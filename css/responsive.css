@@ -1,0 +1,545 @@
+/* ============================================
+   RESPONSIVE STYLES
+   Mobile-first approach with breakpoints
+   ============================================ */
+
+/* ==================== TABLET (max-width: 768px) ==================== */
+@media (max-width: 768px) {
+  /* Typography adjustments */
+  :root {
+    --font-size-xxl: 28px;
+    --font-size-xl: 22px;
+    --font-size-lg: 17px;
+  }
+
+  /* Navigation */
+  .nav-bar {
+    flex-direction: column;
+    gap: var(--spacing-md);
+    padding: var(--spacing-md);
+  }
+
+  .nav-menu {
+    width: 100%;
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+
+  .nav-link {
+    padding: var(--spacing-sm);
+    font-size: var(--font-size-sm);
+  }
+
+  /* Main Container */
+  #app-container {
+    padding: var(--spacing-md);
+  }
+
+  /* Hero Section */
+  .hero-section h1 {
+    font-size: 32px;
+  }
+
+  /* Dashboard Grid */
+  .dashboard-grid {
+    grid-template-columns: 1fr;
+    gap: var(--spacing-md);
+  }
+
+  /* Stats Grid */
+  .stats-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--spacing-md);
+  }
+
+  /* Prompts Grid */
+  .prompts-grid {
+    grid-template-columns: 1fr;
+  }
+
+  /* Words Grid */
+  .words-grid {
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  }
+
+  /* Weak Words Grid */
+  .weak-words-grid {
+    grid-template-columns: 1fr;
+  }
+
+  /* Practice Header */
+  .practice-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  /* Action Buttons */
+  .action-buttons {
+    flex-direction: column;
+    width: 100%;
+  }
+
+  .action-buttons .btn {
+    width: 100%;
+  }
+
+  /* Button Groups */
+  .btn-group {
+    flex-direction: column;
+    width: 100%;
+  }
+
+  .btn-group .btn {
+    width: 100%;
+    min-width: auto;
+  }
+
+  /* Modal */
+  .modal-content {
+    width: 95%;
+    padding: var(--spacing-lg);
+    max-height: 90vh;
+  }
+
+  /* Toast Container */
+  .toast-container {
+    left: var(--spacing-sm);
+    right: var(--spacing-sm);
+    bottom: var(--spacing-sm);
+  }
+
+  .toast {
+    min-width: auto;
+    width: 100%;
+  }
+
+  /* Word Display */
+  .word-main {
+    font-size: 36px;
+  }
+
+  /* Progress Bars */
+  .progress-bar-label {
+    font-size: var(--font-size-sm);
+  }
+
+  /* Achievements Grid */
+  .achievements-grid {
+    grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+  }
+}
+
+/* ==================== MOBILE (max-width: 480px) ==================== */
+@media (max-width: 480px) {
+  /* Further typography adjustments */
+  :root {
+    --font-size-xxl: 24px;
+    --font-size-xl: 20px;
+    --font-size-lg: 16px;
+    --font-size-base: 15px;
+    --spacing-lg: 24px;
+    --spacing-xl: 32px;
+  }
+
+  /* Navigation */
+  .nav-bar {
+    padding: var(--spacing-sm);
+  }
+
+  .brand-text {
+    font-size: var(--font-size-base);
+  }
+
+  .brand-icon {
+    font-size: 24px;
+  }
+
+  .nav-menu {
+    gap: 4px;
+  }
+
+  .nav-link {
+    padding: 8px 12px;
+    font-size: 13px;
+  }
+
+  /* Main Container */
+  #app-container {
+    padding: var(--spacing-sm);
+  }
+
+  /* View Header */
+  .view-header {
+    margin-bottom: var(--spacing-lg);
+  }
+
+  .view-header h1 {
+    font-size: 24px;
+  }
+
+  .view-header p {
+    font-size: var(--font-size-base);
+  }
+
+  /* Hero Section */
+  .hero-section {
+    padding: var(--spacing-lg) 0;
+  }
+
+  .hero-section h1 {
+    font-size: 26px;
+    line-height: 1.2;
+  }
+
+  .subtitle {
+    font-size: var(--font-size-base);
+  }
+
+  /* Dashboard Cards */
+  .dashboard-card {
+    padding: var(--spacing-md);
+  }
+
+  .card-icon {
+    font-size: 36px;
+  }
+
+  /* Stats Grid */
+  .stats-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .stat-icon {
+    font-size: 32px;
+  }
+
+  .stat-number {
+    font-size: 28px;
+  }
+
+  /* Tips Section */
+  .tips-section {
+    padding: var(--spacing-md);
+  }
+
+  .tips-list li {
+    font-size: var(--font-size-sm);
+  }
+
+  /* Word Container */
+  .word-container {
+    padding: var(--spacing-md);
+    min-height: 250px;
+  }
+
+  .word-main {
+    font-size: 28px;
+  }
+
+  .word-pronunciation {
+    font-size: var(--font-size-base);
+  }
+
+  .word-definition {
+    font-size: var(--font-size-base);
+    padding: var(--spacing-sm);
+  }
+
+  .word-example {
+    font-size: var(--font-size-sm);
+    padding: var(--spacing-sm);
+  }
+
+  /* Difficulty/Theme Selector */
+  .difficulty-selector,
+  .theme-selector {
+    margin-bottom: var(--spacing-md);
+  }
+
+  .difficulty-selector label,
+  .theme-selector label {
+    font-size: var(--font-size-base);
+  }
+
+  /* Button Groups - Stack on Mobile */
+  .btn-group .btn {
+    font-size: var(--font-size-sm);
+    padding: 10px;
+  }
+
+  /* Learned Words Section */
+  .words-grid {
+    grid-template-columns: 1fr;
+    gap: var(--spacing-sm);
+  }
+
+  .word-chip {
+    padding: var(--spacing-sm);
+  }
+
+  /* Prompts Grid */
+  .prompt-card {
+    padding: var(--spacing-md);
+  }
+
+  /* Practice Interface */
+  .practice-interface {
+    margin-top: var(--spacing-md);
+  }
+
+  .practice-header h2 {
+    font-size: var(--font-size-lg);
+  }
+
+  .prompt-details {
+    padding: var(--spacing-md);
+  }
+
+  .prompt-text {
+    font-size: var(--font-size-base);
+  }
+
+  .guidance-section {
+    padding: var(--spacing-sm);
+  }
+
+  .guidance-toggle {
+    font-size: var(--font-size-sm);
+  }
+
+  .guidance-item {
+    font-size: var(--font-size-sm);
+  }
+
+  .practice-area textarea {
+    font-size: var(--font-size-sm);
+    padding: var(--spacing-sm);
+  }
+
+  /* Streak Banner */
+  .streak-banner {
+    flex-direction: row;
+    padding: var(--spacing-md);
+    gap: var(--spacing-sm);
+  }
+
+  .streak-icon {
+    font-size: 36px;
+  }
+
+  .streak-number {
+    font-size: var(--font-size-lg);
+  }
+
+  .streak-subtitle {
+    font-size: var(--font-size-sm);
+  }
+
+  /* Daily Word Card */
+  .daily-word-card {
+    padding: var(--spacing-md);
+  }
+
+  /* Exercise Section */
+  .exercise-question {
+    padding: var(--spacing-md);
+    font-size: var(--font-size-base);
+  }
+
+  .exercise-option {
+    padding: var(--spacing-sm) var(--spacing-md);
+    font-size: var(--font-size-sm);
+  }
+
+  /* Weak Words Grid */
+  .weak-word-card {
+    padding: var(--spacing-sm);
+    font-size: var(--font-size-sm);
+  }
+
+  /* Progress Section */
+  .progress-section {
+    padding: var(--spacing-md);
+  }
+
+  .progress-section h2 {
+    font-size: var(--font-size-lg);
+  }
+
+  /* Progress Bars */
+  .progress-bar-track {
+    height: 20px;
+  }
+
+  .progress-bar-fill {
+    font-size: 12px;
+  }
+
+  /* Activity List */
+  .activity-item {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--spacing-xs);
+    padding: var(--spacing-sm);
+  }
+
+  .activity-icon {
+    font-size: 20px;
+  }
+
+  .activity-text {
+    font-size: var(--font-size-sm);
+  }
+
+  /* Achievements Grid */
+  .achievements-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--spacing-sm);
+  }
+
+  .achievement-badge {
+    padding: var(--spacing-sm);
+  }
+
+  .achievement-icon {
+    font-size: 28px;
+  }
+
+  .achievement-name {
+    font-size: 12px;
+  }
+
+  /* Modal */
+  .modal-content {
+    padding: var(--spacing-md);
+    border-radius: var(--border-radius-sm);
+  }
+
+  .modal-close {
+    font-size: 28px;
+    top: var(--spacing-sm);
+    right: var(--spacing-sm);
+  }
+
+  /* Cards */
+  .card {
+    padding: var(--spacing-md);
+  }
+
+  /* Buttons */
+  .btn {
+    padding: var(--spacing-sm) var(--spacing-md);
+    font-size: var(--font-size-sm);
+  }
+
+  /* Toast Notifications */
+  .toast {
+    padding: var(--spacing-sm) var(--spacing-md);
+    font-size: var(--font-size-sm);
+  }
+
+  /* Reference Section */
+  .reference-section {
+    padding: var(--spacing-md);
+  }
+
+  .reference-section h3 {
+    font-size: var(--font-size-base);
+  }
+}
+
+/* ==================== LANDSCAPE MOBILE (max-height: 500px) ==================== */
+@media (max-height: 500px) and (orientation: landscape) {
+  .hero-section {
+    padding: var(--spacing-md) 0;
+  }
+
+  .hero-section h1 {
+    font-size: 24px;
+    margin-bottom: var(--spacing-sm);
+  }
+
+  .view-header {
+    margin-bottom: var(--spacing-md);
+  }
+
+  .nav-bar {
+    padding: var(--spacing-sm) var(--spacing-md);
+  }
+
+  .modal-content {
+    max-height: 95vh;
+  }
+
+  .word-container {
+    min-height: auto;
+  }
+
+  .streak-banner {
+    padding: var(--spacing-sm) var(--spacing-md);
+  }
+}
+
+/* ==================== PRINT STYLES ==================== */
+@media print {
+  .nav-bar,
+  .action-buttons,
+  .btn,
+  .toast-container,
+  .modal-overlay {
+    display: none !important;
+  }
+
+  body {
+    background: white;
+    color: black;
+  }
+
+  .view {
+    display: block !important;
+    page-break-after: always;
+  }
+
+  .card,
+  .dashboard-card,
+  .progress-section {
+    box-shadow: none;
+    border: 1px solid #ccc;
+  }
+
+  a {
+    text-decoration: underline;
+    color: black;
+  }
+}
+
+/* ==================== REDUCED MOTION ==================== */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* ==================== HIGH CONTRAST MODE ==================== */
+@media (prefers-contrast: high) {
+  :root {
+    --border-color: #000;
+    --text-secondary: #000;
+    --shadow-sm: 0 2px 4px rgba(0, 0, 0, 0.3);
+    --shadow-md: 0 4px 8px rgba(0, 0, 0, 0.4);
+  }
+
+  .btn-secondary {
+    border-width: 3px;
+  }
+
+  .word-example,
+  .word-definition {
+    border-width: 3px;
+  }
+}

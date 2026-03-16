@@ -1,0 +1,853 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Improve your speaking skills with vocabulary building, story-telling practice, and daily word exercises.">
+    <title>Articulation Trainer - Speak More Eloquently</title>
+
+    <!-- Stylesheets -->
+    <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="css/components.css">
+    <link rel="stylesheet" href="css/responsive.css">
+</head>
+<body>
+    <!-- Navigation Bar -->
+    <nav id="main-nav" class="nav-bar">
+        <div class="nav-brand">
+            <span class="brand-icon">💬</span>
+            <span class="brand-text">Articulation Trainer</span>
+        </div>
+        <ul class="nav-menu">
+            <li><a href="#" class="nav-link active" data-view="home">Home</a></li>
+            <li><a href="#vocabulary" class="nav-link" data-view="vocabulary">Vocabulary</a></li>
+            <li><a href="#storytelling" class="nav-link" data-view="storytelling">Stories</a></li>
+            <li><a href="#fluency" class="nav-link" data-view="fluency">Fluency & Articulation</a></li>
+            <li><a href="#progress" class="nav-link" data-view="progress">Progress</a></li>
+        </ul>
+    </nav>
+
+    <!-- Main Content Container -->
+    <main id="app-container">
+
+        <!-- ==================== HOME/DASHBOARD VIEW ==================== -->
+        <section id="home-view" class="view active">
+            <div class="hero-section">
+                <h1>Welcome to Articulation Trainer</h1>
+                <p class="subtitle">Master the art of eloquent and articulate speaking</p>
+            </div>
+
+            <div class="dashboard-grid">
+                <!-- Vocabulary Card -->
+                <div class="dashboard-card">
+                    <div class="card-icon">📚</div>
+                    <h2>Vocabulary Builder</h2>
+                    <p>Expand your lexicon with curated words and practice exercises</p>
+                    <div class="card-stats">
+                        <span id="vocab-learned-count">0</span> words learned
+                    </div>
+                    <a href="#vocabulary" class="btn btn-primary">Start Learning</a>
+                </div>
+
+                <!-- Storytelling Card -->
+                <div class="dashboard-card">
+                    <div class="card-icon">📖</div>
+                    <h2>Story-Telling Practice</h2>
+                    <p>Learn to craft and tell comprehensive, engaging stories</p>
+                    <div class="card-stats">
+                        <span id="stories-completed-count">0</span> stories completed
+                    </div>
+                    <a href="#storytelling" class="btn btn-primary">Practice Now</a>
+                </div>
+
+                <!-- Daily Word Card -->
+                <div class="dashboard-card">
+                    <div class="card-icon">✨</div>
+                    <h2>Common Word Enhancement</h2>
+                    <p>Build precision in word choice and avoid common mistakes</p>
+                    <div class="card-stats">
+                        <span id="daily-streak-count">0</span> day streak
+                    </div>
+                    <a href="#daily-word" class="btn btn-primary">Today's Word</a>
+                </div>
+
+                <!-- Fluency & Articulation Card -->
+                <div class="dashboard-card">
+                    <div class="card-icon">🎤</div>
+                    <h2>Fluency & Articulation</h2>
+                    <p>Master pronunciation, pacing, and eloquent expression</p>
+                    <div class="card-stats">
+                        Practice exercises available
+                    </div>
+                    <a href="#fluency" class="btn btn-primary">Start Practicing</a>
+                </div>
+            </div>
+
+            <!-- Quick Tips Section -->
+            <div class="tips-section">
+                <h3>💡 Quick Tips for Better Articulation</h3>
+                <ul class="tips-list">
+                    <li>Practice speaking slowly and clearly before increasing your pace</li>
+                    <li>Replace vague words like "good" or "nice" with specific, descriptive terms</li>
+                    <li>Structure your thoughts with a clear beginning, middle, and end</li>
+                    <li>Build your vocabulary daily - even one new word makes a difference</li>
+                </ul>
+            </div>
+        </section>
+
+        <!-- ==================== VOCABULARY VIEW ==================== -->
+        <section id="vocabulary-view" class="view">
+            <div class="view-header">
+                <h1>Vocabulary</h1>
+                <p>Build your word knowledge and track your progress</p>
+            </div>
+
+            <!-- Category Navigation -->
+            <div class="vocab-categories">
+                <button class="vocab-category-tab active" data-vocab-category="builder">Vocabulary Builder</button>
+                <button class="vocab-category-tab" data-vocab-category="daily">Daily Word</button>
+                <button class="vocab-category-tab" data-vocab-category="bank">Word Bank</button>
+            </div>
+
+            <!-- ========== VOCABULARY BUILDER CATEGORY ========== -->
+            <div id="builder-category" class="vocab-category active">
+                <!-- Difficulty Selector -->
+                <div class="difficulty-selector">
+                    <label>Select Difficulty:</label>
+                    <div class="btn-group">
+                        <button class="btn btn-secondary active" data-difficulty="beginner">Beginner</button>
+                        <button class="btn btn-secondary" data-difficulty="intermediate">Intermediate</button>
+                        <button class="btn btn-secondary" data-difficulty="advanced">Advanced</button>
+                    </div>
+                </div>
+
+                <!-- Word Learning Interface -->
+                <div id="word-display" class="word-container">
+                    <div class="empty-state">
+                        <p>Click "Show New Word" to start learning</p>
+                    </div>
+                </div>
+
+                <!-- Action Buttons -->
+                <div class="action-buttons">
+                    <button id="show-new-word-btn" class="btn btn-primary" data-tooltip="Current word will remain in pool and can come up again">Show New Word</button>
+                    <button id="practice-vocab-btn" class="btn btn-secondary" style="display: none;">Practice Exercise</button>
+                </div>
+
+                <!-- Learned Words List -->
+                <div class="learned-words-section">
+                    <h3>Your Learned Words (<span id="learned-count">0</span>)</h3>
+                    <div id="learned-words-list" class="words-grid">
+                        <!-- Learned words will be dynamically added here -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- ========== DAILY WORD CATEGORY ========== -->
+            <div id="daily-category" class="vocab-category">
+                <!-- Word of the Day -->
+                <div id="mw-word-section" class="mw-word-section">
+                    <div class="mw-word-header">
+                        <h2>📖 Word of the Day</h2>
+                        <span class="mw-logo">Dictionary</span>
+                    </div>
+                    <div id="mw-word-content" class="mw-word-content">
+                        <div class="loading-spinner">Loading today's word...</div>
+                    </div>
+                </div>
+
+                <!-- Streak Display -->
+                <div class="streak-banner">
+                    <div class="streak-icon">🔥</div>
+                    <div class="streak-info">
+                        <div class="streak-number"><span id="current-streak">0</span> Day Streak</div>
+                        <div class="streak-subtitle">Keep it going!</div>
+                    </div>
+                </div>
+
+                <!-- Word of the Day -->
+                <div id="daily-word-display" class="daily-word-card">
+                    <h2>Common Word of the Day</h2>
+                    <div id="daily-word-content">
+                        <!-- Dynamic content will be added here -->
+                    </div>
+                </div>
+
+                <!-- Practice Exercise -->
+                <div id="daily-exercise" class="exercise-section">
+                    <h3>Precision Exercise</h3>
+                    <div id="exercise-content">
+                        <!-- Dynamic exercise will be added here -->
+                    </div>
+                </div>
+
+                <!-- Common Weak Words Reference -->
+                <div class="reference-section">
+                    <h3>Common Words to Replace</h3>
+                    <div class="weak-words-grid">
+                        <div class="weak-word-card">
+                            <div class="weak">good</div>
+                            <div class="arrow">→</div>
+                            <div class="strong">excellent, remarkable, beneficial</div>
+                        </div>
+                        <div class="weak-word-card">
+                            <div class="weak">bad</div>
+                            <div class="arrow">→</div>
+                            <div class="strong">detrimental, inadequate, problematic</div>
+                        </div>
+                        <div class="weak-word-card">
+                            <div class="weak">very</div>
+                            <div class="arrow">→</div>
+                            <div class="strong">exceptionally, remarkably, considerably</div>
+                        </div>
+                        <div class="weak-word-card">
+                            <div class="weak">nice</div>
+                            <div class="arrow">→</div>
+                            <div class="strong">pleasant, delightful, agreeable</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ========== WORD BANK CATEGORY ========== -->
+            <div id="bank-category" class="vocab-category">
+                <!-- Add Custom Word Section -->
+                <div class="word-bank-add-section">
+                    <h2>Add Custom Word</h2>
+                    <p class="subtitle">Add words you've learned outside of this app</p>
+
+                    <form id="add-custom-word-form" class="custom-word-form">
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="custom-word">Word *</label>
+                                <div style="display: flex; gap: 8px;">
+                                    <input type="text" id="custom-word" placeholder="Enter word" required style="flex: 1;">
+                                    <button type="button" id="lookup-word-btn" class="btn btn-secondary" data-tooltip="Auto-fill fields from dictionary">
+                                        Look Up
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label for="custom-pronunciation">Pronunciation</label>
+                                <input type="text" id="custom-pronunciation" placeholder="e.g., eks-KWIZ-it">
+                            </div>
+                        </div>
+                        <div id="lookup-status" class="lookup-status"></div>
+
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="custom-part-of-speech">Part of Speech</label>
+                                <select id="custom-part-of-speech">
+                                    <option value="">Select...</option>
+                                    <option value="noun">Noun</option>
+                                    <option value="verb">Verb</option>
+                                    <option value="adjective">Adjective</option>
+                                    <option value="adverb">Adverb</option>
+                                    <option value="other">Other</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="custom-definition">Definition</label>
+                            <textarea id="custom-definition" rows="3" placeholder="Enter definition"></textarea>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="custom-example">Example Sentence</label>
+                            <textarea id="custom-example" rows="2" placeholder="Use the word in a sentence"></textarea>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="custom-synonyms">Synonyms (comma-separated)</label>
+                            <input type="text" id="custom-synonyms" placeholder="e.g., beautiful, elegant, refined">
+                        </div>
+
+                        <button type="submit" class="btn btn-primary">Add to Word Bank</button>
+                    </form>
+                </div>
+
+                <!-- Quiz Yourself Section -->
+                <div class="word-bank-quiz-section">
+                    <h2>🎯 Quiz Yourself</h2>
+                    <p class="subtitle">Test your knowledge of all your learned words</p>
+
+                    <div id="quiz-start-screen">
+                        <div class="quiz-stats">
+                            <div class="quiz-stat">
+                                <span class="quiz-stat-number" id="quiz-total-words">0</span>
+                                <span class="quiz-stat-label">Words Available</span>
+                            </div>
+                        </div>
+
+                        <div class="quiz-selectors">
+                            <div class="quiz-selector">
+                                <label for="quiz-source" class="quiz-selector-label">Word Source:</label>
+                                <select id="quiz-source" class="quiz-selector-dropdown">
+                                    <option value="all" selected>All Words</option>
+                                    <option value="learned">Learned Words Only</option>
+                                    <option value="custom">Custom Words Only</option>
+                                </select>
+                            </div>
+
+                            <div class="quiz-selector">
+                                <label for="quiz-length" class="quiz-selector-label">Quiz Size:</label>
+                                <select id="quiz-length" class="quiz-selector-dropdown">
+                                    <option value="5">5 Questions</option>
+                                    <option value="10" selected>10 Questions</option>
+                                    <option value="15">15 Questions</option>
+                                    <option value="20">20 Questions</option>
+                                    <option value="all">All Words</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <button id="start-quiz-btn" class="btn btn-primary btn-large">Start Quiz</button>
+                    </div>
+
+                    <div id="quiz-active-screen" style="display: none;">
+                        <div class="quiz-header">
+                            <div class="quiz-progress-container">
+                                <div class="quiz-progress-label">
+                                    Question <span id="quiz-current">1</span> of <span id="quiz-total">10</span>
+                                </div>
+                                <div class="quiz-progress-bar">
+                                    <div id="quiz-progress" class="quiz-progress"></div>
+                                </div>
+                            </div>
+                            <div class="quiz-score-display">
+                                <span class="quiz-score-label">Score</span>
+                                <span id="quiz-score" class="quiz-score">0</span>
+                            </div>
+                        </div>
+
+                        <div class="quiz-question-card">
+                            <h3 id="quiz-question">What is the definition of...</h3>
+                            <div id="quiz-options" class="quiz-options">
+                                <!-- Options will be dynamically added -->
+                            </div>
+                        </div>
+
+                        <div class="quiz-actions">
+                            <button id="quiz-next-btn" class="btn btn-primary" style="display: none;">Next Question</button>
+                            <button id="quit-quiz-btn" class="btn btn-secondary">Quit Quiz</button>
+                        </div>
+                    </div>
+
+                    <div id="quiz-results-screen" style="display: none;">
+                        <div class="quiz-results">
+                            <h3>Quiz Complete! 🎉</h3>
+                            <div class="quiz-final-score" id="final-score">0 / 10</div>
+                            <div class="quiz-percentage" id="final-percentage">0%</div>
+                            <p class="quiz-message">Great job practicing your vocabulary!</p>
+                            <div class="quiz-actions">
+                                <button id="retry-quiz-btn" class="btn btn-primary">Take Another Quiz</button>
+                                <button id="done-quiz-btn" class="btn btn-secondary">Done</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Learned Words from App -->
+                <div class="word-bank-section">
+                    <h2>Words Learned from Vocabulary Builder (<span id="app-words-count">0</span>)</h2>
+                    <div id="app-learned-words" class="word-bank-grid">
+                        <!-- App learned words will be displayed here -->
+                    </div>
+                </div>
+
+                <!-- Custom Words -->
+                <div class="word-bank-section">
+                    <h2>Custom Words (<span id="custom-words-count">0</span>)</h2>
+                    <div id="custom-words-list" class="word-bank-grid">
+                        <!-- Custom words will be displayed here -->
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ==================== STORYTELLING VIEW ==================== -->
+        <section id="storytelling-view" class="view">
+            <div class="view-header">
+                <h1>Story-Telling Practice</h1>
+                <p>Master the art of telling comprehensive, engaging stories</p>
+            </div>
+
+            <!-- Theme Selector -->
+            <div class="theme-selector">
+                <label>Choose a Theme:</label>
+                <div class="btn-group">
+                    <button class="btn btn-secondary active" data-theme="all">All Themes</button>
+                    <button class="btn btn-secondary" data-theme="personal">Personal</button>
+                    <button class="btn btn-secondary" data-theme="fictional">Fictional</button>
+                    <button class="btn btn-secondary" data-theme="descriptive">Descriptive</button>
+                </div>
+            </div>
+
+            <!-- Story Prompts Grid -->
+            <div id="prompts-grid" class="prompts-grid">
+                <!-- Prompt cards will be dynamically added here -->
+            </div>
+
+            <!-- Story Practice Interface (hidden by default) -->
+            <div id="story-practice-interface" class="practice-interface" style="display: none;">
+                <div class="practice-header">
+                    <h2 id="current-prompt-title"></h2>
+                    <button id="back-to-prompts-btn" class="btn btn-outline">← Back to Prompts</button>
+                </div>
+
+                <div class="prompt-details">
+                    <p id="prompt-text" class="prompt-text"></p>
+                </div>
+
+                <!-- Story Structure Guidance -->
+                <div class="guidance-section">
+                    <button class="guidance-toggle">Show Structure Guidance ▼</button>
+                    <div class="guidance-content" style="display: none;">
+                        <div class="guidance-item">
+                            <strong>Beginning:</strong>
+                            <p id="guidance-beginning"></p>
+                        </div>
+                        <div class="guidance-item">
+                            <strong>Middle:</strong>
+                            <p id="guidance-middle"></p>
+                        </div>
+                        <div class="guidance-item">
+                            <strong>End:</strong>
+                            <p id="guidance-end"></p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Practice Text Area -->
+                <div class="practice-area">
+                    <label for="story-textarea">Your Story (speak it out loud or write it down):</label>
+                    <textarea id="story-textarea" placeholder="Practice telling your story here... Remember to speak it out loud!" rows="12"></textarea>
+                </div>
+
+                <!-- Action Buttons -->
+                <div class="action-buttons">
+                    <button id="save-draft-btn" class="btn btn-secondary">Save Draft</button>
+                    <button id="complete-story-btn" class="btn btn-primary">Complete Story</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- ==================== FLUENCY & ARTICULATION VIEW ==================== -->
+
+        <!-- ==================== FLUENCY & ARTICULATION VIEW ==================== -->
+        <section id="fluency-view" class="view">
+            <div class="view-header">
+                <h1>Fluency & Articulation</h1>
+                <p>Master pronunciation, pacing, and eloquent expression</p>
+            </div>
+
+            <!-- Category Navigation -->
+            <div class="fluency-categories">
+                <button class="category-tab active" data-category="fluency">Fluency Building</button>
+                <button class="category-tab" data-category="eloquence">Eloquence & Expression</button>
+                <button class="category-tab" data-category="pronunciation">Pronunciation & Articulation</button>
+            </div>
+
+            <!-- ========== PRONUNCIATION & ARTICULATION CATEGORY ========== -->
+            <div id="pronunciation-category" class="fluency-category">
+
+                <!-- Tongue Twisters -->
+                <div class="fluency-card">
+                    <div class="fluency-card-header">
+                        <div class="fluency-card-icon">👅</div>
+                        <div>
+                            <h3>Tongue Twisters</h3>
+                            <p class="fluency-card-description">Practice difficult sound combinations at progressive difficulty levels</p>
+                        </div>
+                    </div>
+                    <div class="fluency-card-content" id="tongue-twisters-content">
+                        <div class="difficulty-selector">
+                            <button class="difficulty-btn active" data-difficulty="easy">Easy</button>
+                            <button class="difficulty-btn" data-difficulty="medium">Medium</button>
+                            <button class="difficulty-btn" data-difficulty="hard">Hard</button>
+                        </div>
+                        <div id="tongue-twister-display" class="exercise-display">
+                            <p class="exercise-text">Select a difficulty level to start</p>
+                        </div>
+                        <div class="exercise-controls">
+                            <button class="btn btn-secondary" id="new-tongue-twister-btn">New Twister</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Minimal Pairs -->
+                <div class="fluency-card">
+                    <div class="fluency-card-header">
+                        <div class="fluency-card-icon">🔊</div>
+                        <div>
+                            <h3>Minimal Pairs Practice</h3>
+                            <p class="fluency-card-description">Distinguish between similar-sounding words</p>
+                        </div>
+                    </div>
+                    <div class="fluency-card-content" id="minimal-pairs-content">
+                        <div id="minimal-pairs-display" class="exercise-display">
+                            <p class="minimal-pair-instruction">Practice saying these words clearly and notice the difference:</p>
+                            <div id="minimal-pair-words" class="minimal-pair-container">
+                                <!-- Pairs will be displayed here -->
+                            </div>
+                        </div>
+                        <div class="exercise-controls">
+                            <button class="btn btn-secondary" id="new-minimal-pair-btn">New Pair</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Word Stress Training -->
+                <div class="fluency-card">
+                    <div class="fluency-card-header">
+                        <div class="fluency-card-icon">📊</div>
+                        <div>
+                            <h3>Word Stress Training</h3>
+                            <p class="fluency-card-description">Practice stress patterns in multi-syllable words</p>
+                        </div>
+                    </div>
+                    <div class="fluency-card-content" id="stress-training-content">
+                        <div id="stress-training-display" class="exercise-display">
+                            <div id="stress-word-display">
+                                <!-- Word with stress pattern will be displayed here -->
+                            </div>
+                        </div>
+                        <div class="exercise-controls">
+                            <button class="btn btn-secondary" id="new-stress-word-btn">New Word</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ========== FLUENCY BUILDING CATEGORY ========== -->
+            <div id="fluency-category" class="fluency-category active">
+
+                <!-- Filler Word Awareness -->
+                <div class="fluency-card">
+                    <div class="fluency-card-header">
+                        <div class="fluency-card-icon">🎯</div>
+                        <div>
+                            <h3>Filler Word Reducer</h3>
+                            <p class="fluency-card-description">Learn to eliminate "um," "uh," "like" and speak more confidently</p>
+                        </div>
+                    </div>
+                    <div class="fluency-card-content" id="filler-words-content">
+                        <div class="info-box">
+                            <h4>Common Filler Words to Avoid:</h4>
+                            <div class="filler-words-list">
+                                <span class="filler-tag">um</span>
+                                <span class="filler-tag">uh</span>
+                                <span class="filler-tag">like</span>
+                                <span class="filler-tag">you know</span>
+                                <span class="filler-tag">actually</span>
+                                <span class="filler-tag">basically</span>
+                                <span class="filler-tag">literally</span>
+                                <span class="filler-tag">so</span>
+                            </div>
+                            <p class="tip-text">💡 Tip: Instead of using fillers, try pausing briefly to gather your thoughts.</p>
+                        </div>
+                        <div id="filler-exercise-display" class="exercise-display">
+                            <p class="exercise-prompt" id="filler-prompt">Speak for 30 seconds about a topic without using filler words</p>
+                            <button class="btn btn-primary" id="filler-start-btn">Start Exercise</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Pacing Practice -->
+                <div class="fluency-card">
+                    <div class="fluency-card-header">
+                        <div class="fluency-card-icon">⏱️</div>
+                        <div>
+                            <h3>Pacing Practice</h3>
+                            <p class="fluency-card-description">Develop optimal speaking speed and rhythm</p>
+                        </div>
+                    </div>
+                    <div class="fluency-card-content" id="pacing-content">
+                        <div class="pacing-info">
+                            <p><strong>Target Speaking Rate:</strong> 150-160 words per minute (conversational)</p>
+                            <p><strong>Presentation Rate:</strong> 120-150 words per minute (clear and authoritative)</p>
+                        </div>
+                        <div id="pacing-exercise-display" class="exercise-display">
+                            <div id="pacing-passage">
+                                <!-- Reading passage will be displayed here -->
+                            </div>
+                        </div>
+                        <div class="exercise-controls">
+                            <button class="btn btn-secondary" id="new-pacing-passage-btn">New Passage</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Smooth Transitions -->
+                <div class="fluency-card">
+                    <div class="fluency-card-header">
+                        <div class="fluency-card-icon">🔗</div>
+                        <div>
+                            <h3>Smooth Transitions</h3>
+                            <p class="fluency-card-description">Master transition words to connect ideas seamlessly</p>
+                        </div>
+                    </div>
+                    <div class="fluency-card-content" id="transitions-content">
+                        <div class="transition-categories">
+                            <div class="transition-group">
+                                <h4>Addition</h4>
+                                <div class="transition-words">
+                                    <span class="transition-word">Furthermore</span>
+                                    <span class="transition-word">Moreover</span>
+                                    <span class="transition-word">Additionally</span>
+                                    <span class="transition-word">In addition</span>
+                                </div>
+                            </div>
+                            <div class="transition-group">
+                                <h4>Contrast</h4>
+                                <div class="transition-words">
+                                    <span class="transition-word">However</span>
+                                    <span class="transition-word">Nevertheless</span>
+                                    <span class="transition-word">On the other hand</span>
+                                    <span class="transition-word">Conversely</span>
+                                </div>
+                            </div>
+                            <div class="transition-group">
+                                <h4>Cause & Effect</h4>
+                                <div class="transition-words">
+                                    <span class="transition-word">Therefore</span>
+                                    <span class="transition-word">Consequently</span>
+                                    <span class="transition-word">As a result</span>
+                                    <span class="transition-word">Thus</span>
+                                </div>
+                            </div>
+                            <div class="transition-group">
+                                <h4>Time</h4>
+                                <div class="transition-words">
+                                    <span class="transition-word">Meanwhile</span>
+                                    <span class="transition-word">Subsequently</span>
+                                    <span class="transition-word">Previously</span>
+                                    <span class="transition-word">Ultimately</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div id="transitions-exercise-display" class="exercise-display">
+                            <p class="exercise-prompt">Practice: Connect these two ideas using an appropriate transition word</p>
+                            <div id="transition-exercise-content">
+                                <!-- Exercise sentences will be displayed here -->
+                            </div>
+                        </div>
+                        <div class="exercise-controls">
+                            <button class="btn btn-secondary" id="new-transition-exercise-btn">New Exercise</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Sentence Combining -->
+                <div class="fluency-card">
+                    <div class="fluency-card-header">
+                        <div class="fluency-card-icon">🔀</div>
+                        <div>
+                            <h3>Sentence Combining</h3>
+                            <p class="fluency-card-description">Transform simple sentences into complex, flowing structures</p>
+                        </div>
+                    </div>
+                    <div class="fluency-card-content" id="sentence-combining-content">
+                        <div id="combining-exercise-display" class="exercise-display">
+                            <div id="simple-sentences">
+                                <!-- Simple sentences will be displayed here -->
+                            </div>
+                            <div id="combining-hint" class="hint-text">
+                                <!-- Hint will be displayed here -->
+                            </div>
+                        </div>
+                        <div class="exercise-controls">
+                            <button class="btn btn-secondary" id="new-combining-exercise-btn">New Exercise</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ========== ELOQUENCE & EXPRESSION CATEGORY ========== -->
+            <div id="eloquence-category" class="fluency-category">
+
+                <!-- Synonym Swapper -->
+                <div class="fluency-card">
+                    <div class="fluency-card-header">
+                        <div class="fluency-card-icon">📖</div>
+                        <div>
+                            <h3>Synonym Swapper</h3>
+                            <p class="fluency-card-description">Replace common words with more sophisticated alternatives</p>
+                        </div>
+                    </div>
+                    <div class="fluency-card-content" id="synonym-content">
+                        <div id="synonym-exercise-display" class="exercise-display">
+                            <div id="synonym-word-display">
+                                <!-- Common word and alternatives will be displayed here -->
+                            </div>
+                        </div>
+                        <div class="exercise-controls">
+                            <button class="btn btn-secondary" id="new-synonym-btn">New Word</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Idioms & Expressions -->
+                <div class="fluency-card">
+                    <div class="fluency-card-header">
+                        <div class="fluency-card-icon">💭</div>
+                        <div>
+                            <h3>Idioms & Expressions</h3>
+                            <p class="fluency-card-description">Learn natural phrases for everyday conversation</p>
+                        </div>
+                    </div>
+                    <div class="fluency-card-content" id="idioms-content">
+                        <div id="idiom-display" class="exercise-display">
+                            <div id="idiom-content-display">
+                                <!-- Idiom and meaning will be displayed here -->
+                            </div>
+                        </div>
+                        <div class="exercise-controls">
+                            <button class="btn btn-secondary" id="new-idiom-btn">New Idiom</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Rhetorical Devices -->
+                <div class="fluency-card">
+                    <div class="fluency-card-header">
+                        <div class="fluency-card-icon">✨</div>
+                        <div>
+                            <h3>Rhetorical Devices</h3>
+                            <p class="fluency-card-description">Master metaphors, similes, and other expressive techniques</p>
+                        </div>
+                    </div>
+                    <div class="fluency-card-content" id="rhetorical-content">
+                        <div class="rhetorical-types">
+                            <button class="rhetorical-btn active" data-type="metaphor">Metaphor</button>
+                            <button class="rhetorical-btn" data-type="simile">Simile</button>
+                            <button class="rhetorical-btn" data-type="analogy">Analogy</button>
+                            <button class="rhetorical-btn" data-type="alliteration">Alliteration</button>
+                        </div>
+                        <div id="rhetorical-display" class="exercise-display">
+                            <div id="rhetorical-content-display">
+                                <!-- Rhetorical device examples will be displayed here -->
+                            </div>
+                        </div>
+                        <div class="exercise-controls">
+                            <button class="btn btn-secondary" id="new-rhetorical-btn">New Example</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Power Words -->
+                <div class="fluency-card">
+                    <div class="fluency-card-header">
+                        <div class="fluency-card-icon">⚡</div>
+                        <div>
+                            <h3>Power Words Collection</h3>
+                            <p class="fluency-card-description">Impactful words that add emphasis and emotion</p>
+                        </div>
+                    </div>
+                    <div class="fluency-card-content" id="power-words-content">
+                        <div class="power-words-categories">
+                            <button class="power-category-btn active" data-category="persuasive">Persuasive</button>
+                            <button class="power-category-btn" data-category="emotional">Emotional</button>
+                            <button class="power-category-btn" data-category="confident">Confident</button>
+                            <button class="power-category-btn" data-category="descriptive">Descriptive</button>
+                        </div>
+                        <div id="power-words-display" class="power-words-grid">
+                            <!-- Power words will be displayed here -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ==================== PROGRESS VIEW ==================== -->
+        <section id="progress-view" class="view">
+            <div class="view-header">
+                <h1>Your Progress</h1>
+                <p>Track your improvement and celebrate your achievements</p>
+            </div>
+
+            <!-- Overall Stats -->
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-icon">📚</div>
+                    <div class="stat-number" id="total-words-stat">0</div>
+                    <div class="stat-label">Words Learned</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">📖</div>
+                    <div class="stat-number" id="total-stories-stat">0</div>
+                    <div class="stat-label">Stories Completed</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">🔥</div>
+                    <div class="stat-number" id="longest-streak-stat">0</div>
+                    <div class="stat-label">Longest Streak</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">⏱️</div>
+                    <div class="stat-number" id="total-sessions-stat">0</div>
+                    <div class="stat-label">Practice Sessions</div>
+                </div>
+            </div>
+
+            <!-- Vocabulary Progress -->
+            <div class="progress-section">
+                <h2>Vocabulary Progress by Difficulty</h2>
+                <div id="vocab-progress-bars">
+                    <!-- Progress bars will be dynamically added here -->
+                </div>
+            </div>
+
+            <!-- Recent Activity -->
+            <div class="progress-section">
+                <h2>Recent Activity</h2>
+                <div id="recent-activity" class="activity-list">
+                    <!-- Recent activities will be dynamically added here -->
+                </div>
+            </div>
+
+            <!-- Achievements -->
+            <div class="progress-section">
+                <h2>Achievements</h2>
+                <div id="achievements-grid" class="achievements-grid">
+                    <!-- Achievement badges will be dynamically added here -->
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Modal Overlay for Dialogs -->
+    <div id="modal-overlay" class="modal-overlay">
+        <div class="modal-content">
+            <button class="modal-close">&times;</button>
+            <div id="modal-body">
+                <!-- Dynamic modal content will be added here -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Notifications Container -->
+    <div id="toast-container" class="toast-container">
+        <!-- Toast notifications will be dynamically added here -->
+    </div>
+
+    <!-- JavaScript Files (Load in order of dependency) -->
+    <script src="js/storage.js"></script>
+    <script src="js/router.js"></script>
+    <script src="js/data/vocabularyData.js"></script>
+    <script src="js/data/storyPrompts.js"></script>
+    <script src="js/data/dailyWords.js"></script>
+    <script src="js/data/wordOfTheDayList.js"></script>
+    <script src="js/components/modal.js"></script>
+    <script src="js/components/progressBar.js"></script>
+    <script src="js/modules/vocabulary.js"></script>
+    <script src="js/modules/storytelling.js"></script>
+    <script src="js/modules/dailyWord.js"></script>
+    <script src="js/modules/mwWordOfDay.js"></script>
+    <script src="js/modules/wordBank.js"></script>
+    <script src="js/modules/fluency.js"></script>
+    <script src="js/app.js"></script>
+</body>
+</html>
