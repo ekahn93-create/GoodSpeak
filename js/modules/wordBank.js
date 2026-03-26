@@ -14,8 +14,10 @@ const WordBankModule = (function() {
   // DOM elements
   let addWordForm = null;
   let appLearnedWordsContainer = null;
+  let stillLearningWordsContainer = null;
   let customWordsContainer = null;
   let appWordsCountElement = null;
+  let stillLearningCountElement = null;
   let customWordsCountElement = null;
   let lookupButton = null;
   let lookupStatus = null;
@@ -54,8 +56,10 @@ const WordBankModule = (function() {
     // Get DOM elements
     addWordForm = document.getElementById('add-custom-word-form');
     appLearnedWordsContainer = document.getElementById('app-learned-words');
+    stillLearningWordsContainer = document.getElementById('still-learning-words');
     customWordsContainer = document.getElementById('custom-words-list');
     appWordsCountElement = document.getElementById('app-words-count');
+    stillLearningCountElement = document.getElementById('still-learning-words-count');
     customWordsCountElement = document.getElementById('custom-words-count');
     lookupButton = document.getElementById('lookup-word-btn');
     lookupStatus = document.getElementById('lookup-status');
@@ -424,6 +428,55 @@ const WordBankModule = (function() {
   }
 
   /**
+   * Display still learning words
+   */
+  function displayStillLearningWords() {
+    if (!stillLearningWordsContainer || !userData) return;
+
+    const stillLearningWords = userData.vocabulary.stillLearning || [];
+
+    if (stillLearningWords.length === 0) {
+      stillLearningWordsContainer.innerHTML = '<p class="text-secondary">No words in Still Learning yet. Visit the Vocabulary Builder to add words!</p>';
+      return;
+    }
+
+    // Check if vocabularyDatabase is available and properly loaded
+    if (typeof vocabularyDatabase === 'undefined' || !vocabularyDatabase.beginner) {
+      console.warn('vocabularyDatabase not available in displayStillLearningWords');
+      stillLearningWordsContainer.innerHTML = '<p class="text-secondary">Loading vocabulary database...</p>';
+      return;
+    }
+
+    // Get word objects for still learning word IDs
+    const allWords = [
+      ...vocabularyDatabase.beginner,
+      ...vocabularyDatabase.intermediate,
+      ...vocabularyDatabase.advanced
+    ];
+
+    const stillLearningWordObjects = stillLearningWords.map(id => {
+      return allWords.find(w => w.id === id);
+    }).filter(w => w !== undefined);
+
+    // Sort alphabetically
+    stillLearningWordObjects.sort((a, b) => a.word.localeCompare(b.word));
+
+    // Display as detailed cards
+    const html = stillLearningWordObjects.map(word => `
+      <div class="word-bank-card" onclick="WordBankModule.showStillLearningWordDetail(${word.id})">
+        <div class="word-bank-card-header">
+          <div class="word-bank-word">${word.word}</div>
+          <span class="badge badge-warning">Still Learning</span>
+        </div>
+        <div class="word-bank-pronunciation">${word.pronunciation}</div>
+        <div class="word-bank-definition">${truncateText(word.definition, 80)}</div>
+      </div>
+    `).join('');
+
+    stillLearningWordsContainer.innerHTML = html;
+  }
+
+  /**
    * Display custom words
    */
   function displayCustomWords() {
@@ -515,10 +568,148 @@ const WordBankModule = (function() {
             Added: ${new Date(word.addedDate).toLocaleDateString()}
           </div>
         ` : ''}
+        ${!isCustom ? `
+          <div class="action-buttons" style="margin-top: 1rem;">
+            <button class="btn btn-secondary" onclick="WordBankModule.moveWordToStillLearning(${wordId})">
+              Move to Still Learning
+            </button>
+          </div>
+        ` : ''}
       </div>
     `;
 
     Modal.show(content);
+  }
+
+  /**
+   * Show still learning word detail in a modal
+   * @param {number} wordId - The word ID
+   */
+  function showStillLearningWordDetail(wordId) {
+    // Check if vocabularyDatabase is available and properly loaded
+    if (typeof vocabularyDatabase === 'undefined' || !vocabularyDatabase.beginner) {
+      console.error('vocabularyDatabase not available');
+      showToast('Unable to load word details', 'error');
+      return;
+    }
+
+    const allWords = [
+      ...vocabularyDatabase.beginner,
+      ...vocabularyDatabase.intermediate,
+      ...vocabularyDatabase.advanced
+    ];
+    const word = allWords.find(w => w.id === wordId);
+
+    if (!word) return;
+
+    const content = `
+      <div class="word-card">
+        <div class="word-main">${word.word}</div>
+        <div class="word-pronunciation">${word.pronunciation}</div>
+        <div class="word-meta">
+          <span class="badge badge-primary">${word.partOfSpeech}</span>
+          <span class="badge badge-secondary">${word.difficulty}</span>
+          <span class="badge badge-warning">Still Learning</span>
+        </div>
+        <div class="word-definition">
+          <strong>Definition:</strong> ${word.definition}
+        </div>
+        <div class="word-example">
+          <strong>Example:</strong> "${word.exampleSentence}"
+        </div>
+        <div class="word-synonyms">
+          <strong>Synonyms:</strong> ${word.synonyms.join(', ')}
+        </div>
+        <div class="action-buttons" style="margin-top: 1rem;">
+          <button class="btn btn-success" onclick="WordBankModule.moveWordToLearned(${wordId})">
+            Move to Learned Words
+          </button>
+        </div>
+      </div>
+    `;
+
+    Modal.show(content);
+  }
+
+  /**
+   * Move a word from still learning to learned
+   * @param {number} wordId - The word ID to move
+   */
+  function moveWordToLearned(wordId) {
+    if (!userData) return;
+
+    // Remove from still learning
+    const stillLearningIndex = userData.vocabulary.stillLearning.indexOf(wordId);
+    if (stillLearningIndex > -1) {
+      userData.vocabulary.stillLearning.splice(stillLearningIndex, 1);
+    }
+
+    // Add to learned if not already there
+    if (!userData.vocabulary.learned.includes(wordId)) {
+      userData.vocabulary.learned.push(wordId);
+      userData.vocabulary.totalWordsLearned = userData.vocabulary.learned.length;
+      userData.vocabulary.lastLearnedDate = StorageManager.getTodayString();
+    }
+
+    // Save to storage
+    if (StorageManager.save(userData)) {
+      showToast('Word moved to Learned Words!', 'success');
+
+      // Update displays
+      displayAppLearnedWords();
+      displayStillLearningWords();
+      updateCounts();
+
+      // Close modal
+      Modal.hide();
+
+      // Notify vocabulary module if available
+      if (typeof VocabularyModule !== 'undefined' && VocabularyModule.refresh) {
+        VocabularyModule.refresh();
+      }
+    } else {
+      showToast('Failed to save progress', 'error');
+    }
+  }
+
+  /**
+   * Move a word from learned to still learning
+   * @param {number} wordId - The word ID to move
+   */
+  function moveWordToStillLearning(wordId) {
+    if (!userData) return;
+
+    // Remove from learned
+    const learnedIndex = userData.vocabulary.learned.indexOf(wordId);
+    if (learnedIndex > -1) {
+      userData.vocabulary.learned.splice(learnedIndex, 1);
+      userData.vocabulary.totalWordsLearned = userData.vocabulary.learned.length;
+    }
+
+    // Add to still learning if not already there
+    if (!userData.vocabulary.stillLearning.includes(wordId)) {
+      userData.vocabulary.stillLearning.push(wordId);
+    }
+
+    // Save to storage
+    if (StorageManager.save(userData)) {
+      showToast('Word moved to Still Learning!', 'success');
+
+      // Update displays
+      displayAppLearnedWords();
+      displayStillLearningWords();
+      updateCounts();
+
+      // Close modal
+      Modal.hide();
+
+      // Notify vocabulary module if available
+      if (typeof VocabularyModule !== 'undefined' && VocabularyModule.refresh) {
+        VocabularyModule.refresh();
+      }
+    } else {
+      showToast('Failed to save progress', 'error');
+    }
   }
 
   /**
@@ -558,6 +749,11 @@ const WordBankModule = (function() {
   function updateCounts() {
     if (appWordsCountElement && userData) {
       appWordsCountElement.textContent = userData.vocabulary.learned.length;
+    }
+
+    if (stillLearningCountElement && userData) {
+      const stillLearningCount = userData.vocabulary.stillLearning ? userData.vocabulary.stillLearning.length : 0;
+      stillLearningCountElement.textContent = stillLearningCount;
     }
 
     if (customWordsCountElement && userData) {
@@ -945,6 +1141,7 @@ const WordBankModule = (function() {
     }
 
     displayAppLearnedWords();
+    displayStillLearningWords();
     displayCustomWords();
     updateCounts();
 
@@ -969,6 +1166,9 @@ const WordBankModule = (function() {
   return {
     init: init,
     showWordDetail: showWordDetail,
+    showStillLearningWordDetail: showStillLearningWordDetail,
+    moveWordToLearned: moveWordToLearned,
+    moveWordToStillLearning: moveWordToStillLearning,
     deleteCustomWord: deleteCustomWord,
     refresh: refresh
   };

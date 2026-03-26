@@ -66,6 +66,9 @@ const VocabularyModule = (function() {
     // Display learned words
     displayLearnedWords();
 
+    // Display still learning words
+    displayStillLearningWords();
+
     // Update counts
     updateCounts();
 
@@ -186,9 +189,10 @@ const VocabularyModule = (function() {
    * Show a new word
    */
   function showNewWord() {
-    // Get unlearned words for current difficulty
+    // Get unlearned words for current difficulty (exclude both learned and still learning)
     const availableWords = vocabularyDatabase[currentDifficulty].filter(word => {
-      return !userData.vocabulary.learned.includes(word.id);
+      return !userData.vocabulary.learned.includes(word.id) &&
+             !userData.vocabulary.stillLearning.includes(word.id);
     });
 
     if (availableWords.length === 0) {
@@ -249,6 +253,9 @@ const VocabularyModule = (function() {
             <button class="btn btn-success" onclick="VocabularyModule.markAsLearned(${word.id})" data-tooltip="This word will be added to Learned Words bank">
               Mark as Learned
             </button>
+            <button class="btn btn-secondary" onclick="VocabularyModule.markAsStillLearning(${word.id})" data-tooltip="This word will be added to Still Learning">
+              Mark as Still Learning
+            </button>
           </div>
         </div>
       </div>
@@ -286,6 +293,12 @@ const VocabularyModule = (function() {
       return;
     }
 
+    // Remove from still learning if present
+    const stillLearningIndex = userData.vocabulary.stillLearning.indexOf(wordId);
+    if (stillLearningIndex > -1) {
+      userData.vocabulary.stillLearning.splice(stillLearningIndex, 1);
+    }
+
     // Add to learned words
     userData.vocabulary.learned.push(wordId);
     userData.vocabulary.totalWordsLearned = userData.vocabulary.learned.length;
@@ -299,6 +312,44 @@ const VocabularyModule = (function() {
 
       // Update display
       displayLearnedWords();
+      displayStillLearningWords();
+      updateCounts();
+
+      // Show next word
+      showNewWord();
+    } else {
+      showToast('Failed to save progress', 'error');
+    }
+  }
+
+  /**
+   * Mark a word as still learning
+   * @param {number} wordId - The ID of the word to mark as still learning
+   */
+  function markAsStillLearning(wordId) {
+    if (!userData) return;
+
+    // Check if already in still learning
+    if (userData.vocabulary.stillLearning.includes(wordId)) {
+      showToast('This word is already in your still learning list!', 'info');
+      return;
+    }
+
+    // Check if already in learned words
+    if (userData.vocabulary.learned.includes(wordId)) {
+      showToast('This word is already in your learned list!', 'info');
+      return;
+    }
+
+    // Add to still learning words
+    userData.vocabulary.stillLearning.push(wordId);
+
+    // Save to storage
+    if (StorageManager.save(userData)) {
+      showToast('Word added to Still Learning!', 'success');
+
+      // Update display
+      displayStillLearningWords();
       updateCounts();
 
       // Show next word
@@ -409,6 +460,9 @@ const VocabularyModule = (function() {
             <button class="btn btn-success" onclick="VocabularyModule.markAsLearned(${wordId})" data-tooltip="This word will be added to Learned Words bank">
               Mark as Learned
             </button>
+            <button class="btn btn-secondary" onclick="VocabularyModule.markAsStillLearning(${wordId})" data-tooltip="This word will be added to Still Learning">
+              Mark as Still Learning
+            </button>
             <button class="btn btn-secondary" onclick="VocabularyModule.showNewWord()" data-tooltip="Word will remain in pool and can come up again">
               Next Word
             </button>
@@ -426,6 +480,9 @@ const VocabularyModule = (function() {
         <div class="exercise-feedback incorrect">
           ✗ Not quite. Try again with another word!
           <div style="margin-top: 1rem;">
+            <button class="btn btn-secondary" onclick="VocabularyModule.markAsStillLearning(${wordId})" data-tooltip="This word will be added to Still Learning">
+              Mark as Still Learning
+            </button>
             <button class="btn btn-secondary" onclick="VocabularyModule.showNewWord()" data-tooltip="Word will remain in pool and can come up again">
               Next Word
             </button>
@@ -470,6 +527,41 @@ const VocabularyModule = (function() {
   }
 
   /**
+   * Display still learning words
+   */
+  function displayStillLearningWords() {
+    const stillLearningList = document.getElementById('still-learning-words-list');
+    if (!stillLearningList || !userData) return;
+
+    const stillLearningWords = userData.vocabulary.stillLearning || [];
+
+    if (stillLearningWords.length === 0) {
+      stillLearningList.innerHTML = '<p class="text-secondary">No words in Still Learning yet.</p>';
+      return;
+    }
+
+    // Get word objects for still learning word IDs
+    const allWords = [
+      ...vocabularyDatabase.beginner,
+      ...vocabularyDatabase.intermediate,
+      ...vocabularyDatabase.advanced
+    ];
+
+    const stillLearningWordObjects = stillLearningWords.map(id => {
+      return allWords.find(w => w.id === id);
+    }).filter(w => w !== undefined);
+
+    // Display as chips with option to move to learned
+    const html = stillLearningWordObjects.map(word => `
+      <div class="word-chip" onclick="VocabularyModule.showStillLearningWord(${word.id})" title="${word.definition}">
+        ${word.word}
+      </div>
+    `).join('');
+
+    stillLearningList.innerHTML = html;
+  }
+
+  /**
    * Show a learned word in a modal
    * @param {number} wordId - The word ID to show
    */
@@ -501,10 +593,140 @@ const VocabularyModule = (function() {
         <div class="word-synonyms">
           <strong>Synonyms:</strong> ${word.synonyms.join(', ')}
         </div>
+        <div class="action-buttons" style="margin-top: 1rem;">
+          <button class="btn btn-secondary" onclick="VocabularyModule.moveToStillLearning(${wordId})">
+            Move to Still Learning
+          </button>
+        </div>
       </div>
     `;
 
     Modal.show(content);
+  }
+
+  /**
+   * Show a still learning word in a modal with option to move to learned
+   * @param {number} wordId - The word ID to show
+   */
+  function showStillLearningWord(wordId) {
+    const allWords = [
+      ...vocabularyDatabase.beginner,
+      ...vocabularyDatabase.intermediate,
+      ...vocabularyDatabase.advanced
+    ];
+
+    const word = allWords.find(w => w.id === wordId);
+
+    if (!word) return;
+
+    const content = `
+      <div class="word-card">
+        <div class="word-main">${word.word}</div>
+        <div class="word-pronunciation">${word.pronunciation}</div>
+        <div class="word-meta">
+          <span class="badge badge-primary">${word.partOfSpeech}</span>
+          <span class="badge badge-secondary">${word.difficulty}</span>
+          <span class="badge badge-warning">Still Learning</span>
+        </div>
+        <div class="word-definition">
+          <strong>Definition:</strong> ${word.definition}
+        </div>
+        <div class="word-example">
+          <strong>Example:</strong> "${word.exampleSentence}"
+        </div>
+        <div class="word-synonyms">
+          <strong>Synonyms:</strong> ${word.synonyms.join(', ')}
+        </div>
+        <div class="action-buttons" style="margin-top: 1rem;">
+          <button class="btn btn-success" onclick="VocabularyModule.moveToLearned(${wordId})">
+            Move to Learned Words
+          </button>
+        </div>
+      </div>
+    `;
+
+    Modal.show(content);
+  }
+
+  /**
+   * Move a word from still learning to learned
+   * @param {number} wordId - The word ID to move
+   */
+  function moveToLearned(wordId) {
+    if (!userData) return;
+
+    // Remove from still learning
+    const stillLearningIndex = userData.vocabulary.stillLearning.indexOf(wordId);
+    if (stillLearningIndex > -1) {
+      userData.vocabulary.stillLearning.splice(stillLearningIndex, 1);
+    }
+
+    // Add to learned if not already there
+    if (!userData.vocabulary.learned.includes(wordId)) {
+      userData.vocabulary.learned.push(wordId);
+      userData.vocabulary.totalWordsLearned = userData.vocabulary.learned.length;
+      userData.vocabulary.lastLearnedDate = StorageManager.getTodayString();
+    }
+
+    // Save to storage
+    if (StorageManager.save(userData)) {
+      showToast('Word moved to Learned Words!', 'success');
+
+      // Update displays
+      displayLearnedWords();
+      displayStillLearningWords();
+      updateCounts();
+
+      // Close modal
+      Modal.hide();
+
+      // Notify Word Bank module if available
+      if (typeof WordBankModule !== 'undefined' && WordBankModule.refresh) {
+        WordBankModule.refresh();
+      }
+    } else {
+      showToast('Failed to save progress', 'error');
+    }
+  }
+
+  /**
+   * Move a word from learned to still learning
+   * @param {number} wordId - The word ID to move
+   */
+  function moveToStillLearning(wordId) {
+    if (!userData) return;
+
+    // Remove from learned
+    const learnedIndex = userData.vocabulary.learned.indexOf(wordId);
+    if (learnedIndex > -1) {
+      userData.vocabulary.learned.splice(learnedIndex, 1);
+      userData.vocabulary.totalWordsLearned = userData.vocabulary.learned.length;
+    }
+
+    // Add to still learning if not already there
+    if (!userData.vocabulary.stillLearning.includes(wordId)) {
+      userData.vocabulary.stillLearning.push(wordId);
+    }
+
+    // Save to storage
+    if (StorageManager.save(userData)) {
+      showToast('Word moved to Still Learning!', 'success');
+
+      // Update displays
+      displayLearnedWords();
+      displayStillLearningWords();
+      updateCounts();
+
+      // Close modal
+      Modal.hide();
+
+      // Notify Word Bank module if available
+      if (typeof WordBankModule !== 'undefined' && WordBankModule.refresh) {
+        WordBankModule.refresh();
+      }
+    } else {
+      showToast('Failed to save progress', 'error');
+    }
   }
 
   /**
@@ -513,6 +735,12 @@ const VocabularyModule = (function() {
   function updateCounts() {
     if (learnedCountElement && userData) {
       learnedCountElement.textContent = userData.vocabulary.totalWordsLearned;
+    }
+
+    const stillLearningCountElement = document.getElementById('still-learning-count');
+    if (stillLearningCountElement && userData) {
+      const stillLearningCount = userData.vocabulary.stillLearning ? userData.vocabulary.stillLearning.length : 0;
+      stillLearningCountElement.textContent = stillLearningCount;
     }
   }
 
@@ -595,6 +823,7 @@ const VocabularyModule = (function() {
       currentDifficulty = userData.vocabulary.currentDifficulty || 'beginner';
       updateDifficultyButtons();
       displayLearnedWords();
+      displayStillLearningWords();
       updateCounts();
     }
   }
@@ -621,8 +850,12 @@ const VocabularyModule = (function() {
     showNewWord: showNewWord,
     revealDefinition: revealDefinition,
     markAsLearned: markAsLearned,
+    markAsStillLearning: markAsStillLearning,
     startPractice: startPractice,
     showLearnedWord: showLearnedWord,
+    showStillLearningWord: showStillLearningWord,
+    moveToLearned: moveToLearned,
+    moveToStillLearning: moveToStillLearning,
     refresh: refresh,
     getCurrentDifficulty: getCurrentDifficulty,
     getProgress: getProgress,

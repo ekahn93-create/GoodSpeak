@@ -25,6 +25,7 @@ const StorageManager = (function() {
 
       vocabulary: {
         learned: [],           // Array of word IDs that have been learned
+        stillLearning: [],     // Array of word IDs that are still being learned
         mastered: [],          // Array of word IDs that have been mastered through practice
         currentDifficulty: 'beginner',
         totalWordsLearned: 0,
@@ -157,6 +158,12 @@ const StorageManager = (function() {
 
     // Deep merge nested objects
     merged.vocabulary = { ...defaults.vocabulary, ...existing.vocabulary };
+
+    // Ensure stillLearning array exists
+    if (!merged.vocabulary.stillLearning) {
+      merged.vocabulary.stillLearning = [];
+    }
+
     merged.storytelling = { ...defaults.storytelling, ...existing.storytelling };
     merged.dailyWord = { ...defaults.dailyWord, ...existing.dailyWord };
     merged.customWords = existing.customWords || defaults.customWords;
