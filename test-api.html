@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>API Integration Test</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        .test-section {
+            background: white;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        button {
+            background: #4A90E2;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        button:hover {
+            background: #357ABD;
+        }
+        .result {
+            background: #f0f0f0;
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 4px;
+            font-family: monospace;
+            white-space: pre-wrap;
+        }
+        .success { color: green; }
+        .error { color: red; }
+        .loading { color: orange; }
+    </style>
+</head>
+<body>
+    <h1>API Integration Test</h1>
+    <p>Test the Datamuse and Free Dictionary API integrations</p>
+
+    <div class="test-section">
+        <h2>1. Test Datamuse API - Synonyms</h2>
+        <button onclick="testSynonyms()">Get Synonyms for "happy"</button>
+        <div id="synonyms-result" class="result"></div>
+    </div>
+
+    <div class="test-section">
+        <h2>2. Test Sophisticated Synonyms</h2>
+        <button onclick="testSophisticatedSynonyms()">Get Sophisticated Synonyms for "good"</button>
+        <div id="sophisticated-result" class="result"></div>
+    </div>
+
+    <div class="test-section">
+        <h2>3. Test Free Dictionary API</h2>
+        <button onclick="testDefinition()">Get Definition for "articulate"</button>
+        <div id="definition-result" class="result"></div>
+    </div>
+
+    <div class="test-section">
+        <h2>4. Test Rhymes</h2>
+        <button onclick="testRhymes()">Get Rhymes for "cat"</button>
+        <div id="rhymes-result" class="result"></div>
+    </div>
+
+    <div class="test-section">
+        <h2>5. Test Sound-Alike Words</h2>
+        <button onclick="testSoundAlike()">Get Sound-Alike for "ship"</button>
+        <div id="soundalike-result" class="result"></div>
+    </div>
+
+    <div class="test-section">
+        <h2>6. Test Caching</h2>
+        <button onclick="testCaching()">Test Cache (fetch "test" twice)</button>
+        <div id="cache-result" class="result"></div>
+    </div>
+
+    <div class="test-section">
+        <h2>7. Cache Statistics</h2>
+        <button onclick="showCacheStats()">Show Cache Stats</button>
+        <button onclick="clearCache()">Clear Cache</button>
+        <div id="stats-result" class="result"></div>
+    </div>
+
+    <!-- Load API Service -->
+    <script src="js/modules/api-service.js"></script>
+
+    <script>
+        async function testSynonyms() {
+            const resultDiv = document.getElementById('synonyms-result');
+            resultDiv.innerHTML = '<span class="loading">Loading...</span>';
+
+            try {
+                const synonyms = await APIService.getSynonyms('happy', 10);
+                resultDiv.innerHTML = `<span class="success">✓ Success!</span>\nSynonyms: ${synonyms.join(', ')}`;
+            } catch (error) {
+                resultDiv.innerHTML = `<span class="error">✗ Error:</span> ${error.message}`;
+            }
+        }
+
+        async function testSophisticatedSynonyms() {
+            const resultDiv = document.getElementById('sophisticated-result');
+            resultDiv.innerHTML = '<span class="loading">Loading...</span>';
+
+            try {
+                const synonyms = await APIService.getSophisticatedSynonyms('good');
+                resultDiv.innerHTML = `<span class="success">✓ Success!</span>\nSophisticated synonyms: ${synonyms.join(', ')}`;
+            } catch (error) {
+                resultDiv.innerHTML = `<span class="error">✗ Error:</span> ${error.message}`;
+            }
+        }
+
+        async function testDefinition() {
+            const resultDiv = document.getElementById('definition-result');
+            resultDiv.innerHTML = '<span class="loading">Loading...</span>';
+
+            try {
+                const wordData = await APIService.getWordDefinition('articulate');
+                resultDiv.innerHTML = `<span class="success">✓ Success!</span>\n${JSON.stringify(wordData, null, 2)}`;
+            } catch (error) {
+                resultDiv.innerHTML = `<span class="error">✗ Error:</span> ${error.message}`;
+            }
+        }
+
+        async function testRhymes() {
+            const resultDiv = document.getElementById('rhymes-result');
+            resultDiv.innerHTML = '<span class="loading">Loading...</span>';
+
+            try {
+                const rhymes = await APIService.getRhymes('cat', 10);
+                resultDiv.innerHTML = `<span class="success">✓ Success!</span>\nRhymes: ${rhymes.join(', ')}`;
+            } catch (error) {
+                resultDiv.innerHTML = `<span class="error">✗ Error:</span> ${error.message}`;
+            }
+        }
+
+        async function testSoundAlike() {
+            const resultDiv = document.getElementById('soundalike-result');
+            resultDiv.innerHTML = '<span class="loading">Loading...</span>';
+
+            try {
+                const words = await APIService.getSoundAlike('ship', 10);
+                resultDiv.innerHTML = `<span class="success">✓ Success!</span>\nSound-alike words: ${words.join(', ')}`;
+            } catch (error) {
+                resultDiv.innerHTML = `<span class="error">✗ Error:</span> ${error.message}`;
+            }
+        }
+
+        async function testCaching() {
+            const resultDiv = document.getElementById('cache-result');
+            resultDiv.innerHTML = '<span class="loading">Testing cache...</span>';
+
+            try {
+                // First call - will fetch from API
+                const start1 = performance.now();
+                await APIService.getWordDefinition('test');
+                const time1 = (performance.now() - start1).toFixed(2);
+
+                // Second call - should be from cache (much faster)
+                const start2 = performance.now();
+                await APIService.getWordDefinition('test');
+                const time2 = (performance.now() - start2).toFixed(2);
+
+                resultDiv.innerHTML = `<span class="success">✓ Cache Working!</span>\nFirst call (API): ${time1}ms\nSecond call (Cache): ${time2}ms\n\nCache is ${(time1 / time2).toFixed(1)}x faster!`;
+            } catch (error) {
+                resultDiv.innerHTML = `<span class="error">✗ Error:</span> ${error.message}`;
+            }
+        }
+
+        function showCacheStats() {
+            const resultDiv = document.getElementById('stats-result');
+            const stats = APIService.getCacheStats();
+            resultDiv.innerHTML = `<span class="success">Cache Statistics:</span>\n${JSON.stringify(stats, null, 2)}`;
+        }
+
+        function clearCache() {
+            APIService.clearCache();
+            const resultDiv = document.getElementById('stats-result');
+            resultDiv.innerHTML = '<span class="success">✓ Cache cleared!</span>';
+        }
+    </script>
+</body>
+</html>

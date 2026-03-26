@@ -69,6 +69,13 @@ const VocabularyModule = (function() {
     // Update counts
     updateCounts();
 
+    // Restore saved category from localStorage
+    const savedCategory = localStorage.getItem('vocabulary_currentCategory');
+    if (savedCategory) {
+      currentVocabCategory = savedCategory;
+      switchVocabCategory(savedCategory);
+    }
+
     console.log('VocabularyModule initialized successfully');
   }
 
@@ -123,6 +130,9 @@ const VocabularyModule = (function() {
   function switchVocabCategory(category) {
     currentVocabCategory = category;
 
+    // Save to localStorage
+    localStorage.setItem('vocabulary_currentCategory', category);
+
     // Update tab active states
     if (vocabCategoryTabs) {
       vocabCategoryTabs.forEach(tab => {
@@ -162,6 +172,11 @@ const VocabularyModule = (function() {
       case 'bank':
         if (typeof WordBankModule !== 'undefined') {
           WordBankModule.refresh();
+        }
+        break;
+      case 'grammar':
+        if (typeof GrammarModule !== 'undefined') {
+          GrammarModule.refresh();
         }
         break;
     }

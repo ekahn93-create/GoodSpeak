@@ -42,6 +42,7 @@ const App = (function() {
     DailyWordModule.init();
     MWWordOfDayModule.init();
     WordBankModule.init();
+    GrammarModule.init();
     FluencyModule.init();
 
     // Initialize dashboard

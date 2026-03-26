@@ -151,6 +151,68 @@ const WordBankModule = (function() {
   }
 
   /**
+   * Convert IPA phonetic notation to more readable English-like pronunciation
+   * @param {string} ipa - IPA phonetic string
+   * @returns {string} Simplified pronunciation guide
+   */
+  function convertIPAToReadable(ipa) {
+    if (!ipa) return '';
+
+    // Remove slashes and brackets
+    let readable = ipa.replace(/[\/\[\]]/g, '');
+
+    // Handle syllable breaks - convert dots to hyphens
+    readable = readable.replace(/\./g, '-');
+
+    // Remove optional parts in parentheses but keep the content
+    readable = readable.replace(/\(([^)]+)\)/g, '$1');
+
+    // Simple IPA to readable conversions (only common special characters)
+    const conversions = {
+      // Special vowels that don't look like English
+      'ɛ': 'e',    // as in "bed"
+      'ɪ': 'i',    // as in "bit"
+      'ə': 'uh',   // schwa - as in "about"
+      'ʌ': 'u',    // as in "but"
+      'ɔ': 'o',    // as in "dog"
+      'æ': 'a',    // as in "cat"
+      'ʊ': 'oo',   // as in "book"
+      'ɑ': 'ah',   // as in "father"
+      'ɜ': 'er',   // as in "bird"
+      'ɒ': 'o',    // as in "pot"
+
+      // Length markers
+      'ː': '',     // long vowel marker
+
+      // Special consonants
+      'θ': 'th',   // as in "think"
+      'ð': 'th',   // as in "this"
+      'ʃ': 'sh',   // as in "ship"
+      'ʒ': 'zh',   // as in "measure"
+      'ŋ': 'ng',   // as in "sing"
+      'ɹ': 'r',    // English r
+      'j': 'y',    // as in "yes"
+    };
+
+    // Apply conversions
+    for (const [ipaChar, replacement] of Object.entries(conversions)) {
+      readable = readable.split(ipaChar).join(replacement);
+    }
+
+    // Handle stress markers by capitalizing the stressed syllable
+    // Primary stress (ˈ) - capitalize the following syllable
+    readable = readable.replace(/ˈ([a-z])/g, (match, letter) => letter.toUpperCase());
+
+    // Remove any remaining stress markers
+    readable = readable.replace(/[ˈˌ]/g, '');
+
+    // Clean up any double hyphens or leading/trailing hyphens
+    readable = readable.replace(/--+/g, '-').replace(/^-|-$/g, '');
+
+    return readable;
+  }
+
+  /**
    * Handle dictionary lookup
    */
   async function handleLookupWord() {
@@ -168,71 +230,46 @@ const WordBankModule = (function() {
     showLookupStatus('Fetching definition...', 'info');
 
     try {
-      // Use Free Dictionary API (no API key required)
-      const response = await fetch(`https://api.dictionaryapi.dev/api/v2/entries/en/${encodeURIComponent(word)}`);
+      // Use APIService for caching and consistent error handling
+      if (typeof APIService !== 'undefined') {
+        const wordData = await APIService.getWordDefinition(word);
 
-      if (!response.ok) {
-        if (response.status === 404) {
-          showLookupStatus('Word not found in dictionary. You can still add it manually.', 'warning');
-        } else {
-          throw new Error('Failed to fetch definition');
-        }
-        return;
-      }
-
-      const data = await response.json();
-
-      if (data && data.length > 0) {
-        const wordData = data[0];
-
-        // Extract pronunciation
-        let pronunciation = '';
-        if (wordData.phonetic) {
-          pronunciation = wordData.phonetic;
-        } else if (wordData.phonetics && wordData.phonetics.length > 0) {
-          pronunciation = wordData.phonetics[0].text || '';
-        }
-
-        // Extract first meaning
-        const firstMeaning = wordData.meanings && wordData.meanings[0];
-        const partOfSpeech = firstMeaning?.partOfSpeech || '';
-        const definition = firstMeaning?.definitions?.[0]?.definition || '';
-        const example = firstMeaning?.definitions?.[0]?.example || '';
-
-        // Extract synonyms
-        const synonyms = firstMeaning?.synonyms || [];
-        const synonymsText = synonyms.slice(0, 5).join(', '); // Limit to 5 synonyms
-
-        // Populate form fields
-        if (pronunciation) {
-          document.getElementById('custom-pronunciation').value = pronunciation.replace(/[\/\[\]]/g, '');
-        }
-
-        if (partOfSpeech) {
-          const posSelect = document.getElementById('custom-part-of-speech');
-          const normalizedPos = partOfSpeech.toLowerCase();
-          if (['noun', 'verb', 'adjective', 'adverb'].includes(normalizedPos)) {
-            posSelect.value = normalizedPos;
-          } else {
-            posSelect.value = 'other';
+        if (wordData) {
+          // Populate form fields
+          if (wordData.phonetic) {
+            const readablePronunciation = convertIPAToReadable(wordData.phonetic);
+            document.getElementById('custom-pronunciation').value = readablePronunciation;
           }
-        }
 
-        if (definition) {
-          document.getElementById('custom-definition').value = definition;
-        }
+          if (wordData.partOfSpeech) {
+            const posSelect = document.getElementById('custom-part-of-speech');
+            const normalizedPos = wordData.partOfSpeech.toLowerCase();
+            if (['noun', 'verb', 'adjective', 'adverb'].includes(normalizedPos)) {
+              posSelect.value = normalizedPos;
+            } else {
+              posSelect.value = 'other';
+            }
+          }
 
-        if (example) {
-          document.getElementById('custom-example').value = example;
-        }
+          if (wordData.definition) {
+            document.getElementById('custom-definition').value = wordData.definition;
+          }
 
-        if (synonymsText) {
-          document.getElementById('custom-synonyms').value = synonymsText;
-        }
+          if (wordData.example) {
+            document.getElementById('custom-example').value = wordData.example;
+          }
 
-        showLookupStatus('✓ Definition loaded! You can edit any fields before adding.', 'success');
+          if (wordData.synonyms && wordData.synonyms.length > 0) {
+            document.getElementById('custom-synonyms').value = wordData.synonyms.slice(0, 5).join(', ');
+          }
+
+          showLookupStatus('✓ Definition loaded! You can edit any fields before adding.', 'success');
+        } else {
+          showLookupStatus('Word not found in dictionary. You can still add it manually.', 'warning');
+        }
       } else {
-        showLookupStatus('No definition found. You can still add it manually.', 'warning');
+        // Fallback to direct API call if APIService not loaded
+        throw new Error('APIService not available');
       }
     } catch (error) {
       console.error('Dictionary lookup error:', error);

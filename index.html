@@ -20,7 +20,7 @@
         </div>
         <ul class="nav-menu">
             <li><a href="#" class="nav-link active" data-view="home">Home</a></li>
-            <li><a href="#vocabulary" class="nav-link" data-view="vocabulary">Vocabulary</a></li>
+            <li><a href="#vocabulary" class="nav-link" data-view="vocabulary">Vocabulary and Grammar</a></li>
             <li><a href="#storytelling" class="nav-link" data-view="storytelling">Stories</a></li>
             <li><a href="#fluency" class="nav-link" data-view="fluency">Fluency & Articulation</a></li>
             <li><a href="#progress" class="nav-link" data-view="progress">Progress</a></li>
@@ -98,8 +98,8 @@
         <!-- ==================== VOCABULARY VIEW ==================== -->
         <section id="vocabulary-view" class="view">
             <div class="view-header">
-                <h1>Vocabulary</h1>
-                <p>Build your word knowledge and track your progress</p>
+                <h1>Vocabulary and Grammar</h1>
+                <p>Build your word knowledge, master grammar, and track your progress</p>
             </div>
 
             <!-- Category Navigation -->
@@ -107,6 +107,7 @@
                 <button class="vocab-category-tab active" data-vocab-category="builder">Vocabulary Builder</button>
                 <button class="vocab-category-tab" data-vocab-category="daily">Daily Word</button>
                 <button class="vocab-category-tab" data-vocab-category="bank">Word Bank</button>
+                <button class="vocab-category-tab" data-vocab-category="grammar">Grammar & Structure</button>
             </div>
 
             <!-- ========== VOCABULARY BUILDER CATEGORY ========== -->
@@ -364,17 +365,156 @@
                     </div>
                 </div>
             </div>
+
+            <!-- ========== GRAMMAR & STRUCTURE CATEGORY ========== -->
+            <div id="grammar-category" class="vocab-category">
+                <!-- Sentence Structure -->
+                <div class="grammar-exercise-section">
+                    <h2>Sentence Structure</h2>
+                    <p class="subtitle">Master different sentence types and improve clarity</p>
+
+                    <div class="grammar-exercise-card">
+                        <h3>Simple to Complex</h3>
+                        <p class="instruction">Transform simple sentences into more sophisticated structures</p>
+                        <div id="sentence-transform-display" class="exercise-display">
+                            <p id="simple-sentence" class="exercise-text"></p>
+                        </div>
+                        <div class="exercise-controls">
+                            <button class="btn btn-primary" id="new-sentence-transform-btn">New Exercise</button>
+                            <button class="btn btn-secondary" id="show-sentence-hint-btn">Show Hint</button>
+                        </div>
+                        <div id="sentence-hint" class="hint-text hidden"></div>
+                    </div>
+
+                    <div class="grammar-exercise-card">
+                        <h3>Sentence Combining</h3>
+                        <p class="instruction">Combine short sentences using conjunctions and transitions</p>
+                        <div id="combining-display" class="exercise-display">
+                            <div id="sentences-to-combine"></div>
+                        </div>
+                        <div class="exercise-controls">
+                            <button class="btn btn-primary" id="new-combining-btn">New Exercise</button>
+                            <button class="btn btn-secondary" id="show-combining-hint-btn">Show Hint</button>
+                        </div>
+                        <div id="combining-hint" class="hint-text hidden"></div>
+                    </div>
+                </div>
+
+                <!-- Common Grammar Mistakes -->
+                <div class="grammar-exercise-section">
+                    <h2>Common Grammar Mistakes</h2>
+                    <p class="subtitle">Identify and correct frequent errors</p>
+
+                    <div class="grammar-exercise-card">
+                        <h3>Error Correction</h3>
+                        <p class="instruction">Spot the grammatical error and think about the correction</p>
+                        <div id="error-sentence-display" class="exercise-display">
+                            <p id="error-sentence" class="exercise-text"></p>
+                        </div>
+                        <div class="exercise-controls">
+                            <button class="btn btn-primary" id="show-correction-btn">Show Correction</button>
+                            <button class="btn btn-secondary" id="new-error-btn">New Exercise</button>
+                        </div>
+                        <div id="correction-display" class="correction-display" style="display: none;"></div>
+                    </div>
+                </div>
+
+                <!-- Subject-Verb Agreement -->
+                <div class="grammar-exercise-section">
+                    <h2>Subject-Verb Agreement</h2>
+                    <p class="subtitle">Practice proper agreement in various contexts</p>
+
+                    <div class="grammar-exercise-card">
+                        <h3>Agreement Practice</h3>
+                        <p class="instruction">Choose the correct verb form</p>
+                        <div id="agreement-display" class="exercise-display">
+                            <p id="agreement-sentence" class="exercise-text"></p>
+                            <div id="agreement-options" class="agreement-options"></div>
+                        </div>
+                        <div class="exercise-controls">
+                            <button class="btn btn-primary" id="new-agreement-btn">New Exercise</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Punctuation Practice -->
+                <div class="grammar-exercise-section">
+                    <h2>Punctuation Mastery</h2>
+                    <p class="subtitle">Learn proper punctuation usage</p>
+
+                    <div class="grammar-exercise-card">
+                        <h3>Punctuation Rules</h3>
+                        <p class="instruction">Review and practice punctuation marks</p>
+                        <div class="punctuation-rules">
+                            <div class="punctuation-card">
+                                <div class="punctuation-mark">;</div>
+                                <div class="punctuation-name">Semicolon</div>
+                                <div class="punctuation-use">Links two independent clauses that are closely related</div>
+                                <div class="punctuation-example">"I love reading; it expands my mind."</div>
+                            </div>
+                            <div class="punctuation-card">
+                                <div class="punctuation-mark">:</div>
+                                <div class="punctuation-name">Colon</div>
+                                <div class="punctuation-use">Introduces a list, explanation, or quotation</div>
+                                <div class="punctuation-example">"She has three hobbies: reading, writing, and painting."</div>
+                            </div>
+                            <div class="punctuation-card">
+                                <div class="punctuation-mark">—</div>
+                                <div class="punctuation-name">Em Dash</div>
+                                <div class="punctuation-use">Emphasizes or sets apart information</div>
+                                <div class="punctuation-example">"The solution—simple yet elegant—solved the problem."</div>
+                            </div>
+                            <div class="punctuation-card">
+                                <div class="punctuation-mark">,</div>
+                                <div class="punctuation-name">Oxford Comma</div>
+                                <div class="punctuation-use">Final comma in a list before "and" or "or"</div>
+                                <div class="punctuation-example">"I bought apples, oranges, and bananas."</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Active vs Passive Voice -->
+                <div class="grammar-exercise-section">
+                    <h2>Active vs. Passive Voice</h2>
+                    <p class="subtitle">Transform between voice types for better communication</p>
+
+                    <div class="grammar-exercise-card">
+                        <h3>Voice Transformation</h3>
+                        <p class="instruction">Convert between active and passive voice</p>
+                        <div id="voice-display" class="exercise-display">
+                            <p id="voice-sentence" class="exercise-text"></p>
+                            <p id="voice-type" class="voice-type-label"></p>
+                        </div>
+                        <div class="exercise-controls">
+                            <button class="btn btn-primary" id="new-voice-btn">New Exercise</button>
+                            <button class="btn btn-secondary" id="show-voice-hint-btn">Show Hint</button>
+                        </div>
+                        <div id="voice-hint" class="hint-text hidden"></div>
+                    </div>
+                </div>
+            </div>
         </section>
 
         <!-- ==================== STORYTELLING VIEW ==================== -->
         <section id="storytelling-view" class="view">
             <div class="view-header">
-                <h1>Story-Telling Practice</h1>
-                <p>Master the art of telling comprehensive, engaging stories</p>
+                <h1>Speaking & Communication</h1>
+                <p>Develop practical speaking skills and creative expression</p>
             </div>
 
-            <!-- Theme Selector -->
-            <div class="theme-selector">
+            <!-- Category Navigation -->
+            <div class="storytelling-categories">
+                <button class="storytelling-category-tab active" data-story-category="storytelling">Story-Telling</button>
+                <button class="storytelling-category-tab" data-story-category="practical">Practical Skills</button>
+                <button class="storytelling-category-tab" data-story-category="challenges">Interactive Challenges</button>
+                <button class="storytelling-category-tab" data-story-category="listening">Listening & Comprehension</button>
+            </div>
+
+            <!-- ========== STORYTELLING CATEGORY ========== -->
+            <div id="storytelling-category" class="storytelling-category active">
+                <!-- Theme Selector -->
+                <div class="theme-selector">
                 <label>Choose a Theme:</label>
                 <div class="btn-group">
                     <button class="btn btn-secondary active" data-theme="all">All Themes</button>
@@ -431,7 +571,320 @@
                     <button id="complete-story-btn" class="btn btn-primary">Complete Story</button>
                 </div>
             </div>
-        </section>
+        </div>
+
+        <!-- ========== PRACTICAL SPEAKING SKILLS CATEGORY ========== -->
+        <div id="practical-category" class="storytelling-category">
+
+            <!-- Impromptu Speaking -->
+            <div class="fluency-card">
+                <div class="fluency-card-header">
+                    <div class="fluency-card-icon">🎤</div>
+                    <div>
+                        <h3>Impromptu Speaking</h3>
+                        <p class="fluency-card-description">Random prompts with timed speaking challenges</p>
+                    </div>
+                </div>
+                <div class="fluency-card-content">
+                    <div class="time-selector">
+                        <button class="time-btn active" data-time="30">30 Seconds</button>
+                        <button class="time-btn" data-time="60">1 Minute</button>
+                        <button class="time-btn" data-time="120">2 Minutes</button>
+                    </div>
+                    <div id="impromptu-display" class="exercise-display">
+                        <p class="exercise-text" id="impromptu-prompt">Click "New Topic" to start</p>
+                    </div>
+                    <div class="exercise-controls">
+                        <button class="btn btn-primary" id="impromptu-start-btn">Start Timer</button>
+                        <button class="btn btn-secondary" id="impromptu-stop-btn" style="display: none;">Stop Timer</button>
+                        <button class="btn btn-secondary" id="impromptu-reset-btn" style="display: none;">Reset Timer</button>
+                        <button class="btn btn-secondary" id="new-impromptu-btn">New Topic</button>
+                    </div>
+                    <div id="impromptu-timer" class="timer-display">
+                        <div class="timer-number" id="timer-seconds">0:30</div>
+                        <div class="timer-label">remaining</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Topic Builder -->
+            <div class="fluency-card">
+                <div class="fluency-card-header">
+                    <div class="fluency-card-icon">🏗️</div>
+                    <div>
+                        <h3>Topic Builder</h3>
+                        <p class="fluency-card-description">Structure your thoughts with frameworks</p>
+                    </div>
+                </div>
+                <div class="fluency-card-content">
+                    <div class="framework-selector">
+                        <button class="framework-btn active" data-framework="pee">Point-Evidence-Explanation</button>
+                        <button class="framework-btn" data-framework="ps">Problem-Solution</button>
+                        <button class="framework-btn" data-framework="star">STAR Method</button>
+                    </div>
+                    <div id="topic-builder-display" class="exercise-display">
+                        <div id="framework-structure">
+                            <!-- Framework structure will be displayed here -->
+                        </div>
+                    </div>
+                    <div class="exercise-controls">
+                        <button class="btn btn-secondary" id="new-topic-builder-btn">New Topic</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Conversation Starters -->
+            <div class="fluency-card">
+                <div class="fluency-card-header">
+                    <div class="fluency-card-icon">💬</div>
+                    <div>
+                        <h3>Conversation Starters</h3>
+                        <p class="fluency-card-description">Practice opening lines and small talk</p>
+                    </div>
+                </div>
+                <div class="fluency-card-content">
+                    <div class="situation-selector">
+                        <button class="situation-btn active" data-situation="networking">Networking</button>
+                        <button class="situation-btn" data-situation="casual">Casual</button>
+                        <button class="situation-btn" data-situation="professional">Professional</button>
+                    </div>
+                    <div id="conversation-display" class="exercise-display">
+                        <div id="conversation-starters-list">
+                            <!-- Conversation starters will be displayed here -->
+                        </div>
+                    </div>
+                    <div class="exercise-controls">
+                        <button class="btn btn-secondary" id="new-conversation-starters-btn">Refresh</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Elevator Pitch Builder -->
+            <div class="fluency-card">
+                <div class="fluency-card-header">
+                    <div class="fluency-card-icon">🚀</div>
+                    <div>
+                        <h3>Elevator Pitch Builder</h3>
+                        <p class="fluency-card-description">Craft concise, compelling introductions</p>
+                    </div>
+                </div>
+                <div class="fluency-card-content">
+                    <div class="info-box">
+                        <h4>30-Second Pitch Structure:</h4>
+                        <ol style="margin: var(--spacing-sm) 0; padding-left: var(--spacing-lg);">
+                            <li>Who you are (name, role)</li>
+                            <li>What you do (value proposition)</li>
+                            <li>Why it matters (benefit/impact)</li>
+                            <li>Call to action (next step)</li>
+                        </ol>
+                    </div>
+                    <div id="pitch-builder-display" class="exercise-display">
+                        <div id="pitch-template">
+                            <p><strong>Example:</strong></p>
+                            <p style="font-style: italic; color: var(--text-secondary);">
+                                "Hi, I'm [Name], a [Role] at [Company/Industry]. I help [Target Audience] [Solve Problem/Achieve Goal] by [Your Solution/Approach]. This matters because [Impact/Benefit]. I'd love to [Next Step - connect, discuss, share more]."
+                            </p>
+                        </div>
+                    </div>
+                    <div class="practice-area" style="margin-top: var(--spacing-lg);">
+                        <label for="pitch-textarea">Practice Your Pitch:</label>
+                        <textarea id="pitch-textarea" placeholder="Write your elevator pitch here..." rows="6"></textarea>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ========== INTERACTIVE CHALLENGES CATEGORY ========== -->
+        <div id="challenges-category" class="storytelling-category">
+
+            <!-- Daily Speaking Prompt -->
+            <div class="fluency-card">
+                <div class="fluency-card-header">
+                    <div class="fluency-card-icon">📅</div>
+                    <div>
+                        <h3>Daily Speaking Prompt</h3>
+                        <p class="fluency-card-description">New topic each day with suggested vocabulary</p>
+                    </div>
+                </div>
+                <div class="fluency-card-content">
+                    <div id="daily-prompt-display" class="exercise-display">
+                        <h4 id="daily-prompt-topic" style="color: var(--primary-color); margin-bottom: var(--spacing-md);"></h4>
+                        <p id="daily-prompt-description" style="margin-bottom: var(--spacing-lg);"></p>
+                        <div id="daily-prompt-vocab">
+                            <strong>Suggested vocabulary:</strong>
+                            <div id="vocab-tags" style="display: flex; gap: var(--spacing-sm); flex-wrap: wrap; margin-top: var(--spacing-sm);">
+                                <!-- Vocabulary tags will be displayed here -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Word Association Speed Round -->
+            <div class="fluency-card">
+                <div class="fluency-card-header">
+                    <div class="fluency-card-icon">⚡</div>
+                    <div>
+                        <h3>Word Association</h3>
+                        <p class="fluency-card-description">Build a chain of associated words</p>
+                    </div>
+                </div>
+                <div class="fluency-card-content">
+                    <div style="margin-bottom: var(--spacing-lg);">
+                        <p style="color: var(--text-secondary); margin-bottom: var(--spacing-md);">
+                            <strong>How to play:</strong> You'll see a word. Think of a related word and type it in. Keep the chain going!
+                        </p>
+                        <div class="time-selector" style="margin-bottom: var(--spacing-md);">
+                            <button class="association-time-btn active" data-time="none">No Timer</button>
+                            <button class="association-time-btn" data-time="30">30 Seconds</button>
+                            <button class="association-time-btn" data-time="60">1 Minute</button>
+                        </div>
+                    </div>
+                    <div id="word-association-display" class="exercise-display">
+                        <p class="exercise-text" id="association-word">Click "Start Round" to begin</p>
+                        <div id="association-timer" style="margin-top: var(--spacing-md); display: none;">
+                            <div style="font-size: var(--font-size-xxl); font-weight: bold; color: var(--primary-color); text-align: center;">
+                                <span id="association-timer-display">0:00</span>
+                            </div>
+                        </div>
+                        <div id="association-chain" style="margin-top: var(--spacing-lg); display: none;">
+                            <!-- Word chain will be displayed here -->
+                        </div>
+                    </div>
+                    <div id="association-input" style="margin-top: var(--spacing-md); display: none;">
+                        <input type="text" id="association-text" placeholder="Type an associated word and press Enter or click Submit..." style="width: 100%; padding: var(--spacing-sm); font-size: var(--font-size-base); margin-bottom: var(--spacing-sm);">
+                        <p style="font-size: var(--font-size-sm); color: var(--text-secondary); font-style: italic;">
+                            Example: If the word is "ocean" → you might say "waves", "blue", "salty", etc.
+                        </p>
+                    </div>
+                    <div class="exercise-controls">
+                        <button class="btn btn-primary" id="start-association-btn">Start Round</button>
+                        <button class="btn btn-secondary" id="submit-association-btn" style="display: none;">Submit Word</button>
+                        <button class="btn btn-secondary" id="reset-association-btn" style="display: none;">Reset</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Description Challenge -->
+            <div class="fluency-card">
+                <div class="fluency-card-header">
+                    <div class="fluency-card-icon">🎨</div>
+                    <div>
+                        <h3>Description Challenge</h3>
+                        <p class="fluency-card-description">Describe concepts without using common words</p>
+                    </div>
+                </div>
+                <div class="fluency-card-content">
+                    <div id="description-display" class="exercise-display">
+                        <h4 id="description-object" style="color: var(--primary-color); font-size: var(--font-size-xxl); margin-bottom: var(--spacing-lg);"></h4>
+                        <div id="forbidden-words" style="background: var(--accent-color); color: var(--text-white); padding: var(--spacing-md); border-radius: var(--border-radius-sm); margin-bottom: var(--spacing-md);">
+                            <strong>Forbidden Words:</strong>
+                            <div id="forbidden-words-list" style="margin-top: var(--spacing-xs);">
+                                <!-- Forbidden words will be displayed here -->
+                            </div>
+                        </div>
+                        <p style="font-style: italic; color: var(--text-secondary);">Describe this object in 30-60 seconds without using the forbidden words</p>
+                    </div>
+                    <div class="exercise-controls">
+                        <button class="btn btn-secondary" id="new-description-btn">New Challenge</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Speak for X Minutes -->
+            <div class="fluency-card">
+                <div class="fluency-card-header">
+                    <div class="fluency-card-icon">⏱️</div>
+                    <div>
+                        <h3>Speak for X Minutes</h3>
+                        <p class="fluency-card-description">Endurance challenges on random topics</p>
+                    </div>
+                </div>
+                <div class="fluency-card-content">
+                    <div class="duration-selector">
+                        <button class="duration-btn active" data-duration="1">1 Minute</button>
+                        <button class="duration-btn" data-duration="2">2 Minutes</button>
+                        <button class="duration-btn" data-duration="3">3 Minutes</button>
+                        <button class="duration-btn" data-duration="5">5 Minutes</button>
+                    </div>
+                    <div id="endurance-display" class="exercise-display">
+                        <p class="exercise-text" id="endurance-topic">Click "New Topic" to start</p>
+                    </div>
+                    <div class="exercise-controls">
+                        <button class="btn btn-primary" id="start-endurance-btn">Start Challenge</button>
+                        <button class="btn btn-secondary" id="endurance-stop-btn" style="display: none;">Stop Timer</button>
+                        <button class="btn btn-secondary" id="endurance-reset-btn" style="display: none;">Reset Timer</button>
+                        <button class="btn btn-secondary" id="new-endurance-btn">New Topic</button>
+                    </div>
+                    <div id="endurance-timer" class="timer-display">
+                        <div class="timer-number" id="endurance-timer-display">1:00</div>
+                        <div class="timer-label">remaining</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ========== LISTENING & COMPREHENSION CATEGORY ========== -->
+        <div id="listening-category" class="storytelling-category">
+
+            <!-- Summarization Practice -->
+            <div class="fluency-card">
+                <div class="fluency-card-header">
+                    <div class="fluency-card-icon">📝</div>
+                    <div>
+                        <h3>Summarization Practice</h3>
+                        <p class="fluency-card-description">Read content, then summarize in your own words</p>
+                    </div>
+                </div>
+                <div class="fluency-card-content">
+                    <div id="summarization-display" class="exercise-display">
+                        <div id="passage-to-summarize" style="background: var(--bg-card); padding: var(--spacing-lg); border-radius: var(--border-radius-sm); margin-bottom: var(--spacing-lg); max-height: 300px; overflow-y: auto;">
+                            <!-- Passage will be displayed here -->
+                        </div>
+                        <p style="font-weight: 600; margin-bottom: var(--spacing-sm);">Now summarize this passage in your own words (aim for 2-3 sentences):</p>
+                    </div>
+                    <div class="practice-area">
+                        <textarea id="summary-textarea" placeholder="Your summary..." rows="4"></textarea>
+                    </div>
+                    <div class="exercise-controls">
+                        <button class="btn btn-secondary" id="new-summarization-btn">New Passage</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Paraphrasing Exercises -->
+            <div class="fluency-card">
+                <div class="fluency-card-header">
+                    <div class="fluency-card-icon">🔄</div>
+                    <div>
+                        <h3>Paraphrasing Exercises</h3>
+                        <p class="fluency-card-description">Restate sentences in multiple ways</p>
+                    </div>
+                </div>
+                <div class="fluency-card-content">
+                    <div id="paraphrasing-display" class="exercise-display">
+                        <div style="background: var(--primary-light); color: var(--text-white); padding: var(--spacing-lg); border-radius: var(--border-radius-sm); margin-bottom: var(--spacing-lg);">
+                            <p style="font-size: var(--font-size-lg); margin: 0;" id="original-sentence"></p>
+                        </div>
+                        <p style="font-weight: 600; margin-bottom: var(--spacing-sm);">Rephrase this sentence in at least 3 different ways:</p>
+                    </div>
+                    <div class="practice-area">
+                        <label for="paraphrase-1">Version 1:</label>
+                        <textarea id="paraphrase-1" placeholder="First paraphrase..." rows="2"></textarea>
+
+                        <label for="paraphrase-2">Version 2:</label>
+                        <textarea id="paraphrase-2" placeholder="Second paraphrase..." rows="2"></textarea>
+
+                        <label for="paraphrase-3">Version 3:</label>
+                        <textarea id="paraphrase-3" placeholder="Third paraphrase..." rows="2"></textarea>
+                    </div>
+                    <div class="exercise-controls">
+                        <button class="btn btn-secondary" id="new-paraphrasing-btn">New Sentence</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
 
         <!-- ==================== FLUENCY & ARTICULATION VIEW ==================== -->
 
@@ -649,16 +1102,37 @@
                         </div>
                     </div>
                     <div class="fluency-card-content" id="sentence-combining-content">
+                        <p style="color: var(--text-secondary); margin-bottom: var(--spacing-md);">
+                            <strong>Challenge:</strong> Combine these simple sentences into one sophisticated sentence.
+                        </p>
                         <div id="combining-exercise-display" class="exercise-display">
                             <div id="simple-sentences">
                                 <!-- Simple sentences will be displayed here -->
                             </div>
-                            <div id="combining-hint" class="hint-text">
-                                <!-- Hint will be displayed here -->
+                        </div>
+                        <div class="practice-area">
+                            <textarea
+                                id="combining-answer-input"
+                                placeholder="Type your combined sentence here or practice speaking it aloud..."
+                                rows="5">
+                            </textarea>
+                        </div>
+                        <div id="fluency-combining-hint-section" style="display: none; margin-bottom: var(--spacing-md);">
+                            <div style="background: var(--bg-card); padding: var(--spacing-md); border-radius: var(--border-radius-sm); border-left: 4px solid var(--secondary-color);">
+                                <p style="font-weight: 600; color: var(--text-secondary); margin-bottom: var(--spacing-xs);">💡 Hint:</p>
+                                <p id="fluency-combining-hint" style="margin: 0; color: var(--text-primary);"></p>
+                            </div>
+                        </div>
+                        <div id="fluency-combining-example-section" style="display: none; margin-bottom: var(--spacing-md);">
+                            <div style="background: var(--bg-hover); padding: var(--spacing-md); border-radius: var(--border-radius-sm); border-left: 4px solid var(--primary-color);">
+                                <p style="font-weight: 600; color: var(--text-secondary); margin-bottom: var(--spacing-xs);">✨ Example Solution:</p>
+                                <p id="fluency-combining-example" style="margin: 0; color: var(--text-primary); font-style: italic;"></p>
                             </div>
                         </div>
                         <div class="exercise-controls">
-                            <button class="btn btn-secondary" id="new-combining-exercise-btn">New Exercise</button>
+                            <button class="btn btn-secondary" id="show-fluency-combining-hint-btn">Show Hint</button>
+                            <button class="btn btn-secondary" id="show-fluency-combining-example-btn">Show Example</button>
+                            <button class="btn btn-primary" id="new-fluency-combining-exercise-btn">New Exercise</button>
                         </div>
                     </div>
                 </div>
@@ -842,11 +1316,13 @@
     <script src="js/data/wordOfTheDayList.js"></script>
     <script src="js/components/modal.js"></script>
     <script src="js/components/progressBar.js"></script>
+    <script src="js/modules/api-service.js"></script>
     <script src="js/modules/vocabulary.js"></script>
     <script src="js/modules/storytelling.js"></script>
     <script src="js/modules/dailyWord.js"></script>
     <script src="js/modules/mwWordOfDay.js"></script>
     <script src="js/modules/wordBank.js"></script>
+    <script src="js/modules/grammar.js"></script>
     <script src="js/modules/fluency.js"></script>
     <script src="js/app.js"></script>
 </body>

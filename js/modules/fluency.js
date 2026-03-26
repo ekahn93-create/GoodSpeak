@@ -43,8 +43,15 @@ const FluencyModule = (function() {
   let transitionExerciseContent = null;
   let newTransitionExerciseBtn = null;
   let simpleSentences = null;
-  let combiningHint = null;
-  let newCombiningExerciseBtn = null;
+  let fluencyCombiningHint = null;
+  let fluencyCombiningHintSection = null;
+  let fluencyCombiningExampleSection = null;
+  let fluencyCombiningExample = null;
+  let showFluencyCombiningHintBtn = null;
+  let showFluencyCombiningExampleBtn = null;
+  let newFluencyCombiningExerciseBtn = null;
+  let combiningAnswerInput = null;
+  let currentCombiningExercise = null;
 
   // DOM elements - Eloquence & Expression
   let synonymWordDisplay = null;
@@ -65,7 +72,13 @@ const FluencyModule = (function() {
       "How can a clam cram in a clean cream can?",
       "Fred fed Ted bread and Ted fed Fred bread.",
       "Betty bought butter but the butter was bitter.",
-      "I scream, you scream, we all scream for ice cream."
+      "I scream, you scream, we all scream for ice cream.",
+      "Red lorry, yellow lorry.",
+      "Eleven benevolent elephants.",
+      "A big black bear sat on a big black rug.",
+      "How much wood would a woodchuck chuck?",
+      "Fuzzy Wuzzy was a bear. Fuzzy Wuzzy had no hair.",
+      "Toy boat, toy boat, toy boat."
     ],
     medium: [
       "Six thick thistle sticks.",
@@ -73,7 +86,13 @@ const FluencyModule = (function() {
       "Which wristwatches are Swiss wristwatches?",
       "A proper copper coffee pot.",
       "Lesser leather never weathered wetter weather better.",
-      "Truly rural, truly plural."
+      "Truly rural, truly plural.",
+      "I saw Susie sitting in a shoe shine shop.",
+      "She sees cheese, she sees seas.",
+      "Greek grapes, Greek grapes, Greek grapes.",
+      "Fresh fried fish, fish fresh fried.",
+      "Three free throws.",
+      "Rubber baby buggy bumpers."
     ],
     hard: [
       "Pad kid poured curd pulled cod.",
@@ -81,7 +100,13 @@ const FluencyModule = (function() {
       "Brisk brave brigadiers brandished broad bright blades.",
       "Imagine an imaginary menagerie manager managing an imaginary menagerie.",
       "She stood on the balcony, inexplicably mimicking him hiccuping while amicably welcoming him in.",
-      "Six sleek swans swam swiftly southwards."
+      "Six sleek swans swam swiftly southwards.",
+      "The thirty-three thieves thought that they thrilled the throne throughout Thursday.",
+      "Can you can a can as a canner can can a can?",
+      "I wish to wish the wish you wish to wish, but if you wish the wish the witch wishes, I won't wish the wish you wish to wish.",
+      "If a dog chews shoes, whose shoes does he choose?",
+      "Rory the warrior and Roger the worrier were reared wrongly in a rural brewery.",
+      "Six sick hicks nick six slick bricks with picks and sticks."
     ]
   };
 
@@ -95,7 +120,17 @@ const FluencyModule = (function() {
     { word1: "berry", word2: "very" },
     { word1: "bat", word2: "pat" },
     { word1: "light", word2: "right" },
-    { word1: "feel", word2: "fill" }
+    { word1: "feel", word2: "fill" },
+    { word1: "seat", word2: "sit" },
+    { word1: "fail", word2: "fell" },
+    { word1: "pool", word2: "pull" },
+    { word1: "heat", word2: "hit" },
+    { word1: "leave", word2: "live" },
+    { word1: "reach", word2: "rich" },
+    { word1: "pear", word2: "pair" },
+    { word1: "write", word2: "right" },
+    { word1: "three", word2: "free" },
+    { word1: "wet", word2: "vet" }
   ];
 
   const stressPatterns = [
@@ -146,7 +181,8 @@ const FluencyModule = (function() {
         "The clouds were heavy.",
         "Rain was imminent."
       ],
-      hint: "Combine these using descriptive language and conjunctions"
+      hint: "Combine these using descriptive language and conjunctions",
+      example: "With dark skies and heavy clouds looming overhead, rain was imminent."
     },
     {
       sentences: [
@@ -154,7 +190,8 @@ const FluencyModule = (function() {
         "Her skills improved.",
         "She won the competition."
       ],
-      hint: "Show the progression using cause and effect relationships"
+      hint: "Show the progression using cause and effect relationships",
+      example: "Through daily practice, she improved her skills and ultimately won the competition."
     },
     {
       sentences: [
@@ -162,7 +199,35 @@ const FluencyModule = (function() {
         "The service was slow.",
         "The food was excellent."
       ],
-      hint: "Use contrast to connect these observations"
+      hint: "Use contrast to connect these observations",
+      example: "Although the restaurant was busy and the service was slow, the food was excellent."
+    },
+    {
+      sentences: [
+        "The presentation was informative.",
+        "The speaker was engaging.",
+        "The audience was attentive."
+      ],
+      hint: "Use parallel structure to emphasize all three positive aspects",
+      example: "The presentation was informative, the speaker was engaging, and the audience remained attentive throughout."
+    },
+    {
+      sentences: [
+        "The deadline was tight.",
+        "The team worked efficiently.",
+        "They delivered on time."
+      ],
+      hint: "Show how the team responded to the challenge",
+      example: "Despite the tight deadline, the team worked efficiently and delivered on time."
+    },
+    {
+      sentences: [
+        "The book was long.",
+        "The plot was complex.",
+        "I couldn't put it down."
+      ],
+      hint: "Use contrast to show unexpected engagement",
+      example: "Even though the book was long and the plot was complex, I couldn't put it down."
     }
   ];
 
@@ -302,8 +367,14 @@ const FluencyModule = (function() {
     transitionExerciseContent = document.getElementById('transition-exercise-content');
     newTransitionExerciseBtn = document.getElementById('new-transition-exercise-btn');
     simpleSentences = document.getElementById('simple-sentences');
-    combiningHint = document.getElementById('combining-hint');
-    newCombiningExerciseBtn = document.getElementById('new-combining-exercise-btn');
+    fluencyCombiningHint = document.getElementById('fluency-combining-hint');
+    fluencyCombiningHintSection = document.getElementById('fluency-combining-hint-section');
+    fluencyCombiningExampleSection = document.getElementById('fluency-combining-example-section');
+    fluencyCombiningExample = document.getElementById('fluency-combining-example');
+    showFluencyCombiningHintBtn = document.getElementById('show-fluency-combining-hint-btn');
+    showFluencyCombiningExampleBtn = document.getElementById('show-fluency-combining-example-btn');
+    newFluencyCombiningExerciseBtn = document.getElementById('new-fluency-combining-exercise-btn');
+    combiningAnswerInput = document.getElementById('combining-answer-input');
 
     // Eloquence & Expression
     synonymWordDisplay = document.getElementById('synonym-word-display');
@@ -364,8 +435,16 @@ const FluencyModule = (function() {
       newTransitionExerciseBtn.addEventListener('click', showNewTransitionExercise);
     }
 
-    if (newCombiningExerciseBtn) {
-      newCombiningExerciseBtn.addEventListener('click', showNewCombiningExercise);
+    if (newFluencyCombiningExerciseBtn) {
+      newFluencyCombiningExerciseBtn.addEventListener('click', showNewCombiningExercise);
+    }
+
+    if (showFluencyCombiningHintBtn) {
+      showFluencyCombiningHintBtn.addEventListener('click', showCombiningHint);
+    }
+
+    if (showFluencyCombiningExampleBtn) {
+      showFluencyCombiningExampleBtn.addEventListener('click', showCombiningExampleSolution);
     }
 
     // Eloquence & Expression
@@ -417,6 +496,13 @@ const FluencyModule = (function() {
     showNewIdiom();
     showNewRhetoricalExample();
     showPowerWords();
+
+    // Restore saved category from localStorage
+    const savedCategory = localStorage.getItem('fluency_currentCategory');
+    if (savedCategory) {
+      currentCategory = savedCategory;
+      switchCategory(savedCategory);
+    }
   }
 
   /**
@@ -424,6 +510,9 @@ const FluencyModule = (function() {
    */
   function switchCategory(category) {
     currentCategory = category;
+
+    // Save to localStorage
+    localStorage.setItem('fluency_currentCategory', category);
 
     // Update tab active states
     if (categoryTabs) {
@@ -583,17 +672,74 @@ const FluencyModule = (function() {
    * Show a new combining exercise
    */
   function showNewCombiningExercise() {
-    if (!simpleSentences || !combiningHint) return;
+    if (!simpleSentences) return;
 
-    const randomExercise = combiningExercises[Math.floor(Math.random() * combiningExercises.length)];
+    // Pick a random exercise
+    currentCombiningExercise = combiningExercises[Math.floor(Math.random() * combiningExercises.length)];
 
+    // Display the simple sentences
     simpleSentences.innerHTML = `
-      <div style="background: var(--bg-card); padding: var(--spacing-md); border-radius: var(--border-radius-sm); margin-bottom: var(--spacing-md);">
-        ${randomExercise.sentences.map(s => `<p style="margin: var(--spacing-xs) 0;">• ${s}</p>`).join('')}
+      <div style="background: var(--bg-card); padding: var(--spacing-md); border-radius: var(--border-radius-sm);">
+        ${currentCombiningExercise.sentences.map((s, i) => `<p style="margin: var(--spacing-xs) 0; font-size: var(--font-size-lg);"><strong>${i + 1}.</strong> ${s}</p>`).join('')}
       </div>
     `;
 
-    combiningHint.innerHTML = `<p class="hint-text">${randomExercise.hint}</p>`;
+    // Clear the textarea
+    if (combiningAnswerInput) {
+      combiningAnswerInput.value = '';
+    }
+
+    // Hide hint and example sections
+    if (fluencyCombiningHintSection) fluencyCombiningHintSection.style.display = 'none';
+    if (fluencyCombiningExampleSection) fluencyCombiningExampleSection.style.display = 'none';
+
+    // Reset button states
+    if (showFluencyCombiningHintBtn) {
+      showFluencyCombiningHintBtn.disabled = false;
+      showFluencyCombiningHintBtn.textContent = 'Show Hint';
+    }
+    if (showFluencyCombiningExampleBtn) {
+      showFluencyCombiningExampleBtn.disabled = false;
+      showFluencyCombiningExampleBtn.textContent = 'Show Example';
+    }
+  }
+
+  /**
+   * Show hint for combining exercise
+   */
+  function showCombiningHint() {
+    if (!currentCombiningExercise || !fluencyCombiningHintSection || !fluencyCombiningHint) return;
+
+    // Toggle hint visibility
+    const isHidden = fluencyCombiningHintSection.style.display === 'none' || fluencyCombiningHintSection.style.display === '';
+
+    if (isHidden) {
+      fluencyCombiningHint.textContent = currentCombiningExercise.hint;
+      fluencyCombiningHintSection.style.display = 'block';
+      if (showFluencyCombiningHintBtn) showFluencyCombiningHintBtn.textContent = 'Hide Hint';
+    } else {
+      fluencyCombiningHintSection.style.display = 'none';
+      if (showFluencyCombiningHintBtn) showFluencyCombiningHintBtn.textContent = 'Show Hint';
+    }
+  }
+
+  /**
+   * Show example solution for combining exercise
+   */
+  function showCombiningExampleSolution() {
+    if (!currentCombiningExercise || !fluencyCombiningExampleSection || !fluencyCombiningExample) return;
+
+    // Toggle example visibility
+    const isHidden = fluencyCombiningExampleSection.style.display === 'none' || fluencyCombiningExampleSection.style.display === '';
+
+    if (isHidden) {
+      fluencyCombiningExample.textContent = currentCombiningExercise.example;
+      fluencyCombiningExampleSection.style.display = 'block';
+      if (showFluencyCombiningExampleBtn) showFluencyCombiningExampleBtn.textContent = 'Hide Example';
+    } else {
+      fluencyCombiningExampleSection.style.display = 'none';
+      if (showFluencyCombiningExampleBtn) showFluencyCombiningExampleBtn.textContent = 'Show Example';
+    }
   }
 
   // ========== Eloquence & Expression Functions ==========
@@ -601,20 +747,56 @@ const FluencyModule = (function() {
   /**
    * Show a new synonym pair
    */
-  function showNewSynonym() {
+  async function showNewSynonym() {
     if (!synonymWordDisplay) return;
 
+    // Show loading state
+    synonymWordDisplay.innerHTML = `
+      <div style="text-align: center; padding: var(--spacing-xl);">
+        <p style="color: var(--text-secondary);">Loading synonyms...</p>
+      </div>
+    `;
+
+    // Pick a random common word
     const randomPair = synonymPairs[Math.floor(Math.random() * synonymPairs.length)];
+    const commonWord = randomPair.common;
+
+    try {
+      // Try to fetch from API first
+      if (typeof APIService !== 'undefined') {
+        const apiSynonyms = await APIService.getSophisticatedSynonyms(commonWord);
+
+        // Use API synonyms if we got good results
+        if (apiSynonyms && apiSynonyms.length >= 3) {
+          displaySynonymPair(commonWord, apiSynonyms.slice(0, 4));
+          return;
+        }
+      }
+    } catch (error) {
+      console.warn('Failed to fetch synonyms from API, using fallback:', error);
+    }
+
+    // Fallback to static data
+    displaySynonymPair(commonWord, randomPair.sophisticated);
+  }
+
+  /**
+   * Display a synonym pair
+   * @param {string} commonWord - The common word
+   * @param {Array} synonyms - Array of sophisticated synonyms
+   */
+  function displaySynonymPair(commonWord, synonyms) {
+    if (!synonymWordDisplay) return;
 
     synonymWordDisplay.innerHTML = `
       <div style="text-align: center;">
         <div style="background: var(--bg-card); padding: var(--spacing-lg); border-radius: var(--border-radius); margin-bottom: var(--spacing-lg); box-shadow: var(--shadow-sm);">
           <p style="font-size: var(--font-size-lg); color: var(--text-secondary); margin-bottom: var(--spacing-sm);">Instead of:</p>
-          <p style="font-size: var(--font-size-xxl); font-weight: 700; color: var(--accent-color); margin: 0;">${randomPair.common}</p>
+          <p style="font-size: var(--font-size-xxl); font-weight: 700; color: var(--accent-color); margin: 0;">${commonWord}</p>
         </div>
         <p style="font-size: var(--font-size-lg); color: var(--text-secondary); margin-bottom: var(--spacing-md);">Try these alternatives:</p>
         <div style="display: flex; gap: var(--spacing-md); flex-wrap: wrap; justify-content: center;">
-          ${randomPair.sophisticated.map(word => `
+          ${synonyms.map(word => `
             <div style="background: var(--primary-color); color: var(--text-white); padding: var(--spacing-md) var(--spacing-lg); border-radius: var(--border-radius-sm); font-size: var(--font-size-lg); font-weight: 600;">
               ${word}
             </div>
@@ -630,7 +812,27 @@ const FluencyModule = (function() {
   function showNewIdiom() {
     if (!idiomContentDisplay) return;
 
-    const randomIdiom = idioms[Math.floor(Math.random() * idioms.length)];
+    // Expanded static idioms array for more variety
+    const expandedIdioms = [
+      ...idioms,
+      { phrase: "Actions speak louder than words", meaning: "What you do is more important than what you say", example: "Don't just promise to help—actions speak louder than words." },
+      { phrase: "Back to the drawing board", meaning: "Start over with a new plan", example: "The proposal was rejected, so it's back to the drawing board." },
+      { phrase: "Bite off more than you can chew", meaning: "Take on more than you can handle", example: "I bit off more than I could chew by accepting three projects at once." },
+      { phrase: "Burn bridges", meaning: "Damage relationships in a way that cannot be repaired", example: "Don't burn bridges—you never know when you'll need those connections again." },
+      { phrase: "Costs an arm and a leg", meaning: "Very expensive", example: "That new car costs an arm and a leg!" },
+      { phrase: "Get the ball rolling", meaning: "Start something", example: "Let's get the ball rolling on this project today." },
+      { phrase: "In the same boat", meaning: "In the same difficult situation", example: "We're all in the same boat when it comes to meeting this deadline." },
+      { phrase: "Keep your chin up", meaning: "Stay positive in difficult times", example: "Keep your chin up—things will get better." },
+      { phrase: "Let the cat out of the bag", meaning: "Reveal a secret accidentally", example: "I accidentally let the cat out of the bag about the surprise party." },
+      { phrase: "Miss the boat", meaning: "Miss an opportunity", example: "If you don't apply now, you'll miss the boat." },
+      { phrase: "On the fence", meaning: "Undecided", example: "I'm still on the fence about which job offer to accept." },
+      { phrase: "Pull someone's leg", meaning: "Joke with someone", example: "I was just pulling your leg—I didn't really win the lottery!" },
+      { phrase: "Speak of the devil", meaning: "The person we were talking about just appeared", example: "Speak of the devil! We were just talking about you." },
+      { phrase: "Spill the beans", meaning: "Reveal a secret", example: "Don't spill the beans about the merger until it's official." },
+      { phrase: "Under the weather", meaning: "Feeling ill", example: "I'm feeling a bit under the weather today." }
+    ];
+
+    const randomIdiom = expandedIdioms[Math.floor(Math.random() * expandedIdioms.length)];
 
     idiomContentDisplay.innerHTML = `
       <div style="text-align: center;">
