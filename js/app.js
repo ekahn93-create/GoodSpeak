@@ -37,11 +37,11 @@ const App = (function() {
     Router.init();
 
     // Initialize all feature modules
+    WordBankModule.init();
     VocabularyModule.init();
     StorytellingModule.init();
     DailyWordModule.init();
     MWWordOfDayModule.init();
-    WordBankModule.init();
     GrammarModule.init();
     FluencyModule.init();
 

@@ -19,11 +19,11 @@
             <span class="brand-text">Articulation Trainer</span>
         </div>
         <ul class="nav-menu">
-            <li><a href="#" class="nav-link active" data-view="home">Home</a></li>
-            <li><a href="#vocabulary" class="nav-link" data-view="vocabulary">Vocabulary and Grammar</a></li>
-            <li><a href="#storytelling" class="nav-link" data-view="storytelling">Stories</a></li>
-            <li><a href="#fluency" class="nav-link" data-view="fluency">Fluency & Articulation</a></li>
-            <li><a href="#progress" class="nav-link" data-view="progress">Progress</a></li>
+            <li><a href="#" class="nav-link active" data-view="home"><span class="nav-label">Home</span><span class="nav-sub">Dashboard</span></a></li>
+            <li><a href="#vocabulary" class="nav-link" data-view="vocabulary"><span class="nav-label">Learn</span><span class="nav-sub">Words &amp; Grammar</span></a></li>
+            <li><a href="#fluency" class="nav-link" data-view="fluency"><span class="nav-label">Polish</span><span class="nav-sub">Pronunciation &amp; Fluency</span></a></li>
+            <li><a href="#storytelling" class="nav-link" data-view="storytelling"><span class="nav-label">Practice</span><span class="nav-sub">Storytelling &amp; Challenges</span></a></li>
+            <li><a href="#progress" class="nav-link" data-view="progress"><span class="nav-label">Review</span><span class="nav-sub">Progress &amp; Streaks</span></a></li>
         </ul>
     </nav>
 
@@ -34,52 +34,76 @@
         <section id="home-view" class="view active">
             <div class="hero-section">
                 <h1>Welcome to Articulation Trainer</h1>
-                <p class="subtitle">Master the art of eloquent and articulate speaking</p>
+                <p class="subtitle">Learn the words. Polish your delivery. Practice out loud. Review your growth.</p>
             </div>
 
             <div class="dashboard-grid">
-                <!-- Vocabulary Card -->
+                <!-- Learn Card -->
                 <div class="dashboard-card">
                     <div class="card-icon">📚</div>
-                    <h2>Vocabulary Builder</h2>
-                    <p>Expand your lexicon with curated words and practice exercises</p>
+                    <h2>Learn</h2>
+                    <p>Build your vocabulary, master grammar, and sharpen your word choice</p>
+                    <ul class="card-contents">
+                        <li>Vocabulary Builder</li>
+                        <li>Daily Word</li>
+                        <li>Word Bank</li>
+                        <li>Grammar &amp; Structure</li>
+                    </ul>
                     <div class="card-stats">
                         <span id="vocab-learned-count">0</span> words learned
                     </div>
                     <a href="#vocabulary" class="btn btn-primary">Start Learning</a>
                 </div>
 
-                <!-- Storytelling Card -->
+                <!-- Polish Card -->
+                <div class="dashboard-card">
+                    <div class="card-icon">🎤</div>
+                    <h2>Polish</h2>
+                    <p>Refine your pronunciation, pacing, and fluency before speaking</p>
+                    <ul class="card-contents">
+                        <li>Pronunciation Drills</li>
+                        <li>Tongue Twisters</li>
+                        <li>Pacing &amp; Rhythm</li>
+                        <li>Filler Word Awareness</li>
+                    </ul>
+                    <div class="card-stats">
+                        Pronunciation &amp; Fluency Drills
+                    </div>
+                    <a href="#fluency" class="btn btn-primary">Start Polishing</a>
+                </div>
+
+                <!-- Practice Card -->
                 <div class="dashboard-card">
                     <div class="card-icon">📖</div>
-                    <h2>Story-Telling Practice</h2>
-                    <p>Learn to craft and tell comprehensive, engaging stories</p>
+                    <h2>Practice</h2>
+                    <p>Put your skills to use with storytelling, challenges, and real speaking exercises</p>
+                    <ul class="card-contents">
+                        <li>Story-Telling Prompts</li>
+                        <li>Practical Skills</li>
+                        <li>Interactive Challenges</li>
+                        <li>Listening &amp; Comprehension</li>
+                    </ul>
                     <div class="card-stats">
                         <span id="stories-completed-count">0</span> stories completed
                     </div>
-                    <a href="#storytelling" class="btn btn-primary">Practice Now</a>
+                    <a href="#storytelling" class="btn btn-primary">Start Practicing</a>
                 </div>
 
-                <!-- Daily Word Card -->
+                <!-- Review Card -->
                 <div class="dashboard-card">
-                    <div class="card-icon">✨</div>
-                    <h2>Common Word Enhancement</h2>
-                    <p>Build precision in word choice and avoid common mistakes</p>
+                    <div class="card-icon">📊</div>
+                    <h2>Review</h2>
+                    <p>Track your progress, review your word bank, and see how far you've come</p>
+                    <ul class="card-contents">
+                        <li>Progress Overview</li>
+                        <li>Daily Streak</li>
+                        <li>Achievement Badges</li>
+                        <li>Activity History</li>
+                    </ul>
                     <div class="card-stats">
                         <span id="daily-streak-count">0</span> day streak
                     </div>
-                    <a href="#daily-word" class="btn btn-primary">Today's Word</a>
-                </div>
-
-                <!-- Fluency & Articulation Card -->
-                <div class="dashboard-card">
-                    <div class="card-icon">🎤</div>
-                    <h2>Fluency & Articulation</h2>
-                    <p>Master pronunciation, pacing, and eloquent expression</p>
-                    <div class="card-stats">
-                        Practice exercises available
-                    </div>
-                    <a href="#fluency" class="btn btn-primary">Start Practicing</a>
+                    <a href="#progress" class="btn btn-primary">View Progress</a>
                 </div>
             </div>
 
@@ -95,11 +119,11 @@
             </div>
         </section>
 
-        <!-- ==================== VOCABULARY VIEW ==================== -->
+        <!-- ==================== LEARN VIEW ==================== -->
         <section id="vocabulary-view" class="view">
             <div class="view-header">
-                <h1>Vocabulary and Grammar</h1>
-                <p>Build your word knowledge, master grammar, and track your progress</p>
+                <h1>Learn</h1>
+                <p>Build your vocabulary, master grammar, and sharpen your word choice</p>
             </div>
 
             <!-- Category Navigation -->
@@ -272,7 +296,7 @@
                             <input type="text" id="custom-synonyms" placeholder="e.g., beautiful, elegant, refined">
                         </div>
 
-                        <button type="submit" class="btn btn-primary">Add to Word Bank</button>
+                        <button type="button" id="add-word-btn" class="btn btn-primary">Add to Word Bank</button>
                     </form>
                 </div>
 
@@ -294,8 +318,9 @@
                                 <label for="quiz-source" class="quiz-selector-label">Word Source:</label>
                                 <select id="quiz-source" class="quiz-selector-dropdown">
                                     <option value="all" selected>All Words</option>
-                                    <option value="learned">Learned Words Only</option>
-                                    <option value="custom">Custom Words Only</option>
+                                    <option value="stillLearning">Still Learning Words</option>
+                                    <option value="learned">Learned Words</option>
+                                    <option value="custom">Custom Words</option>
                                 </select>
                             </div>
 
@@ -351,15 +376,29 @@
                             <p class="quiz-message">Great job practicing your vocabulary!</p>
                             <div class="quiz-actions">
                                 <button id="retry-quiz-btn" class="btn btn-primary">Take Another Quiz</button>
+                                <button id="review-quiz-btn" class="btn btn-secondary">Review Words</button>
                                 <button id="done-quiz-btn" class="btn btn-secondary">Done</button>
                             </div>
+                        </div>
+                        <div id="quiz-review" style="display: none;">
+                            <h4 class="quiz-review-title">Quiz Review</h4>
+                            <div id="quiz-review-list"></div>
                         </div>
                     </div>
                 </div>
 
                 <!-- Still Learning Words -->
                 <div class="word-bank-section">
-                    <h2>Still Learning (<span id="still-learning-words-count">0</span>)</h2>
+                    <div class="word-bank-section-header">
+                        <h2>Still Learning (<span id="still-learning-words-count">0</span>)</h2>
+                        <div class="word-bank-sort">
+                            <label for="still-learning-sort">Sort by:</label>
+                            <select id="still-learning-sort" class="sort-dropdown" onchange="WordBankModule.sortSection('stillLearning', this.value)">
+                                <option value="alpha">Alphabetically</option>
+                                <option value="difficulty">Difficulty</option>
+                            </select>
+                        </div>
+                    </div>
                     <div id="still-learning-words" class="word-bank-grid">
                         <!-- Still learning words will be displayed here -->
                     </div>
@@ -367,7 +406,16 @@
 
                 <!-- Learned Words from App -->
                 <div class="word-bank-section">
-                    <h2>Words Learned from Vocabulary Builder (<span id="app-words-count">0</span>)</h2>
+                    <div class="word-bank-section-header">
+                        <h2>Words Learned from Vocabulary Builder (<span id="app-words-count">0</span>)</h2>
+                        <div class="word-bank-sort">
+                            <label for="app-learned-sort">Sort by:</label>
+                            <select id="app-learned-sort" class="sort-dropdown" onchange="WordBankModule.sortSection('appLearned', this.value)">
+                                <option value="alpha">Alphabetically</option>
+                                <option value="difficulty">Difficulty</option>
+                            </select>
+                        </div>
+                    </div>
                     <div id="app-learned-words" class="word-bank-grid">
                         <!-- App learned words will be displayed here -->
                     </div>
@@ -375,7 +423,16 @@
 
                 <!-- Custom Words -->
                 <div class="word-bank-section">
-                    <h2>Custom Words (<span id="custom-words-count">0</span>)</h2>
+                    <div class="word-bank-section-header">
+                        <h2>Custom Words (<span id="custom-words-count">0</span>)</h2>
+                        <div class="word-bank-sort">
+                            <label for="custom-words-sort">Sort by:</label>
+                            <select id="custom-words-sort" class="sort-dropdown" onchange="WordBankModule.sortSection('custom', this.value)">
+                                <option value="date">Date Added</option>
+                                <option value="alpha">Alphabetically</option>
+                            </select>
+                        </div>
+                    </div>
                     <div id="custom-words-list" class="word-bank-grid">
                         <!-- Custom words will be displayed here -->
                     </div>
@@ -512,11 +569,11 @@
             </div>
         </section>
 
-        <!-- ==================== STORYTELLING VIEW ==================== -->
+        <!-- ==================== PRACTICE VIEW ==================== -->
         <section id="storytelling-view" class="view">
             <div class="view-header">
-                <h1>Speaking & Communication</h1>
-                <p>Develop practical speaking skills and creative expression</p>
+                <h1>Practice</h1>
+                <p>Put your skills to use with storytelling, challenges, and real speaking exercises</p>
             </div>
 
             <!-- Category Navigation -->
@@ -525,6 +582,7 @@
                 <button class="storytelling-category-tab" data-story-category="practical">Practical Skills</button>
                 <button class="storytelling-category-tab" data-story-category="challenges">Interactive Challenges</button>
                 <button class="storytelling-category-tab" data-story-category="listening">Listening & Comprehension</button>
+                <button class="storytelling-category-tab" data-story-category="webspeech">Web Speech Test</button>
             </div>
 
             <!-- ========== STORYTELLING CATEGORY ========== -->
@@ -552,6 +610,20 @@
                     <button id="back-to-prompts-btn" class="btn btn-outline">← Back to Prompts</button>
                 </div>
 
+                <!-- Input mode toggle -->
+                <div style="margin-bottom: var(--spacing-lg);">
+                    <div class="btn-group">
+                        <button class="btn btn-secondary active" id="story-mode-speak">🎙️ Speak</button>
+                        <button class="btn btn-secondary" id="story-mode-type">⌨️ Type</button>
+                    </div>
+                </div>
+
+                <div class="time-selector">
+                    <button class="ws-inst-time-btn active" data-time="30">30 Seconds</button>
+                    <button class="ws-inst-time-btn" data-time="60">1 Minute</button>
+                    <button class="ws-inst-time-btn" data-time="120">2 Minutes</button>
+                </div>
+
                 <div class="prompt-details">
                     <p id="prompt-text" class="prompt-text"></p>
                 </div>
@@ -575,16 +647,56 @@
                     </div>
                 </div>
 
-                <!-- Practice Text Area -->
-                <div class="practice-area">
-                    <label for="story-textarea">Your Story (speak it out loud or write it down):</label>
-                    <textarea id="story-textarea" placeholder="Practice telling your story here... Remember to speak it out loud!" rows="12"></textarea>
+                <!-- Speak mode controls -->
+                <div id="story-speak-controls">
+                    <div class="exercise-controls">
+                        <button class="btn btn-primary" id="story-start-btn">Start Timer &amp; Listen</button>
+                        <button class="btn btn-secondary" id="story-stop-btn" style="display: none;">Stop</button>
+                        <button class="btn btn-secondary" id="story-reset-btn" style="display: none;">Reset</button>
+                    </div>
+                    <div class="timer-display">
+                        <div class="timer-number" id="story-timer-seconds">0:30</div>
+                        <div class="timer-label">remaining</div>
+                    </div>
+                    <div id="story-status" style="margin-top: var(--spacing-md); font-size: var(--font-size-sm); color: var(--text-secondary); text-align: center;"></div>
+                    <div id="story-transcript-section" style="margin-top: var(--spacing-lg); display: none;">
+                        <h4 style="margin-bottom: var(--spacing-sm);">Live Transcript</h4>
+                        <div style="background: var(--bg-card); border: 1px solid var(--border-color); border-radius: var(--border-radius-sm); padding: var(--spacing-md); min-height: 80px; font-size: var(--font-size-base); line-height: 1.6;">
+                            <span id="story-transcript-final"></span><span id="story-transcript-interim" style="color: var(--text-secondary); font-style: italic;"></span>
+                        </div>
+                        <div class="exercise-controls" style="margin-top: var(--spacing-sm);">
+                            <button class="btn btn-secondary" id="story-clear-transcript-btn">Clear</button>
+                        </div>
+                    </div>
+                    <div id="story-unsupported-msg" style="display: none; margin-top: var(--spacing-md); padding: var(--spacing-md); background: var(--accent-color); color: var(--text-white); border-radius: var(--border-radius-sm);">
+                        ⚠️ Your browser does not support the Web Speech API. Please try Chrome or Edge.
+                    </div>
                 </div>
 
-                <!-- Action Buttons -->
-                <div class="action-buttons">
-                    <button id="save-draft-btn" class="btn btn-secondary">Save Draft</button>
-                    <button id="complete-story-btn" class="btn btn-primary">Complete Story</button>
+                <!-- Type mode controls -->
+                <div id="story-type-controls" style="display: none;">
+                    <div class="exercise-controls">
+                        <button class="btn btn-primary" id="story-type-start-btn">Start Timer</button>
+                        <button class="btn btn-secondary" id="story-type-stop-btn" style="display: none;">Stop</button>
+                        <button class="btn btn-secondary" id="story-type-reset-btn" style="display: none;">Reset</button>
+                    </div>
+                    <div class="timer-display">
+                        <div class="timer-number" id="story-type-timer-seconds">0:30</div>
+                        <div class="timer-label">remaining</div>
+                    </div>
+                    <div style="margin-top: var(--spacing-lg);">
+                        <textarea id="story-type-textarea" rows="8" placeholder="Type your story here..." style="width: 100%; padding: var(--spacing-md); font-size: var(--font-size-base); border: 1px solid var(--border-color); border-radius: var(--border-radius-sm); resize: vertical; font-family: inherit; line-height: 1.6;"></textarea>
+                    </div>
+                    <div class="exercise-controls" style="margin-top: var(--spacing-sm);">
+                        <button class="btn btn-primary" id="story-type-submit-btn">Get Feedback</button>
+                        <button class="btn btn-secondary" id="story-type-clear-btn">Clear</button>
+                    </div>
+                </div>
+
+                <!-- Feedback panel -->
+                <div id="story-feedback-section" style="display: none; margin-top: var(--spacing-xl);">
+                    <h4 style="margin-bottom: var(--spacing-md); font-size: var(--font-size-lg);">Feedback</h4>
+                    <div id="story-feedback-grid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: var(--spacing-md);"></div>
                 </div>
             </div>
         </div>
@@ -602,23 +714,72 @@
                     </div>
                 </div>
                 <div class="fluency-card-content">
-                    <div class="time-selector">
-                        <button class="time-btn active" data-time="30">30 Seconds</button>
-                        <button class="time-btn" data-time="60">1 Minute</button>
-                        <button class="time-btn" data-time="120">2 Minutes</button>
+                    <div style="margin-bottom: var(--spacing-lg);">
+                        <div class="btn-group">
+                            <button class="btn btn-secondary active" id="impromptu-mode-speak">🎙️ Speak</button>
+                            <button class="btn btn-secondary" id="impromptu-mode-type">⌨️ Type</button>
+                        </div>
                     </div>
+
+                    <div class="time-selector">
+                        <button class="ws-inst-time-btn active" data-time="30">30 Seconds</button>
+                        <button class="ws-inst-time-btn" data-time="60">1 Minute</button>
+                        <button class="ws-inst-time-btn" data-time="120">2 Minutes</button>
+                    </div>
+
                     <div id="impromptu-display" class="exercise-display">
                         <p class="exercise-text" id="impromptu-prompt">Click "New Topic" to start</p>
                     </div>
-                    <div class="exercise-controls">
-                        <button class="btn btn-primary" id="impromptu-start-btn">Start Timer</button>
-                        <button class="btn btn-secondary" id="impromptu-stop-btn" style="display: none;">Stop Timer</button>
-                        <button class="btn btn-secondary" id="impromptu-reset-btn" style="display: none;">Reset Timer</button>
-                        <button class="btn btn-secondary" id="new-impromptu-btn">New Topic</button>
+
+                    <div id="impromptu-speak-controls">
+                        <div class="exercise-controls">
+                            <button class="btn btn-primary" id="impromptu-start-btn">Start Timer &amp; Listen</button>
+                            <button class="btn btn-secondary" id="impromptu-stop-btn" style="display: none;">Stop</button>
+                            <button class="btn btn-secondary" id="impromptu-reset-btn" style="display: none;">Reset</button>
+                            <button class="btn btn-secondary" id="new-impromptu-btn">New Topic</button>
+                        </div>
+                        <div class="timer-display">
+                            <div class="timer-number" id="impromptu-timer-seconds">0:30</div>
+                            <div class="timer-label">remaining</div>
+                        </div>
+                        <div id="impromptu-status" style="margin-top: var(--spacing-md); font-size: var(--font-size-sm); color: var(--text-secondary); text-align: center;"></div>
+                        <div id="impromptu-transcript-section" style="margin-top: var(--spacing-lg); display: none;">
+                            <h4 style="margin-bottom: var(--spacing-sm);">Live Transcript</h4>
+                            <div style="background: var(--bg-card); border: 1px solid var(--border-color); border-radius: var(--border-radius-sm); padding: var(--spacing-md); min-height: 80px; font-size: var(--font-size-base); line-height: 1.6;">
+                                <span id="impromptu-transcript-final"></span><span id="impromptu-transcript-interim" style="color: var(--text-secondary); font-style: italic;"></span>
+                            </div>
+                            <div class="exercise-controls" style="margin-top: var(--spacing-sm);">
+                                <button class="btn btn-secondary" id="impromptu-clear-transcript-btn">Clear</button>
+                            </div>
+                        </div>
+                        <div id="impromptu-unsupported-msg" style="display: none; margin-top: var(--spacing-md); padding: var(--spacing-md); background: var(--accent-color); color: var(--text-white); border-radius: var(--border-radius-sm);">
+                            ⚠️ Your browser does not support the Web Speech API. Please try Chrome or Edge.
+                        </div>
                     </div>
-                    <div id="impromptu-timer" class="timer-display">
-                        <div class="timer-number" id="timer-seconds">0:30</div>
-                        <div class="timer-label">remaining</div>
+
+                    <div id="impromptu-type-controls" style="display: none;">
+                        <div class="exercise-controls">
+                            <button class="btn btn-primary" id="impromptu-type-start-btn">Start Timer</button>
+                            <button class="btn btn-secondary" id="impromptu-type-stop-btn" style="display: none;">Stop</button>
+                            <button class="btn btn-secondary" id="impromptu-type-reset-btn" style="display: none;">Reset</button>
+                            <button class="btn btn-secondary" id="new-impromptu-type-btn">New Topic</button>
+                        </div>
+                        <div class="timer-display">
+                            <div class="timer-number" id="impromptu-type-timer-seconds">0:30</div>
+                            <div class="timer-label">remaining</div>
+                        </div>
+                        <div style="margin-top: var(--spacing-lg);">
+                            <textarea id="impromptu-type-textarea" rows="8" placeholder="Type your response here..." style="width: 100%; padding: var(--spacing-md); font-size: var(--font-size-base); border: 1px solid var(--border-color); border-radius: var(--border-radius-sm); resize: vertical; font-family: inherit; line-height: 1.6;"></textarea>
+                        </div>
+                        <div class="exercise-controls" style="margin-top: var(--spacing-sm);">
+                            <button class="btn btn-primary" id="impromptu-type-submit-btn">Get Feedback</button>
+                            <button class="btn btn-secondary" id="impromptu-type-clear-btn">Clear</button>
+                        </div>
+                    </div>
+
+                    <div id="impromptu-feedback-section" style="display: none; margin-top: var(--spacing-xl);">
+                        <h4 style="margin-bottom: var(--spacing-md); font-size: var(--font-size-lg);">Feedback</h4>
+                        <div id="impromptu-feedback-grid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: var(--spacing-md);"></div>
                     </div>
                 </div>
             </div>
@@ -685,26 +846,83 @@
                     </div>
                 </div>
                 <div class="fluency-card-content">
-                    <div class="info-box">
-                        <h4>30-Second Pitch Structure:</h4>
-                        <ol style="margin: var(--spacing-sm) 0; padding-left: var(--spacing-lg);">
-                            <li>Who you are (name, role)</li>
-                            <li>What you do (value proposition)</li>
-                            <li>Why it matters (benefit/impact)</li>
-                            <li>Call to action (next step)</li>
-                        </ol>
+                    <div style="margin-bottom: var(--spacing-lg);">
+                        <div class="btn-group">
+                            <button class="btn btn-secondary active" id="pitch-mode-speak">🎙️ Speak</button>
+                            <button class="btn btn-secondary" id="pitch-mode-type">⌨️ Type</button>
+                        </div>
                     </div>
+
+                    <div class="time-selector">
+                        <button class="ws-inst-time-btn active" data-time="30">30 Seconds</button>
+                        <button class="ws-inst-time-btn" data-time="60">1 Minute</button>
+                        <button class="ws-inst-time-btn" data-time="120">2 Minutes</button>
+                    </div>
+
                     <div id="pitch-builder-display" class="exercise-display">
                         <div id="pitch-template">
-                            <p><strong>Example:</strong></p>
-                            <p style="font-style: italic; color: var(--text-secondary);">
+                            <div class="info-box">
+                                <h4>30-Second Pitch Structure:</h4>
+                                <ol style="margin: var(--spacing-sm) 0; padding-left: var(--spacing-lg);">
+                                    <li>Who you are (name, role)</li>
+                                    <li>What you do (value proposition)</li>
+                                    <li>Why it matters (benefit/impact)</li>
+                                    <li>Call to action (next step)</li>
+                                </ol>
+                            </div>
+                            <p style="font-style: italic; color: var(--text-secondary); margin-top: var(--spacing-md);">
                                 "Hi, I'm [Name], a [Role] at [Company/Industry]. I help [Target Audience] [Solve Problem/Achieve Goal] by [Your Solution/Approach]. This matters because [Impact/Benefit]. I'd love to [Next Step - connect, discuss, share more]."
                             </p>
                         </div>
                     </div>
-                    <div class="practice-area" style="margin-top: var(--spacing-lg);">
-                        <label for="pitch-textarea">Practice Your Pitch:</label>
-                        <textarea id="pitch-textarea" placeholder="Write your elevator pitch here..." rows="6"></textarea>
+
+                    <div id="pitch-speak-controls">
+                        <div class="exercise-controls">
+                            <button class="btn btn-primary" id="pitch-start-btn">Start Timer &amp; Listen</button>
+                            <button class="btn btn-secondary" id="pitch-stop-btn" style="display: none;">Stop</button>
+                            <button class="btn btn-secondary" id="pitch-reset-btn" style="display: none;">Reset</button>
+                        </div>
+                        <div class="timer-display">
+                            <div class="timer-number" id="pitch-timer-seconds">0:30</div>
+                            <div class="timer-label">remaining</div>
+                        </div>
+                        <div id="pitch-status" style="margin-top: var(--spacing-md); font-size: var(--font-size-sm); color: var(--text-secondary); text-align: center;"></div>
+                        <div id="pitch-transcript-section" style="margin-top: var(--spacing-lg); display: none;">
+                            <h4 style="margin-bottom: var(--spacing-sm);">Live Transcript</h4>
+                            <div style="background: var(--bg-card); border: 1px solid var(--border-color); border-radius: var(--border-radius-sm); padding: var(--spacing-md); min-height: 80px; font-size: var(--font-size-base); line-height: 1.6;">
+                                <span id="pitch-transcript-final"></span><span id="pitch-transcript-interim" style="color: var(--text-secondary); font-style: italic;"></span>
+                            </div>
+                            <div class="exercise-controls" style="margin-top: var(--spacing-sm);">
+                                <button class="btn btn-secondary" id="pitch-clear-transcript-btn">Clear</button>
+                            </div>
+                        </div>
+                        <div id="pitch-unsupported-msg" style="display: none; margin-top: var(--spacing-md); padding: var(--spacing-md); background: var(--accent-color); color: var(--text-white); border-radius: var(--border-radius-sm);">
+                            ⚠️ Your browser does not support the Web Speech API. Please try Chrome or Edge.
+                        </div>
+                    </div>
+
+                    <div id="pitch-type-controls" style="display: none;">
+                        <div class="exercise-controls">
+                            <button class="btn btn-primary" id="pitch-type-start-btn">Start Timer</button>
+                            <button class="btn btn-secondary" id="pitch-type-stop-btn" style="display: none;">Stop</button>
+                            <button class="btn btn-secondary" id="pitch-type-reset-btn" style="display: none;">Reset</button>
+                        </div>
+                        <div class="timer-display">
+                            <div class="timer-number" id="pitch-type-timer-seconds">0:30</div>
+                            <div class="timer-label">remaining</div>
+                        </div>
+                        <div style="margin-top: var(--spacing-lg);">
+                            <textarea id="pitch-type-textarea" rows="8" placeholder="Type your elevator pitch here..." style="width: 100%; padding: var(--spacing-md); font-size: var(--font-size-base); border: 1px solid var(--border-color); border-radius: var(--border-radius-sm); resize: vertical; font-family: inherit; line-height: 1.6;"></textarea>
+                        </div>
+                        <div class="exercise-controls" style="margin-top: var(--spacing-sm);">
+                            <button class="btn btn-primary" id="pitch-type-submit-btn">Get Feedback</button>
+                            <button class="btn btn-secondary" id="pitch-type-clear-btn">Clear</button>
+                        </div>
+                    </div>
+
+                    <div id="pitch-feedback-section" style="display: none; margin-top: var(--spacing-xl);">
+                        <h4 style="margin-bottom: var(--spacing-md); font-size: var(--font-size-lg);">Feedback</h4>
+                        <div id="pitch-feedback-grid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: var(--spacing-md);"></div>
                     </div>
                 </div>
             </div>
@@ -817,24 +1035,73 @@
                     </div>
                 </div>
                 <div class="fluency-card-content">
-                    <div class="duration-selector">
-                        <button class="duration-btn active" data-duration="1">1 Minute</button>
-                        <button class="duration-btn" data-duration="2">2 Minutes</button>
-                        <button class="duration-btn" data-duration="3">3 Minutes</button>
-                        <button class="duration-btn" data-duration="5">5 Minutes</button>
+                    <div style="margin-bottom: var(--spacing-lg);">
+                        <div class="btn-group">
+                            <button class="btn btn-secondary active" id="endurance-mode-speak">🎙️ Speak</button>
+                            <button class="btn btn-secondary" id="endurance-mode-type">⌨️ Type</button>
+                        </div>
                     </div>
+
+                    <div class="time-selector">
+                        <button class="ws-inst-time-btn active" data-time="60">1 Minute</button>
+                        <button class="ws-inst-time-btn" data-time="120">2 Minutes</button>
+                        <button class="ws-inst-time-btn" data-time="180">3 Minutes</button>
+                        <button class="ws-inst-time-btn" data-time="300">5 Minutes</button>
+                    </div>
+
                     <div id="endurance-display" class="exercise-display">
                         <p class="exercise-text" id="endurance-topic">Click "New Topic" to start</p>
                     </div>
-                    <div class="exercise-controls">
-                        <button class="btn btn-primary" id="start-endurance-btn">Start Challenge</button>
-                        <button class="btn btn-secondary" id="endurance-stop-btn" style="display: none;">Stop Timer</button>
-                        <button class="btn btn-secondary" id="endurance-reset-btn" style="display: none;">Reset Timer</button>
-                        <button class="btn btn-secondary" id="new-endurance-btn">New Topic</button>
+
+                    <div id="endurance-speak-controls">
+                        <div class="exercise-controls">
+                            <button class="btn btn-primary" id="endurance-start-btn">Start Timer &amp; Listen</button>
+                            <button class="btn btn-secondary" id="endurance-stop-btn" style="display: none;">Stop</button>
+                            <button class="btn btn-secondary" id="endurance-reset-btn" style="display: none;">Reset</button>
+                            <button class="btn btn-secondary" id="new-endurance-btn">New Topic</button>
+                        </div>
+                        <div class="timer-display">
+                            <div class="timer-number" id="endurance-timer-seconds">1:00</div>
+                            <div class="timer-label">remaining</div>
+                        </div>
+                        <div id="endurance-status" style="margin-top: var(--spacing-md); font-size: var(--font-size-sm); color: var(--text-secondary); text-align: center;"></div>
+                        <div id="endurance-transcript-section" style="margin-top: var(--spacing-lg); display: none;">
+                            <h4 style="margin-bottom: var(--spacing-sm);">Live Transcript</h4>
+                            <div style="background: var(--bg-card); border: 1px solid var(--border-color); border-radius: var(--border-radius-sm); padding: var(--spacing-md); min-height: 80px; font-size: var(--font-size-base); line-height: 1.6;">
+                                <span id="endurance-transcript-final"></span><span id="endurance-transcript-interim" style="color: var(--text-secondary); font-style: italic;"></span>
+                            </div>
+                            <div class="exercise-controls" style="margin-top: var(--spacing-sm);">
+                                <button class="btn btn-secondary" id="endurance-clear-transcript-btn">Clear</button>
+                            </div>
+                        </div>
+                        <div id="endurance-unsupported-msg" style="display: none; margin-top: var(--spacing-md); padding: var(--spacing-md); background: var(--accent-color); color: var(--text-white); border-radius: var(--border-radius-sm);">
+                            ⚠️ Your browser does not support the Web Speech API. Please try Chrome or Edge.
+                        </div>
                     </div>
-                    <div id="endurance-timer" class="timer-display">
-                        <div class="timer-number" id="endurance-timer-display">1:00</div>
-                        <div class="timer-label">remaining</div>
+
+                    <div id="endurance-type-controls" style="display: none;">
+                        <div class="exercise-controls">
+                            <button class="btn btn-primary" id="endurance-type-start-btn">Start Timer</button>
+                            <button class="btn btn-secondary" id="endurance-type-stop-btn" style="display: none;">Stop</button>
+                            <button class="btn btn-secondary" id="endurance-type-reset-btn" style="display: none;">Reset</button>
+                            <button class="btn btn-secondary" id="new-endurance-type-btn">New Topic</button>
+                        </div>
+                        <div class="timer-display">
+                            <div class="timer-number" id="endurance-type-timer-seconds">1:00</div>
+                            <div class="timer-label">remaining</div>
+                        </div>
+                        <div style="margin-top: var(--spacing-lg);">
+                            <textarea id="endurance-type-textarea" rows="8" placeholder="Type your response here..." style="width: 100%; padding: var(--spacing-md); font-size: var(--font-size-base); border: 1px solid var(--border-color); border-radius: var(--border-radius-sm); resize: vertical; font-family: inherit; line-height: 1.6;"></textarea>
+                        </div>
+                        <div class="exercise-controls" style="margin-top: var(--spacing-sm);">
+                            <button class="btn btn-primary" id="endurance-type-submit-btn">Get Feedback</button>
+                            <button class="btn btn-secondary" id="endurance-type-clear-btn">Clear</button>
+                        </div>
+                    </div>
+
+                    <div id="endurance-feedback-section" style="display: none; margin-top: var(--spacing-xl);">
+                        <h4 style="margin-bottom: var(--spacing-md); font-size: var(--font-size-lg);">Feedback</h4>
+                        <div id="endurance-feedback-grid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: var(--spacing-md);"></div>
                     </div>
                 </div>
             </div>
@@ -853,17 +1120,75 @@
                     </div>
                 </div>
                 <div class="fluency-card-content">
+                    <div style="margin-bottom: var(--spacing-lg);">
+                        <div class="btn-group">
+                            <button class="btn btn-secondary active" id="summarization-mode-speak">🎙️ Speak</button>
+                            <button class="btn btn-secondary" id="summarization-mode-type">⌨️ Type</button>
+                        </div>
+                    </div>
+
+                    <div class="time-selector">
+                        <button class="ws-inst-time-btn active" data-time="30">30 Seconds</button>
+                        <button class="ws-inst-time-btn" data-time="60">1 Minute</button>
+                        <button class="ws-inst-time-btn" data-time="120">2 Minutes</button>
+                    </div>
+
                     <div id="summarization-display" class="exercise-display">
                         <div id="passage-to-summarize" style="background: var(--bg-card); padding: var(--spacing-lg); border-radius: var(--border-radius-sm); margin-bottom: var(--spacing-lg); max-height: 300px; overflow-y: auto;">
                             <!-- Passage will be displayed here -->
                         </div>
                         <p style="font-weight: 600; margin-bottom: var(--spacing-sm);">Now summarize this passage in your own words (aim for 2-3 sentences):</p>
                     </div>
-                    <div class="practice-area">
-                        <textarea id="summary-textarea" placeholder="Your summary..." rows="4"></textarea>
+
+                    <div id="summarization-speak-controls">
+                        <div class="exercise-controls">
+                            <button class="btn btn-primary" id="summarization-start-btn">Start Timer &amp; Listen</button>
+                            <button class="btn btn-secondary" id="summarization-stop-btn" style="display: none;">Stop</button>
+                            <button class="btn btn-secondary" id="summarization-reset-btn" style="display: none;">Reset</button>
+                            <button class="btn btn-secondary" id="new-summarization-btn">New Passage</button>
+                        </div>
+                        <div class="timer-display">
+                            <div class="timer-number" id="summarization-timer-seconds">0:30</div>
+                            <div class="timer-label">remaining</div>
+                        </div>
+                        <div id="summarization-status" style="margin-top: var(--spacing-md); font-size: var(--font-size-sm); color: var(--text-secondary); text-align: center;"></div>
+                        <div id="summarization-transcript-section" style="margin-top: var(--spacing-lg); display: none;">
+                            <h4 style="margin-bottom: var(--spacing-sm);">Live Transcript</h4>
+                            <div style="background: var(--bg-card); border: 1px solid var(--border-color); border-radius: var(--border-radius-sm); padding: var(--spacing-md); min-height: 80px; font-size: var(--font-size-base); line-height: 1.6;">
+                                <span id="summarization-transcript-final"></span><span id="summarization-transcript-interim" style="color: var(--text-secondary); font-style: italic;"></span>
+                            </div>
+                            <div class="exercise-controls" style="margin-top: var(--spacing-sm);">
+                                <button class="btn btn-secondary" id="summarization-clear-transcript-btn">Clear</button>
+                            </div>
+                        </div>
+                        <div id="summarization-unsupported-msg" style="display: none; margin-top: var(--spacing-md); padding: var(--spacing-md); background: var(--accent-color); color: var(--text-white); border-radius: var(--border-radius-sm);">
+                            ⚠️ Your browser does not support the Web Speech API. Please try Chrome or Edge.
+                        </div>
                     </div>
-                    <div class="exercise-controls">
-                        <button class="btn btn-secondary" id="new-summarization-btn">New Passage</button>
+
+                    <div id="summarization-type-controls" style="display: none;">
+                        <div class="exercise-controls">
+                            <button class="btn btn-primary" id="summarization-type-start-btn">Start Timer</button>
+                            <button class="btn btn-secondary" id="summarization-type-stop-btn" style="display: none;">Stop</button>
+                            <button class="btn btn-secondary" id="summarization-type-reset-btn" style="display: none;">Reset</button>
+                            <button class="btn btn-secondary" id="new-summarization-type-btn">New Passage</button>
+                        </div>
+                        <div class="timer-display">
+                            <div class="timer-number" id="summarization-type-timer-seconds">0:30</div>
+                            <div class="timer-label">remaining</div>
+                        </div>
+                        <div style="margin-top: var(--spacing-lg);">
+                            <textarea id="summarization-type-textarea" rows="8" placeholder="Type your summary here..." style="width: 100%; padding: var(--spacing-md); font-size: var(--font-size-base); border: 1px solid var(--border-color); border-radius: var(--border-radius-sm); resize: vertical; font-family: inherit; line-height: 1.6;"></textarea>
+                        </div>
+                        <div class="exercise-controls" style="margin-top: var(--spacing-sm);">
+                            <button class="btn btn-primary" id="summarization-type-submit-btn">Get Feedback</button>
+                            <button class="btn btn-secondary" id="summarization-type-clear-btn">Clear</button>
+                        </div>
+                    </div>
+
+                    <div id="summarization-feedback-section" style="display: none; margin-top: var(--spacing-xl);">
+                        <h4 style="margin-bottom: var(--spacing-md); font-size: var(--font-size-lg);">Feedback</h4>
+                        <div id="summarization-feedback-grid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: var(--spacing-md);"></div>
                     </div>
                 </div>
             </div>
@@ -878,37 +1203,181 @@
                     </div>
                 </div>
                 <div class="fluency-card-content">
+                    <div style="margin-bottom: var(--spacing-lg);">
+                        <div class="btn-group">
+                            <button class="btn btn-secondary active" id="paraphrasing-mode-speak">🎙️ Speak</button>
+                            <button class="btn btn-secondary" id="paraphrasing-mode-type">⌨️ Type</button>
+                        </div>
+                    </div>
+
+                    <div class="time-selector">
+                        <button class="ws-inst-time-btn active" data-time="30">30 Seconds</button>
+                        <button class="ws-inst-time-btn" data-time="60">1 Minute</button>
+                        <button class="ws-inst-time-btn" data-time="120">2 Minutes</button>
+                    </div>
+
                     <div id="paraphrasing-display" class="exercise-display">
                         <div style="background: var(--primary-light); color: var(--text-white); padding: var(--spacing-lg); border-radius: var(--border-radius-sm); margin-bottom: var(--spacing-lg);">
                             <p style="font-size: var(--font-size-lg); margin: 0;" id="original-sentence"></p>
                         </div>
                         <p style="font-weight: 600; margin-bottom: var(--spacing-sm);">Rephrase this sentence in at least 3 different ways:</p>
                     </div>
-                    <div class="practice-area">
-                        <label for="paraphrase-1">Version 1:</label>
-                        <textarea id="paraphrase-1" placeholder="First paraphrase..." rows="2"></textarea>
 
-                        <label for="paraphrase-2">Version 2:</label>
-                        <textarea id="paraphrase-2" placeholder="Second paraphrase..." rows="2"></textarea>
+                    <div id="paraphrasing-speak-controls">
+                        <div class="exercise-controls">
+                            <button class="btn btn-primary" id="paraphrasing-start-btn">Start Timer &amp; Listen</button>
+                            <button class="btn btn-secondary" id="paraphrasing-stop-btn" style="display: none;">Stop</button>
+                            <button class="btn btn-secondary" id="paraphrasing-reset-btn" style="display: none;">Reset</button>
+                            <button class="btn btn-secondary" id="new-paraphrasing-btn">New Sentence</button>
+                        </div>
+                        <div class="timer-display">
+                            <div class="timer-number" id="paraphrasing-timer-seconds">0:30</div>
+                            <div class="timer-label">remaining</div>
+                        </div>
+                        <div id="paraphrasing-status" style="margin-top: var(--spacing-md); font-size: var(--font-size-sm); color: var(--text-secondary); text-align: center;"></div>
+                        <div id="paraphrasing-transcript-section" style="margin-top: var(--spacing-lg); display: none;">
+                            <h4 style="margin-bottom: var(--spacing-sm);">Live Transcript</h4>
+                            <div style="background: var(--bg-card); border: 1px solid var(--border-color); border-radius: var(--border-radius-sm); padding: var(--spacing-md); min-height: 80px; font-size: var(--font-size-base); line-height: 1.6;">
+                                <span id="paraphrasing-transcript-final"></span><span id="paraphrasing-transcript-interim" style="color: var(--text-secondary); font-style: italic;"></span>
+                            </div>
+                            <div class="exercise-controls" style="margin-top: var(--spacing-sm);">
+                                <button class="btn btn-secondary" id="paraphrasing-clear-transcript-btn">Clear</button>
+                            </div>
+                        </div>
+                        <div id="paraphrasing-unsupported-msg" style="display: none; margin-top: var(--spacing-md); padding: var(--spacing-md); background: var(--accent-color); color: var(--text-white); border-radius: var(--border-radius-sm);">
+                            ⚠️ Your browser does not support the Web Speech API. Please try Chrome or Edge.
+                        </div>
+                    </div>
 
-                        <label for="paraphrase-3">Version 3:</label>
-                        <textarea id="paraphrase-3" placeholder="Third paraphrase..." rows="2"></textarea>
+                    <div id="paraphrasing-type-controls" style="display: none;">
+                        <div class="exercise-controls">
+                            <button class="btn btn-primary" id="paraphrasing-type-start-btn">Start Timer</button>
+                            <button class="btn btn-secondary" id="paraphrasing-type-stop-btn" style="display: none;">Stop</button>
+                            <button class="btn btn-secondary" id="paraphrasing-type-reset-btn" style="display: none;">Reset</button>
+                            <button class="btn btn-secondary" id="new-paraphrasing-type-btn">New Sentence</button>
+                        </div>
+                        <div class="timer-display">
+                            <div class="timer-number" id="paraphrasing-type-timer-seconds">0:30</div>
+                            <div class="timer-label">remaining</div>
+                        </div>
+                        <div style="margin-top: var(--spacing-lg);">
+                            <textarea id="paraphrasing-type-textarea" rows="8" placeholder="Type all three paraphrases here..." style="width: 100%; padding: var(--spacing-md); font-size: var(--font-size-base); border: 1px solid var(--border-color); border-radius: var(--border-radius-sm); resize: vertical; font-family: inherit; line-height: 1.6;"></textarea>
+                        </div>
+                        <div class="exercise-controls" style="margin-top: var(--spacing-sm);">
+                            <button class="btn btn-primary" id="paraphrasing-type-submit-btn">Get Feedback</button>
+                            <button class="btn btn-secondary" id="paraphrasing-type-clear-btn">Clear</button>
+                        </div>
                     </div>
-                    <div class="exercise-controls">
-                        <button class="btn btn-secondary" id="new-paraphrasing-btn">New Sentence</button>
+
+                    <div id="paraphrasing-feedback-section" style="display: none; margin-top: var(--spacing-xl);">
+                        <h4 style="margin-bottom: var(--spacing-md); font-size: var(--font-size-lg);">Feedback</h4>
+                        <div id="paraphrasing-feedback-grid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: var(--spacing-md);"></div>
                     </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ========== WEB SPEECH TEST CATEGORY ========== -->
+        <div id="webspeech-category" class="storytelling-category">
+
+            <!-- Impromptu Speaking with Speech Recognition -->
+            <div class="fluency-card">
+                <div class="fluency-card-header">
+                    <div class="fluency-card-icon">🎙️</div>
+                    <div>
+                        <h3>Impromptu Speaking (Voice)</h3>
+                        <p class="fluency-card-description">Speak your response out loud — your words will be transcribed in real time</p>
+                    </div>
+                </div>
+                <div class="fluency-card-content">
+
+                    <!-- Input mode toggle -->
+                    <div style="margin-bottom: var(--spacing-lg);">
+                        <label style="font-weight: 600; display: block; margin-bottom: var(--spacing-sm);">Input Mode:</label>
+                        <div class="btn-group">
+                            <button class="btn btn-secondary active" id="ws-mode-speak">🎙️ Speak</button>
+                            <button class="btn btn-secondary" id="ws-mode-type">⌨️ Type</button>
+                        </div>
+                    </div>
+
+                    <div class="time-selector">
+                        <button class="ws-time-btn active" data-time="30">30 Seconds</button>
+                        <button class="ws-time-btn" data-time="60">1 Minute</button>
+                        <button class="ws-time-btn" data-time="120">2 Minutes</button>
+                    </div>
+                    <div id="ws-impromptu-display" class="exercise-display">
+                        <p class="exercise-text" id="ws-impromptu-prompt">Click "New Topic" to get a speaking prompt</p>
+                    </div>
+
+                    <!-- Speak mode controls -->
+                    <div id="ws-speak-controls">
+                        <div class="exercise-controls">
+                            <button class="btn btn-primary" id="ws-impromptu-start-btn">Start Timer &amp; Listen</button>
+                            <button class="btn btn-secondary" id="ws-impromptu-stop-btn" style="display: none;">Stop</button>
+                            <button class="btn btn-secondary" id="ws-impromptu-reset-btn" style="display: none;">Reset</button>
+                            <button class="btn btn-secondary" id="ws-new-impromptu-btn">New Topic</button>
+                        </div>
+                        <div id="ws-impromptu-timer" class="timer-display">
+                            <div class="timer-number" id="ws-timer-seconds">0:30</div>
+                            <div class="timer-label">remaining</div>
+                        </div>
+                        <div id="ws-status" style="margin-top: var(--spacing-md); font-size: var(--font-size-sm); color: var(--text-secondary); text-align: center;"></div>
+                        <!-- Live transcript -->
+                        <div id="ws-transcript-section" style="margin-top: var(--spacing-lg); display: none;">
+                            <h4 style="margin-bottom: var(--spacing-sm);">Live Transcript</h4>
+                            <div id="ws-transcript-live" style="background: var(--bg-card); border: 1px solid var(--border-color); border-radius: var(--border-radius-sm); padding: var(--spacing-md); min-height: 80px; font-size: var(--font-size-base); line-height: 1.6; color: var(--text-primary);">
+                                <span id="ws-transcript-final"></span><span id="ws-transcript-interim" style="color: var(--text-secondary); font-style: italic;"></span>
+                            </div>
+                            <div class="exercise-controls" style="margin-top: var(--spacing-sm);">
+                                <button class="btn btn-secondary" id="ws-clear-transcript-btn">Clear</button>
+                            </div>
+                        </div>
+                        <!-- Browser support warning -->
+                        <div id="ws-unsupported-msg" style="display: none; margin-top: var(--spacing-md); padding: var(--spacing-md); background: var(--accent-color); color: var(--text-white); border-radius: var(--border-radius-sm);">
+                            ⚠️ Your browser does not support the Web Speech API. Please try Chrome or Edge.
+                        </div>
+                    </div>
+
+                    <!-- Type mode controls -->
+                    <div id="ws-type-controls" style="display: none;">
+                        <div class="exercise-controls">
+                            <button class="btn btn-primary" id="ws-type-start-btn">Start Timer</button>
+                            <button class="btn btn-secondary" id="ws-type-stop-btn" style="display: none;">Stop</button>
+                            <button class="btn btn-secondary" id="ws-type-reset-btn" style="display: none;">Reset</button>
+                            <button class="btn btn-secondary" id="ws-new-topic-type-btn">New Topic</button>
+                        </div>
+                        <div class="timer-display">
+                            <div class="timer-number" id="ws-type-timer-seconds">0:30</div>
+                            <div class="timer-label">remaining</div>
+                        </div>
+                        <div style="margin-top: var(--spacing-lg);">
+                            <label for="ws-type-textarea" style="font-weight: 600; display: block; margin-bottom: var(--spacing-sm);">Your Response:</label>
+                            <textarea id="ws-type-textarea" rows="8" placeholder="Type your response here..." style="width: 100%; padding: var(--spacing-md); font-size: var(--font-size-base); border: 1px solid var(--border-color); border-radius: var(--border-radius-sm); resize: vertical; font-family: inherit; line-height: 1.6;"></textarea>
+                        </div>
+                        <div class="exercise-controls" style="margin-top: var(--spacing-sm);">
+                            <button class="btn btn-primary" id="ws-type-submit-btn">Get Feedback</button>
+                            <button class="btn btn-secondary" id="ws-type-clear-btn">Clear</button>
+                        </div>
+                    </div>
+
+                    <!-- Feedback panel (shared by both modes) -->
+                    <div id="ws-feedback-section" style="display: none; margin-top: var(--spacing-xl);">
+                        <h4 style="margin-bottom: var(--spacing-md); font-size: var(--font-size-lg);">Feedback</h4>
+                        <div id="ws-feedback-grid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: var(--spacing-md);">
+                            <!-- Metric cards injected by JS -->
+                        </div>
+                    </div>
+
                 </div>
             </div>
         </div>
     </section>
 
-        <!-- ==================== FLUENCY & ARTICULATION VIEW ==================== -->
-
-        <!-- ==================== FLUENCY & ARTICULATION VIEW ==================== -->
+        <!-- ==================== POLISH VIEW ==================== -->
         <section id="fluency-view" class="view">
             <div class="view-header">
-                <h1>Fluency & Articulation</h1>
-                <p>Master pronunciation, pacing, and eloquent expression</p>
+                <h1>Polish</h1>
+                <p>Refine your pronunciation, pacing, and fluency before speaking</p>
             </div>
 
             <!-- Category Navigation -->
@@ -1250,10 +1719,10 @@
             </div>
         </section>
 
-        <!-- ==================== PROGRESS VIEW ==================== -->
+        <!-- ==================== REVIEW VIEW ==================== -->
         <section id="progress-view" class="view">
             <div class="view-header">
-                <h1>Your Progress</h1>
+                <h1>Review</h1>
                 <p>Track your improvement and celebrate your achievements</p>
             </div>
 
@@ -1340,6 +1809,7 @@
     <script src="js/modules/wordBank.js"></script>
     <script src="js/modules/grammar.js"></script>
     <script src="js/modules/fluency.js"></script>
+    <script src="js/modules/webSpeech.js"></script>
     <script src="js/app.js"></script>
 </body>
 </html>

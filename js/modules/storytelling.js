@@ -137,6 +137,9 @@ const StorytellingModule = (function() {
       case 'listening':
         initializeListening();
         break;
+      case 'webspeech':
+        WebSpeechModule.init();
+        break;
     }
   }
 
@@ -193,6 +196,11 @@ const StorytellingModule = (function() {
     // Back to prompts button
     if (backToPromptsBtn) {
       backToPromptsBtn.addEventListener('click', showPromptsView);
+    }
+
+    // Story voice feedback panel
+    if (document.getElementById('story-speak-controls')) {
+      WebSpeechModule.create('story', () => document.getElementById('prompt-text')?.textContent || '').init();
     }
 
     // Listen for view changes
@@ -540,55 +548,15 @@ const StorytellingModule = (function() {
    * Set up event listeners for practical skills
    */
   function setupPracticalListeners() {
-    // Impromptu Speaking
-    const timeButtons = document.querySelectorAll('.time-btn');
-    const impromptuStartBtn = document.getElementById('impromptu-start-btn');
-    const impromptuStopBtn = document.getElementById('impromptu-stop-btn');
-    const impromptuResetBtn = document.getElementById('impromptu-reset-btn');
+    // Impromptu Speaking - New Topic buttons
     const newImpromptuBtn = document.getElementById('new-impromptu-btn');
-
-    if (timeButtons) {
-      timeButtons.forEach(btn => {
-        btn.addEventListener('click', function() {
-          // Check if timer is active
-          if (isImpromptuTimerActive) {
-            if (confirm('Are you sure you want to stop current challenge?')) {
-              stopImpromptuTimer();
-              timeButtons.forEach(b => b.classList.remove('active'));
-              this.classList.add('active');
-              // Update timer display with new duration
-              updateImpromptuTimerDisplay();
-            }
-          } else {
-            timeButtons.forEach(b => b.classList.remove('active'));
-            this.classList.add('active');
-            // Update timer display with new duration
-            updateImpromptuTimerDisplay();
-          }
-        });
-      });
-    }
+    const newImpromptuTypeBtnEl = document.getElementById('new-impromptu-type-btn');
 
     if (newImpromptuBtn) {
       newImpromptuBtn.addEventListener('click', loadImpromptuTopic);
     }
-
-    if (impromptuStartBtn) {
-      impromptuStartBtn.addEventListener('click', startImpromptuTimer);
-    }
-
-    if (impromptuStopBtn) {
-      impromptuStopBtn.addEventListener('click', function() {
-        if (isImpromptuTimerActive) {
-          stopImpromptuTimer();
-        } else {
-          resumeImpromptuTimer();
-        }
-      });
-    }
-
-    if (impromptuResetBtn) {
-      impromptuResetBtn.addEventListener('click', resetImpromptuTimer);
+    if (newImpromptuTypeBtnEl) {
+      newImpromptuTypeBtnEl.addEventListener('click', loadImpromptuTopic);
     }
 
     // Topic Builder
@@ -637,13 +605,20 @@ const StorytellingModule = (function() {
       });
     }
 
+    // Impromptu Speaking voice feedback panel
+    if (document.getElementById('impromptu-speak-controls')) {
+      WebSpeechModule.create('impromptu', () => document.getElementById('impromptu-prompt')?.textContent || '').init();
+    }
+
+    // Elevator Pitch voice feedback panel
+    if (document.getElementById('pitch-speak-controls')) {
+      WebSpeechModule.create('pitch', () => 'Elevator pitch: who you are, what you do, why it matters, call to action').init();
+    }
+
     // Load initial content
     loadImpromptuTopic();
     loadTopicFramework('pee');
     loadConversationStarters('networking');
-
-    // Initialize timer displays
-    updateImpromptuTimerDisplay();
   }
 
   /**
@@ -698,63 +673,25 @@ const StorytellingModule = (function() {
       newDescriptionBtn.addEventListener('click', loadDescriptionChallenge);
     }
 
-    // Speak for X Minutes
-    const durationButtons = document.querySelectorAll('.duration-btn');
-    const startEnduranceBtn = document.getElementById('start-endurance-btn');
-    const enduranceStopBtn = document.getElementById('endurance-stop-btn');
-    const enduranceResetBtn = document.getElementById('endurance-reset-btn');
+    // Speak for X Minutes - New Topic buttons
     const newEnduranceBtn = document.getElementById('new-endurance-btn');
-
-    if (durationButtons) {
-      durationButtons.forEach(btn => {
-        btn.addEventListener('click', function() {
-          // Check if timer is active
-          if (isEnduranceTimerActive) {
-            if (confirm('Are you sure you want to stop current challenge?')) {
-              stopEnduranceTimer();
-              durationButtons.forEach(b => b.classList.remove('active'));
-              this.classList.add('active');
-              // Update timer display with new duration
-              updateEnduranceTimerDisplay();
-            }
-          } else {
-            durationButtons.forEach(b => b.classList.remove('active'));
-            this.classList.add('active');
-            // Update timer display with new duration
-            updateEnduranceTimerDisplay();
-          }
-        });
-      });
-    }
+    const newEnduranceTypeBtnEl = document.getElementById('new-endurance-type-btn');
 
     if (newEnduranceBtn) {
       newEnduranceBtn.addEventListener('click', loadEnduranceTopic);
     }
-
-    if (startEnduranceBtn) {
-      startEnduranceBtn.addEventListener('click', startEnduranceTimer);
+    if (newEnduranceTypeBtnEl) {
+      newEnduranceTypeBtnEl.addEventListener('click', loadEnduranceTopic);
     }
 
-    if (enduranceStopBtn) {
-      enduranceStopBtn.addEventListener('click', function() {
-        if (isEnduranceTimerActive) {
-          stopEnduranceTimer();
-        } else {
-          resumeEnduranceTimer();
-        }
-      });
-    }
-
-    if (enduranceResetBtn) {
-      enduranceResetBtn.addEventListener('click', resetEnduranceTimer);
+    // Speak for X Minutes voice feedback panel
+    if (document.getElementById('endurance-speak-controls')) {
+      WebSpeechModule.create('endurance', () => document.getElementById('endurance-topic')?.textContent || '').init();
     }
 
     // Load initial content
     loadDescriptionChallenge();
     loadEnduranceTopic();
-
-    // Initialize timer displays
-    updateEnduranceTimerDisplay();
   }
 
   /**
@@ -790,14 +727,32 @@ const StorytellingModule = (function() {
    */
   function setupListeningListeners() {
     const newSummarizationBtn = document.getElementById('new-summarization-btn');
+    const newSummarizationTypeBtnEl = document.getElementById('new-summarization-type-btn');
     const newParaphrasingBtn = document.getElementById('new-paraphrasing-btn');
+    const newParaphrasingTypeBtnEl = document.getElementById('new-paraphrasing-type-btn');
 
     if (newSummarizationBtn) {
       newSummarizationBtn.addEventListener('click', loadSummarizationPassage);
     }
+    if (newSummarizationTypeBtnEl) {
+      newSummarizationTypeBtnEl.addEventListener('click', loadSummarizationPassage);
+    }
 
     if (newParaphrasingBtn) {
       newParaphrasingBtn.addEventListener('click', loadParaphrasingExercise);
+    }
+    if (newParaphrasingTypeBtnEl) {
+      newParaphrasingTypeBtnEl.addEventListener('click', loadParaphrasingExercise);
+    }
+
+    // Summarization voice feedback panel
+    if (document.getElementById('summarization-speak-controls')) {
+      WebSpeechModule.create('summarization', () => document.getElementById('passage-to-summarize')?.textContent || '').init();
+    }
+
+    // Paraphrasing voice feedback panel
+    if (document.getElementById('paraphrasing-speak-controls')) {
+      WebSpeechModule.create('paraphrasing', () => document.getElementById('original-sentence')?.textContent || '').init();
     }
   }
 
@@ -853,63 +808,15 @@ const StorytellingModule = (function() {
 
   // ========== Practical Skills Implementation ==========
 
-  let impromptuTimer = null;
-  let enduranceTimer = null;
   let associationTimer = null;
   let wordChain = [];
-  let isImpromptuTimerActive = false;
-  let isEnduranceTimerActive = false;
   let isAssociationTimerActive = false;
-  let impromptuRemainingSeconds = 0;
-  let enduranceRemainingSeconds = 0;
   let associationRemainingSeconds = 0;
-
-  /**
-   * Update impromptu timer display with selected duration
-   */
-  function updateImpromptuTimerDisplay() {
-    const activeTimeBtn = document.querySelector('.time-btn.active');
-    const seconds = activeTimeBtn ? parseInt(activeTimeBtn.dataset.time) : 30;
-    const timerSeconds = document.getElementById('timer-seconds');
-
-    impromptuRemainingSeconds = seconds;
-    const mins = Math.floor(seconds / 60);
-    const secs = seconds % 60;
-
-    if (timerSeconds) {
-      timerSeconds.textContent = `${mins}:${secs.toString().padStart(2, '0')}`;
-    }
-  }
-
-  /**
-   * Update endurance timer display with selected duration
-   */
-  function updateEnduranceTimerDisplay() {
-    const activeDurationBtn = document.querySelector('.duration-btn.active');
-    const minutes = activeDurationBtn ? parseInt(activeDurationBtn.dataset.duration) : 1;
-    const timerElement = document.getElementById('endurance-timer-display');
-
-    enduranceRemainingSeconds = minutes * 60;
-    const mins = Math.floor(enduranceRemainingSeconds / 60);
-    const secs = enduranceRemainingSeconds % 60;
-
-    if (timerElement) {
-      timerElement.textContent = `${mins}:${secs.toString().padStart(2, '0')}`;
-    }
-  }
 
   /**
    * Load impromptu speaking topic
    */
   function loadImpromptuTopic() {
-    // Check if timer is active
-    if (isImpromptuTimerActive) {
-      if (!confirm('Are you sure you want to stop current challenge?')) {
-        return;
-      }
-      stopImpromptuTimer();
-    }
-
     const topics = [
       "If you could have dinner with anyone from history, who would it be and why?",
       "What's the most important lesson you've learned in life?",
@@ -930,138 +837,6 @@ const StorytellingModule = (function() {
     }
   }
 
-  /**
-   * Start impromptu timer
-   */
-  function startImpromptuTimer() {
-    const activeTimeBtn = document.querySelector('.time-btn.active');
-    const seconds = activeTimeBtn ? parseInt(activeTimeBtn.dataset.time) : 30;
-    const timerSeconds = document.getElementById('timer-seconds');
-    const startBtn = document.getElementById('impromptu-start-btn');
-    const stopBtn = document.getElementById('impromptu-stop-btn');
-    const resetBtn = document.getElementById('impromptu-reset-btn');
-
-    if (!timerSeconds) return;
-
-    // Clear any existing timer
-    if (impromptuTimer) clearInterval(impromptuTimer);
-
-    // Show/hide buttons
-    startBtn.style.display = 'none';
-    if (stopBtn) {
-      stopBtn.style.display = 'inline-block';
-      stopBtn.textContent = 'Stop Timer';
-    }
-    if (resetBtn) resetBtn.style.display = 'inline-block';
-    isImpromptuTimerActive = true;
-
-    impromptuRemainingSeconds = seconds;
-
-    const updateDisplay = () => {
-      const mins = Math.floor(impromptuRemainingSeconds / 60);
-      const secs = impromptuRemainingSeconds % 60;
-      timerSeconds.textContent = `${mins}:${secs.toString().padStart(2, '0')}`;
-    };
-
-    updateDisplay();
-
-    impromptuTimer = setInterval(() => {
-      impromptuRemainingSeconds--;
-      updateDisplay();
-
-      if (impromptuRemainingSeconds <= 0) {
-        clearInterval(impromptuTimer);
-        impromptuTimer = null;
-        isImpromptuTimerActive = false;
-        startBtn.style.display = 'inline-block';
-        if (stopBtn) stopBtn.style.display = 'none';
-        if (resetBtn) resetBtn.style.display = 'none';
-        alert('Time\'s up! Great job!');
-      }
-    }, 1000);
-  }
-
-  /**
-   * Stop impromptu timer (pause)
-   */
-  function stopImpromptuTimer() {
-    if (impromptuTimer) {
-      clearInterval(impromptuTimer);
-      impromptuTimer = null;
-    }
-
-    isImpromptuTimerActive = false;
-
-    const stopBtn = document.getElementById('impromptu-stop-btn');
-
-    // Change button text to Resume Timer
-    if (stopBtn) stopBtn.textContent = 'Resume Timer';
-  }
-
-  /**
-   * Resume impromptu timer
-   */
-  function resumeImpromptuTimer() {
-    const timerSeconds = document.getElementById('timer-seconds');
-    const stopBtn = document.getElementById('impromptu-stop-btn');
-
-    if (!timerSeconds) return;
-
-    // Start timer from remaining seconds
-    isImpromptuTimerActive = true;
-    if (stopBtn) stopBtn.textContent = 'Stop Timer';
-
-    const updateDisplay = () => {
-      const mins = Math.floor(impromptuRemainingSeconds / 60);
-      const secs = impromptuRemainingSeconds % 60;
-      timerSeconds.textContent = `${mins}:${secs.toString().padStart(2, '0')}`;
-    };
-
-    impromptuTimer = setInterval(() => {
-      impromptuRemainingSeconds--;
-      updateDisplay();
-
-      if (impromptuRemainingSeconds <= 0) {
-        clearInterval(impromptuTimer);
-        impromptuTimer = null;
-        isImpromptuTimerActive = false;
-        const startBtn = document.getElementById('impromptu-start-btn');
-        const resetBtn = document.getElementById('impromptu-reset-btn');
-        if (startBtn) startBtn.style.display = 'inline-block';
-        if (stopBtn) stopBtn.style.display = 'none';
-        if (resetBtn) resetBtn.style.display = 'none';
-        alert('Time\'s up! Great job!');
-      }
-    }, 1000);
-  }
-
-  /**
-   * Reset impromptu timer
-   */
-  function resetImpromptuTimer() {
-    if (impromptuTimer) {
-      clearInterval(impromptuTimer);
-      impromptuTimer = null;
-    }
-
-    isImpromptuTimerActive = false;
-
-    const activeTimeBtn = document.querySelector('.time-btn.active');
-    const seconds = activeTimeBtn ? parseInt(activeTimeBtn.dataset.time) : 30;
-    const timerSeconds = document.getElementById('timer-seconds');
-    const startBtn = document.getElementById('impromptu-start-btn');
-    const stopBtn = document.getElementById('impromptu-stop-btn');
-    const resetBtn = document.getElementById('impromptu-reset-btn');
-
-    impromptuRemainingSeconds = seconds;
-    const mins = Math.floor(seconds / 60);
-    const secs = seconds % 60;
-
-    if (timerSeconds) timerSeconds.textContent = `${mins}:${secs.toString().padStart(2, '0')}`;
-    if (startBtn) startBtn.style.display = 'inline-block';
-    if (stopBtn) stopBtn.style.display = 'none';
-    if (resetBtn) resetBtn.style.display = 'none';
-  }
 
   /**
    * Load topic framework
@@ -1364,14 +1139,6 @@ const StorytellingModule = (function() {
    * Load endurance topic
    */
   function loadEnduranceTopic() {
-    // Check if timer is active
-    if (isEnduranceTimerActive) {
-      if (!confirm('Are you sure you want to stop current challenge?')) {
-        return;
-      }
-      stopEnduranceTimer();
-    }
-
     const topics = [
       "The importance of lifelong learning",
       "How social media has changed society",
@@ -1393,138 +1160,6 @@ const StorytellingModule = (function() {
     }
   }
 
-  /**
-   * Start endurance timer
-   */
-  function startEnduranceTimer() {
-    const activeDurationBtn = document.querySelector('.duration-btn.active');
-    const minutes = activeDurationBtn ? parseInt(activeDurationBtn.dataset.duration) : 1;
-    const timerElement = document.getElementById('endurance-timer-display');
-    const startBtn = document.getElementById('start-endurance-btn');
-    const stopBtn = document.getElementById('endurance-stop-btn');
-    const resetBtn = document.getElementById('endurance-reset-btn');
-
-    if (!timerElement) return;
-
-    // Clear any existing timer
-    if (enduranceTimer) clearInterval(enduranceTimer);
-
-    // Show/hide buttons
-    startBtn.style.display = 'none';
-    if (stopBtn) {
-      stopBtn.style.display = 'inline-block';
-      stopBtn.textContent = 'Stop Timer';
-    }
-    if (resetBtn) resetBtn.style.display = 'inline-block';
-    isEnduranceTimerActive = true;
-
-    enduranceRemainingSeconds = minutes * 60;
-
-    const updateDisplay = () => {
-      const mins = Math.floor(enduranceRemainingSeconds / 60);
-      const secs = enduranceRemainingSeconds % 60;
-      timerElement.textContent = `${mins}:${secs.toString().padStart(2, '0')}`;
-    };
-
-    updateDisplay();
-
-    enduranceTimer = setInterval(() => {
-      enduranceRemainingSeconds--;
-      updateDisplay();
-
-      if (enduranceRemainingSeconds <= 0) {
-        clearInterval(enduranceTimer);
-        enduranceTimer = null;
-        isEnduranceTimerActive = false;
-        startBtn.style.display = 'inline-block';
-        if (stopBtn) stopBtn.style.display = 'none';
-        if (resetBtn) resetBtn.style.display = 'none';
-        alert('Challenge complete! Excellent work!');
-      }
-    }, 1000);
-  }
-
-  /**
-   * Stop endurance timer (pause)
-   */
-  function stopEnduranceTimer() {
-    if (enduranceTimer) {
-      clearInterval(enduranceTimer);
-      enduranceTimer = null;
-    }
-
-    isEnduranceTimerActive = false;
-
-    const stopBtn = document.getElementById('endurance-stop-btn');
-
-    // Change button text to Resume Timer
-    if (stopBtn) stopBtn.textContent = 'Resume Timer';
-  }
-
-  /**
-   * Resume endurance timer
-   */
-  function resumeEnduranceTimer() {
-    const timerElement = document.getElementById('endurance-timer-display');
-    const stopBtn = document.getElementById('endurance-stop-btn');
-
-    if (!timerElement) return;
-
-    // Start timer from remaining seconds
-    isEnduranceTimerActive = true;
-    if (stopBtn) stopBtn.textContent = 'Stop Timer';
-
-    const updateDisplay = () => {
-      const mins = Math.floor(enduranceRemainingSeconds / 60);
-      const secs = enduranceRemainingSeconds % 60;
-      timerElement.textContent = `${mins}:${secs.toString().padStart(2, '0')}`;
-    };
-
-    enduranceTimer = setInterval(() => {
-      enduranceRemainingSeconds--;
-      updateDisplay();
-
-      if (enduranceRemainingSeconds <= 0) {
-        clearInterval(enduranceTimer);
-        enduranceTimer = null;
-        isEnduranceTimerActive = false;
-        const startBtn = document.getElementById('start-endurance-btn');
-        const resetBtn = document.getElementById('endurance-reset-btn');
-        if (startBtn) startBtn.style.display = 'inline-block';
-        if (stopBtn) stopBtn.style.display = 'none';
-        if (resetBtn) resetBtn.style.display = 'none';
-        alert('Challenge complete! Excellent work!');
-      }
-    }, 1000);
-  }
-
-  /**
-   * Reset endurance timer
-   */
-  function resetEnduranceTimer() {
-    if (enduranceTimer) {
-      clearInterval(enduranceTimer);
-      enduranceTimer = null;
-    }
-
-    isEnduranceTimerActive = false;
-
-    const activeDurationBtn = document.querySelector('.duration-btn.active');
-    const minutes = activeDurationBtn ? parseInt(activeDurationBtn.dataset.duration) : 1;
-    const timerElement = document.getElementById('endurance-timer-display');
-    const startBtn = document.getElementById('start-endurance-btn');
-    const stopBtn = document.getElementById('endurance-stop-btn');
-    const resetBtn = document.getElementById('endurance-reset-btn');
-
-    enduranceRemainingSeconds = minutes * 60;
-    const mins = Math.floor(enduranceRemainingSeconds / 60);
-    const secs = enduranceRemainingSeconds % 60;
-
-    if (timerElement) timerElement.textContent = `${mins}:${secs.toString().padStart(2, '0')}`;
-    if (startBtn) startBtn.style.display = 'inline-block';
-    if (stopBtn) stopBtn.style.display = 'none';
-    if (resetBtn) resetBtn.style.display = 'none';
-  }
 
   /**
    * Refresh the module (reload data)

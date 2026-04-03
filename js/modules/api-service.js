@@ -135,13 +135,31 @@ const APIService = (function() {
         const firstMeaning = wordData.meanings && wordData.meanings[0];
         const firstDefinition = firstMeaning && firstMeaning.definitions && firstMeaning.definitions[0];
 
+        // Collect synonyms from all definitions across all meanings
+        const allSynonyms = [];
+        if (wordData.meanings) {
+          for (const meaning of wordData.meanings) {
+            if (meaning.synonyms && meaning.synonyms.length > 0) {
+              allSynonyms.push(...meaning.synonyms);
+            }
+            if (meaning.definitions) {
+              for (const def of meaning.definitions) {
+                if (def.synonyms && def.synonyms.length > 0) {
+                  allSynonyms.push(...def.synonyms);
+                }
+              }
+            }
+          }
+        }
+        const uniqueSynonyms = [...new Set(allSynonyms)];
+
         return {
           word: wordData.word,
           phonetic: wordData.phonetic || wordData.phonetics?.[0]?.text || '',
           partOfSpeech: firstMeaning?.partOfSpeech || 'unknown',
           definition: firstDefinition?.definition || 'No definition available',
           example: firstDefinition?.example || '',
-          synonyms: firstDefinition?.synonyms || firstMeaning?.synonyms || [],
+          synonyms: uniqueSynonyms,
           antonyms: firstDefinition?.antonyms || firstMeaning?.antonyms || []
         };
       }

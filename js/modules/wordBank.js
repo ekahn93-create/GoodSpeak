@@ -46,6 +46,12 @@ const WordBankModule = (function() {
   let currentQuestionIndex = 0;
   let quizScore = 0;
   let selectedAnswer = null;
+  let quizResults = [];
+
+  // Review elements
+  let reviewQuizBtn = null;
+  let quizReview = null;
+  let quizReviewList = null;
 
   /**
    * Initialize the word bank module
@@ -82,6 +88,9 @@ const WordBankModule = (function() {
     finalPercentageElement = document.getElementById('final-percentage');
     retryQuizBtn = document.getElementById('retry-quiz-btn');
     doneQuizBtn = document.getElementById('done-quiz-btn');
+    reviewQuizBtn = document.getElementById('review-quiz-btn');
+    quizReview = document.getElementById('quiz-review');
+    quizReviewList = document.getElementById('quiz-review-list');
 
     // Load user data
     userData = StorageManager.load();
@@ -115,14 +124,26 @@ const WordBankModule = (function() {
    * Set up event listeners
    */
   function setupEventListeners() {
-    // Add custom word form
-    if (addWordForm) {
-      addWordForm.addEventListener('submit', handleAddCustomWord);
+    // Add to Word Bank button (click only — Enter key does not submit)
+    const addWordBtn = document.getElementById('add-word-btn');
+    if (addWordBtn) {
+      addWordBtn.addEventListener('click', handleAddCustomWord);
     }
 
     // Lookup button
     if (lookupButton) {
       lookupButton.addEventListener('click', handleLookupWord);
+    }
+
+    // Enter key in the word input triggers lookup, not form submit
+    const customWordInput = document.getElementById('custom-word');
+    if (customWordInput) {
+      customWordInput.addEventListener('keydown', function(e) {
+        if (e.key === 'Enter') {
+          e.preventDefault();
+          handleLookupWord();
+        }
+      });
     }
 
     // Quiz event listeners
@@ -146,6 +167,10 @@ const WordBankModule = (function() {
       doneQuizBtn.addEventListener('click', exitQuiz);
     }
 
+    if (reviewQuizBtn) {
+      reviewQuizBtn.addEventListener('click', toggleReview);
+    }
+
     // Listen for view changes
     document.addEventListener('viewChanged', function(e) {
       if (e.detail.viewName === 'word-bank') {
@@ -162,55 +187,37 @@ const WordBankModule = (function() {
   function convertIPAToReadable(ipa) {
     if (!ipa) return '';
 
-    // Remove slashes and brackets
     let readable = ipa.replace(/[\/\[\]]/g, '');
-
-    // Handle syllable breaks - convert dots to hyphens
     readable = readable.replace(/\./g, '-');
-
-    // Remove optional parts in parentheses but keep the content
     readable = readable.replace(/\(([^)]+)\)/g, '$1');
 
-    // Simple IPA to readable conversions (only common special characters)
     const conversions = {
-      // Special vowels that don't look like English
-      'ɛ': 'e',    // as in "bed"
-      'ɪ': 'i',    // as in "bit"
-      'ə': 'uh',   // schwa - as in "about"
-      'ʌ': 'u',    // as in "but"
-      'ɔ': 'o',    // as in "dog"
-      'æ': 'a',    // as in "cat"
-      'ʊ': 'oo',   // as in "book"
-      'ɑ': 'ah',   // as in "father"
-      'ɜ': 'er',   // as in "bird"
-      'ɒ': 'o',    // as in "pot"
-
-      // Length markers
-      'ː': '',     // long vowel marker
-
-      // Special consonants
-      'θ': 'th',   // as in "think"
-      'ð': 'th',   // as in "this"
-      'ʃ': 'sh',   // as in "ship"
-      'ʒ': 'zh',   // as in "measure"
-      'ŋ': 'ng',   // as in "sing"
-      'ɹ': 'r',    // English r
-      'j': 'y',    // as in "yes"
+      'ɛ': 'e',
+      'ɪ': 'i',
+      'ə': 'uh',
+      'ʌ': 'u',
+      'ɔ': 'o',
+      'æ': 'a',
+      'ʊ': 'oo',
+      'ɑ': 'ah',
+      'ɜ': 'er',
+      'ɒ': 'o',
+      'ː': '',
+      'θ': 'th',
+      'ð': 'th',
+      'ʃ': 'sh',
+      'ʒ': 'zh',
+      'ŋ': 'ng',
+      'ɹ': 'r',
+      'j': 'y',
     };
 
-    // Apply conversions
     for (const [ipaChar, replacement] of Object.entries(conversions)) {
       readable = readable.split(ipaChar).join(replacement);
     }
 
-    // Handle stress markers by capitalizing the stressed syllable
-    // Primary stress (ˈ) - capitalize the following syllable
     readable = readable.replace(/ˈ([a-z])/g, (match, letter) => letter.toUpperCase());
-
-    // Remove any remaining stress markers
     readable = readable.replace(/[ˈˌ]/g, '');
-
-    // Clean up any double hyphens or leading/trailing hyphens
     readable = readable.replace(/--+/g, '-').replace(/^-|-$/g, '');
 
     return readable;
@@ -241,8 +248,7 @@ const WordBankModule = (function() {
         if (wordData) {
           // Populate form fields
           if (wordData.phonetic) {
-            const readablePronunciation = convertIPAToReadable(wordData.phonetic);
-            document.getElementById('custom-pronunciation').value = readablePronunciation;
+            document.getElementById('custom-pronunciation').value = convertIPAToReadable(wordData.phonetic);
           }
 
           if (wordData.partOfSpeech) {
@@ -326,8 +332,7 @@ const WordBankModule = (function() {
    * Handle add custom word form submission
    * @param {Event} e - Form submit event
    */
-  function handleAddCustomWord(e) {
-    e.preventDefault();
+  function handleAddCustomWord() {
 
     // Get form values
     const word = document.getElementById('custom-word').value.trim();
@@ -381,7 +386,7 @@ const WordBankModule = (function() {
   /**
    * Display app learned words
    */
-  function displayAppLearnedWords() {
+  function displayAppLearnedWords(sortBy) {
     if (!appLearnedWordsContainer || !userData) return;
 
     const learnedWords = userData.vocabulary.learned;
@@ -409,8 +414,13 @@ const WordBankModule = (function() {
       return allWords.find(w => w.id === id);
     }).filter(w => w !== undefined);
 
-    // Sort alphabetically
-    learnedWordObjects.sort((a, b) => a.word.localeCompare(b.word));
+    const difficultyOrder = { beginner: 1, intermediate: 2, advanced: 3 };
+    const currentSort = sortBy || (document.getElementById('app-learned-sort') ? document.getElementById('app-learned-sort').value : 'alpha');
+    if (currentSort === 'difficulty') {
+      learnedWordObjects.sort((a, b) => (difficultyOrder[a.difficulty] || 99) - (difficultyOrder[b.difficulty] || 99) || a.word.localeCompare(b.word));
+    } else {
+      learnedWordObjects.sort((a, b) => a.word.localeCompare(b.word));
+    }
 
     // Display as detailed cards
     const html = learnedWordObjects.map(word => `
@@ -430,7 +440,7 @@ const WordBankModule = (function() {
   /**
    * Display still learning words
    */
-  function displayStillLearningWords() {
+  function displayStillLearningWords(sortBy) {
     if (!stillLearningWordsContainer || !userData) return;
 
     const stillLearningWords = userData.vocabulary.stillLearning || [];
@@ -458,15 +468,20 @@ const WordBankModule = (function() {
       return allWords.find(w => w.id === id);
     }).filter(w => w !== undefined);
 
-    // Sort alphabetically
-    stillLearningWordObjects.sort((a, b) => a.word.localeCompare(b.word));
+    const difficultyOrder = { beginner: 1, intermediate: 2, advanced: 3 };
+    const currentSort = sortBy || (document.getElementById('still-learning-sort') ? document.getElementById('still-learning-sort').value : 'alpha');
+    if (currentSort === 'difficulty') {
+      stillLearningWordObjects.sort((a, b) => (difficultyOrder[a.difficulty] || 99) - (difficultyOrder[b.difficulty] || 99) || a.word.localeCompare(b.word));
+    } else {
+      stillLearningWordObjects.sort((a, b) => a.word.localeCompare(b.word));
+    }
 
     // Display as detailed cards
     const html = stillLearningWordObjects.map(word => `
       <div class="word-bank-card" onclick="WordBankModule.showStillLearningWordDetail(${word.id})">
         <div class="word-bank-card-header">
           <div class="word-bank-word">${word.word}</div>
-          <span class="badge badge-warning">Still Learning</span>
+          ${word.partOfSpeech ? `<span class="badge badge-primary">${word.partOfSpeech}</span>` : ''}
         </div>
         <div class="word-bank-pronunciation">${word.pronunciation}</div>
         <div class="word-bank-definition">${truncateText(word.definition, 80)}</div>
@@ -479,27 +494,32 @@ const WordBankModule = (function() {
   /**
    * Display custom words
    */
-  function displayCustomWords() {
+  function displayCustomWords(sortBy) {
     if (!customWordsContainer || !userData) return;
 
-    const customWords = userData.customWords || [];
+    const customWords = [...(userData.customWords || [])];
 
     if (customWords.length === 0) {
       customWordsContainer.innerHTML = '<p class="text-secondary">No custom words yet. Use the form above to add words you\'ve learned elsewhere!</p>';
       return;
     }
 
-    // Sort alphabetically
-    customWords.sort((a, b) => a.word.localeCompare(b.word));
+    const currentSort = sortBy || (document.getElementById('custom-words-sort') ? document.getElementById('custom-words-sort').value : 'date');
+    if (currentSort === 'alpha') {
+      customWords.sort((a, b) => a.word.localeCompare(b.word));
+    } else {
+      // date: newest first
+      customWords.sort((a, b) => new Date(b.addedDate) - new Date(a.addedDate));
+    }
 
     // Display as detailed cards with delete option
     const html = customWords.map(word => `
-      <div class="word-bank-card custom-word-card">
+      <div class="word-bank-card custom-word-card" onclick="WordBankModule.showWordDetail(${word.id}, true)">
         <div class="word-bank-card-header">
-          <div class="word-bank-word" onclick="WordBankModule.showWordDetail(${word.id}, true)">${word.word}</div>
+          <div class="word-bank-word">${word.word}</div>
           <div>
             ${word.partOfSpeech ? `<span class="badge badge-secondary">${word.partOfSpeech}</span>` : ''}
-            <button class="btn-icon" onclick="WordBankModule.deleteCustomWord(${word.id})" title="Delete word">
+            <button class="btn-icon" onclick="event.stopPropagation(); WordBankModule.deleteCustomWord(${word.id})" title="Delete word">
               ✕
             </button>
           </div>
@@ -856,7 +876,16 @@ const WordBankModule = (function() {
     const quizSourceSelect = document.getElementById('quiz-source');
     const selectedSource = quizSourceSelect ? quizSourceSelect.value : 'all';
 
-    if (selectedSource === 'learned') {
+    if (selectedSource === 'stillLearning') {
+      // Only include still learning words
+      const stillLearningIds = userData.vocabulary.stillLearning || [];
+      const dbWords = [
+        ...vocabularyDatabase.beginner,
+        ...vocabularyDatabase.intermediate,
+        ...vocabularyDatabase.advanced
+      ];
+      allWords = stillLearningIds.map(id => dbWords.find(w => w.id === id)).filter(w => w !== undefined);
+    } else if (selectedSource === 'learned') {
       // Only include words from vocabulary builder (have numeric IDs from database)
       allWords = allWords.filter(word => typeof word.id === 'number' && word.id < 1000000);
     } else if (selectedSource === 'custom') {
@@ -895,6 +924,7 @@ const WordBankModule = (function() {
     currentQuestionIndex = 0;
     quizScore = 0;
     selectedAnswer = null;
+    quizResults = [];
 
     // Show active screen
     if (quizStartScreen) quizStartScreen.style.display = 'none';
@@ -976,14 +1006,36 @@ const WordBankModule = (function() {
       { text: correctWord.definition, isCorrect: true }
     ];
 
-    // Get wrong answers from other words
-    const otherWords = quizWords.filter(w => w.id !== correctWord.id);
-    const shuffledOthers = shuffleArray(otherWords);
+    // Build the largest possible pool for distractors:
+    // full vocabulary database + custom words, excluding the correct word
+    let distractorPool = [];
+
+    if (typeof vocabularyDatabase !== 'undefined' && vocabularyDatabase.beginner) {
+      distractorPool = [
+        ...vocabularyDatabase.beginner,
+        ...vocabularyDatabase.intermediate,
+        ...vocabularyDatabase.advanced
+      ];
+    }
+
+    // Add custom words with definitions
+    const customWords = (userData && userData.customWords) ? userData.customWords : [];
+    customWords.forEach(w => { if (w.definition) distractorPool.push(w); });
+
+    // Fall back to quiz words if database isn't available
+    if (distractorPool.length === 0) {
+      distractorPool = quizWords;
+    }
+
+    // Exclude the correct word
+    distractorPool = distractorPool.filter(w => w.id !== correctWord.id && w.definition);
+
+    const shuffledPool = shuffleArray(distractorPool);
 
     // Add 3 wrong answers
-    for (let i = 0; i < 3 && i < shuffledOthers.length; i++) {
+    for (let i = 0; i < 3 && i < shuffledPool.length; i++) {
       options.push({
-        text: shuffledOthers[i].definition,
+        text: shuffledPool[i].definition,
         isCorrect: false
       });
     }
@@ -1034,6 +1086,12 @@ const WordBankModule = (function() {
 
     selectedAnswer = isCorrect;
 
+    // Record result for review
+    quizResults.push({
+      word: quizWords[currentQuestionIndex],
+      correct: isCorrect
+    });
+
     // Show and enable next button
     if (nextQuestionBtn) {
       nextQuestionBtn.style.display = 'block';
@@ -1075,6 +1133,46 @@ const WordBankModule = (function() {
     currentQuestionIndex = 0;
     quizScore = 0;
     selectedAnswer = null;
+    quizResults = [];
+
+    // Reset review
+    if (quizReview) quizReview.style.display = 'none';
+    if (reviewQuizBtn) reviewQuizBtn.textContent = 'Review Words';
+  }
+
+  /**
+   * Toggle the quiz review section
+   */
+  function toggleReview() {
+    if (!quizReview) return;
+    const isHidden = quizReview.style.display === 'none';
+    if (isHidden) {
+      renderReview();
+      quizReview.style.display = 'block';
+      reviewQuizBtn.textContent = 'Hide Review';
+    } else {
+      quizReview.style.display = 'none';
+      reviewQuizBtn.textContent = 'Review Words';
+    }
+  }
+
+  /**
+   * Render the quiz review list
+   */
+  function renderReview() {
+    if (!quizReviewList) return;
+    const html = quizResults.map(result => `
+      <div class="quiz-review-item ${result.correct ? 'review-correct' : 'review-incorrect'}">
+        <div class="quiz-review-item-header">
+          <span class="quiz-review-icon">${result.correct ? '✓' : '✗'}</span>
+          <span class="quiz-review-word">${result.word.word}</span>
+          ${result.word.partOfSpeech ? `<span class="badge badge-primary">${result.word.partOfSpeech}</span>` : ''}
+        </div>
+        <div class="quiz-review-definition">${result.word.definition}</div>
+        ${result.word.exampleSentence ? `<div class="quiz-review-example">"${result.word.exampleSentence}"</div>` : ''}
+      </div>
+    `).join('');
+    quizReviewList.innerHTML = html;
   }
 
   /**
@@ -1162,6 +1260,21 @@ const WordBankModule = (function() {
     }
   }
 
+  /**
+   * Re-render a section with a new sort order
+   * @param {string} section - 'stillLearning', 'appLearned', or 'custom'
+   * @param {string} sortBy - sort option value
+   */
+  function sortSection(section, sortBy) {
+    if (section === 'stillLearning') {
+      displayStillLearningWords(sortBy);
+    } else if (section === 'appLearned') {
+      displayAppLearnedWords(sortBy);
+    } else if (section === 'custom') {
+      displayCustomWords(sortBy);
+    }
+  }
+
   // Public API
   return {
     init: init,
@@ -1170,7 +1283,8 @@ const WordBankModule = (function() {
     moveWordToLearned: moveWordToLearned,
     moveWordToStillLearning: moveWordToStillLearning,
     deleteCustomWord: deleteCustomWord,
-    refresh: refresh
+    refresh: refresh,
+    sortSection: sortSection
   };
 })();
 
