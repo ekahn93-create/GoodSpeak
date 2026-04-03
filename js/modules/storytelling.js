@@ -137,8 +137,8 @@ const StorytellingModule = (function() {
       case 'listening':
         initializeListening();
         break;
-      case 'webspeech':
-        WebSpeechModule.init();
+case 'recordings':
+        if (typeof RecordingsModule !== 'undefined') RecordingsModule.refresh();
         break;
     }
   }

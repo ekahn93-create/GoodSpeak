@@ -36,6 +36,9 @@ const App = (function() {
     // Initialize router
     Router.init();
 
+    // Show onboarding for new users
+    OnboardingModule.init();
+
     // Initialize all feature modules
     WordBankModule.init();
     VocabularyModule.init();
@@ -44,6 +47,14 @@ const App = (function() {
     MWWordOfDayModule.init();
     GrammarModule.init();
     FluencyModule.init();
+    ReadAloudModule.init();
+    SRSModule.init();
+    RecordingsModule.init();
+    ShadowingModule.init();
+    ProgressChartsModule.init();
+
+    // Initialize daily drill
+    DailyDrillModule.init();
 
     // Initialize dashboard
     initializeDashboard();
@@ -334,12 +345,15 @@ const App = (function() {
     switch (viewName) {
       case 'home':
         updateDashboardStats();
+        DailyDrillModule.refresh();
         break;
       case 'progress':
         updateProgressView();
+        ProgressChartsModule.refresh();
         break;
       case 'vocabulary':
         // Handled by VocabularyModule
+        SRSModule.refresh();
         break;
       case 'storytelling':
         // Handled by StorytellingModule

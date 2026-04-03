@@ -228,7 +228,12 @@ const VocabularyModule = (function() {
 
     const html = `
       <div class="word-card">
-        <div class="word-main">${word.word}</div>
+        <div class="word-main">
+          ${word.word}
+          <button class="tts-btn" onclick="VocabularyModule.speakWord('${word.word.replace(/'/g, "\\'")}')" title="Hear pronunciation" aria-label="Hear pronunciation">
+            🔊
+          </button>
+        </div>
         <div class="word-pronunciation">${word.pronunciation}</div>
         <div class="word-meta">
           <span class="badge badge-primary">${word.partOfSpeech}</span>
@@ -309,6 +314,16 @@ const VocabularyModule = (function() {
     // Save to storage
     if (StorageManager.save(userData)) {
       showToast('Word added to your vocabulary!', 'success');
+
+      // Log vocab count for progress charts
+      if (typeof ProgressChartsModule !== 'undefined') {
+        ProgressChartsModule.logVocabCount(userData.vocabulary.totalWordsLearned);
+      }
+
+      // Enroll word in SRS
+      if (typeof SRSModule !== 'undefined') {
+        SRSModule.enrollWord(wordId);
+      }
 
       // Update display
       displayLearnedWords();
@@ -815,6 +830,19 @@ const VocabularyModule = (function() {
   }
 
   /**
+   * Speak a word aloud using Web Speech Synthesis
+   * @param {string} word - The word to speak
+   */
+  function speakWord(word) {
+    if (!window.speechSynthesis) return;
+    window.speechSynthesis.cancel();
+    const utterance = new SpeechSynthesisUtterance(word);
+    utterance.rate = 0.85;
+    utterance.pitch = 1;
+    window.speechSynthesis.speak(utterance);
+  }
+
+  /**
    * Refresh the module (reload data)
    */
   function refresh() {
@@ -859,7 +887,8 @@ const VocabularyModule = (function() {
     refresh: refresh,
     getCurrentDifficulty: getCurrentDifficulty,
     getProgress: getProgress,
-    switchVocabCategory: switchVocabCategory
+    switchVocabCategory: switchVocabCategory,
+    speakWord: speakWord
   };
 })();
 

@@ -244,6 +244,11 @@ const WebSpeechModule = (function() {
     const seconds   = Math.max(elapsedSeconds, 1);
     const wpm       = calcWPM(words, seconds);
     const fillers   = calcFillers(trimmed);
+
+    // Log to progress charts if it's a speech session
+    if (isSpeech && typeof ProgressChartsModule !== 'undefined') {
+      ProgressChartsModule.logSpeechSession(wpm, fillers.count);
+    }
     const diversity = calcDiversity(words);
     const weakWords = calcWeakWords(words);
     const relevance = calcTopicRelevance(trimmed, promptText || '');
@@ -986,7 +991,7 @@ const WebSpeechModule = (function() {
   }
 
   // ── Public API ────────────────────────────────────────────────────────────
-  return { init, create };
+  return { init, create, buildAndRenderFeedback };
 
 })();
 

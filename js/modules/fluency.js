@@ -232,16 +232,69 @@ const FluencyModule = (function() {
   ];
 
   const synonymPairs = [
+    // Quality
     { common: "good", sophisticated: ["excellent", "superior", "exceptional", "exemplary"] },
     { common: "bad", sophisticated: ["inferior", "subpar", "deficient", "inadequate"] },
+    { common: "great", sophisticated: ["extraordinary", "magnificent", "phenomenal", "outstanding"] },
+    { common: "nice", sophisticated: ["pleasant", "agreeable", "delightful", "charming"] },
+    { common: "amazing", sophisticated: ["astounding", "remarkable", "breathtaking", "staggering"] },
+    { common: "awful", sophisticated: ["atrocious", "deplorable", "appalling", "grievous"] },
+    { common: "perfect", sophisticated: ["flawless", "impeccable", "exemplary", "immaculate"] },
+    // Size & degree
     { common: "big", sophisticated: ["substantial", "considerable", "extensive", "significant"] },
     { common: "small", sophisticated: ["minute", "diminutive", "negligible", "minimal"] },
+    { common: "very", sophisticated: ["exceptionally", "remarkably", "profoundly", "extraordinarily"] },
+    { common: "a lot", sophisticated: ["considerably", "substantially", "abundantly", "extensively"] },
+    // Emotions
     { common: "happy", sophisticated: ["elated", "jubilant", "euphoric", "delighted"] },
     { common: "sad", sophisticated: ["melancholy", "despondent", "disheartened", "dejected"] },
+    { common: "angry", sophisticated: ["incensed", "indignant", "exasperated", "irate"] },
+    { common: "scared", sophisticated: ["apprehensive", "trepidatious", "unnerved", "alarmed"] },
+    { common: "excited", sophisticated: ["exhilarated", "enthusiastic", "animated", "invigorated"] },
+    { common: "surprised", sophisticated: ["astonished", "astounded", "flabbergasted", "dumbfounded"] },
+    { common: "worried", sophisticated: ["apprehensive", "disconcerted", "perturbed", "unsettled"] },
+    { common: "tired", sophisticated: ["exhausted", "fatigued", "depleted", "enervated"] },
+    // Intelligence & character
     { common: "smart", sophisticated: ["astute", "perspicacious", "sagacious", "shrewd"] },
+    { common: "funny", sophisticated: ["witty", "hilarious", "facetious", "comical"] },
+    { common: "brave", sophisticated: ["courageous", "intrepid", "valiant", "undaunted"] },
+    { common: "shy", sophisticated: ["reticent", "diffident", "reserved", "unassuming"] },
+    { common: "mean", sophisticated: ["malicious", "contemptible", "vindictive", "spiteful"] },
+    { common: "kind", sophisticated: ["benevolent", "magnanimous", "compassionate", "gracious"] },
+    { common: "lazy", sophisticated: ["indolent", "lethargic", "inert", "apathetic"] },
+    { common: "stubborn", sophisticated: ["obstinate", "intractable", "tenacious", "resolute"] },
+    // Communication & thought
+    { common: "say", sophisticated: ["articulate", "assert", "convey", "proclaim"] },
+    { common: "show", sophisticated: ["demonstrate", "illustrate", "exhibit", "manifest"] },
+    { common: "think", sophisticated: ["contemplate", "deliberate", "ponder", "surmise"] },
+    { common: "understand", sophisticated: ["comprehend", "discern", "grasp", "perceive"] },
+    { common: "explain", sophisticated: ["elucidate", "articulate", "clarify", "expound"] },
     { common: "important", sophisticated: ["crucial", "paramount", "pivotal", "vital"] },
     { common: "interesting", sophisticated: ["compelling", "captivating", "intriguing", "engaging"] },
-    { common: "show", sophisticated: ["demonstrate", "illustrate", "exhibit", "manifest"] }
+    { common: "confusing", sophisticated: ["perplexing", "bewildering", "convoluted", "ambiguous"] },
+    { common: "obvious", sophisticated: ["evident", "conspicuous", "unambiguous", "manifest"] },
+    // Action
+    { common: "help", sophisticated: ["facilitate", "bolster", "advocate", "champion"] },
+    { common: "change", sophisticated: ["transform", "revolutionize", "alter", "reconfigure"] },
+    { common: "make", sophisticated: ["construct", "fabricate", "devise", "formulate"] },
+    { common: "use", sophisticated: ["utilize", "employ", "leverage", "deploy"] },
+    { common: "need", sophisticated: ["require", "necessitate", "demand", "warrant"] },
+    { common: "try", sophisticated: ["endeavor", "attempt", "undertake", "pursue"] },
+    { common: "get", sophisticated: ["acquire", "obtain", "attain", "procure"] },
+    { common: "give", sophisticated: ["bestow", "confer", "impart", "furnish"] },
+    { common: "stop", sophisticated: ["cease", "halt", "discontinue", "terminate"] },
+    { common: "start", sophisticated: ["initiate", "commence", "inaugurate", "embark"] },
+    // Descriptive
+    { common: "old", sophisticated: ["antiquated", "archaic", "obsolete", "venerable"] },
+    { common: "new", sophisticated: ["innovative", "novel", "contemporary", "pioneering"] },
+    { common: "fast", sophisticated: ["expeditious", "swift", "brisk", "agile"] },
+    { common: "slow", sophisticated: ["deliberate", "unhurried", "gradual", "methodical"] },
+    { common: "hard", sophisticated: ["arduous", "formidable", "strenuous", "rigorous"] },
+    { common: "easy", sophisticated: ["effortless", "straightforward", "uncomplicated", "seamless"] },
+    { common: "strange", sophisticated: ["peculiar", "anomalous", "aberrant", "idiosyncratic"] },
+    { common: "clear", sophisticated: ["lucid", "transparent", "unequivocal", "coherent"] },
+    { common: "strong", sophisticated: ["robust", "formidable", "resolute", "tenacious"] },
+    { common: "weak", sophisticated: ["feeble", "ineffectual", "fragile", "inadequate"] }
   ];
 
   const idioms = [
@@ -427,6 +480,31 @@ const FluencyModule = (function() {
       fillerStartBtn.addEventListener('click', startFillerExercise);
     }
 
+    const fillerDurationGroup = document.getElementById('filler-duration-group');
+    if (fillerDurationGroup) {
+      fillerDurationGroup.addEventListener('click', function(e) {
+        const btn = e.target.closest('[data-seconds]');
+        if (!btn) return;
+        fillerDurationGroup.querySelectorAll('.btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+      });
+    }
+
+    const fillerStopBtn = document.getElementById('filler-stop-btn');
+    if (fillerStopBtn) {
+      fillerStopBtn.addEventListener('click', () => stopFillerExercise(false));
+    }
+
+    const fillerTryAgainBtn = document.getElementById('filler-try-again-btn');
+    if (fillerTryAgainBtn) {
+      fillerTryAgainBtn.addEventListener('click', () => startFillerExercise(true));
+    }
+
+    const fillerNewTopicBtn = document.getElementById('filler-new-topic-btn');
+    if (fillerNewTopicBtn) {
+      fillerNewTopicBtn.addEventListener('click', () => startFillerExercise(false));
+    }
+
     if (newPacingPassageBtn) {
       newPacingPassageBtn.addEventListener('click', showNewPacingPassage);
     }
@@ -535,6 +613,14 @@ const FluencyModule = (function() {
         }
       });
     }
+
+    // Initialize new modules when their tab is selected
+    if (category === 'readaloud' && typeof ReadAloudModule !== 'undefined') {
+      ReadAloudModule.refresh();
+    }
+    if (category === 'shadowing' && typeof ShadowingModule !== 'undefined') {
+      ShadowingModule.refresh();
+    }
   }
 
   // ========== Pronunciation & Articulation Functions ==========
@@ -610,29 +696,257 @@ const FluencyModule = (function() {
 
   // ========== Fluency Building Functions ==========
 
-  /**
-   * Start filler word exercise
-   */
-  function startFillerExercise() {
-    const topics = [
-      "your favorite hobby",
-      "a recent accomplishment",
-      "your ideal vacation",
-      "a book or movie you enjoyed",
-      "your morning routine",
-      "your career goals",
-      "a memorable experience",
-      "your hometown"
-    ];
+  // Filler exercise state
+  let fillerTimer = null;
+  let fillerRecognition = null;
+  let fillerSecondsLeft = 30;
+  let fillerTotalDuration = 30;
+  let fillerCount = 0;
+  let fillerBreakdown = {};
+  let fillerCurrentTopic = '';
 
-    const randomTopic = topics[Math.floor(Math.random() * topics.length)];
+  const FILLER_WORDS_LIST = [
+    'you know', 'i mean', 'okay so', 'so basically', 'you see',
+    'sort of', 'kind of', 'um', 'uh', 'er', 'like', 'basically',
+    'literally', 'actually', 'right', 'well'
+  ];
 
-    const fillerPrompt = document.getElementById('filler-prompt');
-    if (fillerPrompt) {
-      fillerPrompt.innerHTML = `
-        <strong>Topic: ${randomTopic}</strong><br>
-        Speak for 30 seconds without using filler words. Focus on pausing instead of saying "um" or "uh".
-      `;
+  const fillerTopics = [
+    "your favorite hobby and why you enjoy it",
+    "a recent accomplishment you're proud of",
+    "your ideal vacation destination",
+    "a book, film, or show that stuck with you",
+    "your morning routine and how it sets your day",
+    "your career goals for the next five years",
+    "a place that has special meaning to you",
+    "one skill everyone should learn",
+    "a challenge you faced and how you got through it",
+    "what success means to you personally",
+    "a person who has influenced your life",
+    "something small that brings you a lot of joy",
+    "if you could change one thing about your city",
+    "what being a good communicator looks like",
+    "your ideal workday from start to finish",
+    "a time things didn't go as planned",
+    "what you would do with an extra hour every day",
+    "something you wish more people understood"
+  ];
+
+  const fillerTips = {
+    perfect: [
+      "Outstanding! Zero fillers detected. Deliberate pauses are your secret weapon — keep using them.",
+      "Flawless run. Your silence spoke louder than any filler ever could.",
+      "Perfect score. You're building a habit that will set you apart as a speaker."
+    ],
+    good: [
+      "Great job. To go from good to excellent, notice the moment before a filler appears — that moment of searching is your cue to pause.",
+      "Very clean speech. Try recording yourself to spot patterns you might not notice in the moment.",
+      "Strong result. Next step: slow down slightly before transitions between ideas — that's when fillers tend to sneak in."
+    ],
+    fair: [
+      "Solid effort. A useful trick: before you start, rehearse your first sentence out loud so you don't need a filler to buy time at the start.",
+      "Getting there. Try thinking in full sentences before speaking rather than thinking out loud.",
+      "Fair result. Focus on one filler at a time — pick your most-used one and make eliminating it your only goal next round."
+    ],
+    needs_work: [
+      "Don't worry — awareness is step one. Try pausing for 1–2 seconds when you feel a filler coming. Silence feels longer to you than it does to your listeners.",
+      "Keep practicing. Filler words often appear when we lose track of our next point — try structuring your answer with: situation, what you did, the result.",
+      "The key insight: fillers happen when your mouth moves before your brain is ready. Slow your pace slightly and give your thoughts time to form."
+    ]
+  };
+
+  function getFillerTip(count, duration) {
+    const rate = count / (duration / 60); // fillers per minute
+    if (count === 0) return fillerTips.perfect[Math.floor(Math.random() * fillerTips.perfect.length)];
+    if (rate < 3)    return fillerTips.good[Math.floor(Math.random() * fillerTips.good.length)];
+    if (rate < 6)    return fillerTips.fair[Math.floor(Math.random() * fillerTips.fair.length)];
+    return fillerTips.needs_work[Math.floor(Math.random() * fillerTips.needs_work.length)];
+  }
+
+  function detectFillers(transcript) {
+    const lower = transcript.toLowerCase();
+    const sorted = [...FILLER_WORDS_LIST].sort((a, b) => b.split(' ').length - a.split(' ').length);
+    let found = [];
+    sorted.forEach(filler => {
+      const regex = new RegExp('\\b' + filler.replace(/\s+/g, '\\s+') + '\\b', 'gi');
+      const matches = lower.match(regex);
+      if (matches) {
+        matches.forEach(() => found.push(filler));
+        fillerBreakdown[filler] = (fillerBreakdown[filler] || 0) + matches.length;
+      }
+    });
+    return found;
+  }
+
+  function showFillerSetup() {
+    document.getElementById('filler-setup').style.display = 'block';
+    document.getElementById('filler-active').style.display = 'none';
+    document.getElementById('filler-results').style.display = 'none';
+  }
+
+  function showFillerResults() {
+    document.getElementById('filler-setup').style.display = 'none';
+    document.getElementById('filler-active').style.display = 'none';
+    document.getElementById('filler-results').style.display = 'block';
+
+    const rate = fillerCount / (fillerTotalDuration / 60);
+    let emoji, label, sub, bannerColor;
+    if (fillerCount === 0) {
+      emoji = '🏆'; label = 'Perfect — Zero Fillers!';
+      sub = `You spoke for ${fillerTotalDuration} seconds with no filler words detected.`;
+      bannerColor = '#d4edda';
+    } else if (rate < 3) {
+      emoji = '🌟'; label = `Very Clean — ${fillerCount} filler${fillerCount > 1 ? 's' : ''}`;
+      sub = `Only ${fillerCount} filler${fillerCount > 1 ? 's' : ''} in ${fillerTotalDuration} seconds. That's excellent.`;
+      bannerColor = '#d4edda';
+    } else if (rate < 6) {
+      emoji = '👍'; label = `Good — ${fillerCount} fillers detected`;
+      sub = `About ${rate.toFixed(1)} fillers per minute. A bit more practice and you'll be clean.`;
+      bannerColor = '#fff3cd';
+    } else {
+      emoji = '💪'; label = `${fillerCount} fillers — keep practicing`;
+      sub = `${rate.toFixed(1)} fillers per minute. Every attempt builds the habit.`;
+      bannerColor = '#f8d7da';
+    }
+
+    const banner = document.getElementById('filler-score-banner');
+    banner.style.background = bannerColor;
+    document.getElementById('filler-score-emoji').textContent = emoji;
+    document.getElementById('filler-score-label').textContent = label;
+    document.getElementById('filler-score-sub').textContent = sub;
+
+    const breakdown = document.getElementById('filler-breakdown');
+    if (Object.keys(fillerBreakdown).length > 0) {
+      const rows = Object.entries(fillerBreakdown)
+        .sort((a, b) => b[1] - a[1])
+        .map(([word, count]) => `
+          <div style="display:flex; justify-content:space-between; align-items:center;
+               padding: var(--spacing-sm) var(--spacing-md); background: var(--bg-hover);
+               border-radius: var(--border-radius-sm); margin-bottom: var(--spacing-xs);">
+            <span style="font-weight:600;">"${word}"</span>
+            <span style="background: var(--accent-color); color: white; border-radius: 12px;
+                  padding: 2px 10px; font-size: var(--font-size-sm); font-weight:700;">×${count}</span>
+          </div>`).join('');
+      breakdown.innerHTML = `<div style="font-weight:600; margin-bottom: var(--spacing-sm);">Filler Breakdown:</div>${rows}`;
+    } else {
+      breakdown.innerHTML = '';
+    }
+
+    document.getElementById('filler-tip-box').innerHTML =
+      `<strong>Tip:</strong> ${getFillerTip(fillerCount, fillerTotalDuration)}`;
+  }
+
+  function stopFillerExercise(finished) {
+    if (fillerTimer) { clearInterval(fillerTimer); fillerTimer = null; }
+    if (fillerRecognition) {
+      try { fillerRecognition.stop(); } catch(e) {}
+      fillerRecognition = null;
+    }
+    if (finished || fillerSecondsLeft <= 0) {
+      showFillerResults();
+    } else {
+      showFillerSetup();
+    }
+  }
+
+  function startFillerExercise(sameTopic) {
+    // Pick a topic (avoid repeating last one unless sameTopic is true)
+    let topic;
+    if (sameTopic && fillerCurrentTopic) {
+      topic = fillerCurrentTopic;
+    } else {
+      do {
+        topic = fillerTopics[Math.floor(Math.random() * fillerTopics.length)];
+      } while (topic === fillerCurrentTopic && fillerTopics.length > 1);
+      fillerCurrentTopic = topic;
+    }
+
+    // Get selected duration
+    const activeBtn = document.querySelector('#filler-duration-group .btn.active');
+    fillerTotalDuration = activeBtn ? parseInt(activeBtn.dataset.seconds, 10) : 30;
+    fillerSecondsLeft = fillerTotalDuration;
+    fillerCount = 0;
+    fillerBreakdown = {};
+
+    // Switch screens
+    document.getElementById('filler-setup').style.display = 'none';
+    document.getElementById('filler-active').style.display = 'block';
+    document.getElementById('filler-results').style.display = 'none';
+
+    document.getElementById('filler-topic-text').textContent = topic;
+    document.getElementById('filler-countdown').textContent = fillerSecondsLeft;
+    document.getElementById('filler-live-count').textContent = '0';
+    document.getElementById('filler-last-detected').textContent = '—';
+
+    // Countdown timer
+    fillerTimer = setInterval(() => {
+      fillerSecondsLeft--;
+      const countEl = document.getElementById('filler-countdown');
+      if (countEl) countEl.textContent = fillerSecondsLeft;
+      if (fillerSecondsLeft <= 0) {
+        stopFillerExercise(true);
+      }
+    }, 1000);
+
+    // Speech recognition
+    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+    if (SpeechRecognition) {
+      fillerRecognition = new SpeechRecognition();
+      fillerRecognition.continuous = true;
+      fillerRecognition.interimResults = true;
+      fillerRecognition.lang = 'en-US';
+
+      let processedLength = 0;
+
+      fillerRecognition.onresult = function(event) {
+        let interimText = '';
+        let finalText = '';
+        for (let i = event.resultIndex; i < event.results.length; i++) {
+          const transcript = event.results[i][0].transcript;
+          if (event.results[i].isFinal) {
+            finalText += transcript + ' ';
+          } else {
+            interimText += transcript;
+          }
+        }
+        if (finalText) {
+          const newChunk = finalText.slice(processedLength);
+          processedLength = finalText.length;
+          const found = detectFillers(newChunk);
+          if (found.length > 0) {
+            fillerCount += found.length;
+            const liveEl = document.getElementById('filler-live-count');
+            const lastEl = document.getElementById('filler-last-detected');
+            if (liveEl) liveEl.textContent = fillerCount;
+            if (lastEl) lastEl.textContent = '"' + found[found.length - 1] + '"';
+            if (liveEl) liveEl.style.color = fillerCount > 5 ? '#e74c3c' : 'var(--accent-color)';
+          }
+        }
+      };
+
+      fillerRecognition.onerror = function(event) {
+        if (event.error === 'not-allowed' || event.error === 'service-not-allowed') {
+          const micEl = document.getElementById('filler-mic-status');
+          if (micEl) micEl.textContent = '⚠️ Microphone access denied — exercise continues without detection';
+        }
+      };
+
+      fillerRecognition.onend = function() {
+        // Restart if timer is still running
+        if (fillerTimer && fillerSecondsLeft > 0) {
+          try { fillerRecognition.start(); } catch(e) {}
+        }
+      };
+
+      try {
+        fillerRecognition.start();
+      } catch(e) {
+        const micEl = document.getElementById('filler-mic-status');
+        if (micEl) micEl.textContent = '⚠️ Speech recognition not available — exercise continues without detection';
+      }
+    } else {
+      const micEl = document.getElementById('filler-mic-status');
+      if (micEl) micEl.textContent = '⚠️ Speech recognition not supported in this browser';
     }
   }
 
@@ -757,8 +1071,12 @@ const FluencyModule = (function() {
       </div>
     `;
 
-    // Pick a random common word
-    const randomPair = synonymPairs[Math.floor(Math.random() * synonymPairs.length)];
+    // Pick a random common word (avoid immediate repeat)
+    let randomPair;
+    do {
+      randomPair = synonymPairs[Math.floor(Math.random() * synonymPairs.length)];
+    } while (randomPair.common === showNewSynonym._lastWord && synonymPairs.length > 1);
+    showNewSynonym._lastWord = randomPair.common;
     const commonWord = randomPair.common;
 
     try {

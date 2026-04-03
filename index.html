@@ -107,6 +107,23 @@
                 </div>
             </div>
 
+            <!-- Daily Drill Section -->
+            <div class="daily-drill-section" id="daily-drill-section">
+                <div class="daily-drill-header">
+                    <div>
+                        <h3>Today's 5-Minute Drill</h3>
+                        <p class="daily-drill-subtitle">Complete all three steps to keep your streak alive</p>
+                    </div>
+                    <div class="daily-drill-timer" id="drill-timer-display"></div>
+                </div>
+                <div class="drill-steps" id="drill-steps">
+                    <!-- Steps rendered by JS -->
+                </div>
+                <div class="drill-complete-banner" id="drill-complete-banner" style="display:none;">
+                    <span>🎉 Drill complete! Come back tomorrow for a new one.</span>
+                </div>
+            </div>
+
             <!-- Quick Tips Section -->
             <div class="tips-section">
                 <h3>💡 Quick Tips for Better Articulation</h3>
@@ -244,6 +261,55 @@
 
             <!-- ========== WORD BANK CATEGORY ========== -->
             <div id="bank-category" class="vocab-category">
+
+                <!-- ===== SPACED REPETITION REVIEW ===== -->
+                <div class="srs-review-section" id="srs-review-section">
+                    <div class="srs-header">
+                        <div>
+                            <h2>🔁 Spaced Repetition Review</h2>
+                            <p class="subtitle">Review words at the optimal time to lock them into long-term memory</p>
+                        </div>
+                        <div class="srs-due-badge" id="srs-due-badge">0 due</div>
+                    </div>
+
+                    <!-- SRS Idle state -->
+                    <div id="srs-idle">
+                        <div id="srs-idle-message" style="color: var(--text-secondary); margin-bottom: var(--spacing-md);"></div>
+                        <button class="btn btn-primary" id="srs-start-btn">Start Review</button>
+                    </div>
+
+                    <!-- SRS Card state -->
+                    <div id="srs-active" style="display:none;">
+                        <div class="srs-progress-line">
+                            <span id="srs-progress-text">Word 1 of 1</span>
+                        </div>
+                        <div class="srs-card" id="srs-card">
+                            <div class="srs-card-word" id="srs-card-word"></div>
+                            <button class="tts-btn" style="font-size:22px;" onclick="SRSModule.speakCurrent()" title="Hear word">🔊</button>
+                            <div class="srs-card-hint">Do you know this word? Tap to reveal.</div>
+                        </div>
+                        <div id="srs-card-reveal" style="display:none;">
+                            <div class="srs-card-definition" id="srs-card-definition"></div>
+                            <div class="srs-card-example" id="srs-card-example"></div>
+                            <div class="srs-rating-btns">
+                                <button class="btn srs-btn-hard" onclick="SRSModule.rate(1)">Forgot</button>
+                                <button class="btn srs-btn-ok" onclick="SRSModule.rate(2)">Hard</button>
+                                <button class="btn srs-btn-good" onclick="SRSModule.rate(3)">Got It</button>
+                                <button class="btn srs-btn-easy" onclick="SRSModule.rate(4)">Easy</button>
+                            </div>
+                        </div>
+                        <div id="srs-reveal-btn-wrap">
+                            <button class="btn btn-primary" id="srs-reveal-btn" onclick="SRSModule.revealCard()">Reveal Definition</button>
+                        </div>
+                    </div>
+
+                    <!-- SRS Done state -->
+                    <div id="srs-done" style="display:none;">
+                        <div class="srs-done-msg" id="srs-done-msg"></div>
+                        <button class="btn btn-secondary" id="srs-restart-btn" onclick="SRSModule.resetToIdle()">Back</button>
+                    </div>
+                </div>
+
                 <!-- Add Custom Word Section -->
                 <div class="word-bank-add-section">
                     <h2>Add Custom Word</h2>
@@ -582,7 +648,7 @@
                 <button class="storytelling-category-tab" data-story-category="practical">Practical Skills</button>
                 <button class="storytelling-category-tab" data-story-category="challenges">Interactive Challenges</button>
                 <button class="storytelling-category-tab" data-story-category="listening">Listening & Comprehension</button>
-                <button class="storytelling-category-tab" data-story-category="webspeech">Web Speech Test</button>
+<button class="storytelling-category-tab" data-story-category="recordings">My Recordings</button>
             </div>
 
             <!-- ========== STORYTELLING CATEGORY ========== -->
@@ -1278,99 +1344,51 @@
         </div>
 
         <!-- ========== WEB SPEECH TEST CATEGORY ========== -->
-        <div id="webspeech-category" class="storytelling-category">
 
-            <!-- Impromptu Speaking with Speech Recognition -->
-            <div class="fluency-card">
-                <div class="fluency-card-header">
-                    <div class="fluency-card-icon">🎙️</div>
-                    <div>
-                        <h3>Impromptu Speaking (Voice)</h3>
-                        <p class="fluency-card-description">Speak your response out loud — your words will be transcribed in real time</p>
-                    </div>
-                </div>
-                <div class="fluency-card-content">
-
-                    <!-- Input mode toggle -->
-                    <div style="margin-bottom: var(--spacing-lg);">
-                        <label style="font-weight: 600; display: block; margin-bottom: var(--spacing-sm);">Input Mode:</label>
-                        <div class="btn-group">
-                            <button class="btn btn-secondary active" id="ws-mode-speak">🎙️ Speak</button>
-                            <button class="btn btn-secondary" id="ws-mode-type">⌨️ Type</button>
+            <!-- ========== MY RECORDINGS CATEGORY ========== -->
+            <div id="recordings-category" class="storytelling-category">
+                <div class="fluency-card">
+                    <div class="fluency-card-header">
+                        <div class="fluency-card-icon">🎙️</div>
+                        <div>
+                            <h3>My Recordings</h3>
+                            <p class="fluency-card-description">Record yourself speaking, play it back, and compare sessions over time</p>
                         </div>
                     </div>
+                    <div class="fluency-card-content" id="recordings-content">
 
-                    <div class="time-selector">
-                        <button class="ws-time-btn active" data-time="30">30 Seconds</button>
-                        <button class="ws-time-btn" data-time="60">1 Minute</button>
-                        <button class="ws-time-btn" data-time="120">2 Minutes</button>
-                    </div>
-                    <div id="ws-impromptu-display" class="exercise-display">
-                        <p class="exercise-text" id="ws-impromptu-prompt">Click "New Topic" to get a speaking prompt</p>
-                    </div>
-
-                    <!-- Speak mode controls -->
-                    <div id="ws-speak-controls">
-                        <div class="exercise-controls">
-                            <button class="btn btn-primary" id="ws-impromptu-start-btn">Start Timer &amp; Listen</button>
-                            <button class="btn btn-secondary" id="ws-impromptu-stop-btn" style="display: none;">Stop</button>
-                            <button class="btn btn-secondary" id="ws-impromptu-reset-btn" style="display: none;">Reset</button>
-                            <button class="btn btn-secondary" id="ws-new-impromptu-btn">New Topic</button>
-                        </div>
-                        <div id="ws-impromptu-timer" class="timer-display">
-                            <div class="timer-number" id="ws-timer-seconds">0:30</div>
-                            <div class="timer-label">remaining</div>
-                        </div>
-                        <div id="ws-status" style="margin-top: var(--spacing-md); font-size: var(--font-size-sm); color: var(--text-secondary); text-align: center;"></div>
-                        <!-- Live transcript -->
-                        <div id="ws-transcript-section" style="margin-top: var(--spacing-lg); display: none;">
-                            <h4 style="margin-bottom: var(--spacing-sm);">Live Transcript</h4>
-                            <div id="ws-transcript-live" style="background: var(--bg-card); border: 1px solid var(--border-color); border-radius: var(--border-radius-sm); padding: var(--spacing-md); min-height: 80px; font-size: var(--font-size-base); line-height: 1.6; color: var(--text-primary);">
-                                <span id="ws-transcript-final"></span><span id="ws-transcript-interim" style="color: var(--text-secondary); font-style: italic;"></span>
+                        <!-- Record Panel -->
+                        <div id="rec-record-panel">
+                            <div style="margin-bottom: var(--spacing-md);">
+                                <label style="font-weight:600; display:block; margin-bottom: var(--spacing-sm);">Topic / Prompt (optional):</label>
+                                <input type="text" id="rec-prompt-input" placeholder="e.g. Describe your morning routine..."
+                                    style="width:100%; padding: var(--spacing-sm); border: 1px solid var(--border-color); border-radius: var(--border-radius-sm); font-size: var(--font-size-base);">
                             </div>
-                            <div class="exercise-controls" style="margin-top: var(--spacing-sm);">
-                                <button class="btn btn-secondary" id="ws-clear-transcript-btn">Clear</button>
+                            <div style="text-align:center; margin: var(--spacing-lg) 0;">
+                                <div class="rec-status" id="rec-status">Ready to record</div>
+                                <div class="rec-timer" id="rec-timer">0:00</div>
+                            </div>
+                            <div class="exercise-controls">
+                                <button class="btn btn-primary" id="rec-start-btn">Start Recording</button>
+                                <button class="btn btn-secondary" id="rec-stop-btn" style="display:none;">Stop</button>
+                            </div>
+                            <div id="rec-unsupported" style="display:none; margin-top: var(--spacing-md); padding: var(--spacing-md); background: var(--accent-color); color:white; border-radius: var(--border-radius-sm);">
+                                ⚠️ Audio recording requires a modern browser with microphone access.
                             </div>
                         </div>
-                        <!-- Browser support warning -->
-                        <div id="ws-unsupported-msg" style="display: none; margin-top: var(--spacing-md); padding: var(--spacing-md); background: var(--accent-color); color: var(--text-white); border-radius: var(--border-radius-sm);">
-                            ⚠️ Your browser does not support the Web Speech API. Please try Chrome or Edge.
-                        </div>
-                    </div>
 
-                    <!-- Type mode controls -->
-                    <div id="ws-type-controls" style="display: none;">
-                        <div class="exercise-controls">
-                            <button class="btn btn-primary" id="ws-type-start-btn">Start Timer</button>
-                            <button class="btn btn-secondary" id="ws-type-stop-btn" style="display: none;">Stop</button>
-                            <button class="btn btn-secondary" id="ws-type-reset-btn" style="display: none;">Reset</button>
-                            <button class="btn btn-secondary" id="ws-new-topic-type-btn">New Topic</button>
+                        <!-- Recordings List -->
+                        <div id="rec-list-panel" style="margin-top: var(--spacing-xl);">
+                            <h4 style="margin-bottom: var(--spacing-md);">Saved Recordings</h4>
+                            <div id="rec-list">
+                                <p style="color: var(--text-secondary);">No recordings yet. Hit record to start!</p>
+                            </div>
                         </div>
-                        <div class="timer-display">
-                            <div class="timer-number" id="ws-type-timer-seconds">0:30</div>
-                            <div class="timer-label">remaining</div>
-                        </div>
-                        <div style="margin-top: var(--spacing-lg);">
-                            <label for="ws-type-textarea" style="font-weight: 600; display: block; margin-bottom: var(--spacing-sm);">Your Response:</label>
-                            <textarea id="ws-type-textarea" rows="8" placeholder="Type your response here..." style="width: 100%; padding: var(--spacing-md); font-size: var(--font-size-base); border: 1px solid var(--border-color); border-radius: var(--border-radius-sm); resize: vertical; font-family: inherit; line-height: 1.6;"></textarea>
-                        </div>
-                        <div class="exercise-controls" style="margin-top: var(--spacing-sm);">
-                            <button class="btn btn-primary" id="ws-type-submit-btn">Get Feedback</button>
-                            <button class="btn btn-secondary" id="ws-type-clear-btn">Clear</button>
-                        </div>
-                    </div>
 
-                    <!-- Feedback panel (shared by both modes) -->
-                    <div id="ws-feedback-section" style="display: none; margin-top: var(--spacing-xl);">
-                        <h4 style="margin-bottom: var(--spacing-md); font-size: var(--font-size-lg);">Feedback</h4>
-                        <div id="ws-feedback-grid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: var(--spacing-md);">
-                            <!-- Metric cards injected by JS -->
-                        </div>
                     </div>
-
                 </div>
             </div>
-        </div>
+
     </section>
 
         <!-- ==================== POLISH VIEW ==================== -->
@@ -1385,6 +1403,8 @@
                 <button class="category-tab active" data-category="fluency">Fluency Building</button>
                 <button class="category-tab" data-category="eloquence">Eloquence & Expression</button>
                 <button class="category-tab" data-category="pronunciation">Pronunciation & Articulation</button>
+                <button class="category-tab" data-category="readaloud">Read Aloud Mode</button>
+                <button class="category-tab" data-category="shadowing">Shadowing</button>
             </div>
 
             <!-- ========== PRONUNCIATION & ARTICULATION CATEGORY ========== -->
@@ -1467,28 +1487,87 @@
                         <div class="fluency-card-icon">🎯</div>
                         <div>
                             <h3>Filler Word Reducer</h3>
-                            <p class="fluency-card-description">Learn to eliminate "um," "uh," "like" and speak more confidently</p>
+                            <p class="fluency-card-description">Speak for 30 seconds — live detection counts every "um," "uh," and "like"</p>
                         </div>
                     </div>
                     <div class="fluency-card-content" id="filler-words-content">
-                        <div class="info-box">
-                            <h4>Common Filler Words to Avoid:</h4>
-                            <div class="filler-words-list">
-                                <span class="filler-tag">um</span>
-                                <span class="filler-tag">uh</span>
-                                <span class="filler-tag">like</span>
-                                <span class="filler-tag">you know</span>
-                                <span class="filler-tag">actually</span>
-                                <span class="filler-tag">basically</span>
-                                <span class="filler-tag">literally</span>
-                                <span class="filler-tag">so</span>
+
+                        <!-- Setup screen -->
+                        <div id="filler-setup">
+                            <div class="info-box">
+                                <h4>Filler Words Being Tracked:</h4>
+                                <div class="filler-words-list">
+                                    <span class="filler-tag">um</span>
+                                    <span class="filler-tag">uh</span>
+                                    <span class="filler-tag">er</span>
+                                    <span class="filler-tag">like</span>
+                                    <span class="filler-tag">you know</span>
+                                    <span class="filler-tag">i mean</span>
+                                    <span class="filler-tag">actually</span>
+                                    <span class="filler-tag">basically</span>
+                                    <span class="filler-tag">literally</span>
+                                    <span class="filler-tag">sort of</span>
+                                    <span class="filler-tag">kind of</span>
+                                    <span class="filler-tag">right</span>
+                                </div>
+                                <p class="tip-text">💡 When you feel the urge to fill silence, pause instead. A confident pause sounds far better than "um."</p>
                             </div>
-                            <p class="tip-text">💡 Tip: Instead of using fillers, try pausing briefly to gather your thoughts.</p>
+
+                            <div style="margin-bottom: var(--spacing-md);">
+                                <label style="font-weight: 600; display: block; margin-bottom: var(--spacing-sm);">Duration:</label>
+                                <div class="btn-group" id="filler-duration-group">
+                                    <button class="btn btn-secondary active" data-seconds="30">30 sec</button>
+                                    <button class="btn btn-secondary" data-seconds="60">1 min</button>
+                                    <button class="btn btn-secondary" data-seconds="120">2 min</button>
+                                </div>
+                            </div>
+
+                            <button class="btn btn-primary" id="filler-start-btn" style="width: 100%;">Start Exercise</button>
                         </div>
-                        <div id="filler-exercise-display" class="exercise-display">
-                            <p class="exercise-prompt" id="filler-prompt">Speak for 30 seconds about a topic without using filler words</p>
-                            <button class="btn btn-primary" id="filler-start-btn">Start Exercise</button>
+
+                        <!-- Active exercise screen -->
+                        <div id="filler-active" style="display:none; text-align:center;">
+                            <div id="filler-topic-box" style="background: var(--bg-hover); border-radius: var(--border-radius-sm); padding: var(--spacing-lg); margin-bottom: var(--spacing-lg);">
+                                <div style="font-size: var(--font-size-sm); color: var(--text-secondary); margin-bottom: var(--spacing-xs); text-transform: uppercase; letter-spacing: 1px;">Your Topic</div>
+                                <div id="filler-topic-text" style="font-size: var(--font-size-xl); font-weight: 600; color: var(--text-primary);"></div>
+                            </div>
+
+                            <div id="filler-countdown" style="font-size: 3.5rem; font-weight: 700; color: var(--primary-color); line-height: 1; margin-bottom: var(--spacing-sm);">30</div>
+                            <div style="font-size: var(--font-size-sm); color: var(--text-secondary); margin-bottom: var(--spacing-lg);">seconds remaining</div>
+
+                            <div style="display: flex; justify-content: center; gap: var(--spacing-xl); margin-bottom: var(--spacing-lg);">
+                                <div>
+                                    <div id="filler-live-count" style="font-size: 2.5rem; font-weight: 700; color: var(--accent-color);">0</div>
+                                    <div style="font-size: var(--font-size-sm); color: var(--text-secondary);">fillers detected</div>
+                                </div>
+                                <div>
+                                    <div id="filler-last-detected" style="font-size: 2.5rem; font-weight: 700; color: var(--text-secondary);">—</div>
+                                    <div style="font-size: var(--font-size-sm); color: var(--text-secondary);">last filler</div>
+                                </div>
+                            </div>
+
+                            <div id="filler-mic-status" style="font-size: var(--font-size-sm); color: var(--text-secondary); margin-bottom: var(--spacing-lg);">🎙️ Listening...</div>
+                            <button class="btn btn-danger" id="filler-stop-btn" style="width: 100%;">Stop Early</button>
                         </div>
+
+                        <!-- Results screen -->
+                        <div id="filler-results" style="display:none;">
+                            <div id="filler-score-banner" style="text-align:center; padding: var(--spacing-xl); border-radius: var(--border-radius-sm); margin-bottom: var(--spacing-lg);">
+                                <div id="filler-score-emoji" style="font-size: 3rem; margin-bottom: var(--spacing-sm);"></div>
+                                <div id="filler-score-label" style="font-size: var(--font-size-xl); font-weight: 700; margin-bottom: var(--spacing-xs);"></div>
+                                <div id="filler-score-sub" style="font-size: var(--font-size-md); color: var(--text-secondary);"></div>
+                            </div>
+
+                            <div id="filler-breakdown" style="margin-bottom: var(--spacing-lg);"></div>
+
+                            <div id="filler-tip-box" class="info-box" style="margin-bottom: var(--spacing-lg);"></div>
+
+                            <div style="display: flex; gap: var(--spacing-md);">
+                                <button class="btn btn-primary" id="filler-try-again-btn" style="flex: 1;">Try Again</button>
+                                <button class="btn btn-secondary" id="filler-new-topic-btn" style="flex: 1;">New Topic</button>
+                            </div>
+                        </div>
+
                     </div>
                 </div>
 
@@ -1717,6 +1796,126 @@
                     </div>
                 </div>
             </div>
+
+            <!-- ========== READ ALOUD MODE CATEGORY ========== -->
+            <div id="readaloud-category" class="fluency-category">
+                <div class="fluency-card">
+                    <div class="fluency-card-header">
+                        <div class="fluency-card-icon">📖</div>
+                        <div>
+                            <h3>Read Aloud Mode</h3>
+                            <p class="fluency-card-description">Paste any text and read it aloud — get live WPM, filler word counts, and delivery feedback</p>
+                        </div>
+                    </div>
+                    <div class="fluency-card-content" id="readaloud-content">
+
+                        <!-- Text Input -->
+                        <div id="readaloud-setup">
+                            <label style="font-weight:600; display:block; margin-bottom: var(--spacing-sm);">Paste your text below:</label>
+                            <textarea id="readaloud-text-input" rows="6"
+                                placeholder="Paste a speech, article, email, or any text you want to practice reading aloud..."
+                                style="width:100%; padding: var(--spacing-md); font-size: var(--font-size-base); border: 1px solid var(--border-color); border-radius: var(--border-radius-sm); resize: vertical; font-family: inherit; line-height: 1.6;"></textarea>
+                            <div style="margin-top: var(--spacing-sm); display:flex; gap: var(--spacing-sm); align-items: center; flex-wrap: wrap;">
+                                <span style="font-size: var(--font-size-sm); color: var(--text-secondary);">
+                                    Est. reading time: <strong id="readaloud-est-time">—</strong>
+                                </span>
+                            </div>
+                            <div class="exercise-controls" style="margin-top: var(--spacing-md);">
+                                <button class="btn btn-primary" id="readaloud-start-btn">Start Reading</button>
+                                <button class="btn btn-secondary" id="readaloud-sample-btn">Load Sample Text</button>
+                            </div>
+                            <div id="readaloud-unsupported-msg" style="display:none; margin-top: var(--spacing-md); padding: var(--spacing-md); background: var(--accent-color); color: white; border-radius: var(--border-radius-sm);">
+                                ⚠️ Read Aloud Mode requires Chrome or Edge for speech recognition.
+                            </div>
+                        </div>
+
+                        <!-- Active Reading Screen -->
+                        <div id="readaloud-active" style="display:none;">
+                            <div class="readaloud-script-box" id="readaloud-script-display">
+                                <!-- Highlighted script rendered here -->
+                            </div>
+                            <div class="readaloud-live-stats">
+                                <div class="readaloud-stat">
+                                    <div class="readaloud-stat-num" id="readaloud-wpm">—</div>
+                                    <div class="readaloud-stat-label">WPM</div>
+                                </div>
+                                <div class="readaloud-stat">
+                                    <div class="readaloud-stat-num" id="readaloud-fillers">0</div>
+                                    <div class="readaloud-stat-label">Filler Words</div>
+                                </div>
+                                <div class="readaloud-stat">
+                                    <div class="readaloud-stat-num" id="readaloud-elapsed">0:00</div>
+                                    <div class="readaloud-stat-label">Elapsed</div>
+                                </div>
+                            </div>
+                            <div style="margin-top: var(--spacing-sm); font-size: var(--font-size-sm); color: var(--text-secondary); text-align: center;" id="readaloud-status"></div>
+                            <div class="exercise-controls" style="margin-top: var(--spacing-md);">
+                                <button class="btn btn-secondary" id="readaloud-stop-btn">Stop &amp; See Results</button>
+                            </div>
+                        </div>
+
+                        <!-- Results Screen -->
+                        <div id="readaloud-results" style="display:none;">
+                            <h4 style="margin-bottom: var(--spacing-md);">Session Results</h4>
+                            <div id="readaloud-results-grid" style="display:grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: var(--spacing-md); margin-bottom: var(--spacing-lg);"></div>
+                            <div id="readaloud-filler-breakdown" style="margin-bottom: var(--spacing-lg);"></div>
+                            <div class="exercise-controls">
+                                <button class="btn btn-primary" id="readaloud-retry-btn">Try Again</button>
+                                <button class="btn btn-secondary" id="readaloud-new-btn">New Text</button>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+
+            <!-- ========== SHADOWING CATEGORY ========== -->
+            <div id="shadowing-category" class="fluency-category">
+                <div class="fluency-card">
+                    <div class="fluency-card-header">
+                        <div class="fluency-card-icon">🎭</div>
+                        <div>
+                            <h3>Shadowing Exercises</h3>
+                            <p class="fluency-card-description">Read along with famous speeches — match the rhythm, stress, and pauses of great speakers</p>
+                        </div>
+                    </div>
+                    <div class="fluency-card-content" id="shadowing-content">
+
+                        <!-- Passage Selector -->
+                        <div class="shadowing-selector" id="shadowing-selector">
+                            <h4 style="margin-bottom: var(--spacing-md);">Choose a passage:</h4>
+                            <div id="shadowing-passage-list" class="shadowing-passage-list">
+                                <!-- Rendered by JS -->
+                            </div>
+                        </div>
+
+                        <!-- Active Shadowing View -->
+                        <div id="shadowing-active" style="display:none;">
+                            <div class="shadowing-controls-top">
+                                <button class="btn btn-secondary btn-sm" id="shadowing-back-btn">← Back</button>
+                                <span class="shadowing-passage-title" id="shadowing-passage-title"></span>
+                            </div>
+                            <div class="shadowing-legend">
+                                <span class="shadow-key shadow-stress">BOLD = stress this word</span>
+                                <span class="shadow-key shadow-pause">/ = pause here</span>
+                                <span class="shadow-key shadow-slow">~ = slow down</span>
+                            </div>
+                            <div class="shadowing-script" id="shadowing-script">
+                                <!-- Marked-up passage rendered here -->
+                            </div>
+                            <div style="margin-top: var(--spacing-lg); color: var(--text-secondary); font-size: var(--font-size-sm);">
+                                <strong>How to shadow:</strong> Listen (use TTS button), then read aloud simultaneously trying to match the natural rhythm and emphasis shown above.
+                            </div>
+                            <div class="exercise-controls" style="margin-top: var(--spacing-md);">
+                                <button class="btn btn-primary" id="shadowing-tts-btn">🔊 Hear it Read Aloud</button>
+                                <button class="btn btn-secondary" id="shadowing-tts-stop-btn" style="display:none;">Stop</button>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+
         </section>
 
         <!-- ==================== REVIEW VIEW ==================== -->
@@ -1766,6 +1965,29 @@
                 </div>
             </div>
 
+            <!-- Progress Charts -->
+            <div class="progress-section">
+                <h2>Progress Over Time</h2>
+                <p style="color: var(--text-secondary); margin-bottom: var(--spacing-lg);">Each time you complete a Web Speech session, your stats are logged here.</p>
+                <div class="charts-grid">
+                    <div class="chart-card">
+                        <div class="chart-title">Words per Minute (WPM)</div>
+                        <canvas id="chart-wpm" height="160"></canvas>
+                        <div class="chart-empty" id="chart-wpm-empty">No data yet — complete a Web Speech session to start tracking.</div>
+                    </div>
+                    <div class="chart-card">
+                        <div class="chart-title">Filler Words per Session</div>
+                        <canvas id="chart-fillers" height="160"></canvas>
+                        <div class="chart-empty" id="chart-fillers-empty">No data yet.</div>
+                    </div>
+                    <div class="chart-card">
+                        <div class="chart-title">Words Learned (Cumulative)</div>
+                        <canvas id="chart-vocab" height="160"></canvas>
+                        <div class="chart-empty" id="chart-vocab-empty">No data yet — start learning words.</div>
+                    </div>
+                </div>
+            </div>
+
             <!-- Achievements -->
             <div class="progress-section">
                 <h2>Achievements</h2>
@@ -1810,6 +2032,13 @@
     <script src="js/modules/grammar.js"></script>
     <script src="js/modules/fluency.js"></script>
     <script src="js/modules/webSpeech.js"></script>
+    <script src="js/modules/onboarding.js"></script>
+    <script src="js/modules/dailyDrill.js"></script>
+    <script src="js/modules/readAloud.js"></script>
+    <script src="js/modules/srs.js"></script>
+    <script src="js/modules/recordings.js"></script>
+    <script src="js/modules/shadowing.js"></script>
+    <script src="js/modules/progressCharts.js"></script>
     <script src="js/app.js"></script>
 </body>
 </html>
