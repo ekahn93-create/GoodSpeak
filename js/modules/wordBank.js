@@ -1238,6 +1238,12 @@ const WordBankModule = (function() {
       }
     }
 
+    // Reset search state on refresh
+    const searchInput = document.getElementById('word-bank-search');
+    if (searchInput) searchInput.value = '';
+    const clearBtn = document.getElementById('word-bank-search-clear');
+    if (clearBtn) clearBtn.style.display = 'none';
+
     displayAppLearnedWords();
     displayStillLearningWords();
     displayCustomWords();
@@ -1258,6 +1264,58 @@ const WordBankModule = (function() {
         startQuizBtn.textContent = 'Start Quiz';
       }
     }
+  }
+
+  /**
+   * Search words across all three sections, filtering cards in-place
+   * @param {string} query - search string
+   */
+  function searchWords(query) {
+    const q = (query || '').trim().toLowerCase();
+    const clearBtn = document.getElementById('word-bank-search-clear');
+    if (clearBtn) clearBtn.style.display = q ? 'block' : 'none';
+
+    // Helper: filter a grid container's cards by word text / definition
+    function filterGrid(container) {
+      if (!container) return;
+      const cards = container.querySelectorAll('.word-bank-card');
+      if (cards.length === 0) return; // already showing an empty-state message
+
+      let visible = 0;
+      cards.forEach(card => {
+        const text = card.textContent.toLowerCase();
+        const match = !q || text.includes(q);
+        card.style.display = match ? '' : 'none';
+        if (match) visible++;
+      });
+
+      // Show/hide a "no results" notice inside the container
+      let notice = container.querySelector('.wb-search-no-results');
+      if (visible === 0 && q) {
+        if (!notice) {
+          notice = document.createElement('p');
+          notice.className = 'wb-search-no-results text-secondary';
+          container.appendChild(notice);
+        }
+        notice.textContent = `No results for "${query}"`;
+        notice.style.display = '';
+      } else if (notice) {
+        notice.style.display = 'none';
+      }
+    }
+
+    filterGrid(stillLearningWordsContainer);
+    filterGrid(appLearnedWordsContainer);
+    filterGrid(customWordsContainer);
+  }
+
+  /**
+   * Clear the search input and restore all cards
+   */
+  function clearSearch() {
+    const input = document.getElementById('word-bank-search');
+    if (input) input.value = '';
+    searchWords('');
   }
 
   /**
@@ -1284,7 +1342,9 @@ const WordBankModule = (function() {
     moveWordToStillLearning: moveWordToStillLearning,
     deleteCustomWord: deleteCustomWord,
     refresh: refresh,
-    sortSection: sortSection
+    sortSection: sortSection,
+    searchWords: searchWords,
+    clearSearch: clearSearch
   };
 })();
 

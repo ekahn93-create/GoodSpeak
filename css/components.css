@@ -4,11 +4,12 @@
 
 /* ==================== BUTTONS ==================== */
 .btn {
-  padding: var(--spacing-sm) var(--spacing-lg);
+  padding: 10px var(--spacing-lg);
   border: none;
-  border-radius: var(--border-radius-sm);
-  font-size: var(--font-size-base);
+  border-radius: 999px;
+  font-size: var(--font-size-sm);
   font-weight: 600;
+  letter-spacing: 0.02em;
   cursor: pointer;
   transition: all var(--transition-fast);
   font-family: var(--font-family);
@@ -18,12 +19,18 @@
 }
 
 .btn:hover {
-  transform: translateY(-2px);
+  transform: translateY(-1px);
   box-shadow: var(--shadow-md);
 }
 
 .btn:active {
   transform: translateY(0);
+  box-shadow: none;
+}
+
+.btn:focus-visible {
+  outline: 2px solid var(--primary-color);
+  outline-offset: 3px;
 }
 
 .btn:disabled {
@@ -36,10 +43,12 @@
 .btn-primary {
   background-color: var(--primary-color);
   color: var(--text-white);
+  box-shadow: 0 1px 4px rgba(99, 102, 241, 0.3);
 }
 
 .btn-primary:hover {
   background-color: var(--primary-dark);
+  box-shadow: 0 4px 14px rgba(99, 102, 241, 0.4);
 }
 
 .btn-secondary {
@@ -61,10 +70,12 @@
 .btn-success {
   background-color: var(--secondary-color);
   color: var(--text-white);
+  box-shadow: 0 1px 4px rgba(16, 185, 129, 0.3);
 }
 
 .btn-success:hover {
   background-color: var(--secondary-dark);
+  box-shadow: 0 4px 14px rgba(16, 185, 129, 0.4);
 }
 
 .btn-danger {
@@ -197,9 +208,9 @@
 
 .progress-bar-track {
   width: 100%;
-  height: 24px;
+  height: 10px;
   background-color: var(--bg-hover);
-  border-radius: var(--border-radius-sm);
+  border-radius: 999px;
   overflow: hidden;
   position: relative;
 }
@@ -207,16 +218,9 @@
 .progress-bar-fill {
   height: 100%;
   background: linear-gradient(90deg, var(--primary-color), var(--primary-light));
-  border-radius: var(--border-radius-sm);
+  border-radius: 999px;
   transition: width var(--transition-slow);
-  display: flex;
-  align-items: center;
-  justify-content: flex-end;
-  padding-right: var(--spacing-sm);
-  color: var(--text-white);
-  font-weight: 600;
-  font-size: var(--font-size-sm);
-  min-width: 30px;
+  min-width: 4px;
 }
 
 .progress-bar-percentage {
@@ -228,15 +232,15 @@
 
 /* Progress Bar Variants */
 .progress-bar-fill.success {
-  background: linear-gradient(90deg, var(--secondary-color), var(--secondary-dark));
+  background: linear-gradient(90deg, var(--secondary-color), #34d399);
 }
 
 .progress-bar-fill.warning {
-  background: linear-gradient(90deg, #FFB300, #FFA000);
+  background: linear-gradient(90deg, #f59e0b, #fbbf24);
 }
 
 .progress-bar-fill.danger {
-  background: linear-gradient(90deg, var(--accent-color), #e55555);
+  background: linear-gradient(90deg, var(--accent-color), #fb7185);
 }
 
 /* ==================== CARDS ==================== */
@@ -245,11 +249,12 @@
   border-radius: var(--border-radius);
   padding: var(--spacing-lg);
   box-shadow: var(--shadow-sm);
+  border: 1px solid var(--border-color);
   margin-bottom: var(--spacing-md);
 }
 
 .card-header {
-  border-bottom: 2px solid var(--border-color);
+  border-bottom: 1px solid var(--border-color);
   padding-bottom: var(--spacing-sm);
   margin-bottom: var(--spacing-md);
 }
@@ -272,11 +277,12 @@
 /* ==================== BADGES ==================== */
 .badge {
   display: inline-block;
-  padding: 4px var(--spacing-sm);
-  border-radius: var(--border-radius-sm);
-  font-size: var(--font-size-sm);
+  padding: 3px 10px;
+  border-radius: 999px;
+  font-size: 12px;
   font-weight: 600;
-  line-height: 1;
+  letter-spacing: 0.02em;
+  line-height: 1.4;
 }
 
 .badge-primary {
@@ -316,11 +322,12 @@
 .form-select {
   width: 100%;
   padding: var(--spacing-sm) var(--spacing-md);
-  border: 2px solid var(--border-color);
+  border: 1.5px solid var(--border-color);
   border-radius: var(--border-radius-sm);
   font-family: var(--font-family);
   font-size: var(--font-size-base);
-  transition: border-color var(--transition-fast);
+  background-color: var(--bg-card);
+  transition: border-color var(--transition-fast), box-shadow var(--transition-fast);
 }
 
 .form-input:focus,
@@ -328,6 +335,7 @@
 .form-select:focus {
   outline: none;
   border-color: var(--primary-color);
+  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.12);
 }
 
 .form-textarea {
@@ -351,27 +359,27 @@
 }
 
 .alert-info {
-  background-color: #E3F2FD;
-  border-color: #2196F3;
-  color: #1565C0;
+  background-color: #eef2ff;
+  border-color: var(--primary-color);
+  color: #3730a3;
 }
 
 .alert-success {
-  background-color: #E8F5E9;
+  background-color: #ecfdf5;
   border-color: var(--secondary-color);
-  color: #2E7D32;
+  color: #065f46;
 }
 
 .alert-warning {
-  background-color: #FFF3E0;
-  border-color: #FF9800;
-  color: #E65100;
+  background-color: #fffbeb;
+  border-color: #f59e0b;
+  color: #92400e;
 }
 
 .alert-danger {
-  background-color: #FFEBEE;
+  background-color: #fff1f2;
   border-color: var(--accent-color);
-  color: #C62828;
+  color: #9f1239;
 }
 
 /* ==================== LOADING SPINNER ==================== */

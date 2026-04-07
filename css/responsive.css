@@ -446,6 +446,33 @@
   .reference-section h3 {
     font-size: var(--font-size-base);
   }
+
+  /* Review Dashboard */
+  .review-hero {
+    flex-direction: column;
+    padding: var(--spacing-lg);
+  }
+
+  .review-hero-right {
+    justify-content: center;
+  }
+
+  .review-kpi-row {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .review-charts-row,
+  .review-charts-row.three-col {
+    grid-template-columns: 1fr;
+  }
+
+  .review-bottom-row {
+    grid-template-columns: 1fr;
+  }
+
+  .review-achievements-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
 }
 
 /* ==================== LANDSCAPE MOBILE (max-height: 500px) ==================== */

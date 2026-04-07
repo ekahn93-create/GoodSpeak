@@ -6,6 +6,11 @@
     <meta name="description" content="Improve your speaking skills with vocabulary building, story-telling practice, and daily word exercises.">
     <title>Articulation Trainer - Speak More Eloquently</title>
 
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
     <!-- Stylesheets -->
     <link rel="stylesheet" href="css/styles.css">
     <link rel="stylesheet" href="css/components.css">
@@ -23,7 +28,7 @@
             <li><a href="#vocabulary" class="nav-link" data-view="vocabulary"><span class="nav-label">Learn</span><span class="nav-sub">Words &amp; Grammar</span></a></li>
             <li><a href="#fluency" class="nav-link" data-view="fluency"><span class="nav-label">Polish</span><span class="nav-sub">Pronunciation &amp; Fluency</span></a></li>
             <li><a href="#storytelling" class="nav-link" data-view="storytelling"><span class="nav-label">Practice</span><span class="nav-sub">Storytelling &amp; Challenges</span></a></li>
-            <li><a href="#progress" class="nav-link" data-view="progress"><span class="nav-label">Review</span><span class="nav-sub">Progress &amp; Streaks</span></a></li>
+            <li><a href="#progress" class="nav-link" data-view="progress"><span class="nav-label">Review</span><span class="nav-sub">Progress &amp; Stats</span></a></li>
         </ul>
     </nav>
 
@@ -269,7 +274,15 @@
                             <h2>🔁 Spaced Repetition Review</h2>
                             <p class="subtitle">Review words at the optimal time to lock them into long-term memory</p>
                         </div>
-                        <div class="srs-due-badge" id="srs-due-badge">0 due</div>
+                        <div class="srs-badge-group">
+                            <div class="srs-due-badge" id="srs-due-badge">0 due</div>
+                            <div class="srs-info-wrap">
+                                <span class="srs-info-icon">ⓘ</span>
+                                <div class="srs-info-popover">
+                                    These are words from your <strong>learned vocabulary</strong> whose scheduled review date is today or overdue. Each time you review a word, the app schedules the next review further out — so a word you found easy won't come back for a week or more, while a word you struggled with returns sooner. The count grows as you learn more words and as past review dates come due.
+                                </div>
+                            </div>
+                        </div>
                     </div>
 
                     <!-- SRS Idle state -->
@@ -451,6 +464,13 @@
                             <div id="quiz-review-list"></div>
                         </div>
                     </div>
+                </div>
+
+                <!-- Word Bank Search -->
+                <div class="word-bank-search-bar">
+                    <span class="word-bank-search-icon">🔍</span>
+                    <input type="text" id="word-bank-search" class="word-bank-search-input" placeholder="Search your Word Bank..." oninput="WordBankModule.searchWords(this.value)" autocomplete="off">
+                    <button class="word-bank-search-clear" id="word-bank-search-clear" onclick="WordBankModule.clearSearch()" title="Clear search" style="display:none;">✕</button>
                 </div>
 
                 <!-- Still Learning Words -->
@@ -1920,81 +1940,188 @@
 
         <!-- ==================== REVIEW VIEW ==================== -->
         <section id="progress-view" class="view">
-            <div class="view-header">
-                <h1>Review</h1>
-                <p>Track your improvement and celebrate your achievements</p>
-            </div>
 
-            <!-- Overall Stats -->
-            <div class="stats-grid">
-                <div class="stat-card">
-                    <div class="stat-icon">📚</div>
-                    <div class="stat-number" id="total-words-stat">0</div>
-                    <div class="stat-label">Words Learned</div>
+            <!-- Dark Hero Header -->
+            <div class="review-hero">
+                <div class="review-hero-left">
+                    <div class="review-hero-label">Your Progress</div>
+                    <h1 class="review-hero-title">Performance Dashboard</h1>
+                    <p class="review-hero-sub">Track every step of your articulation journey</p>
                 </div>
-                <div class="stat-card">
-                    <div class="stat-icon">📖</div>
-                    <div class="stat-number" id="total-stories-stat">0</div>
-                    <div class="stat-label">Stories Completed</div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-icon">🔥</div>
-                    <div class="stat-number" id="longest-streak-stat">0</div>
-                    <div class="stat-label">Longest Streak</div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-icon">⏱️</div>
-                    <div class="stat-number" id="total-sessions-stat">0</div>
-                    <div class="stat-label">Practice Sessions</div>
-                </div>
-            </div>
-
-            <!-- Vocabulary Progress -->
-            <div class="progress-section">
-                <h2>Vocabulary Progress by Difficulty</h2>
-                <div id="vocab-progress-bars">
-                    <!-- Progress bars will be dynamically added here -->
-                </div>
-            </div>
-
-            <!-- Recent Activity -->
-            <div class="progress-section">
-                <h2>Recent Activity</h2>
-                <div id="recent-activity" class="activity-list">
-                    <!-- Recent activities will be dynamically added here -->
-                </div>
-            </div>
-
-            <!-- Progress Charts -->
-            <div class="progress-section">
-                <h2>Progress Over Time</h2>
-                <p style="color: var(--text-secondary); margin-bottom: var(--spacing-lg);">Each time you complete a Web Speech session, your stats are logged here.</p>
-                <div class="charts-grid">
-                    <div class="chart-card">
-                        <div class="chart-title">Words per Minute (WPM)</div>
-                        <canvas id="chart-wpm" height="160"></canvas>
-                        <div class="chart-empty" id="chart-wpm-empty">No data yet — complete a Web Speech session to start tracking.</div>
+                <div class="review-hero-right">
+                    <div class="review-hero-goal">
+                        <div class="review-goal-label">Weekly Goal</div>
+                        <canvas id="chart-goal-ring" width="120" height="120"></canvas>
+                        <div class="review-goal-pct" id="review-goal-pct">0%</div>
+                        <div class="review-goal-sub" id="review-goal-sub">sessions this week</div>
                     </div>
-                    <div class="chart-card">
-                        <div class="chart-title">Filler Words per Session</div>
-                        <canvas id="chart-fillers" height="160"></canvas>
-                        <div class="chart-empty" id="chart-fillers-empty">No data yet.</div>
+                </div>
+            </div>
+
+            <!-- KPI Cards Row -->
+            <div class="review-kpi-row">
+                <div class="review-kpi-card review-kpi-primary" role="button" onclick="Router.navigateTo('vocabulary')">
+                    <div class="review-kpi-top">
+                        <span class="review-kpi-icon">📚</span>
+                        <span class="review-kpi-trend" id="kpi-words-trend">—</span>
                     </div>
-                    <div class="chart-card">
-                        <div class="chart-title">Words Learned (Cumulative)</div>
-                        <canvas id="chart-vocab" height="160"></canvas>
-                        <div class="chart-empty" id="chart-vocab-empty">No data yet — start learning words.</div>
+                    <div class="review-kpi-number" id="total-words-stat">0</div>
+                    <div class="review-kpi-label">Words Learned</div>
+                    <div class="review-kpi-sub" id="kpi-words-sub">total vocabulary</div>
+                    <div class="review-kpi-goto" data-tip="Go to Vocabulary">Practice →</div>
+                </div>
+                <div class="review-kpi-card review-kpi-green" role="button" onclick="Router.navigateTo('daily-word')">
+                    <div class="review-kpi-top">
+                        <span class="review-kpi-icon">🔥</span>
+                        <span class="review-kpi-trend" id="kpi-streak-trend">—</span>
+                    </div>
+                    <div class="review-kpi-number" id="longest-streak-stat">0</div>
+                    <div class="review-kpi-label">Best Streak</div>
+                    <div class="review-kpi-sub" id="kpi-streak-sub">days in a row</div>
+                    <div class="review-kpi-goto" data-tip="Go to Daily Word">Practice →</div>
+                </div>
+                <div class="review-kpi-card review-kpi-purple" role="button" onclick="Router.navigateTo('fluency')">
+                    <div class="review-kpi-top">
+                        <span class="review-kpi-icon">🎙️</span>
+                        <span class="review-kpi-trend" id="kpi-wpm-trend">—</span>
+                    </div>
+                    <div class="review-kpi-number" id="kpi-avg-wpm">—</div>
+                    <div class="review-kpi-label">Avg WPM</div>
+                    <div class="review-kpi-sub">words per minute</div>
+                    <div class="review-kpi-goto" data-tip="Go to Fluency">Practice →</div>
+                </div>
+                <div class="review-kpi-card review-kpi-orange" role="button" onclick="Router.navigateTo('storytelling')">
+                    <div class="review-kpi-top">
+                        <span class="review-kpi-icon">📖</span>
+                        <span class="review-kpi-trend" id="kpi-stories-trend">—</span>
+                    </div>
+                    <div class="review-kpi-number" id="total-stories-stat">0</div>
+                    <div class="review-kpi-label">Stories Done</div>
+                    <div class="review-kpi-sub" id="kpi-stories-sub">completed prompts</div>
+                    <div class="review-kpi-goto" data-tip="Go to Storytelling">Practice →</div>
+                </div>
+                <div class="review-kpi-card review-kpi-teal" role="button" onclick="Router.navigateTo('read-aloud')">
+                    <div class="review-kpi-top">
+                        <span class="review-kpi-icon">⏱️</span>
+                        <span class="review-kpi-trend" id="kpi-sessions-trend">—</span>
+                    </div>
+                    <div class="review-kpi-number" id="total-sessions-stat">0</div>
+                    <div class="review-kpi-label">Sessions</div>
+                    <div class="review-kpi-sub">total practice sessions</div>
+                    <div class="review-kpi-goto" data-tip="Go to Read Aloud">Practice →</div>
+                </div>
+            </div>
+
+            <!-- Charts Row: Speech Metrics + Weekly Activity -->
+            <div class="review-charts-row">
+
+                <!-- Speech Metrics — big chart -->
+                <div class="review-chart-panel review-chart-wide">
+                    <div class="review-panel-header">
+                        <div>
+                            <div class="review-panel-title">Speech Metrics Over Time</div>
+                            <div class="review-panel-sub">WPM &amp; filler words per session</div>
+                        </div>
+                        <div class="review-legend">
+                            <span class="review-legend-dot" style="background:#818cf8"></span><span>WPM</span>
+                            <span class="review-legend-dot" style="background:#f43f5e; margin-left:12px"></span><span>Fillers</span>
+                        </div>
+                    </div>
+                    <canvas id="chart-wpm" height="220"></canvas>
+                    <div class="chart-empty" id="chart-wpm-empty">Complete a Web Speech session to start tracking your metrics.</div>
+                </div>
+
+                <!-- Weekly Activity Bar Chart -->
+                <div class="review-chart-panel review-chart-narrow">
+                    <div class="review-panel-header">
+                        <div>
+                            <div class="review-panel-title">Weekly Activity</div>
+                            <div class="review-panel-sub">sessions &amp; words this week</div>
+                        </div>
+                    </div>
+                    <canvas id="chart-weekly" height="220"></canvas>
+                    <div class="chart-empty" id="chart-weekly-empty">No activity this week yet.</div>
+                </div>
+            </div>
+
+            <!-- Second Row: Vocab Growth + Filler Trend + Speech Quality -->
+            <div class="review-charts-row three-col">
+
+                <!-- Vocab Growth -->
+                <div class="review-chart-panel">
+                    <div class="review-panel-header">
+                        <div>
+                            <div class="review-panel-title">Vocabulary Growth</div>
+                            <div class="review-panel-sub">cumulative words learned</div>
+                        </div>
+                    </div>
+                    <canvas id="chart-vocab" height="190"></canvas>
+                    <div class="chart-empty" id="chart-vocab-empty">Start learning words to see your growth curve.</div>
+                </div>
+
+                <!-- Filler Word Trend -->
+                <div class="review-chart-panel">
+                    <div class="review-panel-header">
+                        <div>
+                            <div class="review-panel-title">Filler Word Trend</div>
+                            <div class="review-panel-sub">lower is better</div>
+                        </div>
+                    </div>
+                    <canvas id="chart-fillers" height="190"></canvas>
+                    <div class="chart-empty" id="chart-fillers-empty">Complete Web Speech sessions to track filler words.</div>
+                </div>
+
+                <!-- Speech Quality Breakdown -->
+                <div class="review-chart-panel">
+                    <div class="review-panel-header">
+                        <div>
+                            <div class="review-panel-title">Last Session Quality</div>
+                            <div class="review-panel-sub">speech analysis snapshot</div>
+                        </div>
+                    </div>
+                    <div id="review-quality-breakdown" class="review-quality-list">
+                        <div class="review-quality-empty">No speech session recorded yet.</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Bottom Row: Vocabulary Breakdown + Activity Feed -->
+            <div class="review-bottom-row">
+
+                <!-- Vocab by Difficulty -->
+                <div class="review-panel review-panel-medium">
+                    <div class="review-panel-header">
+                        <div class="review-panel-title">Vocabulary by Difficulty</div>
+                        <div class="review-panel-sub">words mastered per level</div>
+                    </div>
+                    <div id="vocab-progress-bars" class="review-vocab-bars">
+                        <!-- Progress bars dynamically added -->
+                    </div>
+                </div>
+
+                <!-- Recent Activity Feed -->
+                <div class="review-panel review-panel-medium">
+                    <div class="review-panel-header">
+                        <div class="review-panel-title">Recent Activity</div>
+                        <div class="review-panel-sub">your latest practice moments</div>
+                    </div>
+                    <div id="recent-activity" class="activity-list">
+                        <!-- Recent activities dynamically added -->
                     </div>
                 </div>
             </div>
 
             <!-- Achievements -->
-            <div class="progress-section">
-                <h2>Achievements</h2>
-                <div id="achievements-grid" class="achievements-grid">
-                    <!-- Achievement badges will be dynamically added here -->
+            <div class="review-panel review-panel-full">
+                <div class="review-panel-header">
+                    <div class="review-panel-title">Achievements</div>
+                    <div class="review-panel-sub" id="achievements-unlocked-count">0 unlocked</div>
+                </div>
+                <div id="achievements-grid" class="review-achievements-grid">
+                    <!-- Achievement badges dynamically added -->
                 </div>
             </div>
+
         </section>
 
     </main>
@@ -2040,5 +2167,37 @@
     <script src="js/modules/shadowing.js"></script>
     <script src="js/modules/progressCharts.js"></script>
     <script src="js/app.js"></script>
+
+    <!-- KPI tooltip -->
+    <div id="kpi-tooltip"></div>
+    <script>
+      (function() {
+        var tip = document.getElementById('kpi-tooltip');
+        document.addEventListener('mouseover', function(e) {
+          var el = e.target.closest('[data-tip]');
+          if (!el) return;
+          tip.textContent = el.getAttribute('data-tip');
+          tip.style.display = 'block';
+        });
+        document.addEventListener('mouseout', function(e) {
+          var el = e.target.closest('[data-tip]');
+          if (!el) return;
+          tip.style.display = 'none';
+        });
+        document.addEventListener('mousemove', function(e) {
+          if (tip.style.display === 'none') return;
+          var margin = 8;
+          var tw = tip.offsetWidth;
+          var th = tip.offsetHeight;
+          var x = e.clientX - tw / 2;
+          var y = e.clientY + 18;
+          // clamp to viewport
+          x = Math.max(margin, Math.min(x, window.innerWidth - tw - margin));
+          if (y + th > window.innerHeight - margin) y = e.clientY - th - 10;
+          tip.style.left = x + 'px';
+          tip.style.top  = y + 'px';
+        });
+      })();
+    </script>
 </body>
 </html>

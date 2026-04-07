@@ -108,8 +108,16 @@ const App = (function() {
    * Initialize progress view
    */
   function initializeProgressView() {
-    // This will be called when the progress view is first accessed
-    // The actual rendering happens in updateProgressView
+    // If progress is the initial route, the viewChanged event fired before
+    // this listener was registered, so we need to render it now.
+    // Use requestAnimationFrame to ensure the DOM has been laid out and
+    // canvas elements have real pixel dimensions before drawing.
+    if (Router.getCurrentRoute() === 'progress') {
+      requestAnimationFrame(function() {
+        updateProgressView();
+        ProgressChartsModule.refresh();
+      });
+    }
   }
 
   /**
@@ -135,41 +143,58 @@ const App = (function() {
    * Update overall statistics cards
    */
   function updateOverallStats() {
-    // Total words
-    const totalWordsElement = document.getElementById('total-words-stat');
-    if (totalWordsElement) {
-      totalWordsElement.textContent = userData.vocabulary.totalWordsLearned || 0;
-    }
+    const totalWords   = userData.vocabulary.totalWordsLearned || 0;
+    const totalStories = userData.storytelling.totalStories || 0;
+    const longestStreak = userData.dailyWord.longestStreak || 0;
+    const currentStreak = userData.dailyWord.currentStreak || 0;
+    const totalSessions = userData.stats.totalSessions || 0;
 
-    // Total stories
-    const totalStoriesElement = document.getElementById('total-stories-stat');
-    if (totalStoriesElement) {
-      totalStoriesElement.textContent = userData.storytelling.totalStories || 0;
-    }
+    const el = id => document.getElementById(id);
 
-    // Longest streak
-    const longestStreakElement = document.getElementById('longest-streak-stat');
-    if (longestStreakElement) {
-      longestStreakElement.textContent = userData.dailyWord.longestStreak || 0;
-    }
+    if (el('total-words-stat'))    el('total-words-stat').textContent   = totalWords;
+    if (el('total-stories-stat'))  el('total-stories-stat').textContent = totalStories;
+    if (el('longest-streak-stat')) el('longest-streak-stat').textContent = longestStreak;
+    if (el('total-sessions-stat')) el('total-sessions-stat').textContent = totalSessions;
 
-    // Total sessions
-    const totalSessionsElement = document.getElementById('total-sessions-stat');
-    if (totalSessionsElement) {
-      totalSessionsElement.textContent = userData.stats.totalSessions || 0;
-    }
+    // Sub-labels
+    if (el('kpi-words-sub'))   el('kpi-words-sub').textContent   = (userData.vocabulary.learned || []).length + ' in review';
+    if (el('kpi-streak-sub'))  el('kpi-streak-sub').textContent  = 'current: ' + currentStreak + ' days';
+    if (el('kpi-stories-sub')) el('kpi-stories-sub').textContent = totalStories === 1 ? '1 prompt done' : totalStories + ' prompts done';
   }
 
   /**
-   * Update vocabulary progress bars
+   * Update vocabulary progress bars (new dashboard style)
    */
   function updateVocabularyProgress() {
     const progressBarsContainer = document.getElementById('vocab-progress-bars');
     if (!progressBarsContainer) return;
 
-    // Generate progress bars using ProgressBar component
-    const html = ProgressBar.createVocabularyProgress(userData, vocabularyDatabase);
-    progressBarsContainer.innerHTML = html;
+    const difficulties = ['beginner', 'intermediate', 'advanced'];
+    const colors = { beginner: '#34d399', intermediate: '#818cf8', advanced: '#f43f5e' };
+    const learned = userData.vocabulary.learned || [];
+
+    let html = '';
+    difficulties.forEach(diff => {
+      // vocabularyDatabase is keyed by difficulty level
+      const words = (vocabularyDatabase[diff] || []);
+      const total = words.length;
+      const done  = words.filter(w => learned.includes(w.id)).length;
+      const pct   = total > 0 ? Math.round((done / total) * 100) : 0;
+      const color = colors[diff] || '#818cf8';
+      html += `
+        <div class="review-vocab-bar-item">
+          <div class="review-vocab-bar-row">
+            <span class="review-vocab-bar-label">${diff}</span>
+            <span class="review-vocab-bar-count" style="color:${color}">${done} / ${total}</span>
+          </div>
+          <div class="review-vocab-bar-bg">
+            <div class="review-vocab-bar-fill" style="width:${pct}%; background:${color}"></div>
+          </div>
+        </div>
+      `;
+    });
+
+    progressBarsContainer.innerHTML = html || '<p class="text-secondary">No vocabulary data yet.</p>';
   }
 
   /**
@@ -297,12 +322,17 @@ const App = (function() {
       }
     ];
 
-    // Generate HTML
+    // Generate HTML (new dashboard card style)
+    const unlockedCount = achievements.filter(a => a.unlocked).length;
+    const countEl = document.getElementById('achievements-unlocked-count');
+    if (countEl) countEl.textContent = unlockedCount + ' / ' + achievements.length + ' unlocked';
+
     const html = achievements.map(achievement => `
-      <div class="achievement-badge ${achievement.unlocked ? 'unlocked' : ''}">
-        <div class="achievement-icon">${achievement.icon}</div>
-        <div class="achievement-name">${achievement.name}</div>
-        <div class="achievement-description">${achievement.description}</div>
+      <div class="review-achievement-card ${achievement.unlocked ? 'unlocked' : ''}">
+        ${achievement.unlocked ? '<span class="review-achievement-badge">Earned</span>' : ''}
+        <div class="review-achievement-icon">${achievement.icon}</div>
+        <div class="review-achievement-name">${achievement.name}</div>
+        <div class="review-achievement-desc">${achievement.description}</div>
       </div>
     `).join('');
 
@@ -349,7 +379,9 @@ const App = (function() {
         break;
       case 'progress':
         updateProgressView();
-        ProgressChartsModule.refresh();
+        requestAnimationFrame(function() {
+          ProgressChartsModule.refresh();
+        });
         break;
       case 'vocabulary':
         // Handled by VocabularyModule
