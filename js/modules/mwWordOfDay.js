@@ -259,11 +259,10 @@ const MWWordOfDayModule = (function() {
 
     container.appendChild(toast);
 
-    // Remove after 3 seconds
     setTimeout(() => {
       toast.style.opacity = '0';
       setTimeout(() => {
-        container.removeChild(toast);
+        toast.remove();
       }, 300);
     }, 3000);
   }
@@ -278,7 +277,7 @@ const MWWordOfDayModule = (function() {
       <div class="mw-word-error">
         <p>Unable to load today's word. Please check your internet connection and try again.</p>
         <p>
-          <button class="btn btn-secondary" onclick="MWWordOfDayModule.fetchAndDisplayWord()">
+          <button class="btn btn-secondary" onclick="MWWordOfDayModule.retry()">
             Retry
           </button>
         </p>
@@ -293,7 +292,8 @@ const MWWordOfDayModule = (function() {
     init: init,
     fetchAndDisplayWord: fetchAndDisplayWord,
     addToWordBank: addToWordBank,
-    refresh: refresh
+    refresh: refresh,
+    retry: fetchAndDisplayWord
   };
 })();
 

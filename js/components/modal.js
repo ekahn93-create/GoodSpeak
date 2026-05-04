@@ -8,6 +8,17 @@
  * Provides methods to show, hide, and configure modals
  */
 const Modal = (function() {
+
+  /**
+   * Escape HTML special characters to prevent XSS
+   * @param {string} str - Raw string
+   * @returns {string} HTML-escaped string
+   */
+  function escapeHtml(str) {
+    const div = document.createElement('div');
+    div.textContent = str;
+    return div.innerHTML;
+  }
   // Private variables
   let modalOverlay = null;
   let modalBody = null;
@@ -100,14 +111,14 @@ const Modal = (function() {
 
     const content = `
       <div class="modal-header">
-        <h2>${title}</h2>
+        <h2>${escapeHtml(title)}</h2>
       </div>
       <div class="modal-body">
-        <p>${message}</p>
+        <p>${escapeHtml(message)}</p>
       </div>
       <div class="modal-actions">
-        <button class="btn btn-secondary" id="modal-cancel-btn">${cancelText}</button>
-        <button class="btn btn-primary" id="modal-confirm-btn">${confirmText}</button>
+        <button class="btn btn-secondary" id="modal-cancel-btn">${escapeHtml(cancelText)}</button>
+        <button class="btn btn-primary" id="modal-confirm-btn">${escapeHtml(confirmText)}</button>
       </div>
     `;
 
@@ -160,13 +171,13 @@ const Modal = (function() {
 
     const content = `
       <div class="modal-header">
-        <h2>${icon} ${title}</h2>
+        <h2>${icon} ${escapeHtml(title)}</h2>
       </div>
       <div class="modal-body">
-        <p>${message}</p>
+        <p>${escapeHtml(message)}</p>
       </div>
       <div class="modal-actions">
-        <button class="btn btn-primary" id="modal-ok-btn">${okText}</button>
+        <button class="btn btn-primary" id="modal-ok-btn">${escapeHtml(okText)}</button>
       </div>
     `;
 

@@ -211,15 +211,6 @@
                     </div>
                 </div>
 
-                <!-- Streak Display -->
-                <div class="streak-banner">
-                    <div class="streak-icon">🔥</div>
-                    <div class="streak-info">
-                        <div class="streak-number"><span id="current-streak">0</span> Day Streak</div>
-                        <div class="streak-subtitle">Keep it going!</div>
-                    </div>
-                </div>
-
                 <!-- Word of the Day -->
                 <div id="daily-word-display" class="daily-word-card">
                     <h2>Common Word of the Day</h2>
@@ -233,6 +224,15 @@
                     <h3>Precision Exercise</h3>
                     <div id="exercise-content">
                         <!-- Dynamic exercise will be added here -->
+                    </div>
+
+                    <!-- Streak Display -->
+                    <div class="streak-banner">
+                        <div class="streak-icon">🔥</div>
+                        <div class="streak-info">
+                            <div class="streak-number"><span id="current-streak">0</span> Day Streak</div>
+                            <div class="streak-subtitle">Complete today's exercise to keep your streak alive</div>
+                        </div>
                     </div>
                 </div>
 
@@ -1947,6 +1947,10 @@
                     <div class="review-hero-label">Your Progress</div>
                     <h1 class="review-hero-title">Performance Dashboard</h1>
                     <p class="review-hero-sub">Track every step of your articulation journey</p>
+                    <div class="review-hero-days-active">
+                        <span class="review-hero-days-number" id="total-days-active">0</span>
+                        <span class="review-hero-days-label">total days practiced</span>
+                    </div>
                 </div>
                 <div class="review-hero-right">
                     <div class="review-hero-goal">
@@ -1960,6 +1964,16 @@
 
             <!-- KPI Cards Row -->
             <div class="review-kpi-row">
+                <div class="review-kpi-card review-kpi-green" role="button" onclick="Router.navigateTo('storytelling')">
+                    <div class="review-kpi-top">
+                        <span class="review-kpi-icon">🔥</span>
+                        <span class="review-kpi-trend" id="kpi-streak-trend">—</span>
+                    </div>
+                    <div class="review-kpi-number" id="longest-streak-stat">0</div>
+                    <div class="review-kpi-label">Best Streak</div>
+                    <div class="review-kpi-sub" id="kpi-streak-sub">learn a word, complete a story,<br>or do a Read Aloud each day</div>
+                    <div class="review-kpi-goto" data-tip="Go to Practice">Practice →</div>
+                </div>
                 <div class="review-kpi-card review-kpi-primary" role="button" onclick="Router.navigateTo('vocabulary')">
                     <div class="review-kpi-top">
                         <span class="review-kpi-icon">📚</span>
@@ -1967,18 +1981,18 @@
                     </div>
                     <div class="review-kpi-number" id="total-words-stat">0</div>
                     <div class="review-kpi-label">Words Learned</div>
-                    <div class="review-kpi-sub" id="kpi-words-sub">total vocabulary</div>
+                    <div class="review-kpi-sub">marked as learned in<br>Vocabulary Builder</div>
                     <div class="review-kpi-goto" data-tip="Go to Vocabulary">Practice →</div>
                 </div>
-                <div class="review-kpi-card review-kpi-green" role="button" onclick="Router.navigateTo('daily-word')">
+                <div class="review-kpi-card review-kpi-indigo" role="button" onclick="Router.navigateTo('vocabulary')">
                     <div class="review-kpi-top">
-                        <span class="review-kpi-icon">🔥</span>
-                        <span class="review-kpi-trend" id="kpi-streak-trend">—</span>
+                        <span class="review-kpi-icon">📝</span>
+                        <span class="review-kpi-trend" id="kpi-today-trend">—</span>
                     </div>
-                    <div class="review-kpi-number" id="longest-streak-stat">0</div>
-                    <div class="review-kpi-label">Best Streak</div>
-                    <div class="review-kpi-sub" id="kpi-streak-sub">days in a row</div>
-                    <div class="review-kpi-goto" data-tip="Go to Daily Word">Practice →</div>
+                    <div class="review-kpi-number" id="words-today-stat">0</div>
+                    <div class="review-kpi-label">Learned Today</div>
+                    <div class="review-kpi-sub">vocabulary words<br>marked as learned today</div>
+                    <div class="review-kpi-goto" data-tip="Go to Vocabulary">Practice →</div>
                 </div>
                 <div class="review-kpi-card review-kpi-purple" role="button" onclick="Router.navigateTo('fluency')">
                     <div class="review-kpi-top">
@@ -1987,7 +2001,7 @@
                     </div>
                     <div class="review-kpi-number" id="kpi-avg-wpm">—</div>
                     <div class="review-kpi-label">Avg WPM</div>
-                    <div class="review-kpi-sub">words per minute</div>
+                    <div class="review-kpi-sub">average speaking speed<br>from Read Aloud sessions</div>
                     <div class="review-kpi-goto" data-tip="Go to Fluency">Practice →</div>
                 </div>
                 <div class="review-kpi-card review-kpi-orange" role="button" onclick="Router.navigateTo('storytelling')">
@@ -1997,17 +2011,17 @@
                     </div>
                     <div class="review-kpi-number" id="total-stories-stat">0</div>
                     <div class="review-kpi-label">Stories Done</div>
-                    <div class="review-kpi-sub" id="kpi-stories-sub">completed prompts</div>
+                    <div class="review-kpi-sub">storytelling prompts<br>completed in full</div>
                     <div class="review-kpi-goto" data-tip="Go to Storytelling">Practice →</div>
                 </div>
-                <div class="review-kpi-card review-kpi-teal" role="button" onclick="Router.navigateTo('read-aloud')">
+                <div class="review-kpi-card review-kpi-teal" role="button" onclick="Router.navigateTo('fluency')">
                     <div class="review-kpi-top">
                         <span class="review-kpi-icon">⏱️</span>
                         <span class="review-kpi-trend" id="kpi-sessions-trend">—</span>
                     </div>
                     <div class="review-kpi-number" id="total-sessions-stat">0</div>
                     <div class="review-kpi-label">Sessions</div>
-                    <div class="review-kpi-sub">total practice sessions</div>
+                    <div class="review-kpi-sub">total app sessions<br>since you started</div>
                     <div class="review-kpi-goto" data-tip="Go to Read Aloud">Practice →</div>
                 </div>
             </div>
@@ -2027,7 +2041,7 @@
                             <span class="review-legend-dot" style="background:#f43f5e; margin-left:12px"></span><span>Fillers</span>
                         </div>
                     </div>
-                    <canvas id="chart-wpm" height="220"></canvas>
+                    <canvas id="chart-wpm"></canvas>
                     <div class="chart-empty" id="chart-wpm-empty">Complete a Web Speech session to start tracking your metrics.</div>
                 </div>
 
@@ -2039,7 +2053,7 @@
                             <div class="review-panel-sub">sessions &amp; words this week</div>
                         </div>
                     </div>
-                    <canvas id="chart-weekly" height="220"></canvas>
+                    <canvas id="chart-weekly"></canvas>
                     <div class="chart-empty" id="chart-weekly-empty">No activity this week yet.</div>
                 </div>
             </div>
@@ -2055,7 +2069,7 @@
                             <div class="review-panel-sub">cumulative words learned</div>
                         </div>
                     </div>
-                    <canvas id="chart-vocab" height="190"></canvas>
+                    <canvas id="chart-vocab"></canvas>
                     <div class="chart-empty" id="chart-vocab-empty">Start learning words to see your growth curve.</div>
                 </div>
 
@@ -2067,7 +2081,7 @@
                             <div class="review-panel-sub">lower is better</div>
                         </div>
                     </div>
-                    <canvas id="chart-fillers" height="190"></canvas>
+                    <canvas id="chart-fillers"></canvas>
                     <div class="chart-empty" id="chart-fillers-empty">Complete Web Speech sessions to track filler words.</div>
                 </div>
 

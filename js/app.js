@@ -33,20 +33,19 @@ const App = (function() {
     // Initialize components
     Modal.init();
 
-    // Initialize router
-    Router.init();
-
     // Show onboarding for new users
     OnboardingModule.init();
 
     // Initialize all feature modules
+    // Note: VocabularyModule.init() restores the saved tab and calls refresh()
+    // on whichever sub-module was active, so those modules must be initialized first.
     WordBankModule.init();
-    VocabularyModule.init();
     StorytellingModule.init();
     DailyWordModule.init();
     MWWordOfDayModule.init();
     GrammarModule.init();
     FluencyModule.init();
+    VocabularyModule.init();
     ReadAloudModule.init();
     SRSModule.init();
     RecordingsModule.init();
@@ -59,11 +58,15 @@ const App = (function() {
     // Initialize dashboard
     initializeDashboard();
 
-    // Initialize progress view
-    initializeProgressView();
-
     // Listen for view changes to update data
     document.addEventListener('viewChanged', handleViewChange);
+
+    // Initialize router last so the initial viewChanged event fires
+    // after all modules and listeners are ready
+    Router.init();
+
+    // Initialize progress view (handles case where progress is initial route)
+    initializeProgressView();
 
     // Mark as initialized
     isInitialized = true;
@@ -97,10 +100,10 @@ const App = (function() {
       storiesCount.textContent = userData.storytelling.totalStories || 0;
     }
 
-    // Update streak count
+    // Update streak count (multi-activity streak)
     const streakCount = document.getElementById('daily-streak-count');
     if (streakCount) {
-      streakCount.textContent = userData.dailyWord.currentStreak || 0;
+      streakCount.textContent = userData.stats.practiceStreak || userData.dailyWord.currentStreak || 0;
     }
   }
 
@@ -143,23 +146,23 @@ const App = (function() {
    * Update overall statistics cards
    */
   function updateOverallStats() {
-    const totalWords   = userData.vocabulary.totalWordsLearned || 0;
-    const totalStories = userData.storytelling.totalStories || 0;
-    const longestStreak = userData.dailyWord.longestStreak || 0;
-    const currentStreak = userData.dailyWord.currentStreak || 0;
-    const totalSessions = userData.stats.totalSessions || 0;
+    const totalWords        = userData.vocabulary.totalWordsLearned || 0;
+    const totalStories      = userData.storytelling.totalStories || 0;
+    const longestStreak     = userData.stats.longestPracticeStreak || userData.dailyWord.longestStreak || 0;
+    const currentStreak     = userData.stats.practiceStreak || userData.dailyWord.currentStreak || 0;
+    const totalSessions     = userData.stats.totalSessions || 0;
+    const totalDaysActive   = (userData.stats.activeDates || []).length;
+    const wordsToday        = StorageManager.getWordsLearnedToday();
 
     const el = id => document.getElementById(id);
 
-    if (el('total-words-stat'))    el('total-words-stat').textContent   = totalWords;
-    if (el('total-stories-stat'))  el('total-stories-stat').textContent = totalStories;
+    if (el('total-words-stat'))    el('total-words-stat').textContent    = totalWords;
+    if (el('total-stories-stat'))  el('total-stories-stat').textContent  = totalStories;
     if (el('longest-streak-stat')) el('longest-streak-stat').textContent = longestStreak;
     if (el('total-sessions-stat')) el('total-sessions-stat').textContent = totalSessions;
+    if (el('words-today-stat'))    el('words-today-stat').textContent    = wordsToday;
+    if (el('total-days-active'))   el('total-days-active').textContent   = totalDaysActive;
 
-    // Sub-labels
-    if (el('kpi-words-sub'))   el('kpi-words-sub').textContent   = (userData.vocabulary.learned || []).length + ' in review';
-    if (el('kpi-streak-sub'))  el('kpi-streak-sub').textContent  = 'current: ' + currentStreak + ' days';
-    if (el('kpi-stories-sub')) el('kpi-stories-sub').textContent = totalStories === 1 ? '1 prompt done' : totalStories + ' prompts done';
   }
 
   /**
@@ -235,7 +238,7 @@ const App = (function() {
     if (userData.dailyWord.lastCompletedDate) {
       activities.push({
         icon: '✨',
-        text: `${userData.dailyWord.currentStreak} day practice streak`,
+        text: `${userData.stats.practiceStreak || userData.dailyWord.currentStreak || 0} day practice streak`,
         time: userData.dailyWord.lastCompletedDate
       });
     }
@@ -306,13 +309,13 @@ const App = (function() {
         icon: '🔥',
         name: 'Week Warrior',
         description: '7 day practice streak',
-        unlocked: userData.dailyWord.currentStreak >= 7
+        unlocked: (userData.stats.practiceStreak || userData.dailyWord.currentStreak || 0) >= 7
       },
       {
         icon: '💪',
         name: 'Dedicated',
         description: '30 day practice streak',
-        unlocked: userData.dailyWord.currentStreak >= 30
+        unlocked: (userData.stats.practiceStreak || userData.dailyWord.currentStreak || 0) >= 30
       },
       {
         icon: '⭐',
@@ -347,17 +350,24 @@ const App = (function() {
   function formatDate(dateString) {
     const date = new Date(dateString);
     const now = new Date();
-    const diffTime = Math.abs(now - date);
-    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
 
-    if (diffDays === 0 || diffDays === 1) {
+    // Compare calendar dates, not timestamps, to avoid hour-based edge cases
+    const todayStr = now.toDateString();
+    const yesterday = new Date(now);
+    yesterday.setDate(now.getDate() - 1);
+
+    if (date.toDateString() === todayStr) {
       return 'Today';
-    } else if (diffDays === 2) {
+    } else if (date.toDateString() === yesterday.toDateString()) {
       return 'Yesterday';
-    } else if (diffDays <= 7) {
-      return `${diffDays - 1} days ago`;
     } else {
-      return date.toLocaleDateString();
+      const diffTime = now - date;
+      const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+      if (diffDays <= 7) {
+        return `${diffDays} days ago`;
+      } else {
+        return date.toLocaleDateString();
+      }
     }
   }
 

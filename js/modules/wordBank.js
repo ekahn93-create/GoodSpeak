@@ -173,7 +173,7 @@ const WordBankModule = (function() {
 
     // Listen for view changes
     document.addEventListener('viewChanged', function(e) {
-      if (e.detail.viewName === 'word-bank') {
+      if (e.detail.viewName === 'vocabulary') {
         refresh();
       }
     });
@@ -811,7 +811,7 @@ const WordBankModule = (function() {
     setTimeout(() => {
       toast.style.opacity = '0';
       setTimeout(() => {
-        container.removeChild(toast);
+        toast.remove();
       }, 300);
     }, 3000);
   }

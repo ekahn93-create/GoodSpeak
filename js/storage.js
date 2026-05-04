@@ -54,7 +54,12 @@ const StorageManager = (function() {
         totalSessionTime: 0,   // in seconds
         totalSessions: 0,
         lastSessionDate: null,
-        firstVisit: new Date().toISOString()
+        firstVisit: new Date().toISOString(),
+        activeDates: [],       // Array of unique YYYY-MM-DD strings (any activity)
+        practiceStreak: 0,     // Current multi-activity streak
+        longestPracticeStreak: 0,
+        wordsLearnedToday: 0,  // Words learned on wordsLearnedDate
+        wordsLearnedDate: null
       }
     };
   }
@@ -156,6 +161,10 @@ const StorageManager = (function() {
   function mergeDefaults(existing, defaults) {
     const merged = { ...defaults, ...existing };
 
+    // Preserve original creation timestamp and user ID from existing data
+    merged.userId = existing.userId || defaults.userId;
+    merged.createdAt = existing.createdAt || defaults.createdAt;
+
     // Deep merge nested objects
     merged.vocabulary = { ...defaults.vocabulary, ...existing.vocabulary };
 
@@ -168,6 +177,16 @@ const StorageManager = (function() {
     merged.dailyWord = { ...defaults.dailyWord, ...existing.dailyWord };
     merged.customWords = existing.customWords || defaults.customWords;
     merged.stats = { ...defaults.stats, ...existing.stats };
+
+    // Preserve original firstVisit
+    merged.stats.firstVisit = (existing.stats && existing.stats.firstVisit) || defaults.stats.firstVisit;
+
+    // Ensure activeDates array exists
+    if (!merged.stats.activeDates) merged.stats.activeDates = [];
+    if (merged.stats.practiceStreak === undefined) merged.stats.practiceStreak = 0;
+    if (merged.stats.longestPracticeStreak === undefined) merged.stats.longestPracticeStreak = 0;
+    if (merged.stats.wordsLearnedToday === undefined) merged.stats.wordsLearnedToday = 0;
+    if (merged.stats.wordsLearnedDate === undefined) merged.stats.wordsLearnedDate = null;
 
     return merged;
   }
@@ -283,6 +302,78 @@ const StorageManager = (function() {
   }
 
   /**
+   * Mark today as an active practice day and update multi-activity streak.
+   * Call this from any module when a meaningful activity is completed.
+   */
+  function markActiveToday() {
+    try {
+      const data = load();
+      if (!data) return false;
+
+      const today = getTodayString();
+
+      if (!data.stats.activeDates) data.stats.activeDates = [];
+      if (data.stats.activeDates.includes(today)) return true; // already counted today
+
+      data.stats.activeDates.push(today);
+
+      // Compute streak: check if yesterday was active
+      const yesterday = new Date();
+      yesterday.setDate(yesterday.getDate() - 1);
+      const yStr = yesterday.getFullYear() + '-' +
+        String(yesterday.getMonth() + 1).padStart(2, '0') + '-' +
+        String(yesterday.getDate()).padStart(2, '0');
+
+      if (data.stats.activeDates.includes(yStr)) {
+        data.stats.practiceStreak = (data.stats.practiceStreak || 0) + 1;
+      } else {
+        data.stats.practiceStreak = 1;
+      }
+
+      if (data.stats.practiceStreak > (data.stats.longestPracticeStreak || 0)) {
+        data.stats.longestPracticeStreak = data.stats.practiceStreak;
+      }
+
+      return save(data);
+    } catch (error) {
+      console.error('Error in markActiveToday:', error);
+      return false;
+    }
+  }
+
+  /**
+   * Count how many vocabulary words were learned today.
+   * Relies on vocabHistory in localStorage (logged by ProgressChartsModule).
+   */
+  function incrementWordsLearnedToday() {
+    try {
+      const data = load();
+      if (!data) return false;
+      const today = getTodayString();
+      if (data.stats.wordsLearnedDate !== today) {
+        data.stats.wordsLearnedToday = 0;
+        data.stats.wordsLearnedDate = today;
+      }
+      data.stats.wordsLearnedToday += 1;
+      return save(data);
+    } catch (e) {
+      return false;
+    }
+  }
+
+  function getWordsLearnedToday() {
+    try {
+      const data = load();
+      if (!data) return 0;
+      const today = getTodayString();
+      if (data.stats.wordsLearnedDate !== today) return 0;
+      return data.stats.wordsLearnedToday || 0;
+    } catch (e) {
+      return 0;
+    }
+  }
+
+  /**
    * Update session statistics
    */
   function updateSession() {
@@ -316,6 +407,9 @@ const StorageManager = (function() {
     isAvailable: isAvailable,
     getTodayString: getTodayString,
     updateSession: updateSession,
+    markActiveToday: markActiveToday,
+    incrementWordsLearnedToday: incrementWordsLearnedToday,
+    getWordsLearnedToday: getWordsLearnedToday,
     getDefaultProgress: getDefaultProgress
   };
 })();

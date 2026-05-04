@@ -11,6 +11,7 @@ const DailyWordModule = (function() {
   // Private variables
   let userData = null;
   let todaysWord = null;
+  let initialized = false;
 
   // DOM elements
   let dailyWordContent = null;
@@ -57,6 +58,7 @@ const DailyWordModule = (function() {
       // Now controlled by vocabulary category switching
     });
 
+    initialized = true;
     console.log('DailyWordModule initialized successfully');
   }
 
@@ -121,6 +123,7 @@ const DailyWordModule = (function() {
 
     // Save
     if (StorageManager.save(userData)) {
+      StorageManager.markActiveToday();
       updateStreakDisplay();
       showToast(`${userData.dailyWord.currentStreak} day streak! 🔥`, 'success');
     }
@@ -352,7 +355,7 @@ const DailyWordModule = (function() {
     setTimeout(() => {
       toast.style.opacity = '0';
       setTimeout(() => {
-        container.removeChild(toast);
+        toast.remove();
       }, 300);
     }, 3000);
   }
@@ -361,6 +364,10 @@ const DailyWordModule = (function() {
    * Refresh the module (reload data)
    */
   function refresh() {
+    if (!initialized) {
+      init();
+      return;
+    }
     userData = StorageManager.load();
     if (userData) {
       todaysWord = getTodaysWord();

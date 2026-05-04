@@ -26,6 +26,7 @@ const ProgressChartsModule = (function() {
       ts: Date.now()
     });
     localStorage.setItem(SPEECH_SESSIONS_KEY, JSON.stringify(sessions.slice(-20)));
+    if (typeof StorageManager !== 'undefined') StorageManager.markActiveToday();
   }
 
   // Called externally when vocab count changes
@@ -114,8 +115,15 @@ const ProgressChartsModule = (function() {
 
   function setupCanvas(canvas) {
     const ratio = dpr();
-    const displayW = canvas.offsetWidth || canvas.parentElement.offsetWidth || 400;
-    const displayH = canvas.height;
+    // getBoundingClientRect is reliable even when offsetWidth returns 0
+    let displayW = canvas.getBoundingClientRect().width;
+    if (!displayW) {
+      let el = canvas.parentElement;
+      while (el && !displayW) { displayW = el.getBoundingClientRect().width; el = el.parentElement; }
+    }
+    if (!displayW) displayW = 600;
+    // Use CSS-computed height (set via stylesheet), fall back to 280
+    const displayH = parseInt(getComputedStyle(canvas).height) || 280;
     canvas.width  = displayW * ratio;
     canvas.height = displayH * ratio;
     canvas.style.width  = displayW + 'px';
@@ -141,7 +149,7 @@ const ProgressChartsModule = (function() {
     if (emptyEl) emptyEl.style.display = 'none';
 
     const { ctx, W, H } = setupCanvas(canvas);
-    const pad = { top: 16, right: 28, bottom: 36, left: 44 };
+    const pad = { top: 12, right: 16, bottom: 44, left: 40 };
     const w = W - pad.left - pad.right;
     const h = H - pad.top - pad.bottom;
 
@@ -212,21 +220,25 @@ const ProgressChartsModule = (function() {
     drawSeries(series2, color2);
     drawSeries(series1, color1);
 
-    // X labels — pixel-aware spacing to prevent overlap
+    // X labels — skip labels that would overlap the previous drawn one
     const shortLabels = labels.map(formatShortDate);
     const pts0 = labels.map((_, i) => pad.left + (i / Math.max(labels.length - 1, 1)) * w);
     ctx.font = '10px Inter, sans-serif';
-    const labelW = ctx.measureText('12/31/99').width + 6; // widest expected label + padding
-    const step = Math.max(1, Math.ceil((labelW * labels.length) / w));
     ctx.fillStyle = COLORS.label;
+    const minGap = ctx.measureText('12/31/99').width + 10;
+    let lastDrawnX = -Infinity;
+    const labelY = pad.top + h + 20;
     shortLabels.forEach((label, i) => {
-      if (i % step === 0 || i === labels.length - 1) {
-        const isLast = i === labels.length - 1;
-        const isFirst = i === 0;
-        ctx.textAlign = isLast ? 'right' : (isFirst ? 'left' : 'center');
-        const x = isLast ? (pad.left + w) : (isFirst ? pad.left : pts0[i]);
-        ctx.fillText(label, x, pad.top + h + 18);
-      }
+      const x = pts0[i];
+      const isFirst = i === 0;
+      const isLast  = i === shortLabels.length - 1;
+      // Always try to draw first and last; skip middle ones that are too close
+      if (!isFirst && !isLast && x - lastDrawnX < minGap) return;
+      // Also skip last if it would overlap the previous
+      if (isLast && x - lastDrawnX < minGap) return;
+      ctx.textAlign = isLast ? 'right' : (isFirst ? 'left' : 'center');
+      ctx.fillText(label, x, labelY);
+      lastDrawnX = x;
     });
   }
 
@@ -251,7 +263,7 @@ const ProgressChartsModule = (function() {
     if (emptyEl) emptyEl.style.display = 'none';
 
     const { ctx, W, H } = setupCanvas(canvas);
-    const pad = { top: 20, right: 28, bottom: 44, left: 44 };
+    const pad = { top: 12, right: 16, bottom: 44, left: 40 };
     const w = W - pad.left - pad.right;
     const h = H - pad.top - pad.bottom;
 
@@ -305,14 +317,14 @@ const ProgressChartsModule = (function() {
         ctx.fillStyle = COLORS.label;
         ctx.font = 'bold 11px Inter, sans-serif';
         ctx.textAlign = 'center';
-        ctx.fillText(val, x + barW / 2, y - 6);
+        ctx.fillText(val, x + barW / 2, y - 5);
       }
 
       // X label — bar chart labels are short day names (Mon, Tue…) so always show them
       ctx.fillStyle = COLORS.label;
       ctx.font = '11px Inter, sans-serif';
       ctx.textAlign = 'center';
-      ctx.fillText(formatShortDate(labels[i]), x + barW / 2, pad.top + h + 18);
+      ctx.fillText(labels[i], x + barW / 2, pad.top + h + 20);
     });
   }
 
@@ -483,13 +495,13 @@ const ProgressChartsModule = (function() {
             'This week: ' + vocabThisWeek + ' days active vs last week: ' + vocabLastWeek);
         }
 
-        // Streak: current vs longest
-        const current = ud.dailyWord.currentStreak || 0;
-        const longest = ud.dailyWord.longestStreak || 0;
-        if (longest > 0) {
-          const streakDiff = current - longest;
-          setTrend('kpi-streak-trend', streakDiff === 0 ? 0 : streakDiff, ' days', streakDiff >= 0,
-            'Current streak: ' + current + ' days  |  Best ever: ' + longest + ' days');
+        // Streak: show current streak in the badge
+        const current = ud.stats.practiceStreak || ud.dailyWord.currentStreak || 0;
+        const longest = ud.stats.longestPracticeStreak || ud.dailyWord.longestStreak || 0;
+        const streakEl = document.getElementById('kpi-streak-trend');
+        if (streakEl) {
+          streakEl.textContent = current + ' days';
+          streakEl.title = 'Current streak: ' + current + ' days  |  Best ever: ' + longest + ' days';
         }
 
         // Stories: this month vs last month
@@ -518,6 +530,12 @@ const ProgressChartsModule = (function() {
         if (speechSessions.length > 0) {
           setTrend('kpi-sessions-trend', sessThisWeek - sessLastWeek, '', true,
             'This week: ' + sessThisWeek + ' sessions  |  Last week: ' + sessLastWeek);
+        }
+
+        // Words today vs yesterday
+        const wordsToday = StorageManager.getWordsLearnedToday();
+        if (wordsToday > 0) {
+          setTrend('kpi-today-trend', wordsToday, '', true, wordsToday + ' words learned today');
         }
       }
     }
@@ -572,8 +590,8 @@ const ProgressChartsModule = (function() {
     renderQualityBreakdown(speechSessions);
   }
 
-  function init() { render(); }
-  function refresh() { render(); }
+  function init() { requestAnimationFrame(render); }
+  function refresh() { requestAnimationFrame(render); }
 
   return {
     init,

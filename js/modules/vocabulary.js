@@ -313,6 +313,8 @@ const VocabularyModule = (function() {
 
     // Save to storage
     if (StorageManager.save(userData)) {
+      StorageManager.markActiveToday();
+      StorageManager.incrementWordsLearnedToday();
       showToast('Word added to your vocabulary!', 'success');
 
       // Log vocab count for progress charts
@@ -394,12 +396,18 @@ const VocabularyModule = (function() {
    * @param {Object} word - The word to create an exercise for
    */
   function generateMultipleChoiceExercise(word) {
-    // Get 3 random wrong definitions from other words
-    const allWords = vocabularyDatabase[currentDifficulty];
-    const wrongWords = allWords.filter(w => w.id !== word.id);
+    // Get 3 random wrong definitions from other words; fall back to all difficulties if needed
+    let pool = vocabularyDatabase[currentDifficulty].filter(w => w.id !== word.id);
+    if (pool.length < 3) {
+      pool = [
+        ...vocabularyDatabase.beginner,
+        ...vocabularyDatabase.intermediate,
+        ...vocabularyDatabase.advanced
+      ].filter(w => w.id !== word.id);
+    }
 
     // Shuffle and get 3 wrong options
-    const shuffled = wrongWords.sort(() => 0.5 - Math.random());
+    const shuffled = pool.sort(() => 0.5 - Math.random());
     const wrongOptions = shuffled.slice(0, 3);
 
     // Create options array with correct answer
@@ -824,7 +832,7 @@ const VocabularyModule = (function() {
     setTimeout(() => {
       toast.style.opacity = '0';
       setTimeout(() => {
-        container.removeChild(toast);
+        toast.remove();
       }, 300);
     }, 3000);
   }

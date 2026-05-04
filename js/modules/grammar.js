@@ -261,6 +261,10 @@ const GrammarModule = (function() {
       else if (target.id === 'show-correction-btn') {
         showCorrection();
       }
+      // Handle agreement option buttons
+      else if (target.classList.contains('agreement-option-btn') && target.dataset.option) {
+        checkAgreement(target.dataset.option);
+      }
     });
   }
 
@@ -339,12 +343,24 @@ const GrammarModule = (function() {
     const correctionDiv = document.getElementById('correction-display');
     if (!correctionDiv) return;
 
-    correctionDiv.innerHTML = `
-      <div style="background: #50C878; color: white; padding: 16px; border-radius: 8px; margin-top: 16px;">
-        <p style="margin: 0 0 8px 0;"><strong>Correct:</strong> ${currentError.correct}</p>
-        <p style="margin: 0; opacity: 0.9;"><strong>Explanation:</strong> ${currentError.explanation}</p>
-      </div>
-    `;
+    const wrapper = document.createElement('div');
+    wrapper.style.cssText = 'background: #50C878; color: white; padding: 16px; border-radius: 8px; margin-top: 16px;';
+
+    const correctP = document.createElement('p');
+    correctP.style.cssText = 'margin: 0 0 8px 0;';
+    correctP.innerHTML = '<strong>Correct:</strong> ';
+    correctP.appendChild(document.createTextNode(currentError.correct));
+
+    const explanationP = document.createElement('p');
+    explanationP.style.cssText = 'margin: 0; opacity: 0.9;';
+    explanationP.innerHTML = '<strong>Explanation:</strong> ';
+    explanationP.appendChild(document.createTextNode(currentError.explanation));
+
+    wrapper.appendChild(correctP);
+    wrapper.appendChild(explanationP);
+
+    correctionDiv.innerHTML = '';
+    correctionDiv.appendChild(wrapper);
     correctionDiv.style.display = 'block';
   }
 
@@ -362,7 +378,7 @@ const GrammarModule = (function() {
     const optionsDiv = document.getElementById('agreement-options');
     if (optionsDiv) {
       optionsDiv.innerHTML = currentAgreement.options.map(option => `
-        <button class="agreement-option-btn btn btn-secondary" data-option="${option}" onclick="GrammarModule.checkAgreement('${option}')">
+        <button class="agreement-option-btn btn btn-secondary" data-option="${option}">
           ${option}
         </button>
       `).join('');

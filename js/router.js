@@ -83,11 +83,6 @@ const Router = (function() {
   function navigateTo(viewName) {
     console.log(`Navigating to: ${viewName}`);
 
-    // Don't do anything if we're already on this route
-    if (currentRoute === viewName) {
-      return;
-    }
-
     // Hide all views
     const allViews = document.querySelectorAll('.view');
     allViews.forEach(view => {
@@ -99,6 +94,11 @@ const Router = (function() {
     if (targetView) {
       targetView.classList.add('active');
       currentRoute = viewName;
+
+      // Sync the URL hash so nav tab clicks always fire hashchange
+      if (window.location.hash.slice(1) !== viewName) {
+        history.replaceState(null, '', `#${viewName}`);
+      }
 
       // Update navigation links to reflect current view
       updateNavLinks(viewName);
