@@ -32,6 +32,12 @@
         </ul>
     </nav>
 
+    <!-- Floating Word Bank Button -->
+    <button id="word-bank-fab" class="word-bank-fab" title="Open Word Bank" aria-label="Open Word Bank">
+        <span class="word-bank-fab-icon">📖</span>
+        <span class="word-bank-fab-label">Word Bank</span>
+    </button>
+
     <!-- Main Content Container -->
     <main id="app-container">
 
@@ -154,6 +160,7 @@
                 <button class="vocab-category-tab" data-vocab-category="daily">Daily Word</button>
                 <button class="vocab-category-tab" data-vocab-category="bank">Word Bank</button>
                 <button class="vocab-category-tab" data-vocab-category="grammar">Grammar & Structure</button>
+                <button class="vocab-category-tab" data-vocab-category="knowledge-check">Knowledge Check</button>
             </div>
 
             <!-- ========== VOCABULARY BUILDER CATEGORY ========== -->
@@ -267,62 +274,6 @@
             <!-- ========== WORD BANK CATEGORY ========== -->
             <div id="bank-category" class="vocab-category">
 
-                <!-- ===== SPACED REPETITION REVIEW ===== -->
-                <div class="srs-review-section" id="srs-review-section">
-                    <div class="srs-header">
-                        <div>
-                            <h2>🔁 Spaced Repetition Review</h2>
-                            <p class="subtitle">Review words at the optimal time to lock them into long-term memory</p>
-                        </div>
-                        <div class="srs-badge-group">
-                            <div class="srs-due-badge" id="srs-due-badge">0 due</div>
-                            <div class="srs-info-wrap">
-                                <span class="srs-info-icon">ⓘ</span>
-                                <div class="srs-info-popover">
-                                    These are words from your <strong>learned vocabulary</strong> whose scheduled review date is today or overdue. Each time you review a word, the app schedules the next review further out — so a word you found easy won't come back for a week or more, while a word you struggled with returns sooner. The count grows as you learn more words and as past review dates come due.
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- SRS Idle state -->
-                    <div id="srs-idle">
-                        <div id="srs-idle-message" style="color: var(--text-secondary); margin-bottom: var(--spacing-md);"></div>
-                        <button class="btn btn-primary" id="srs-start-btn">Start Review</button>
-                    </div>
-
-                    <!-- SRS Card state -->
-                    <div id="srs-active" style="display:none;">
-                        <div class="srs-progress-line">
-                            <span id="srs-progress-text">Word 1 of 1</span>
-                        </div>
-                        <div class="srs-card" id="srs-card">
-                            <div class="srs-card-word" id="srs-card-word"></div>
-                            <button class="tts-btn" style="font-size:22px;" onclick="SRSModule.speakCurrent()" title="Hear word">🔊</button>
-                            <div class="srs-card-hint">Do you know this word? Tap to reveal.</div>
-                        </div>
-                        <div id="srs-card-reveal" style="display:none;">
-                            <div class="srs-card-definition" id="srs-card-definition"></div>
-                            <div class="srs-card-example" id="srs-card-example"></div>
-                            <div class="srs-rating-btns">
-                                <button class="btn srs-btn-hard" onclick="SRSModule.rate(1)">Forgot</button>
-                                <button class="btn srs-btn-ok" onclick="SRSModule.rate(2)">Hard</button>
-                                <button class="btn srs-btn-good" onclick="SRSModule.rate(3)">Got It</button>
-                                <button class="btn srs-btn-easy" onclick="SRSModule.rate(4)">Easy</button>
-                            </div>
-                        </div>
-                        <div id="srs-reveal-btn-wrap">
-                            <button class="btn btn-primary" id="srs-reveal-btn" onclick="SRSModule.revealCard()">Reveal Definition</button>
-                        </div>
-                    </div>
-
-                    <!-- SRS Done state -->
-                    <div id="srs-done" style="display:none;">
-                        <div class="srs-done-msg" id="srs-done-msg"></div>
-                        <button class="btn btn-secondary" id="srs-restart-btn" onclick="SRSModule.resetToIdle()">Back</button>
-                    </div>
-                </div>
-
                 <!-- Add Custom Word Section -->
                 <div class="word-bank-add-section">
                     <h2>Add Custom Word</h2>
@@ -377,6 +328,133 @@
 
                         <button type="button" id="add-word-btn" class="btn btn-primary">Add to Word Bank</button>
                     </form>
+                </div>
+
+                <!-- Word Bank Search -->
+                <div class="word-bank-search-bar">
+                    <span class="word-bank-search-icon">🔍</span>
+                    <input type="text" id="word-bank-search" class="word-bank-search-input" placeholder="Search your Word Bank..." oninput="WordBankModule.searchWords(this.value)" autocomplete="off">
+                    <button class="word-bank-search-clear" id="word-bank-search-clear" onclick="WordBankModule.clearSearch()" title="Clear search" style="display:none;">✕</button>
+                </div>
+
+                <!-- Still Learning Words -->
+                <div class="word-bank-section">
+                    <div class="word-bank-section-header">
+                        <h2>Still Learning (<span id="still-learning-words-count">0</span>)</h2>
+                        <div class="word-bank-sort">
+                            <label for="still-learning-sort">Sort by:</label>
+                            <select id="still-learning-sort" class="sort-dropdown" onchange="WordBankModule.sortSection('stillLearning', this.value)">
+                                <option value="alpha">Alphabetically</option>
+                                <option value="difficulty">Difficulty</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div id="still-learning-words" class="word-bank-grid">
+                        <!-- Still learning words will be displayed here -->
+                    </div>
+                </div>
+
+                <!-- Learned Words from App -->
+                <div class="word-bank-section">
+                    <div class="word-bank-section-header">
+                        <h2>Words Learned from Vocabulary Builder (<span id="app-words-count">0</span>)</h2>
+                        <div class="word-bank-sort">
+                            <label for="app-learned-sort">Sort by:</label>
+                            <select id="app-learned-sort" class="sort-dropdown" onchange="WordBankModule.sortSection('appLearned', this.value)">
+                                <option value="alpha">Alphabetically</option>
+                                <option value="difficulty">Difficulty</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div id="app-learned-words" class="word-bank-grid">
+                        <!-- App learned words will be displayed here -->
+                    </div>
+                </div>
+
+                <!-- Custom Words -->
+                <div class="word-bank-section">
+                    <div class="word-bank-section-header">
+                        <h2>Custom Words (<span id="custom-words-count">0</span>)</h2>
+                        <div class="word-bank-sort">
+                            <label for="custom-words-sort">Sort by:</label>
+                            <select id="custom-words-sort" class="sort-dropdown" onchange="WordBankModule.sortSection('custom', this.value)">
+                                <option value="date">Date Added</option>
+                                <option value="alpha">Alphabetically</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div id="custom-words-list" class="word-bank-grid">
+                        <!-- Custom words will be displayed here -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- ========== KNOWLEDGE CHECK CATEGORY ========== -->
+            <div id="knowledge-check-category" class="vocab-category">
+
+                <!-- Knowledge Check Sub-Tabs -->
+                <div class="kc-subtabs">
+                    <button class="kc-subtab active" data-kc-tab="vocab">Vocab</button>
+                    <button class="kc-subtab" data-kc-tab="grammar">Grammar</button>
+                </div>
+
+                <!-- ---- VOCAB SUB-PANEL ---- -->
+                <div id="kc-vocab-panel" class="kc-panel active">
+
+                <!-- Spaced Repetition Review -->
+                <div class="srs-review-section" id="srs-review-section">
+                    <div class="srs-header">
+                        <div>
+                            <h2>🔁 Spaced Repetition Review</h2>
+                            <p class="subtitle">Review words at the optimal time to lock them into long-term memory</p>
+                        </div>
+                        <div class="srs-badge-group">
+                            <div class="srs-due-badge" id="srs-due-badge">0 due</div>
+                            <div class="srs-info-wrap">
+                                <span class="srs-info-icon">ⓘ</span>
+                                <div class="srs-info-popover">
+                                    These are words from your <strong>learned vocabulary</strong> whose scheduled review date is today or overdue. Each time you review a word, the app schedules the next review further out — so a word you found easy won't come back for a week or more, while a word you struggled with returns sooner. The count grows as you learn more words and as past review dates come due.
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- SRS Idle state -->
+                    <div id="srs-idle">
+                        <div id="srs-idle-message" style="color: var(--text-secondary); margin-bottom: var(--spacing-md);"></div>
+                        <button class="btn btn-primary" id="srs-start-btn">Start Review</button>
+                    </div>
+
+                    <!-- SRS Card state -->
+                    <div id="srs-active" style="display:none;">
+                        <div class="srs-progress-line">
+                            <span id="srs-progress-text">Word 1 of 1</span>
+                        </div>
+                        <div class="srs-card" id="srs-card">
+                            <div class="srs-card-word" id="srs-card-word"></div>
+                            <button class="tts-btn" style="font-size:22px;" onclick="SRSModule.speakCurrent()" title="Hear word">🔊</button>
+                            <div class="srs-card-hint">Do you know this word? Tap to reveal.</div>
+                        </div>
+                        <div id="srs-card-reveal" style="display:none;">
+                            <div class="srs-card-definition" id="srs-card-definition"></div>
+                            <div class="srs-card-example" id="srs-card-example"></div>
+                            <div class="srs-rating-btns">
+                                <button class="btn srs-btn-hard" onclick="SRSModule.rate(1)">Forgot</button>
+                                <button class="btn srs-btn-ok" onclick="SRSModule.rate(2)">Hard</button>
+                                <button class="btn srs-btn-good" onclick="SRSModule.rate(3)">Got It</button>
+                                <button class="btn srs-btn-easy" onclick="SRSModule.rate(4)">Easy</button>
+                            </div>
+                        </div>
+                        <div id="srs-reveal-btn-wrap">
+                            <button class="btn btn-primary" id="srs-reveal-btn" onclick="SRSModule.revealCard()">Reveal Definition</button>
+                        </div>
+                    </div>
+
+                    <!-- SRS Done state -->
+                    <div id="srs-done" style="display:none;">
+                        <div class="srs-done-msg" id="srs-done-msg"></div>
+                        <button class="btn btn-secondary" id="srs-restart-btn" onclick="SRSModule.resetToIdle()">Back</button>
+                    </div>
                 </div>
 
                 <!-- Quiz Yourself Section -->
@@ -466,64 +544,100 @@
                     </div>
                 </div>
 
-                <!-- Word Bank Search -->
-                <div class="word-bank-search-bar">
-                    <span class="word-bank-search-icon">🔍</span>
-                    <input type="text" id="word-bank-search" class="word-bank-search-input" placeholder="Search your Word Bank..." oninput="WordBankModule.searchWords(this.value)" autocomplete="off">
-                    <button class="word-bank-search-clear" id="word-bank-search-clear" onclick="WordBankModule.clearSearch()" title="Clear search" style="display:none;">✕</button>
-                </div>
+                <!-- 2 Words and a Lie -->
+                <div class="kc-game-section" id="two-words-lie-section">
+                    <div class="kc-game-header">
+                        <h2>2 Words and a Lie</h2>
+                        <p class="subtitle">Three sentences use one of your Word Bank words — but one sentence uses it incorrectly. Can you spot the lie?</p>
+                    </div>
 
-                <!-- Still Learning Words -->
-                <div class="word-bank-section">
-                    <div class="word-bank-section-header">
-                        <h2>Still Learning (<span id="still-learning-words-count">0</span>)</h2>
-                        <div class="word-bank-sort">
-                            <label for="still-learning-sort">Sort by:</label>
-                            <select id="still-learning-sort" class="sort-dropdown" onchange="WordBankModule.sortSection('stillLearning', this.value)">
-                                <option value="alpha">Alphabetically</option>
-                                <option value="difficulty">Difficulty</option>
-                            </select>
+                    <!-- Idle / start state -->
+                    <div id="twal-idle">
+                        <div id="twal-no-words-msg" style="display:none;" class="kc-empty-state">
+                            <p>You need at least 1 word in your Word Bank to play. Head to the <strong>Word Bank</strong> tab and add some words!</p>
+                        </div>
+                        <div id="twal-ready">
+                            <p class="twal-intro">A random word from your Word Bank will be chosen. Claude AI will generate 3 sentences — 2 correct, 1 sneaky lie. Pick the incorrect one.</p>
+                            <button class="btn btn-primary btn-large" id="twal-start-btn">Play</button>
                         </div>
                     </div>
-                    <div id="still-learning-words" class="word-bank-grid">
-                        <!-- Still learning words will be displayed here -->
+
+                    <!-- Loading state -->
+                    <div id="twal-loading" style="display:none;">
+                        <div class="twal-loading-wrap">
+                            <div class="kc-spinner"></div>
+                            <p>Claude is crafting your sentences...</p>
+                        </div>
+                    </div>
+
+                    <!-- Active game state -->
+                    <div id="twal-active" style="display:none;">
+                        <div class="twal-word-display">
+                            <span class="twal-word-label">Word:</span>
+                            <span class="twal-word" id="twal-word"></span>
+                            <span class="twal-pos" id="twal-pos"></span>
+                        </div>
+                        <p class="twal-prompt">Which sentence uses the word <strong>incorrectly</strong>?</p>
+                        <div id="twal-sentences" class="twal-sentences"></div>
+                        <div id="twal-feedback" class="twal-feedback" style="display:none;"></div>
+                        <div class="twal-actions" id="twal-actions" style="display:none;">
+                            <button class="btn btn-primary" id="twal-next-btn">Play Again</button>
+                        </div>
+                    </div>
+
+                    <!-- Score bar -->
+                    <div class="twal-score-bar" id="twal-score-bar" style="display:none;">
+                        <span>Score: <strong id="twal-score-correct">0</strong> correct / <strong id="twal-score-played">0</strong> played</span>
                     </div>
                 </div>
 
-                <!-- Learned Words from App -->
-                <div class="word-bank-section">
-                    <div class="word-bank-section-header">
-                        <h2>Words Learned from Vocabulary Builder (<span id="app-words-count">0</span>)</h2>
-                        <div class="word-bank-sort">
-                            <label for="app-learned-sort">Sort by:</label>
-                            <select id="app-learned-sort" class="sort-dropdown" onchange="WordBankModule.sortSection('appLearned', this.value)">
-                                <option value="alpha">Alphabetically</option>
-                                <option value="difficulty">Difficulty</option>
-                            </select>
-                        </div>
+                </div><!-- end #kc-vocab-panel -->
+
+                <!-- ---- GRAMMAR SUB-PANEL ---- -->
+                <div id="kc-grammar-panel" class="kc-panel">
+
+                <!-- Spot the Error -->
+                <div class="kc-game-section" id="spot-error-section">
+                    <div class="kc-game-header">
+                        <h2>Spot the Error</h2>
+                        <p class="subtitle">A sentence with a grammatical mistake is shown. Tap the exact word that contains the error.</p>
                     </div>
-                    <div id="app-learned-words" class="word-bank-grid">
-                        <!-- App learned words will be displayed here -->
+                    <div class="kc-score-strip" id="ste-score-strip">
+                        <span>Streak: <strong id="ste-streak">0</strong></span>
+                        <span>Score: <strong id="ste-score">0</strong> / <strong id="ste-total">0</strong></span>
+                    </div>
+                    <div id="ste-card" class="kc-exercise-card">
+                        <div id="ste-sentence" class="ste-sentence"></div>
+                        <div id="ste-feedback" class="kc-feedback" style="display:none;"></div>
+                    </div>
+                    <div class="kc-controls">
+                        <button class="btn btn-primary" id="ste-new-btn">New Sentence</button>
                     </div>
                 </div>
 
-                <!-- Custom Words -->
-                <div class="word-bank-section">
-                    <div class="word-bank-section-header">
-                        <h2>Custom Words (<span id="custom-words-count">0</span>)</h2>
-                        <div class="word-bank-sort">
-                            <label for="custom-words-sort">Sort by:</label>
-                            <select id="custom-words-sort" class="sort-dropdown" onchange="WordBankModule.sortSection('custom', this.value)">
-                                <option value="date">Date Added</option>
-                                <option value="alpha">Alphabetically</option>
-                            </select>
-                        </div>
+                <!-- Fill in the Blank -->
+                <div class="kc-game-section" id="fill-blank-section">
+                    <div class="kc-game-header">
+                        <h2>Fill in the Blank</h2>
+                        <p class="subtitle">Choose the correct verb form to complete the sentence.</p>
                     </div>
-                    <div id="custom-words-list" class="word-bank-grid">
-                        <!-- Custom words will be displayed here -->
+                    <div class="kc-score-strip" id="fib-score-strip">
+                        <span>Streak: <strong id="fib-streak">0</strong></span>
+                        <span>Score: <strong id="fib-score">0</strong> / <strong id="fib-total">0</strong></span>
+                    </div>
+                    <div id="fib-card" class="kc-exercise-card">
+                        <p id="fib-sentence" class="fib-sentence"></p>
+                        <div id="fib-options" class="fib-options"></div>
+                        <div id="fib-feedback" class="kc-feedback" style="display:none;"></div>
+                    </div>
+                    <div class="kc-controls">
+                        <button class="btn btn-primary" id="fib-new-btn">New Question</button>
                     </div>
                 </div>
-            </div>
+
+                </div><!-- end #kc-grammar-panel -->
+
+            </div><!-- end #knowledge-check-category -->
 
             <!-- ========== GRAMMAR & STRUCTURE CATEGORY ========== -->
             <div id="grammar-category" class="vocab-category">
@@ -2210,6 +2324,42 @@
           if (y + th > window.innerHeight - margin) y = e.clientY - th - 10;
           tip.style.left = x + 'px';
           tip.style.top  = y + 'px';
+        });
+      })();
+    </script>
+
+    <!-- Word Bank FAB -->
+    <script>
+      (function() {
+        var fab = document.getElementById('word-bank-fab');
+        fab.addEventListener('click', function() {
+          Router.navigateTo('vocabulary');
+          // After the view switches, click the Word Bank tab
+          setTimeout(function() {
+            var tab = document.querySelector('[data-vocab-category="bank"]');
+            if (tab) tab.click();
+          }, 50);
+        });
+
+        // Hide FAB when the Word Bank tab is active, show it otherwise
+        function syncFabVisibility() {
+          var bankTab = document.querySelector('[data-vocab-category="bank"]');
+          var onVocabView = document.getElementById('vocabulary-view') &&
+                            document.getElementById('vocabulary-view').classList.contains('active');
+          if (onVocabView && bankTab && bankTab.classList.contains('active')) {
+            fab.classList.add('word-bank-fab--hidden');
+          } else {
+            fab.classList.remove('word-bank-fab--hidden');
+          }
+        }
+
+        document.addEventListener('viewChanged', syncFabVisibility);
+
+        // Also sync when vocab tabs are clicked
+        document.addEventListener('click', function(e) {
+          if (e.target.closest('[data-vocab-category]')) {
+            setTimeout(syncFabVisibility, 10);
+          }
         });
       })();
     </script>

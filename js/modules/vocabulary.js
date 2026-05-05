@@ -177,6 +177,15 @@ const VocabularyModule = (function() {
           WordBankModule.refresh();
         }
         break;
+      case 'knowledge-check':
+        if (typeof SRSModule !== 'undefined') {
+          SRSModule.refresh();
+        }
+        if (typeof WordBankModule !== 'undefined') {
+          WordBankModule.refresh();
+        }
+        initTWAL();
+        break;
       case 'grammar':
         if (typeof GrammarModule !== 'undefined') {
           GrammarModule.refresh();
@@ -880,6 +889,237 @@ const VocabularyModule = (function() {
     return userData ? userData.vocabulary : null;
   }
 
+  // ============================================
+  // KNOWLEDGE CHECK SUB-TABS
+  // ============================================
+
+  let currentKCTab = 'vocab';
+
+  function setupKCSubTabs() {
+    const subtabs = document.querySelectorAll('.kc-subtab');
+    subtabs.forEach(tab => {
+      tab.addEventListener('click', function() {
+        switchKCTab(this.dataset.kcTab);
+      });
+    });
+  }
+
+  function switchKCTab(tab) {
+    currentKCTab = tab;
+    document.querySelectorAll('.kc-subtab').forEach(t => {
+      t.classList.toggle('active', t.dataset.kcTab === tab);
+    });
+    document.querySelectorAll('.kc-panel').forEach(p => {
+      p.classList.toggle('active', p.id === `kc-${tab}-panel`);
+    });
+    if (tab === 'grammar') {
+      if (typeof GrammarModule !== 'undefined' && GrammarModule.initKnowledgeCheck) {
+        GrammarModule.initKnowledgeCheck();
+      }
+    }
+  }
+
+  // ============================================
+  // 2 WORDS AND A LIE
+  // ============================================
+
+  const TWAL_CACHE_KEY = 'twal_sentence_cache';
+  let twalScore = { correct: 0, played: 0 };
+  let twalCurrentWord = null;
+  let twalAnswered = false;
+
+  function initTWAL() {
+    setupKCSubTabs();
+
+    const startBtn = document.getElementById('twal-start-btn');
+    const nextBtn = document.getElementById('twal-next-btn');
+
+    if (startBtn) startBtn.addEventListener('click', twalPlay);
+    if (nextBtn) nextBtn.addEventListener('click', twalPlay);
+  }
+
+  function twalGetWordBank() {
+    const data = StorageManager.load();
+    if (!data) return [];
+    const allAppWords = [
+      ...vocabularyDatabase.beginner,
+      ...vocabularyDatabase.intermediate,
+      ...vocabularyDatabase.advanced
+    ];
+    const learnedAppWords = allAppWords.filter(w =>
+      data.vocabulary.learned.includes(w.id) || data.vocabulary.stillLearning.includes(w.id)
+    ).map(w => ({
+      word: w.word,
+      partOfSpeech: w.partOfSpeech,
+      definition: w.definition,
+      exampleSentence: w.exampleSentence
+    }));
+    const customWords = (data.customWords || []).map(w => ({
+      word: w.word,
+      partOfSpeech: w.partOfSpeech || 'word',
+      definition: w.definition || '',
+      exampleSentence: w.example || ''
+    })).filter(w => w.definition);
+    return [...learnedAppWords, ...customWords];
+  }
+
+  function twalGetCached(word) {
+    try {
+      const raw = localStorage.getItem(TWAL_CACHE_KEY);
+      if (!raw) return null;
+      const cache = JSON.parse(raw);
+      return cache[word] || null;
+    } catch { return null; }
+  }
+
+  function twalSetCached(word, data) {
+    try {
+      const raw = localStorage.getItem(TWAL_CACHE_KEY);
+      const cache = raw ? JSON.parse(raw) : {};
+      cache[word] = data;
+      // Keep cache from growing unbounded — max 100 entries
+      const keys = Object.keys(cache);
+      if (keys.length > 100) delete cache[keys[0]];
+      localStorage.setItem(TWAL_CACHE_KEY, JSON.stringify(cache));
+    } catch {}
+  }
+
+  async function twalPlay() {
+    const words = twalGetWordBank();
+    const noWordsMsg = document.getElementById('twal-no-words-msg');
+    const readyDiv = document.getElementById('twal-ready');
+
+    if (words.length === 0) {
+      if (noWordsMsg) noWordsMsg.style.display = 'block';
+      if (readyDiv) readyDiv.style.display = 'none';
+      return;
+    }
+
+    // Pick a random word
+    twalCurrentWord = words[Math.floor(Math.random() * words.length)];
+    twalAnswered = false;
+
+    // Show loading
+    twalSetState('loading');
+
+    // Check cache first
+    let result = twalGetCached(twalCurrentWord.word);
+
+    if (!result) {
+      try {
+        const response = await fetch('/.netlify/functions/claude-proxy', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            task: 'two_words_and_a_lie',
+            payload: {
+              word: twalCurrentWord.word,
+              partOfSpeech: twalCurrentWord.partOfSpeech,
+              definition: twalCurrentWord.definition,
+              exampleSentence: twalCurrentWord.exampleSentence
+            }
+          })
+        });
+
+        if (!response.ok) throw new Error('Network error');
+        result = await response.json();
+        if (!result.sentences) throw new Error('Bad response shape');
+        twalSetCached(twalCurrentWord.word, result);
+      } catch (err) {
+        console.error('TWAL fetch error:', err);
+        twalSetState('idle');
+        showToast('Could not load sentences. Check your connection and try again.', 'error');
+        return;
+      }
+    }
+
+    twalRender(result);
+  }
+
+  function twalRender(result) {
+    const wordEl = document.getElementById('twal-word');
+    const posEl = document.getElementById('twal-pos');
+    const sentencesEl = document.getElementById('twal-sentences');
+    const feedbackEl = document.getElementById('twal-feedback');
+    const actionsEl = document.getElementById('twal-actions');
+
+    if (wordEl) wordEl.textContent = twalCurrentWord.word;
+    if (posEl) posEl.textContent = twalCurrentWord.partOfSpeech;
+    if (feedbackEl) { feedbackEl.style.display = 'none'; feedbackEl.textContent = ''; }
+    if (actionsEl) actionsEl.style.display = 'none';
+
+    if (sentencesEl) {
+      sentencesEl.innerHTML = result.sentences.map((s, i) => `
+        <button class="twal-sentence-btn" data-index="${i}" data-correct="${s.correct}">
+          <span class="twal-label">${String.fromCharCode(65 + i)}.</span>
+          <span class="twal-text">${s.text}</span>
+        </button>
+      `).join('');
+
+      sentencesEl.querySelectorAll('.twal-sentence-btn').forEach(btn => {
+        btn.addEventListener('click', () => twalAnswer(btn, result));
+      });
+    }
+
+    twalSetState('active');
+  }
+
+  function twalAnswer(btn, result) {
+    if (twalAnswered) return;
+    twalAnswered = true;
+
+    const isCorrectGuess = btn.dataset.correct === 'false'; // user picks the LIE
+    twalScore.played++;
+    if (isCorrectGuess) twalScore.correct++;
+
+    // Style all buttons
+    const allBtns = document.querySelectorAll('.twal-sentence-btn');
+    allBtns.forEach(b => {
+      b.disabled = true;
+      if (b.dataset.correct === 'false') {
+        b.classList.add('twal-incorrect-sentence');
+      } else {
+        b.classList.add('twal-correct-sentence');
+      }
+    });
+
+    // Highlight chosen
+    btn.classList.add(isCorrectGuess ? 'twal-chosen-right' : 'twal-chosen-wrong');
+
+    // Feedback
+    const feedbackEl = document.getElementById('twal-feedback');
+    if (feedbackEl) {
+      feedbackEl.style.display = 'block';
+      feedbackEl.className = `twal-feedback ${isCorrectGuess ? 'twal-feedback-correct' : 'twal-feedback-wrong'}`;
+      feedbackEl.innerHTML = isCorrectGuess
+        ? `<strong>Correct!</strong> You spotted the lie. <em>${result.explanation}</em>`
+        : `<strong>Not quite.</strong> <em>${result.explanation}</em>`;
+    }
+
+    // Score
+    const scoreCorrect = document.getElementById('twal-score-correct');
+    const scorePlayed = document.getElementById('twal-score-played');
+    const scoreBar = document.getElementById('twal-score-bar');
+    if (scoreCorrect) scoreCorrect.textContent = twalScore.correct;
+    if (scorePlayed) scorePlayed.textContent = twalScore.played;
+    if (scoreBar) scoreBar.style.display = 'block';
+
+    // Show next button
+    const actionsEl = document.getElementById('twal-actions');
+    if (actionsEl) actionsEl.style.display = 'block';
+
+    StorageManager.markActiveToday();
+  }
+
+  function twalSetState(state) {
+    const idle = document.getElementById('twal-idle');
+    const loading = document.getElementById('twal-loading');
+    const active = document.getElementById('twal-active');
+    if (idle) idle.style.display = state === 'idle' ? 'block' : 'none';
+    if (loading) loading.style.display = state === 'loading' ? 'block' : 'none';
+    if (active) active.style.display = state === 'active' ? 'block' : 'none';
+  }
+
   // Public API
   return {
     init: init,
@@ -896,7 +1136,9 @@ const VocabularyModule = (function() {
     getCurrentDifficulty: getCurrentDifficulty,
     getProgress: getProgress,
     switchVocabCategory: switchVocabCategory,
-    speakWord: speakWord
+    speakWord: speakWord,
+    initTWAL: initTWAL,
+    switchKCTab: switchKCTab
   };
 })();
 

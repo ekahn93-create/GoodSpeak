@@ -3529,3 +3529,424 @@ canvas {
   font-size: var(--font-size-sm);
 }
 
+/* ==================== WORD BANK FLOATING ACTION BUTTON ==================== */
+.word-bank-fab {
+  position: fixed;
+  right: 24px;
+  bottom: 32px;
+  z-index: 1500;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 20px;
+  background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
+  color: #fff;
+  border: none;
+  border-radius: 999px;
+  box-shadow: 0 4px 20px rgba(99, 102, 241, 0.45);
+  cursor: pointer;
+  font-family: var(--font-family);
+  font-size: var(--font-size-sm);
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  transition: transform var(--transition-fast), box-shadow var(--transition-fast), opacity var(--transition-base);
+}
+
+.word-bank-fab:hover {
+  transform: translateY(-2px) scale(1.04);
+  box-shadow: 0 8px 28px rgba(99, 102, 241, 0.55);
+}
+
+.word-bank-fab:active {
+  transform: translateY(0) scale(0.98);
+}
+
+.word-bank-fab-icon {
+  font-size: 18px;
+  line-height: 1;
+}
+
+.word-bank-fab--hidden {
+  opacity: 0;
+  pointer-events: none;
+  transform: translateY(12px);
+}
+
+/* ============================================
+   KNOWLEDGE CHECK — SUB-TABS
+   ============================================ */
+
+.kc-subtabs {
+  display: flex;
+  gap: var(--spacing-xs);
+  margin-bottom: var(--spacing-lg);
+  border-bottom: 2px solid var(--border-color);
+  padding-bottom: 0;
+}
+
+.kc-subtab {
+  background: none;
+  border: none;
+  border-bottom: 3px solid transparent;
+  padding: var(--spacing-sm) var(--spacing-md);
+  font-size: var(--font-size-base);
+  font-weight: 600;
+  color: var(--text-secondary);
+  cursor: pointer;
+  margin-bottom: -2px;
+  transition: color 0.2s, border-color 0.2s;
+  border-radius: 0;
+}
+
+.kc-subtab:hover {
+  color: var(--primary-color);
+}
+
+.kc-subtab.active {
+  color: var(--primary-color);
+  border-bottom-color: var(--primary-color);
+}
+
+.kc-panel {
+  display: none;
+}
+
+.kc-panel.active {
+  display: block;
+}
+
+/* ============================================
+   KNOWLEDGE CHECK — SHARED GAME STYLES
+   ============================================ */
+
+.kc-game-section {
+  background: var(--bg-card);
+  border-radius: var(--border-radius);
+  box-shadow: var(--shadow-md);
+  padding: var(--spacing-lg);
+  margin-bottom: var(--spacing-lg);
+}
+
+.kc-game-header h2 {
+  margin: 0 0 var(--spacing-xs) 0;
+  font-size: var(--font-size-xl);
+  color: var(--text-primary);
+}
+
+.kc-game-header .subtitle {
+  margin: 0 0 var(--spacing-md) 0;
+  color: var(--text-secondary);
+}
+
+.kc-score-strip {
+  display: flex;
+  gap: var(--spacing-lg);
+  font-size: var(--font-size-sm);
+  color: var(--text-secondary);
+  margin-bottom: var(--spacing-md);
+  padding: var(--spacing-xs) var(--spacing-sm);
+  background: var(--bg-main);
+  border-radius: var(--border-radius-sm);
+}
+
+.kc-score-strip strong {
+  color: var(--primary-color);
+}
+
+.kc-exercise-card {
+  background: var(--bg-main);
+  border-radius: var(--border-radius-sm);
+  padding: var(--spacing-md);
+  margin-bottom: var(--spacing-md);
+  min-height: 80px;
+}
+
+.kc-controls {
+  display: flex;
+  gap: var(--spacing-sm);
+  flex-wrap: wrap;
+}
+
+.kc-feedback {
+  margin-top: var(--spacing-md);
+  padding: var(--spacing-sm) var(--spacing-md);
+  border-radius: var(--border-radius-sm);
+  font-size: var(--font-size-sm);
+  line-height: 1.5;
+}
+
+.kc-feedback-correct {
+  background: #d1fae5;
+  color: #065f46;
+  border-left: 4px solid var(--secondary-color);
+}
+
+.kc-feedback-wrong {
+  background: #fee2e2;
+  color: #991b1b;
+  border-left: 4px solid var(--accent-color);
+}
+
+.kc-empty-state {
+  color: var(--text-secondary);
+  text-align: center;
+  padding: var(--spacing-lg);
+}
+
+.kc-spinner {
+  width: 36px;
+  height: 36px;
+  border: 3px solid var(--border-color);
+  border-top-color: var(--primary-color);
+  border-radius: 50%;
+  animation: spin 0.7s linear infinite;
+  margin: 0 auto var(--spacing-sm);
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+/* ============================================
+   2 WORDS AND A LIE
+   ============================================ */
+
+.twal-loading-wrap {
+  text-align: center;
+  padding: var(--spacing-lg);
+  color: var(--text-secondary);
+}
+
+.twal-intro {
+  color: var(--text-secondary);
+  margin-bottom: var(--spacing-md);
+  line-height: 1.6;
+}
+
+.twal-word-display {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+  margin-bottom: var(--spacing-md);
+  flex-wrap: wrap;
+}
+
+.twal-word-label {
+  font-size: var(--font-size-sm);
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.twal-word {
+  font-size: var(--font-size-xl);
+  font-weight: 700;
+  color: var(--primary-color);
+}
+
+.twal-pos {
+  font-size: var(--font-size-sm);
+  color: var(--text-secondary);
+  background: var(--bg-main);
+  border: 1px solid var(--border-color);
+  border-radius: 20px;
+  padding: 2px 10px;
+}
+
+.twal-prompt {
+  color: var(--text-secondary);
+  margin-bottom: var(--spacing-md);
+}
+
+.twal-sentences {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-sm);
+  margin-bottom: var(--spacing-md);
+}
+
+.twal-sentence-btn {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--spacing-sm);
+  background: var(--bg-card);
+  border: 2px solid var(--border-color);
+  border-radius: var(--border-radius-sm);
+  padding: var(--spacing-sm) var(--spacing-md);
+  cursor: pointer;
+  text-align: left;
+  font-size: var(--font-size-base);
+  line-height: 1.6;
+  color: var(--text-primary);
+  transition: border-color 0.15s, background 0.15s;
+  width: 100%;
+}
+
+.twal-sentence-btn:hover:not(:disabled) {
+  border-color: var(--primary-color);
+  background: #eef2ff;
+}
+
+.twal-label {
+  font-weight: 700;
+  color: var(--primary-color);
+  flex-shrink: 0;
+  min-width: 20px;
+}
+
+.twal-sentence-btn.twal-correct-sentence {
+  border-color: var(--secondary-color);
+  background: #d1fae5;
+}
+
+.twal-sentence-btn.twal-incorrect-sentence {
+  border-color: var(--accent-color);
+  background: #fee2e2;
+}
+
+.twal-sentence-btn.twal-chosen-right {
+  border-width: 3px;
+  border-color: var(--secondary-color);
+}
+
+.twal-sentence-btn.twal-chosen-wrong {
+  border-width: 3px;
+  border-color: var(--accent-color);
+}
+
+.twal-feedback {
+  padding: var(--spacing-sm) var(--spacing-md);
+  border-radius: var(--border-radius-sm);
+  font-size: var(--font-size-sm);
+  line-height: 1.6;
+  margin-bottom: var(--spacing-md);
+}
+
+.twal-feedback-correct {
+  background: #d1fae5;
+  color: #065f46;
+  border-left: 4px solid var(--secondary-color);
+}
+
+.twal-feedback-wrong {
+  background: #fee2e2;
+  color: #991b1b;
+  border-left: 4px solid var(--accent-color);
+}
+
+.twal-score-bar {
+  font-size: var(--font-size-sm);
+  color: var(--text-secondary);
+  margin-top: var(--spacing-sm);
+  padding: var(--spacing-xs) var(--spacing-sm);
+  background: var(--bg-main);
+  border-radius: var(--border-radius-sm);
+}
+
+.twal-score-bar strong {
+  color: var(--primary-color);
+}
+
+.twal-actions {
+  margin-top: var(--spacing-sm);
+}
+
+/* ============================================
+   SPOT THE ERROR
+   ============================================ */
+
+.ste-sentence {
+  font-size: var(--font-size-lg);
+  line-height: 1.8;
+  color: var(--text-primary);
+}
+
+.ste-word {
+  cursor: pointer;
+  border-radius: 4px;
+  padding: 1px 3px;
+  transition: background 0.15s, color 0.15s;
+  display: inline;
+}
+
+.ste-word:hover {
+  background: #eef2ff;
+  color: var(--primary-color);
+}
+
+.ste-word-correct {
+  background: #d1fae5 !important;
+  color: #065f46 !important;
+  font-weight: 700;
+  cursor: default;
+}
+
+.ste-word-wrong {
+  background: #fee2e2 !important;
+  color: #991b1b !important;
+  font-weight: 700;
+  cursor: default;
+}
+
+/* ============================================
+   FILL IN THE BLANK
+   ============================================ */
+
+.fib-sentence {
+  font-size: var(--font-size-lg);
+  line-height: 1.8;
+  color: var(--text-primary);
+  margin-bottom: var(--spacing-md);
+}
+
+.fib-blank {
+  display: inline-block;
+  border-bottom: 2px solid var(--primary-color);
+  min-width: 60px;
+  text-align: center;
+  color: var(--primary-color);
+  font-weight: 700;
+}
+
+.fib-filled {
+  font-weight: 700;
+  padding: 0 4px;
+  border-radius: 4px;
+}
+
+.fib-filled-correct {
+  background: #d1fae5;
+  color: #065f46;
+}
+
+.fib-filled-wrong {
+  background: #fee2e2;
+  color: #991b1b;
+}
+
+.fib-options {
+  display: flex;
+  gap: var(--spacing-sm);
+  flex-wrap: wrap;
+  margin-bottom: var(--spacing-md);
+}
+
+.fib-option-btn {
+  min-width: 80px;
+  font-size: var(--font-size-base);
+  font-weight: 600;
+  transition: background 0.15s, border-color 0.15s;
+}
+
+.fib-correct {
+  background: var(--secondary-color) !important;
+  color: white !important;
+  border-color: var(--secondary-color) !important;
+}
+
+.fib-wrong {
+  background: var(--accent-color) !important;
+  color: white !important;
+  border-color: var(--accent-color) !important;
+}
+

@@ -171,6 +171,12 @@ const WordBankModule = (function() {
       reviewQuizBtn.addEventListener('click', toggleReview);
     }
 
+    // Update Words Available count when source dropdown changes
+    const quizSourceSelect = document.getElementById('quiz-source');
+    if (quizSourceSelect) {
+      quizSourceSelect.addEventListener('change', updateQuizWordCount);
+    }
+
     // Listen for view changes
     document.addEventListener('viewChanged', function(e) {
       if (e.detail.viewName === 'vocabulary') {
@@ -866,6 +872,33 @@ const WordBankModule = (function() {
   }
 
   /**
+   * Update the "Words Available" count based on the selected quiz source
+   */
+  function updateQuizWordCount() {
+    if (!quizTotalWordsElement || !userData) return;
+
+    const quizSourceSelect = document.getElementById('quiz-source');
+    const selectedSource = quizSourceSelect ? quizSourceSelect.value : 'all';
+    let allWords = getAllQuizWords();
+
+    if (selectedSource === 'stillLearning') {
+      const stillLearningIds = userData.vocabulary.stillLearning || [];
+      const dbWords = [
+        ...vocabularyDatabase.beginner,
+        ...vocabularyDatabase.intermediate,
+        ...vocabularyDatabase.advanced
+      ];
+      allWords = stillLearningIds.map(id => dbWords.find(w => w.id === id)).filter(w => w !== undefined);
+    } else if (selectedSource === 'learned') {
+      allWords = allWords.filter(word => typeof word.id === 'number' && word.id < 1000000);
+    } else if (selectedSource === 'custom') {
+      allWords = allWords.filter(word => word.isCustom === true || word.id >= 1000000);
+    }
+
+    quizTotalWordsElement.textContent = allWords.length;
+  }
+
+  /**
    * Start the quiz
    */
   function startQuiz() {
@@ -1249,13 +1282,11 @@ const WordBankModule = (function() {
     displayCustomWords();
     updateCounts();
 
-    // Update quiz total words count
-    const totalQuizWords = getAllQuizWords().length;
-    if (quizTotalWordsElement) {
-      quizTotalWordsElement.textContent = totalQuizWords;
-    }
+    // Update quiz total words count based on current source selection
+    updateQuizWordCount();
 
     // Enable/disable start button based on word count
+    const totalQuizWords = getAllQuizWords().length;
     if (startQuizBtn) {
       startQuizBtn.disabled = totalQuizWords < 4;
       if (totalQuizWords < 4) {

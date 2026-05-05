@@ -486,11 +486,211 @@ const GrammarModule = (function() {
     loadNewVoice();
   }
 
+  // ============================================
+  // KNOWLEDGE CHECK — SPOT THE ERROR
+  // ============================================
+
+  let steScore = 0;
+  let steTotal = 0;
+  let steStreak = 0;
+  let steCurrentError = null;
+  let steAnswered = false;
+  let steInitialized = false;
+
+  function initSpotTheError() {
+    const newBtn = document.getElementById('ste-new-btn');
+    if (newBtn && !newBtn._steListenerAdded) {
+      newBtn.addEventListener('click', steLoad);
+      newBtn._steListenerAdded = true;
+    }
+    steLoad();
+  }
+
+  function steLoad() {
+    steAnswered = false;
+    steCurrentError = errorCorrections[Math.floor(Math.random() * errorCorrections.length)];
+
+    const sentenceEl = document.getElementById('ste-sentence');
+    const feedbackEl = document.getElementById('ste-feedback');
+    if (feedbackEl) { feedbackEl.style.display = 'none'; feedbackEl.textContent = ''; }
+
+    if (!sentenceEl) return;
+
+    // Tokenise the incorrect sentence into clickable word spans
+    const words = steCurrentError.incorrect.split(/(\s+)/);
+    sentenceEl.innerHTML = words.map((token, i) => {
+      if (/^\s+$/.test(token)) return token;
+      return `<span class="ste-word" data-index="${i}">${token}</span>`;
+    }).join('');
+
+    sentenceEl.querySelectorAll('.ste-word').forEach(span => {
+      span.addEventListener('click', () => steGuess(span));
+    });
+  }
+
+  function steGuess(span) {
+    if (steAnswered) return;
+    steAnswered = true;
+    steTotal++;
+
+    // Determine the "error word(s)" — words in incorrect sentence not in correct sentence
+    const incorrectWords = steCurrentError.incorrect.replace(/[.,!?;:]/g, '').toLowerCase().split(/\s+/);
+    const correctWords = steCurrentError.correct.replace(/[.,!?;:]/g, '').toLowerCase().split(/\s+/);
+    const errorWords = incorrectWords.filter((w, i) => w !== (correctWords[i] || ''));
+
+    const clickedWord = span.textContent.replace(/[.,!?;:]/g, '').toLowerCase();
+    const isCorrect = errorWords.includes(clickedWord);
+
+    if (isCorrect) {
+      steScore++;
+      steStreak++;
+      span.classList.add('ste-word-correct');
+    } else {
+      steStreak = 0;
+      span.classList.add('ste-word-wrong');
+      // Highlight the actual error word(s)
+      document.querySelectorAll('.ste-word').forEach(s => {
+        if (errorWords.includes(s.textContent.replace(/[.,!?;:]/g, '').toLowerCase())) {
+          s.classList.add('ste-word-correct');
+        }
+      });
+    }
+
+    const feedbackEl = document.getElementById('ste-feedback');
+    if (feedbackEl) {
+      feedbackEl.style.display = 'block';
+      feedbackEl.className = `kc-feedback ${isCorrect ? 'kc-feedback-correct' : 'kc-feedback-wrong'}`;
+      feedbackEl.innerHTML = isCorrect
+        ? `<strong>Correct!</strong> "${steCurrentError.correct}" — ${steCurrentError.explanation}`
+        : `<strong>Not quite.</strong> "${steCurrentError.correct}" — ${steCurrentError.explanation}`;
+    }
+
+    steUpdateScores();
+    StorageManager.markActiveToday();
+  }
+
+  function steUpdateScores() {
+    const streakEl = document.getElementById('ste-streak');
+    const scoreEl = document.getElementById('ste-score');
+    const totalEl = document.getElementById('ste-total');
+    if (streakEl) streakEl.textContent = steStreak;
+    if (scoreEl) scoreEl.textContent = steScore;
+    if (totalEl) totalEl.textContent = steTotal;
+  }
+
+  // ============================================
+  // KNOWLEDGE CHECK — FILL IN THE BLANK
+  // ============================================
+
+  let fibScore = 0;
+  let fibTotal = 0;
+  let fibStreak = 0;
+  let fibCurrentQ = null;
+  let fibAnswered = false;
+
+  function initFillInTheBlank() {
+    const newBtn = document.getElementById('fib-new-btn');
+    if (newBtn && !newBtn._fibListenerAdded) {
+      newBtn.addEventListener('click', fibLoad);
+      newBtn._fibListenerAdded = true;
+    }
+    fibLoad();
+  }
+
+  function fibLoad() {
+    fibAnswered = false;
+    fibCurrentQ = agreementExercises[Math.floor(Math.random() * agreementExercises.length)];
+
+    const sentenceEl = document.getElementById('fib-sentence');
+    const optionsEl = document.getElementById('fib-options');
+    const feedbackEl = document.getElementById('fib-feedback');
+
+    if (feedbackEl) { feedbackEl.style.display = 'none'; feedbackEl.textContent = ''; }
+
+    if (sentenceEl) {
+      sentenceEl.innerHTML = fibCurrentQ.sentence.replace('___', '<span class="fib-blank">___</span>');
+    }
+
+    if (optionsEl) {
+      optionsEl.innerHTML = fibCurrentQ.options.map(opt => `
+        <button class="fib-option-btn btn btn-secondary" data-option="${opt}">${opt}</button>
+      `).join('');
+
+      optionsEl.querySelectorAll('.fib-option-btn').forEach(btn => {
+        btn.addEventListener('click', () => fibGuess(btn));
+      });
+    }
+  }
+
+  function fibGuess(btn) {
+    if (fibAnswered) return;
+    fibAnswered = true;
+    fibTotal++;
+
+    const selected = btn.dataset.option;
+    const isCorrect = selected === fibCurrentQ.correct;
+
+    if (isCorrect) { fibScore++; fibStreak++; }
+    else { fibStreak = 0; }
+
+    // Style buttons
+    document.querySelectorAll('.fib-option-btn').forEach(b => {
+      b.disabled = true;
+      if (b.dataset.option === fibCurrentQ.correct) {
+        b.classList.add('fib-correct');
+      } else if (b === btn && !isCorrect) {
+        b.classList.add('fib-wrong');
+      }
+    });
+
+    // Fill in the blank with answer
+    const sentenceEl = document.getElementById('fib-sentence');
+    if (sentenceEl) {
+      sentenceEl.innerHTML = fibCurrentQ.sentence.replace(
+        '___',
+        `<span class="fib-filled ${isCorrect ? 'fib-filled-correct' : 'fib-filled-wrong'}">${fibCurrentQ.correct}</span>`
+      );
+    }
+
+    const feedbackEl = document.getElementById('fib-feedback');
+    if (feedbackEl) {
+      feedbackEl.style.display = 'block';
+      feedbackEl.className = `kc-feedback ${isCorrect ? 'kc-feedback-correct' : 'kc-feedback-wrong'}`;
+      feedbackEl.innerHTML = isCorrect
+        ? `<strong>Correct!</strong> ${fibCurrentQ.explanation}`
+        : `<strong>Not quite.</strong> ${fibCurrentQ.explanation}`;
+    }
+
+    fibUpdateScores();
+    StorageManager.markActiveToday();
+  }
+
+  function fibUpdateScores() {
+    const streakEl = document.getElementById('fib-streak');
+    const scoreEl = document.getElementById('fib-score');
+    const totalEl = document.getElementById('fib-total');
+    if (streakEl) streakEl.textContent = fibStreak;
+    if (scoreEl) scoreEl.textContent = fibScore;
+    if (totalEl) totalEl.textContent = fibTotal;
+  }
+
+  /**
+   * Called by VocabularyModule when user switches to Grammar KC sub-tab
+   */
+  function initKnowledgeCheck() {
+    if (!steInitialized) {
+      steInitialized = true;
+      initSpotTheError();
+      initFillInTheBlank();
+    }
+  }
+
   // Public API
   return {
     init: init,
     refresh: refresh,
-    checkAgreement: checkAgreement
+    checkAgreement: checkAgreement,
+    initKnowledgeCheck: initKnowledgeCheck
   };
 })();
 
