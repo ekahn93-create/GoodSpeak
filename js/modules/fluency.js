@@ -1304,15 +1304,15 @@ const FluencyModule = (function() {
     }
   }
 
-  function addAIGenerateButton(containerId, exerciseType, displayFn) {
-    const container = document.getElementById(containerId);
-    if (!container) return;
+  function addAIGenerateButton(siblingId, exerciseType, displayFn) {
+    const sibling = document.getElementById(siblingId);
+    if (!sibling || !sibling.parentNode) return;
     const btn = document.createElement('button');
     btn.className = 'btn btn-secondary btn-sm';
     btn.textContent = 'Generate with AI';
     btn.style.cssText = 'margin-left: var(--spacing-sm);';
     btn.addEventListener('click', () => generateFluencyExercise(exerciseType, displayFn, btn));
-    container.appendChild(btn);
+    sibling.parentNode.insertBefore(btn, sibling.nextSibling);
   }
 
   function initAIGenerateButtons() {
