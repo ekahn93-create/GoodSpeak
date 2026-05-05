@@ -104,7 +104,10 @@ Shuffle the order of the sentences randomly so the incorrect one is not always l
     }
 
     const data = await response.json();
-    const content = data.content?.[0]?.text || '';
+    let content = data.content?.[0]?.text || '';
+
+    // Strip markdown code fences if present (e.g. ```json ... ```)
+    content = content.replace(/^```(?:json)?\s*/i, '').replace(/\s*```\s*$/, '').trim();
 
     // Validate that we got parseable JSON back
     let parsed;
