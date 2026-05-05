@@ -73,6 +73,10 @@ Shuffle the order of the sentences randomly so the incorrect one is not always l
   }
 
   try {
+    console.log('Calling Anthropic API...');
+    console.log('Node version:', process.version);
+    console.log('fetch available:', typeof fetch);
+
     const response = await fetch('https://api.anthropic.com/v1/messages', {
       method: 'POST',
       headers: {
@@ -87,12 +91,15 @@ Shuffle the order of the sentences randomly so the incorrect one is not always l
       })
     });
 
+    console.log('Anthropic response status:', response.status);
+
     if (!response.ok) {
       const errText = await response.text();
       console.error('Anthropic API error:', response.status, errText);
       return {
         statusCode: 502,
-        body: JSON.stringify({ error: 'Upstream API error.', detail: errText })
+        headers: { 'Access-Control-Allow-Origin': '*' },
+        body: JSON.stringify({ error: 'Upstream API error.', status: response.status, detail: errText })
       };
     }
 
@@ -106,6 +113,7 @@ Shuffle the order of the sentences randomly so the incorrect one is not always l
     } catch {
       return {
         statusCode: 502,
+        headers: { 'Access-Control-Allow-Origin': '*' },
         body: JSON.stringify({ error: 'Model returned non-JSON response.', raw: content })
       };
     }
@@ -120,10 +128,11 @@ Shuffle the order of the sentences randomly so the incorrect one is not always l
     };
 
   } catch (err) {
-    console.error('Function error:', err);
+    console.error('Function error:', err.name, err.message);
     return {
       statusCode: 500,
-      body: JSON.stringify({ error: 'Internal server error.', detail: err.message })
+      headers: { 'Access-Control-Allow-Origin': '*' },
+      body: JSON.stringify({ error: 'Internal server error.', name: err.name, detail: err.message })
     };
   }
 };

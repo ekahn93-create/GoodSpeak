@@ -1021,7 +1021,11 @@ const VocabularyModule = (function() {
           })
         });
 
-        if (!response.ok) throw new Error('Network error');
+        if (!response.ok) {
+          const errBody = await response.json().catch(() => ({}));
+          console.error('TWAL server error:', response.status, errBody);
+          throw new Error(`Server error ${response.status}: ${errBody.detail || errBody.error || 'unknown'}`);
+        }
         result = await response.json();
         if (!result.sentences) throw new Error('Bad response shape');
         twalSetCached(twalCurrentWord.word, result);
