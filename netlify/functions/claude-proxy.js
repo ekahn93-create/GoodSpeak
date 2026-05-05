@@ -68,6 +68,27 @@ Respond ONLY with valid JSON in this exact format, no other text:
 }
 
 Shuffle the order of the sentences randomly so the incorrect one is not always last.`;
+  } else if (task === 'storytelling_feedback') {
+    const { prompt: storyPrompt, transcript, isSpeech } = payload;
+    const inputType = isSpeech ? 'spoken response (transcribed)' : 'written response';
+    prompt = `You are a speaking coach giving feedback on a ${inputType} to a storytelling prompt.
+
+Prompt given to the user: "${storyPrompt}"
+
+User's response:
+"""
+${transcript}
+"""
+
+Evaluate the response on these 4 dimensions and give one actionable improvement tip. Be encouraging but honest. Keep each dimension to 1–2 sentences.
+
+Respond ONLY with valid JSON in this exact format, no other text:
+{
+  "structure": "...",
+  "engagement": "...",
+  "vocabulary": "...",
+  "tip": "..."
+}`;
   } else {
     return { statusCode: 400, body: JSON.stringify({ error: 'Unknown task.' }) };
   }

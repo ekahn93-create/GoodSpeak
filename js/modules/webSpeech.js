@@ -315,8 +315,130 @@ const WebSpeechModule = (function() {
     const titleEl = section.querySelector('h4');
     if (titleEl) titleEl.textContent = isSpeech ? 'Speech Feedback' : 'Writing Feedback';
 
+    // Inject AI feedback button below metric cards
+    renderAIFeedbackButton(section, trimmed, promptText, isSpeech);
+
     section.style.display = 'block';
     section.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
+
+  // ── AI Feedback (Claude) ─────────────────────────────────────────────────
+
+  const AI_CACHE_KEY = 'ai_feedback_cache';
+  const AI_CACHE_MAX = 50;
+
+  function getFeedbackCacheKey(transcript, promptText) {
+    // Simple hash: length + first 80 chars of each
+    return (promptText || '').slice(0, 80) + '|' + transcript.slice(0, 80) + '|' + transcript.length;
+  }
+
+  function loadAICache() {
+    try { return JSON.parse(localStorage.getItem(AI_CACHE_KEY)) || {}; } catch { return {}; }
+  }
+
+  function saveAICache(cache) {
+    // Evict oldest entries if over limit
+    const keys = Object.keys(cache);
+    if (keys.length > AI_CACHE_MAX) {
+      keys.slice(0, keys.length - AI_CACHE_MAX).forEach(k => delete cache[k]);
+    }
+    try { localStorage.setItem(AI_CACHE_KEY, JSON.stringify(cache)); } catch {}
+  }
+
+  function renderAIFeedbackButton(section, transcript, promptText, isSpeech) {
+    // Remove any existing AI feedback area for this section
+    const existing = section.querySelector('.ai-feedback-area');
+    if (existing) existing.remove();
+
+    const area = document.createElement('div');
+    area.className = 'ai-feedback-area';
+    area.style.cssText = 'margin-top: var(--spacing-lg);';
+
+    // Check cache first
+    const cacheKey = getFeedbackCacheKey(transcript, promptText);
+    const cache = loadAICache();
+    if (cache[cacheKey]) {
+      area.appendChild(buildAIFeedbackCard(cache[cacheKey]));
+      section.appendChild(area);
+      return;
+    }
+
+    const btn = document.createElement('button');
+    btn.className = 'btn btn-secondary';
+    btn.textContent = 'Get AI Feedback';
+    btn.style.cssText = 'width: 100%;';
+
+    btn.addEventListener('click', async function() {
+      btn.disabled = true;
+      btn.textContent = 'Getting AI feedback...';
+
+      try {
+        const res = await fetch('/.netlify/functions/claude-proxy', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            task: 'storytelling_feedback',
+            payload: { prompt: promptText || '', transcript, isSpeech }
+          })
+        });
+
+        if (!res.ok) throw new Error('Server error ' + res.status);
+        const data = await res.json();
+
+        // Cache the result
+        const freshCache = loadAICache();
+        freshCache[cacheKey] = data;
+        saveAICache(freshCache);
+
+        // Replace button with card
+        area.innerHTML = '';
+        area.appendChild(buildAIFeedbackCard(data));
+      } catch (err) {
+        btn.disabled = false;
+        btn.textContent = 'Get AI Feedback';
+        const errMsg = document.createElement('p');
+        errMsg.style.cssText = 'color: var(--accent-color); font-size: var(--font-size-sm); margin-top: var(--spacing-sm);';
+        errMsg.textContent = 'Could not reach AI feedback service. Are you on the live site?';
+        area.appendChild(errMsg);
+        setTimeout(() => { if (area.contains(errMsg)) area.removeChild(errMsg); }, 4000);
+      }
+    });
+
+    area.appendChild(btn);
+    section.appendChild(area);
+  }
+
+  function buildAIFeedbackCard(data) {
+    const card = document.createElement('div');
+    card.style.cssText = 'background: var(--bg-card); border: 1px solid var(--border-color); border-radius: var(--border-radius-sm); padding: var(--spacing-md);';
+
+    const header = document.createElement('div');
+    header.style.cssText = 'display: flex; align-items: center; gap: var(--spacing-sm); margin-bottom: var(--spacing-md);';
+    header.innerHTML = '<span style="font-size: 1.4rem;">✨</span><span style="font-weight: 600; font-size: var(--font-size-base);">AI Feedback</span>';
+    card.appendChild(header);
+
+    const dimensions = [
+      { label: 'Structure', key: 'structure' },
+      { label: 'Engagement', key: 'engagement' },
+      { label: 'Vocabulary', key: 'vocabulary' }
+    ];
+
+    dimensions.forEach(({ label, key }) => {
+      if (!data[key]) return;
+      const row = document.createElement('div');
+      row.style.cssText = 'margin-bottom: var(--spacing-sm);';
+      row.innerHTML = `<span style="font-weight: 600; font-size: var(--font-size-sm);">${label}:</span> <span style="font-size: var(--font-size-sm); color: var(--text-secondary);">${data[key]}</span>`;
+      card.appendChild(row);
+    });
+
+    if (data.tip) {
+      const tip = document.createElement('div');
+      tip.style.cssText = 'margin-top: var(--spacing-md); padding: var(--spacing-sm) var(--spacing-md); background: var(--bg-secondary); border-left: 3px solid var(--primary-color); border-radius: 0 var(--border-radius-sm) var(--border-radius-sm) 0; font-size: var(--font-size-sm);';
+      tip.innerHTML = `<strong>Tip:</strong> ${data.tip}`;
+      card.appendChild(tip);
+    }
+
+    return card;
   }
 
   // ═══════════════════════════════════════════════════════════════════════════
