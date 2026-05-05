@@ -393,6 +393,9 @@ const FluencyModule = (function() {
     // Load initial content
     loadInitialContent();
 
+    // Add AI generate buttons next to existing "New" buttons
+    initAIGenerateButtons();
+
     console.log('FluencyModule initialized successfully');
   }
 
@@ -1274,6 +1277,77 @@ const FluencyModule = (function() {
   }
 
   // Public API
+  // ── AI Exercise Generation ────────────────────────────────────────────────
+
+  async function generateFluencyExercise(exerciseType, displayFn, btn) {
+    const originalText = btn.textContent;
+    btn.disabled = true;
+    btn.textContent = 'Generating...';
+
+    try {
+      const res = await fetch('/.netlify/functions/claude-proxy', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          task: 'generate_exercise',
+          payload: { exerciseType, topic: 'general' }
+        })
+      });
+      if (!res.ok) throw new Error('Server error');
+      const data = await res.json();
+      displayFn(data);
+    } catch {
+      // Silently fall back — user still has the regular "New" button
+    } finally {
+      btn.disabled = false;
+      btn.textContent = originalText;
+    }
+  }
+
+  function addAIGenerateButton(containerId, exerciseType, displayFn) {
+    const container = document.getElementById(containerId);
+    if (!container) return;
+    const btn = document.createElement('button');
+    btn.className = 'btn btn-secondary btn-sm';
+    btn.textContent = 'Generate with AI';
+    btn.style.cssText = 'margin-left: var(--spacing-sm);';
+    btn.addEventListener('click', () => generateFluencyExercise(exerciseType, displayFn, btn));
+    container.appendChild(btn);
+  }
+
+  function initAIGenerateButtons() {
+    // Tongue twister
+    addAIGenerateButton('new-tongue-twister-btn', 'tongue_twister', function(data) {
+      if (tongueTwisterDisplay && data.content) {
+        tongueTwisterDisplay.innerHTML = `<p class="exercise-text">"${data.content}"</p>`;
+      }
+    });
+
+    // Pacing passage
+    addAIGenerateButton('new-pacing-passage-btn', 'pacing_passage', function(data) {
+      if (pacingPassage && data.content) {
+        const wordCount = data.content.split(' ').length;
+        pacingPassage.innerHTML = `
+          <p class="exercise-text">${data.content}</p>
+          <p class="pacing-info"><strong>Word count:</strong> ${wordCount} words | <strong>Target time:</strong> ${Math.round(wordCount / 2.5)} seconds (150 WPM)</p>
+          ${data.label ? `<p style="font-size:var(--font-size-sm); color:var(--text-secondary); margin-top:var(--spacing-sm);">${data.label}</p>` : ''}
+        `;
+      }
+    });
+
+    // Rhetorical device (metaphor/simile — whichever is active)
+    addAIGenerateButton('new-rhetorical-btn', 'metaphor', function(data) {
+      const type = currentRhetoricalType === 'simile' ? 'simile' : 'metaphor';
+      if (rhetoricalContentDisplay && data.content) {
+        rhetoricalContentDisplay.innerHTML = `
+          <div style="text-align:center;">
+            <p style="font-size:var(--font-size-xxl); font-weight:700; color:var(--secondary-color); margin-bottom:var(--spacing-lg);">"${data.content}"</p>
+            ${data.label ? `<div style="background:var(--bg-card); padding:var(--spacing-lg); border-radius:var(--border-radius-sm);"><p style="font-size:var(--font-size-lg); color:var(--text-primary); margin:0;">${data.label}</p></div>` : ''}
+          </div>`;
+      }
+    });
+  }
+
   return {
     init: init,
     refresh: refresh

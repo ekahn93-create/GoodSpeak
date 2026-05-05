@@ -89,6 +89,91 @@ Respond ONLY with valid JSON in this exact format, no other text:
   "vocabulary": "...",
   "tip": "..."
 }`;
+  } else if (task === 'read_aloud_feedback') {
+    const { passage, transcript } = payload;
+    prompt = `You are a speaking coach reviewing a read-aloud session.
+
+Original passage the user was asked to read:
+"""
+${passage}
+"""
+
+What the user actually said (transcribed):
+"""
+${transcript}
+"""
+
+Give brief, encouraging feedback on 3 dimensions, then one actionable tip. Keep each dimension to 1–2 sentences.
+
+Respond ONLY with valid JSON in this exact format, no other text:
+{
+  "coverage": "...",
+  "delivery": "...",
+  "accuracy": "...",
+  "tip": "..."
+}`;
+
+  } else if (task === 'daily_drill_feedback') {
+    const { prompt: drillPrompt, transcript } = payload;
+    prompt = `You are a speaking coach reviewing a 60-second impromptu speech.
+
+Topic the user was given: "${drillPrompt}"
+
+What the user said:
+"""
+${transcript}
+"""
+
+Evaluate on 3 dimensions and give one actionable tip. Be encouraging but honest. Keep each to 1–2 sentences.
+
+Respond ONLY with valid JSON in this exact format, no other text:
+{
+  "structure": "...",
+  "specificity": "...",
+  "delivery": "...",
+  "tip": "..."
+}`;
+
+  } else if (task === 'word_enrichment') {
+    const { word, partOfSpeech, definition, example } = payload;
+    prompt = `You are a vocabulary coach helping someone deeply learn a new word.
+
+Word: "${word}"
+Part of speech: ${partOfSpeech}
+Definition: ${definition}
+Example sentence: ${example || 'none provided'}
+
+Generate 2 additional natural example sentences using this word, and a short memorable mnemonic (a vivid image or phrase) to help them remember what it means.
+
+Respond ONLY with valid JSON in this exact format, no other text:
+{
+  "examples": ["...", "..."],
+  "mnemonic": "..."
+}`;
+
+  } else if (task === 'generate_exercise') {
+    const { exerciseType, topic } = payload;
+    const exerciseInstructions = {
+      tongue_twister: 'Create one original tongue twister (alliterative or phonetically challenging). Return just the tongue twister text as "content" and the target sound as "label".',
+      pacing_passage: 'Write a short 3–4 sentence passage (suitable for reading aloud at a measured pace) on the given topic. Return the passage as "content" and a brief delivery note as "label".',
+      metaphor: 'Create one vivid metaphor about the given topic. Return the metaphor as "content" and a one-sentence explanation as "label".',
+      simile: 'Create one vivid simile about the given topic. Return the simile as "content" and a one-sentence explanation as "label".',
+      sentence_combining: 'Write two short related sentences that can be elegantly combined into one. Return them as an array ["sentence1", "sentence2"] in "content" and a hint for combining as "label".'
+    };
+    const instructions = exerciseInstructions[exerciseType] || exerciseInstructions.tongue_twister;
+    prompt = `You are a speech and communication coach generating a practice exercise.
+
+Topic/theme: "${topic || 'general'}"
+Exercise type: ${exerciseType}
+
+${instructions}
+
+Respond ONLY with valid JSON in this exact format, no other text:
+{
+  "content": "...",
+  "label": "..."
+}`;
+
   } else {
     return { statusCode: 400, body: JSON.stringify({ error: 'Unknown task.' }) };
   }

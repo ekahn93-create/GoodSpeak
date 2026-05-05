@@ -384,9 +384,42 @@ const WordBankModule = (function() {
       // Refresh display
       displayCustomWords();
       updateCounts();
+
+      // Fire background enrichment via Claude (non-blocking)
+      enrichCustomWord(customWord.id);
     } else {
       showToast('Failed to save word', 'error');
     }
+  }
+
+  async function enrichCustomWord(wordId) {
+    const word = userData.customWords.find(w => w.id === wordId);
+    if (!word || word.aiEnriched) return;
+    try {
+      const res = await fetch('/.netlify/functions/claude-proxy', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          task: 'word_enrichment',
+          payload: {
+            word: word.word,
+            partOfSpeech: word.partOfSpeech,
+            definition: word.definition,
+            example: word.exampleSentence
+          }
+        })
+      });
+      if (!res.ok) return;
+      const data = await res.json();
+      // Merge enrichment back onto the stored word
+      const stored = userData.customWords.find(w => w.id === wordId);
+      if (stored) {
+        stored.aiExamples = data.examples || [];
+        stored.aiMnemonic = data.mnemonic || '';
+        stored.aiEnriched = true;
+        StorageManager.save(userData);
+      }
+    } catch { /* silently fail — enrichment is a bonus */ }
   }
 
   /**
@@ -587,6 +620,19 @@ const WordBankModule = (function() {
         ${word.synonyms && word.synonyms.length > 0 ? `
           <div class="word-synonyms">
             <strong>Synonyms:</strong> ${word.synonyms.join(', ')}
+          </div>
+        ` : ''}
+        ${isCustom && word.aiMnemonic ? `
+          <div class="word-example" style="margin-top: var(--spacing-sm);">
+            <strong>Memory tip:</strong> ${word.aiMnemonic}
+          </div>
+        ` : ''}
+        ${isCustom && word.aiExamples && word.aiExamples.length > 0 ? `
+          <div class="word-example" style="margin-top: var(--spacing-sm);">
+            <strong>More examples:</strong>
+            <ul style="margin: var(--spacing-xs) 0 0 var(--spacing-md); padding: 0;">
+              ${word.aiExamples.map(ex => `<li style="margin-bottom: 4px;">"${ex}"</li>`).join('')}
+            </ul>
           </div>
         ` : ''}
         ${isCustom ? `

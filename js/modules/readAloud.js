@@ -229,7 +229,96 @@ const ReadAloudModule = (function() {
       breakdownEl.innerHTML = '';
     }
 
+    renderReadAloudAIButton(currentText, finalTranscript);
+
     document.getElementById('readaloud-results').style.display = '';
+  }
+
+  function renderReadAloudAIButton(passage, transcript) {
+    const resultsEl = document.getElementById('readaloud-results');
+    if (!resultsEl) return;
+
+    const existing = resultsEl.querySelector('.ai-feedback-area');
+    if (existing) existing.remove();
+
+    if (!transcript.trim()) return;
+
+    const area = document.createElement('div');
+    area.className = 'ai-feedback-area';
+    area.style.cssText = 'margin-bottom: var(--spacing-lg);';
+
+    // Check cache
+    const cacheKey = passage.slice(0, 60) + '|' + transcript.slice(0, 60) + '|' + transcript.length;
+    let cache = {};
+    try { cache = JSON.parse(localStorage.getItem('ai_feedback_cache')) || {}; } catch {}
+    if (cache[cacheKey]) {
+      area.appendChild(buildReadAloudCard(cache[cacheKey]));
+      // Insert before the buttons
+      const controls = resultsEl.querySelector('.exercise-controls');
+      if (controls) resultsEl.insertBefore(area, controls);
+      else resultsEl.appendChild(area);
+      return;
+    }
+
+    const btn = document.createElement('button');
+    btn.className = 'btn btn-secondary';
+    btn.style.cssText = 'width: 100%; margin-bottom: var(--spacing-md);';
+    btn.textContent = 'Get AI Feedback';
+
+    btn.addEventListener('click', async function() {
+      btn.disabled = true;
+      btn.textContent = 'Getting AI feedback...';
+      try {
+        const res = await fetch('/.netlify/functions/claude-proxy', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ task: 'read_aloud_feedback', payload: { passage, transcript } })
+        });
+        if (!res.ok) throw new Error('Server error ' + res.status);
+        const data = await res.json();
+        let freshCache = {};
+        try { freshCache = JSON.parse(localStorage.getItem('ai_feedback_cache')) || {}; } catch {}
+        freshCache[cacheKey] = data;
+        try { localStorage.setItem('ai_feedback_cache', JSON.stringify(freshCache)); } catch {}
+        area.innerHTML = '';
+        area.appendChild(buildReadAloudCard(data));
+      } catch {
+        btn.disabled = false;
+        btn.textContent = 'Get AI Feedback';
+      }
+    });
+
+    area.appendChild(btn);
+    const controls = resultsEl.querySelector('.exercise-controls');
+    if (controls) resultsEl.insertBefore(area, controls);
+    else resultsEl.appendChild(area);
+  }
+
+  function buildReadAloudCard(data) {
+    const card = document.createElement('div');
+    card.style.cssText = 'background: var(--bg-card); border: 1px solid var(--border-color); border-radius: var(--border-radius-sm); padding: var(--spacing-md);';
+
+    const header = document.createElement('div');
+    header.style.cssText = 'display: flex; align-items: center; gap: var(--spacing-sm); margin-bottom: var(--spacing-md);';
+    header.innerHTML = '<span style="font-size: 1.4rem;">✨</span><span style="font-weight: 600; font-size: var(--font-size-base);">AI Feedback</span>';
+    card.appendChild(header);
+
+    [['Coverage', 'coverage'], ['Delivery', 'delivery'], ['Accuracy', 'accuracy']].forEach(([label, key]) => {
+      if (!data[key]) return;
+      const row = document.createElement('div');
+      row.style.cssText = 'margin-bottom: var(--spacing-sm);';
+      row.innerHTML = `<span style="font-weight: 600; font-size: var(--font-size-sm);">${label}:</span> <span style="font-size: var(--font-size-sm); color: var(--text-secondary);">${data[key]}</span>`;
+      card.appendChild(row);
+    });
+
+    if (data.tip) {
+      const tip = document.createElement('div');
+      tip.style.cssText = 'margin-top: var(--spacing-md); padding: var(--spacing-sm) var(--spacing-md); background: var(--bg-secondary); border-left: 3px solid var(--primary-color); border-radius: 0 var(--border-radius-sm) var(--border-radius-sm) 0; font-size: var(--font-size-sm);';
+      tip.innerHTML = `<strong>Tip:</strong> ${data.tip}`;
+      card.appendChild(tip);
+    }
+
+    return card;
   }
 
   function retrySession() {
