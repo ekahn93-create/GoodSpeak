@@ -44,8 +44,80 @@
         <!-- ==================== HOME/DASHBOARD VIEW ==================== -->
         <section id="home-view" class="view active">
             <div class="hero-section">
-                <h1>Welcome to Articulation Trainer</h1>
-                <p class="subtitle">Learn the words. Polish your delivery. Practice out loud. Review your growth.</p>
+                <div class="hero-top">
+                    <div>
+                        <h1>Welcome to Articulation Trainer</h1>
+                        <p class="subtitle">Learn the words. Polish your delivery. Practice out loud. Review your growth.</p>
+                    </div>
+                    <div class="tier-display">
+                        <span class="tier-eyebrow">Your Current Level</span>
+                        <span class="tier-badge" id="tier-badge">Beginner</span>
+                        <span class="tier-description" id="tier-description">Just getting started</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ========== LEARNING PATH STEPPER (#1) ========== -->
+            <div class="learning-path-strip" id="learning-path-strip">
+                <div class="lp-step" id="lp-step-learn">
+                    <div class="lp-step-number">1</div>
+                    <div class="lp-step-body">
+                        <div class="lp-step-label">Learn Words</div>
+                        <div class="lp-step-desc">Build your vocabulary &amp; grammar</div>
+                        <div class="lp-step-stat" id="lp-stat-learn">0 words learned</div>
+                    </div>
+                    <a href="#vocabulary" class="lp-step-btn btn btn-sm btn-primary">Go</a>
+                </div>
+                <div class="lp-arrow">&#8594;</div>
+                <div class="lp-step" id="lp-step-polish">
+                    <div class="lp-step-number">2</div>
+                    <div class="lp-step-body">
+                        <div class="lp-step-label">Polish Delivery</div>
+                        <div class="lp-step-desc">Pronunciation, pacing &amp; fluency</div>
+                        <div class="lp-step-stat" id="lp-stat-polish">Drills &amp; exercises</div>
+                    </div>
+                    <a href="#fluency" class="lp-step-btn btn btn-sm btn-primary">Go</a>
+                </div>
+                <div class="lp-arrow">&#8594;</div>
+                <div class="lp-step" id="lp-step-practice">
+                    <div class="lp-step-number">3</div>
+                    <div class="lp-step-body">
+                        <div class="lp-step-label">Practice Speaking</div>
+                        <div class="lp-step-desc">Storytelling &amp; real challenges</div>
+                        <div class="lp-step-stat" id="lp-stat-practice">0 stories completed</div>
+                    </div>
+                    <a href="#storytelling" class="lp-step-btn btn btn-sm btn-primary">Go</a>
+                </div>
+                <div class="lp-arrow">&#8594;</div>
+                <div class="lp-step" id="lp-step-review">
+                    <div class="lp-step-number">4</div>
+                    <div class="lp-step-body">
+                        <div class="lp-step-label">Review &amp; Test</div>
+                        <div class="lp-step-desc">Quizzes, SRS &amp; progress tracking</div>
+                        <div class="lp-step-stat" id="lp-stat-review">0 day streak</div>
+                    </div>
+                    <a href="#progress" class="lp-step-btn btn btn-sm btn-primary">Go</a>
+                </div>
+            </div>
+
+            <!-- ========== TIERED CHECKLIST (#4) ========== -->
+            <div class="beginner-checklist-card" id="beginner-checklist-card">
+                <div class="bcl-header">
+                    <div>
+                        <h3 class="bcl-title">Your First Steps</h3>
+                        <p class="bcl-subtitle">Complete these to get the full experience</p>
+                    </div>
+                </div>
+                <ul class="bcl-list"></ul>
+                <div class="bcl-complete" style="display:none;"></div>
+            </div>
+
+            <!-- Daily Suggestions (Option B) -->
+            <div class="suggestions-card">
+                <h3 class="suggestions-title">What to do today</h3>
+                <div class="suggestions-list" id="daily-suggestions">
+                    <!-- Rendered by JS -->
+                </div>
             </div>
 
             <div class="dashboard-grid">
@@ -118,33 +190,6 @@
                 </div>
             </div>
 
-            <!-- Daily Drill Section -->
-            <div class="daily-drill-section" id="daily-drill-section">
-                <div class="daily-drill-header">
-                    <div>
-                        <h3>Today's 5-Minute Drill</h3>
-                        <p class="daily-drill-subtitle">Complete all three steps to keep your streak alive</p>
-                    </div>
-                    <div class="daily-drill-timer" id="drill-timer-display"></div>
-                </div>
-                <div class="drill-steps" id="drill-steps">
-                    <!-- Steps rendered by JS -->
-                </div>
-                <div class="drill-complete-banner" id="drill-complete-banner" style="display:none;">
-                    <span>🎉 Drill complete! Come back tomorrow for a new one.</span>
-                </div>
-            </div>
-
-            <!-- Quick Tips Section -->
-            <div class="tips-section">
-                <h3>💡 Quick Tips for Better Articulation</h3>
-                <ul class="tips-list">
-                    <li>Practice speaking slowly and clearly before increasing your pace</li>
-                    <li>Replace vague words like "good" or "nice" with specific, descriptive terms</li>
-                    <li>Structure your thoughts with a clear beginning, middle, and end</li>
-                    <li>Build your vocabulary daily - even one new word makes a difference</li>
-                </ul>
-            </div>
         </section>
 
         <!-- ==================== LEARN VIEW ==================== -->
@@ -187,6 +232,9 @@
                     <button id="show-new-word-btn" class="btn btn-primary" data-tooltip="Current word will remain in pool and can come up again">Show New Word</button>
                     <button id="practice-vocab-btn" class="btn btn-secondary" style="display: none;">Practice Exercise</button>
                 </div>
+
+                <!-- Nudge: shown after marking a word as learned -->
+                <div id="nudge-vocab-learned" class="nudge-slot"></div>
 
                 <!-- Still Learning Words List -->
                 <div class="learned-words-section">
@@ -542,6 +590,9 @@
                             <div id="quiz-review-list"></div>
                         </div>
                     </div>
+                    <!-- Nudge: shown after quiz completes -->
+                    <div id="nudge-quiz-done" class="nudge-slot"></div>
+                </div>
                 </div>
 
                 <!-- 2 Words and a Lie -->
@@ -849,16 +900,18 @@
 
                 <!-- Speak mode controls -->
                 <div id="story-speak-controls">
+                    <p style="text-align: center; color: var(--text-secondary); font-size: var(--font-size-sm); margin-bottom: var(--spacing-md); font-style: italic;">Take a moment, take a deep breath, and when you're ready...</p>
                     <div class="exercise-controls">
                         <button class="btn btn-primary" id="story-start-btn">Start Timer &amp; Listen</button>
                         <button class="btn btn-secondary" id="story-stop-btn" style="display: none;">Stop</button>
                         <button class="btn btn-secondary" id="story-reset-btn" style="display: none;">Reset</button>
+                        <button class="btn btn-success" id="story-finish-btn" style="display: none;">Finish</button>
                     </div>
+                    <div id="story-status" style="margin-top: var(--spacing-md); font-size: var(--font-size-sm); color: var(--text-secondary); text-align: center; min-height: 1.5rem;"></div>
                     <div class="timer-display">
                         <div class="timer-number" id="story-timer-seconds">0:30</div>
                         <div class="timer-label">remaining</div>
                     </div>
-                    <div id="story-status" style="margin-top: var(--spacing-md); font-size: var(--font-size-sm); color: var(--text-secondary); text-align: center;"></div>
                     <div id="story-transcript-section" style="margin-top: var(--spacing-lg); display: none;">
                         <h4 style="margin-bottom: var(--spacing-sm);">Live Transcript</h4>
                         <div style="background: var(--bg-card); border: 1px solid var(--border-color); border-radius: var(--border-radius-sm); padding: var(--spacing-md); min-height: 80px; font-size: var(--font-size-base); line-height: 1.6;">
@@ -897,6 +950,12 @@
                 <div id="story-feedback-section" style="display: none; margin-top: var(--spacing-xl);">
                     <h4 style="margin-bottom: var(--spacing-md); font-size: var(--font-size-lg);">Feedback</h4>
                     <div id="story-feedback-grid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: var(--spacing-md);"></div>
+                </div>
+
+                <!-- Mark as Complete -->
+                <div style="margin-top: var(--spacing-xl); padding-top: var(--spacing-lg); border-top: 1px solid var(--border-color); text-align: center;">
+                    <button id="mark-story-complete-btn" class="btn btn-success">Mark as Complete</button>
+                    <p style="margin-top: var(--spacing-sm); font-size: var(--font-size-sm); color: var(--text-secondary);">Done with this prompt? Mark it complete to track your progress.</p>
                 </div>
             </div>
         </div>
@@ -2278,6 +2337,7 @@
     <script src="js/data/wordOfTheDayList.js"></script>
     <script src="js/components/modal.js"></script>
     <script src="js/components/progressBar.js"></script>
+    <script src="js/modules/nudge.js"></script>
     <script src="js/modules/api-service.js"></script>
     <script src="js/modules/vocabulary.js"></script>
     <script src="js/modules/storytelling.js"></script>

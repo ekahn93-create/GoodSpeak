@@ -137,6 +137,17 @@ const DailyDrillModule = (function() {
     if (allDone) {
       stepsEl.style.display = 'none';
       if (banner) banner.style.display = 'block';
+
+      // Nudge toward next challenge after drill is complete
+      if (typeof NudgeModule !== 'undefined') {
+        NudgeModule.show(
+          'nudge-drill-done',
+          'Drill done! Ready to go deeper? Try a Storytelling prompt.',
+          'Go to Practice',
+          'storytelling',
+          'storytelling'
+        );
+      }
       return;
     }
 

@@ -52,9 +52,6 @@ const App = (function() {
     ShadowingModule.init();
     ProgressChartsModule.init();
 
-    // Initialize daily drill
-    DailyDrillModule.init();
-
     // Initialize dashboard
     initializeDashboard();
 
@@ -80,6 +77,377 @@ const App = (function() {
   function initializeDashboard() {
     // Update dashboard statistics
     updateDashboardStats();
+    // Initialise learning path + checklist
+    initLearningPath();
+  }
+
+  // ================================================================
+  // TIER SYSTEM
+  // Tier = minimum score across three dimensions (words, stories, days active).
+  // This ensures balanced growth — heavy word learners who never practice
+  // speaking stay at a lower tier until they round out their skills.
+  // ================================================================
+
+  const TIERS = [
+    {
+      name: 'Beginner',
+      label: 'Beginner',
+      description: 'Just getting started',
+      color: '#64748b',
+      thresholds: { words: 0,  stories: 0,  days: 0  },
+      nextThresholds: { words: 5,  stories: 1,  days: 3  }
+    },
+    {
+      name: 'Building',
+      label: 'Building',
+      description: 'Developing the habit',
+      color: '#6366f1',
+      thresholds: { words: 5,  stories: 1,  days: 3  },
+      nextThresholds: { words: 20, stories: 5,  days: 14 }
+    },
+    {
+      name: 'Intermediate',
+      label: 'Intermediate',
+      description: 'Consistent and growing',
+      color: '#0ea5e9',
+      thresholds: { words: 20, stories: 5,  days: 14 },
+      nextThresholds: { words: 50, stories: 15, days: 30 }
+    },
+    {
+      name: 'Advanced',
+      label: 'Advanced',
+      description: 'Speaking with confidence',
+      color: '#10b981',
+      thresholds: { words: 50, stories: 15, days: 30 },
+      nextThresholds: null  // top tier
+    }
+  ];
+
+  /**
+   * Calculate the user's current tier based on their weakest dimension.
+   * Returns the full tier object.
+   */
+  function getTier() {
+    if (!userData) return TIERS[0];
+
+    const words  = userData.vocabulary.learned.length;
+    const stories = userData.storytelling.totalStories || 0;
+    const days   = (userData.stats.activeDates || []).length;
+
+    // Walk tiers from top down — user is in the highest tier where ALL
+    // three dimensions meet the minimum threshold
+    for (let i = TIERS.length - 1; i >= 0; i--) {
+      const t = TIERS[i].thresholds;
+      if (words >= t.words && stories >= t.stories && days >= t.days) {
+        return TIERS[i];
+      }
+    }
+    return TIERS[0];
+  }
+
+  // ================================================================
+  // LEARNING PATH STEPPER + TIER BADGE + CHECKLIST + SUGGESTIONS
+  // ================================================================
+
+  function initLearningPath() {
+    updateLearningPath();
+  }
+
+  function updateLearningPath() {
+    if (!userData) return;
+
+    const tier           = getTier();
+    const words          = userData.vocabulary.learned.length;
+    const stories        = userData.storytelling.totalStories || 0;
+    const streak         = userData.stats.practiceStreak || userData.dailyWord.currentStreak || 0;
+    const days           = (userData.stats.activeDates || []).length;
+    const fluencyVisited = !!localStorage.getItem('fluency_visited');
+    const next           = tier.nextThresholds;
+
+    // --- Tier badge ---
+    updateTierBadge(tier);
+
+    // --- Path stepper stats (always live numbers) ---
+    const lpLearn    = document.getElementById('lp-stat-learn');
+    const lpPractice = document.getElementById('lp-stat-practice');
+    const lpReview   = document.getElementById('lp-stat-review');
+    if (lpLearn)    lpLearn.textContent    = words + (words === 1 ? ' word learned' : ' words learned');
+    if (lpPractice) lpPractice.textContent = stories + (stories === 1 ? ' story completed' : ' stories completed');
+    if (lpReview)   lpReview.textContent   = streak + (streak === 1 ? ' day streak' : ' day streak');
+
+    // Stepper "done" thresholds scale with current tier's next targets
+    // so returning users always see meaningful progress markers
+    const stepDoneAt = next
+      ? { learn: next.words, practice: next.stories, days: next.days }
+      : { learn: TIERS[TIERS.length - 1].thresholds.words,
+          practice: TIERS[TIERS.length - 1].thresholds.stories,
+          days: TIERS[TIERS.length - 1].thresholds.days };
+
+    const steps = [
+      { id: 'lp-step-learn',    done: words    >= stepDoneAt.learn    },
+      { id: 'lp-step-polish',   done: fluencyVisited                  },
+      { id: 'lp-step-practice', done: stories  >= stepDoneAt.practice },
+      { id: 'lp-step-review',   done: days     >= stepDoneAt.days     }
+    ];
+    let foundCurrent = false;
+    steps.forEach(function(s) {
+      const el = document.getElementById(s.id);
+      if (!el) return;
+      el.classList.remove('lp-step-done', 'lp-step-current');
+      if (s.done) {
+        el.classList.add('lp-step-done');
+      } else if (!foundCurrent) {
+        el.classList.add('lp-step-current');
+        foundCurrent = true;
+      }
+    });
+
+    // --- Tier-aware checklist (Option A) ---
+    updateChecklist(tier, words, stories, days, fluencyVisited);
+
+    // --- Daily suggestions (Option B) ---
+    updateSuggestions(tier, words, stories, streak, fluencyVisited);
+  }
+
+  // ----------------------------------------------------------------
+  // TIER BADGE
+  // ----------------------------------------------------------------
+
+  function updateTierBadge(tier) {
+    const badge = document.getElementById('tier-badge');
+    if (!badge) return;
+    badge.textContent = tier.label;
+    badge.style.background = tier.color;
+    badge.title = tier.description;
+
+    // Also update the tier label below the badge if present
+    const tierDesc = document.getElementById('tier-description');
+    if (tierDesc) tierDesc.textContent = tier.description;
+  }
+
+  // ----------------------------------------------------------------
+  // TIERED CHECKLIST (Option A)
+  // ----------------------------------------------------------------
+
+  // Goals for each tier — what the user needs to do to reach the NEXT tier.
+  // At Advanced tier, goals shift to sustaining mastery.
+  const TIER_GOALS = {
+    Beginner: [
+      { key: 'words',   text: 'Learn 5 words',                  link: '#vocabulary',  linkLabel: 'Vocabulary Builder',  check: function(w,s,d) { return w >= 5;  }, target: 5,  current: function(w,s,d) { return w; }, unit: 'words' },
+      { key: 'polish',  text: 'Try a pronunciation drill',       link: '#fluency',     linkLabel: 'Polish',              check: function(w,s,d,f) { return f;    } },
+      { key: 'stories', text: 'Complete a storytelling prompt',  link: '#storytelling',linkLabel: 'Practice',            check: function(w,s,d) { return s >= 1;  }, target: 1,  current: function(w,s,d) { return s; }, unit: 'completed' },
+      { key: 'days',    text: 'Use the app 3 different days',    link: '#vocabulary',  linkLabel: 'Keep going',          check: function(w,s,d) { return d >= 3;  }, target: 3,  current: function(w,s,d) { return d; }, unit: 'days' }
+    ],
+    Building: [
+      { key: 'words',   text: 'Reach 20 words learned',          link: '#vocabulary',  linkLabel: 'Vocabulary Builder',  check: function(w,s,d) { return w >= 20; }, target: 20, current: function(w,s,d) { return w; }, unit: 'words' },
+      { key: 'stories', text: 'Complete 5 storytelling prompts', link: '#storytelling',linkLabel: 'Practice',            check: function(w,s,d) { return s >= 5;  }, target: 5,  current: function(w,s,d) { return s; }, unit: 'completed' },
+      { key: 'days',    text: 'Stay active for 14 days',         link: '#vocabulary',  linkLabel: 'Keep going',          check: function(w,s,d) { return d >= 14; }, target: 14, current: function(w,s,d) { return d; }, unit: 'days' },
+      { key: 'quiz',    text: 'Pass a Knowledge Check quiz',     link: '#vocabulary',  linkLabel: 'Knowledge Check',    check: function(w,s,d) { return w >= 10; } }
+    ],
+    Intermediate: [
+      { key: 'words',   text: 'Reach 50 words learned',          link: '#vocabulary',  linkLabel: 'Vocabulary Builder',  check: function(w,s,d) { return w >= 50; }, target: 50, current: function(w,s,d) { return w; }, unit: 'words' },
+      { key: 'stories', text: 'Complete 15 storytelling prompts',link: '#storytelling',linkLabel: 'Practice',            check: function(w,s,d) { return s >= 15; }, target: 15, current: function(w,s,d) { return s; }, unit: 'completed' },
+      { key: 'days',    text: 'Stay active for 30 days',         link: '#vocabulary',  linkLabel: 'Keep going',          check: function(w,s,d) { return d >= 30; }, target: 30, current: function(w,s,d) { return d; }, unit: 'days' },
+      { key: 'drill',   text: 'Finish 10 daily drills',          link: '#home',        linkLabel: 'Daily Drill',         check: function(w,s,d) { return d >= 10; } }
+    ],
+    Advanced: [
+      { key: 'words',   text: '100 words learned — sustain it',  link: '#vocabulary',  linkLabel: 'Vocabulary Builder',  check: function(w,s,d) { return w >= 100; }, target: 100, current: function(w,s,d) { return w; }, unit: 'words' },
+      { key: 'stories', text: '30 stories completed',            link: '#storytelling',linkLabel: 'Practice',            check: function(w,s,d) { return s >= 30;  }, target: 30,  current: function(w,s,d) { return s; }, unit: 'completed' },
+      { key: 'days',    text: 'Active on 60+ different days',    link: '#vocabulary',  linkLabel: 'Keep going',          check: function(w,s,d) { return d >= 60;  }, target: 60,  current: function(w,s,d) { return d; }, unit: 'days' }
+    ]
+  };
+
+  function updateChecklist(tier, words, stories, days, fluencyVisited) {
+    const card = document.getElementById('beginner-checklist-card');
+    if (!card) return;
+
+    const goals = TIER_GOALS[tier.name];
+    if (!goals) { card.style.display = 'none'; return; }
+
+    // Title
+    const titleEl = card.querySelector('.bcl-title');
+    const subtitleEl = card.querySelector('.bcl-subtitle');
+    if (titleEl) {
+      titleEl.textContent = tier.name === 'Beginner' ? 'Your First Steps' : 'Your Next Goals';
+    }
+    if (subtitleEl) {
+      subtitleEl.textContent = tier.name === 'Advanced'
+        ? 'Sustain your mastery'
+        : 'Complete these to reach ' + nextTierName(tier) + ' level';
+    }
+
+    // Render list
+    const list = card.querySelector('.bcl-list');
+    const completeEl = card.querySelector('.bcl-complete');
+    if (!list) return;
+
+    let allDone = true;
+    list.innerHTML = goals.map(function(g) {
+      const done = g.check(words, stories, days, fluencyVisited);
+      if (!done) allDone = false;
+
+      var progressHtml = '';
+      if (!done && g.target && g.current) {
+        var cur = Math.min(g.current(words, stories, days), g.target);
+        var pct = Math.round((cur / g.target) * 100);
+        progressHtml =
+          '<div class="bcl-progress">' +
+            '<div class="bcl-progress-header">' +
+              '<span class="bcl-progress-label">' + cur + ' / ' + g.target + ' ' + g.unit + '</span>' +
+            '</div>' +
+            '<div class="bcl-progress-bar-track">' +
+              '<div class="bcl-progress-bar-fill" style="width:' + pct + '%"></div>' +
+            '</div>' +
+          '</div>';
+      }
+
+      return '<li class="bcl-item' + (done ? ' bcl-item-done' : '') + '">' +
+        '<span class="bcl-check' + (done ? ' bcl-check-done' : '') + '"></span>' +
+        '<div class="bcl-item-body">' +
+          '<span class="bcl-text">' + g.text + '</span>' +
+          progressHtml +
+        '</div>' +
+        (done ? '' : '<a href="' + g.link + '" class="bcl-link">' + g.linkLabel + ' &#8594;</a>') +
+        '</li>';
+    }).join('');
+
+    if (completeEl) {
+      if (allDone && tier.name === 'Advanced') {
+        // Top tier complete — hide the whole card
+        card.style.display = 'none';
+        return;
+      }
+      list.style.display     = allDone ? 'none'  : '';
+      completeEl.style.display = allDone ? 'block' : 'none';
+      if (allDone) {
+        completeEl.textContent = tier.name === 'Advanced'
+          ? 'Outstanding — you have reached the top tier. Keep it up!'
+          : 'All done! You are on track to reach ' + nextTierName(tier) + ' level.';
+      }
+    }
+
+    card.style.display = '';
+  }
+
+  function nextTierName(tier) {
+    const idx = TIERS.findIndex(function(t) { return t.name === tier.name; });
+    return idx < TIERS.length - 1 ? TIERS[idx + 1].name : 'Advanced';
+  }
+
+  // ----------------------------------------------------------------
+  // DAILY SUGGESTIONS (Option B)
+  // ----------------------------------------------------------------
+
+  function updateSuggestions(tier, words, stories, streak, fluencyVisited) {
+    const container = document.getElementById('daily-suggestions');
+    if (!container) return;
+
+    const suggestions = [];
+    const srsData     = getSRSDueCount();
+
+    // Priority 1 — urgent: SRS reviews due
+    if (srsData > 0) {
+      suggestions.push({
+        icon: '🔁',
+        text: srsData + ' word' + (srsData === 1 ? '' : 's') + ' due for review — keep them fresh',
+        link: '#vocabulary',
+        tab: 'knowledge-check',
+        label: 'Start Review'
+      });
+    }
+
+    // Priority 2 — streak at risk
+    const activeDates = userData.stats.activeDates || [];
+    const today = new Date().toISOString().split('T')[0];
+    const yesterday = new Date(Date.now() - 86400000).toISOString().split('T')[0];
+    const doneToday = activeDates.includes(today);
+    const activeYesterday = activeDates.includes(yesterday);
+    if (!doneToday && streak > 0 && activeYesterday) {
+      suggestions.push({
+        icon: '🔥',
+        text: 'Your ' + streak + '-day streak is at risk — do something today',
+        link: '#home',
+        tab: null,
+        label: 'Do Today\'s Drill'
+      });
+    }
+
+    // Priority 3 — tier-specific nudges
+    if (tier.name === 'Beginner') {
+      if (words < 5) {
+        suggestions.push({ icon: '📚', text: 'Start with your first words — even one a day adds up', link: '#vocabulary', tab: 'builder', label: 'Learn a Word' });
+      }
+      if (!fluencyVisited) {
+        suggestions.push({ icon: '🎤', text: 'Try a pronunciation drill to build confidence out loud', link: '#fluency', tab: null, label: 'Go to Polish' });
+      }
+      if (words >= 3 && stories === 0) {
+        suggestions.push({ icon: '📖', text: 'You have some words — try putting them into a story', link: '#storytelling', tab: 'storytelling', label: 'Try a Prompt' });
+      }
+    } else if (tier.name === 'Building') {
+      if (words < 20) {
+        suggestions.push({ icon: '📚', text: 'Keep building — you need ' + (20 - words) + ' more words to reach Intermediate', link: '#vocabulary', tab: 'builder', label: 'Learn Words' });
+      }
+      if (stories < 5) {
+        suggestions.push({ icon: '📖', text: 'Practice makes permanent — ' + (5 - stories) + ' more stories to reach Intermediate', link: '#storytelling', tab: 'storytelling', label: 'Tell a Story' });
+      }
+      suggestions.push({ icon: '🎯', text: 'Challenge yourself with a quiz on your word bank', link: '#vocabulary', tab: 'knowledge-check', label: 'Take a Quiz' });
+    } else if (tier.name === 'Intermediate') {
+      suggestions.push({ icon: '🗣️', text: 'Try Impromptu Speaking — 60 seconds, no preparation', link: '#storytelling', tab: 'practical', label: 'Speak Now' });
+      if (words < 50) {
+        suggestions.push({ icon: '📚', text: (50 - words) + ' more words to reach Advanced', link: '#vocabulary', tab: 'builder', label: 'Learn Words' });
+      }
+      suggestions.push({ icon: '👥', text: 'Try shadowing to refine your delivery and rhythm', link: '#fluency', tab: null, label: 'Go to Shadowing' });
+    } else if (tier.name === 'Advanced') {
+      suggestions.push({ icon: '🏆', text: 'Advanced tier — focus on consistency and nuance', link: '#storytelling', tab: 'storytelling', label: 'New Story' });
+      suggestions.push({ icon: '🔁', text: 'Keep your SRS reviews up to maintain long-term retention', link: '#vocabulary', tab: 'knowledge-check', label: 'Review Words' });
+      suggestions.push({ icon: '🎙️', text: 'Read Aloud mode builds pace and clarity — try it today', link: '#fluency', tab: null, label: 'Read Aloud' });
+    }
+
+    // Cap at 3 suggestions
+    const shown = suggestions.slice(0, 3);
+
+    container.innerHTML = shown.map(function(s) {
+      const tabAttr = s.tab ? ' data-tab="' + s.tab + '"' : '';
+      return '<div class="suggestion-item">' +
+        '<span class="suggestion-icon">' + s.icon + '</span>' +
+        '<span class="suggestion-text">' + s.text + '</span>' +
+        '<a href="' + s.link + '" class="suggestion-link btn btn-sm btn-primary"' + tabAttr + '>' + s.label + '</a>' +
+        '</div>';
+    }).join('');
+
+    // Wire up tab-switching for suggestion links
+    container.querySelectorAll('[data-tab]').forEach(function(link) {
+      link.addEventListener('click', function() {
+        const tab = this.getAttribute('data-tab');
+        const href = this.getAttribute('href').replace('#', '');
+        if (tab && href) {
+          setTimeout(function() {
+            if (href === 'vocabulary' && typeof VocabularyModule !== 'undefined') {
+              VocabularyModule.switchVocabCategory(tab);
+            } else if (href === 'storytelling') {
+              const btn = document.querySelector('.storytelling-category-tab[data-story-category="' + tab + '"]');
+              if (btn) btn.click();
+            }
+          }, 150);
+        }
+      });
+    });
+  }
+
+  function getSRSDueCount() {
+    try {
+      if (typeof SRSModule !== 'undefined' && SRSModule.getDueCount) {
+        return SRSModule.getDueCount();
+      }
+      // Fallback: read SRS data directly
+      const raw = localStorage.getItem('srsData');
+      if (!raw) return 0;
+      const srs = JSON.parse(raw);
+      const today = new Date().toISOString().split('T')[0];
+      return Object.values(srs).filter(function(w) {
+        return w.nextReview && w.nextReview <= today;
+      }).length;
+    } catch(e) { return 0; }
   }
 
   /**
@@ -385,7 +753,7 @@ const App = (function() {
     switch (viewName) {
       case 'home':
         updateDashboardStats();
-        DailyDrillModule.refresh();
+        updateLearningPath();
         break;
       case 'progress':
         updateProgressView();
@@ -402,6 +770,7 @@ const App = (function() {
         break;
       case 'fluency':
         FluencyModule.refresh();
+        localStorage.setItem('fluency_visited', '1');
         break;
     }
   }

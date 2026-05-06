@@ -449,7 +449,7 @@ const WebSpeechModule = (function() {
   // getPromptFn  — function() that returns the current prompt text for that section
   // ═══════════════════════════════════════════════════════════════════════════
 
-  function create(prefix, getPromptFn) {
+  function create(prefix, getPromptFn, options) {
     let recognition     = null;
     let isListening     = false;
     let timer           = null;
@@ -516,9 +516,12 @@ const WebSpeechModule = (function() {
       const resetBtn    = el('reset-btn');
       const clearBtn    = el('clear-transcript-btn');
 
+      const finishBtn   = el('finish-btn');
+
       if (startBtn)  startBtn.addEventListener('click', startSession);
-      if (stopBtn)   stopBtn.addEventListener('click', stopSession);
+      if (stopBtn)   stopBtn.onclick = stopSession;
       if (resetBtn)  resetBtn.addEventListener('click', resetSession);
+      if (finishBtn) finishBtn.addEventListener('click', finishSession);
       if (clearBtn)  clearBtn.addEventListener('click', clearAll);
 
       // Time buttons (scoped to this instance via common card ancestor)
@@ -566,6 +569,37 @@ const WebSpeechModule = (function() {
     // ── Speak session ───────────────────────────────────────────────────────
     function startSession() {
       if (!recognition) { setStatus('Speech recognition not supported in this browser.'); return; }
+
+      const countdownSeconds = (options && options.countdown) ? options.countdown : 0;
+
+      if (countdownSeconds > 0) {
+        toggleSpeakButtons(true); // hide start, show stop/reset so user can cancel
+        let remaining = countdownSeconds;
+        setCountdown(`Get ready… ${remaining}`);
+        let countdownInterval = setInterval(() => {
+          // If stop was clicked during countdown, isListening will be false
+          if (!isListening) {
+            clearInterval(countdownInterval);
+            setCountdown('');
+            return;
+          }
+          remaining--;
+          if (remaining > 0) {
+            setCountdown(`Get ready… ${remaining}`);
+          } else {
+            clearInterval(countdownInterval);
+            setCountdown('Go!');
+            setTimeout(() => { if (isListening) { setCountdown(''); _doStartSession(); } }, 600);
+          }
+        }, 1000);
+        // Mark as "pending start" so stop button works during countdown
+        isListening = true;
+      } else {
+        _doStartSession();
+      }
+    }
+
+    function _doStartSession() {
       const activeBtn = cardScope.querySelector('.ws-inst-time-btn.active');
       totalSeconds = activeBtn ? parseInt(activeBtn.dataset.time) : 30;
       remainingSeconds = totalSeconds;
@@ -601,9 +635,36 @@ const WebSpeechModule = (function() {
       if (timer) { clearInterval(timer); timer = null; }
       try { recognition.stop(); } catch(e) {}
       elapsedSeconds = totalSeconds - remainingSeconds;
-      toggleSpeakButtons(false);
-      if (remainingSeconds > 0) setStatus('Stopped early. Review your feedback below.');
-      showSpeakFeedback();
+
+      if (options && options.resumable && remainingSeconds > 0) {
+        // Paused — show Resume button instead of reverting to Start
+        const stopBtn = el('stop-btn');
+        if (stopBtn) { stopBtn.textContent = 'Resume'; stopBtn.onclick = resumeSession; }
+        setStatus('Paused. Press Resume to continue.');
+      } else {
+        restoreStopBtn();
+        toggleSpeakButtons(false);
+        if (remainingSeconds > 0) setStatus('Stopped early. Review your feedback below.');
+        showSpeakFeedback();
+      }
+    }
+
+    function resumeSession() {
+      if (!recognition) return;
+      isListening = true;
+      const stopBtn = el('stop-btn');
+      if (stopBtn) { stopBtn.textContent = 'Stop'; stopBtn.onclick = stopSession; }
+      setStatus('🎙️ Listening...');
+      try { recognition.start(); } catch(e) {}
+      timer = setInterval(() => {
+        remainingSeconds--;
+        elapsedSeconds++;
+        updateTimerDisplay();
+        if (remainingSeconds <= 0) {
+          stopSession();
+          setStatus("Time's up! Review your feedback below.");
+        }
+      }, 1000);
     }
 
     function resetSession() {
@@ -618,6 +679,7 @@ const WebSpeechModule = (function() {
       finalTranscript = '';
       pauseChunks = [];
 
+      restoreStopBtn();
       toggleSpeakButtons(false);
       updateTimerDisplay();
       setStatus('');
@@ -625,6 +687,22 @@ const WebSpeechModule = (function() {
       const feedbackSection = el('feedback-section');
       if (feedbackSection) feedbackSection.style.display = 'none';
       clearTranscriptDisplay();
+    }
+
+    function finishSession() {
+      isListening = false;
+      if (timer) { clearInterval(timer); timer = null; }
+      try { recognition.stop(); } catch(e) {}
+      elapsedSeconds = totalSeconds - remainingSeconds;
+      restoreStopBtn();
+      toggleSpeakButtons(false);
+      setStatus('');
+      showSpeakFeedback();
+    }
+
+    function restoreStopBtn() {
+      const stopBtn = el('stop-btn');
+      if (stopBtn) { stopBtn.textContent = 'Stop'; stopBtn.onclick = stopSession; }
     }
 
     function clearAll() {
@@ -752,17 +830,34 @@ const WebSpeechModule = (function() {
     }
 
     function toggleSpeakButtons(active) {
-      const startBtn = el('start-btn');
-      const stopBtn  = el('stop-btn');
-      const resetBtn = el('reset-btn');
-      if (startBtn) startBtn.style.display = active ? 'none' : 'inline-block';
-      if (stopBtn)  stopBtn.style.display  = active ? 'inline-block' : 'none';
-      if (resetBtn) resetBtn.style.display = active ? 'inline-block' : 'none';
+      const startBtn  = el('start-btn');
+      const stopBtn   = el('stop-btn');
+      const resetBtn  = el('reset-btn');
+      const finishBtn = el('finish-btn');
+      if (startBtn)  startBtn.style.display  = active ? 'none' : 'inline-block';
+      if (stopBtn)   stopBtn.style.display   = active ? 'inline-block' : 'none';
+      if (resetBtn)  resetBtn.style.display  = active ? 'inline-block' : 'none';
+      if (finishBtn) finishBtn.style.display = active ? 'inline-block' : 'none';
     }
 
     function setStatus(msg) {
       const e = el('status');
-      if (e) e.textContent = msg;
+      if (e) {
+        e.textContent = msg;
+        e.classList.remove('countdown-active');
+      }
+    }
+
+    function setCountdown(msg) {
+      const e = el('status');
+      if (e) {
+        e.textContent = msg;
+        if (msg) {
+          e.classList.add('countdown-active');
+        } else {
+          e.classList.remove('countdown-active');
+        }
+      }
     }
 
     // ── Feedback renderers ──────────────────────────────────────────────────
@@ -780,7 +875,50 @@ const WebSpeechModule = (function() {
       buildAndRenderFeedback(grid, section, text, prompt, elapsedSeconds, [], false);
     }
 
-    return { init };
+    // Stop and fully reset everything (used when navigating away from a prompt)
+    function stopAndReset() {
+      isListening = false;
+      if (timer) { clearInterval(timer); timer = null; }
+      try { if (recognition) recognition.stop(); } catch(e) {}
+      isTypeTimerActive = false;
+      if (typeTimer) { clearInterval(typeTimer); typeTimer = null; }
+
+      const activeBtn = cardScope ? cardScope.querySelector('.ws-inst-time-btn.active') : null;
+      totalSeconds = activeBtn ? parseInt(activeBtn.dataset.time) : 30;
+      remainingSeconds = totalSeconds;
+      typeRemainingSeconds = totalSeconds;
+      elapsedSeconds = 0;
+      finalTranscript = '';
+      pauseChunks = [];
+
+      restoreStopBtn();
+      toggleSpeakButtons(false);
+      updateTimerDisplay();
+      updateTypeTimerDisplay();
+      setStatus('');
+
+      const transcriptSection = el('transcript-section');
+      const feedbackSection   = el('feedback-section');
+      if (transcriptSection) transcriptSection.style.display = 'none';
+      if (feedbackSection)   feedbackSection.style.display   = 'none';
+      clearTranscriptDisplay();
+
+      // Hide finish button
+      const finishBtn = el('finish-btn');
+      if (finishBtn) finishBtn.style.display = 'none';
+
+      // Reset type textarea and type buttons
+      const typeStartBtn = el('type-start-btn');
+      const typeStopBtn  = el('type-stop-btn');
+      const typeResetBtn = el('type-reset-btn');
+      if (typeStartBtn) typeStartBtn.style.display = 'inline-block';
+      if (typeStopBtn)  typeStopBtn.style.display  = 'none';
+      if (typeResetBtn) typeResetBtn.style.display = 'none';
+      const typeTextarea = el('type-textarea');
+      if (typeTextarea) typeTextarea.value = '';
+    }
+
+    return { init, stopAndReset };
   }
 
   // ═══════════════════════════════════════════════════════════════════════════

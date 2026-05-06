@@ -326,6 +326,15 @@ const VocabularyModule = (function() {
       StorageManager.incrementWordsLearnedToday();
       showToast('Word added to your vocabulary!', 'success');
 
+      // Nudge toward Knowledge Check after learning words
+      if (typeof NudgeModule !== 'undefined') {
+        const learnedCount = userData.vocabulary.learned.length;
+        const msg = learnedCount >= 5
+          ? `You have ${learnedCount} words — test yourself in Knowledge Check!`
+          : `Great word! Keep going — you need 5 learned words to unlock the quiz.`;
+        NudgeModule.show('nudge-vocab-learned', msg, 'Go to Knowledge Check', 'vocabulary', 'knowledge-check');
+      }
+
       // Log vocab count for progress charts
       if (typeof ProgressChartsModule !== 'undefined') {
         ProgressChartsModule.logVocabCount(userData.vocabulary.totalWordsLearned);

@@ -1278,6 +1278,17 @@ const WordBankModule = (function() {
     if (quizProgressElement) {
       quizProgressElement.style.width = '100%';
     }
+
+    // Nudge toward next step after quiz
+    if (typeof NudgeModule !== 'undefined') {
+      const msg = percentage >= 80
+        ? 'Great score! Put those words to use — try a Storytelling prompt.'
+        : 'Keep building — head to Vocabulary Builder to learn more words.';
+      const linkLabel = percentage >= 80 ? 'Go to Practice' : 'Go to Vocabulary Builder';
+      const targetView = percentage >= 80 ? 'storytelling' : 'vocabulary';
+      const targetTab = percentage >= 80 ? 'storytelling' : 'builder';
+      NudgeModule.show('nudge-quiz-done', msg, linkLabel, targetView, targetTab);
+    }
   }
 
   /**

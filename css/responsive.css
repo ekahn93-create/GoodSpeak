@@ -94,6 +94,59 @@
     min-width: auto;
   }
 
+  /* Hero: stack tier badge below heading on tablet */
+  .hero-top {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--spacing-sm);
+  }
+
+  .tier-display {
+    align-items: center;
+    width: 100%;
+  }
+
+  .tier-description {
+    text-align: center;
+  }
+
+  /* Suggestions: full-width items */
+  .suggestion-item {
+    flex-wrap: wrap;
+    gap: var(--spacing-xs);
+  }
+
+  .suggestion-link {
+    margin-left: auto;
+  }
+
+  /* Learning path stepper: stack vertically on tablet */
+  .learning-path-strip {
+    flex-direction: column;
+  }
+
+  .lp-step {
+    flex-direction: row;
+    text-align: left;
+    border-right: none;
+    border-bottom: 1px solid var(--border-color);
+    padding: var(--spacing-sm) var(--spacing-md);
+    gap: var(--spacing-sm);
+  }
+
+  .lp-step:last-child {
+    border-bottom: none;
+  }
+
+  .lp-step-body {
+    flex: 1;
+  }
+
+  .lp-step-btn {
+    margin-top: 0;
+    align-self: center;
+  }
+
   /* Modal */
   .modal-content {
     width: 95%;

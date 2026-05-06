@@ -13,6 +13,7 @@ const StorytellingModule = (function() {
   let currentPrompt = null;
   let currentStoryCategory = 'storytelling';
   let userData = null;
+  let storyWebSpeechInstance = null;
 
   // DOM elements - Category tabs
   let storyCategoryTabs = null;
@@ -198,9 +199,16 @@ case 'recordings':
       backToPromptsBtn.addEventListener('click', showPromptsView);
     }
 
+    // Mark as complete button
+    const markCompleteBtn = document.getElementById('mark-story-complete-btn');
+    if (markCompleteBtn) {
+      markCompleteBtn.addEventListener('click', completeStory);
+    }
+
     // Story voice feedback panel
     if (document.getElementById('story-speak-controls')) {
-      WebSpeechModule.create('story', () => document.getElementById('prompt-text')?.textContent || '').init();
+      storyWebSpeechInstance = WebSpeechModule.create('story', () => document.getElementById('prompt-text')?.textContent || '', { countdown: 3, resumable: true });
+      storyWebSpeechInstance.init();
     }
 
     // Listen for view changes
@@ -228,8 +236,15 @@ case 'recordings':
 
     // Create prompt cards
     const html = prompts.map(prompt => {
-      const isCompleted = userData.storytelling.completedPrompts.some(cp => cp.promptId === prompt.id);
+      const completedEntry = userData.storytelling.completedPrompts.find(cp => cp.promptId === prompt.id);
+      const isCompleted = !!completedEntry;
       const hasDraft = userData.storytelling.drafts && userData.storytelling.drafts[prompt.id];
+      const note = completedEntry && completedEntry.notes ? completedEntry.notes : '';
+
+      const noteBtn = note
+        ? `<button class="prompt-note-btn" onclick="event.stopPropagation(); this.nextElementSibling.classList.toggle('visible')">Your Reflection</button>
+           <div class="prompt-note-panel">${note.replace(/</g, '&lt;').replace(/>/g, '&gt;')}</div>`
+        : '';
 
       return `
         <div class="prompt-card ${isCompleted ? 'completed' : ''}" onclick="StorytellingModule.startPractice(${prompt.id})">
@@ -240,8 +255,11 @@ case 'recordings':
             <span class="badge badge-secondary">${prompt.difficulty}</span>
             <span class="badge badge-primary">${prompt.estimatedTime}</span>
           </div>
-          ${isCompleted ? '<div class="badge badge-success">✓ Completed</div>' : ''}
-          ${hasDraft && !isCompleted ? '<div class="badge badge-warning">Draft Saved</div>' : ''}
+          <div style="display:flex; align-items:center; gap: var(--spacing-sm); flex-wrap:wrap; margin-top: var(--spacing-xs);">
+            ${isCompleted ? '<div class="badge badge-success">✓ Completed</div>' : ''}
+            ${hasDraft && !isCompleted ? '<div class="badge badge-warning">Draft Saved</div>' : ''}
+          </div>
+          ${noteBtn}
         </div>
       `;
     }).join('');
@@ -284,6 +302,15 @@ case 'recordings':
       return;
     }
 
+    // Reset any running session and clear previous transcript/feedback before opening this prompt
+    if (storyWebSpeechInstance) {
+      storyWebSpeechInstance.stopAndReset();
+    }
+
+    // Clear the type textarea in case it had content from a previous prompt
+    const storyTypeTextarea = document.getElementById('story-type-textarea');
+    if (storyTypeTextarea) storyTypeTextarea.value = '';
+
     currentPrompt = prompt;
 
     // Show practice interface
@@ -307,11 +334,21 @@ case 'recordings':
     if (guidanceMiddle) guidanceMiddle.textContent = prompt.guidance.middle;
     if (guidanceEnd) guidanceEnd.textContent = prompt.guidance.end;
 
-    // Load draft if exists
-    if (storyTextarea) {
-      const draft = userData.storytelling.drafts && userData.storytelling.drafts[promptId];
-      storyTextarea.value = draft || '';
-      storyTextarea.focus();
+    // Update "Mark as Complete" button state
+    const markCompleteBtn = document.getElementById('mark-story-complete-btn');
+    if (markCompleteBtn) {
+      const alreadyCompleted = userData.storytelling.completedPrompts.some(cp => cp.promptId === promptId);
+      if (alreadyCompleted) {
+        markCompleteBtn.textContent = 'Completed';
+        markCompleteBtn.disabled = true;
+        markCompleteBtn.classList.add('btn-secondary');
+        markCompleteBtn.classList.remove('btn-success');
+      } else {
+        markCompleteBtn.textContent = 'Mark as Complete';
+        markCompleteBtn.disabled = false;
+        markCompleteBtn.classList.remove('btn-secondary');
+        markCompleteBtn.classList.add('btn-success');
+      }
     }
   }
 
@@ -338,6 +375,11 @@ case 'recordings':
    * Show prompts view
    */
   function showPromptsView() {
+    // Stop and reset any running timer/session before leaving the practice view
+    if (storyWebSpeechInstance) {
+      storyWebSpeechInstance.stopAndReset();
+    }
+
     if (promptsGrid) {
       promptsGrid.style.display = 'grid';
     }
@@ -404,9 +446,7 @@ case 'recordings':
    * Complete story
    */
   function completeStory() {
-    if (!currentPrompt || !storyTextarea) return;
-
-    const content = storyTextarea.value.trim();
+    if (!currentPrompt) return;
 
     // Optional notes
     Modal.showForm({
@@ -466,15 +506,19 @@ case 'recordings':
     if (StorageManager.save(userData)) {
       showToast('Story completed! Great job!', 'success');
 
-      // Clear textarea
-      if (storyTextarea) {
-        storyTextarea.value = '';
+      // Update button to reflect completed state
+      const markCompleteBtn = document.getElementById('mark-story-complete-btn');
+      if (markCompleteBtn) {
+        markCompleteBtn.textContent = 'Completed';
+        markCompleteBtn.disabled = true;
+        markCompleteBtn.classList.add('btn-secondary');
+        markCompleteBtn.classList.remove('btn-success');
       }
 
       // Show congratulations modal
       setTimeout(() => {
         Modal.alert({
-          title: '🎉 Story Completed!',
+          title: 'Story Completed!',
           message: `Excellent work! You've completed "${currentPrompt.title}". Keep practicing to improve your storytelling skills.`,
           type: 'success',
           onClose: function() {
