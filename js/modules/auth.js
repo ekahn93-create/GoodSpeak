@@ -8,6 +8,7 @@ const AuthModule = (function () {
   let supabase = null;
   let currentUser = null;
   let onAuthChangeCallback = null;
+  let initialSessionHandled = false;
 
   // ── Init ──────────────────────────────────────────────────────────────────
 
@@ -25,16 +26,27 @@ const AuthModule = (function () {
     // onAuthStateChange fires for both new logins and existing session restores.
     // INITIAL_SESSION covers the page-load case; SIGNED_IN covers new logins.
     supabase.auth.onAuthStateChange((event, session) => {
-      if (event === 'INITIAL_SESSION' || event === 'SIGNED_IN') {
+      if (event === 'INITIAL_SESSION') {
+        initialSessionHandled = true;
         if (session) {
           currentUser = session.user;
-          if (onAuthChangeCallback) onAuthChangeCallback(event, session.user);
+          if (onAuthChangeCallback) onAuthChangeCallback('INITIAL_SESSION', session.user);
+        }
+        _updateUI();
+      } else if (event === 'SIGNED_IN') {
+        // Only fire callback for genuine new logins, not token refreshes on tab focus
+        const isNewLogin = !currentUser || currentUser.id !== session.user.id;
+        currentUser = session.user;
+        _updateUI();
+        if (isNewLogin && initialSessionHandled) {
+          if (onAuthChangeCallback) onAuthChangeCallback('SIGNED_IN', session.user);
         }
       } else if (event === 'SIGNED_OUT') {
         currentUser = null;
+        initialSessionHandled = false;
         _onSignedOut();
+        _updateUI();
       }
-      _updateUI();
     });
 
     _bindModalEvents();

@@ -68,18 +68,16 @@ const App = (function() {
     // Load remote config then initialize auth
     AppConfig.load().then(() => {
       AuthModule.init(function(event, user) {
-        if (event === 'SIGNED_IN') {
-          // Use sessionStorage flag to reload exactly once after a new login
-          if (!sessionStorage.getItem('auth_reloading')) {
-            SyncModule.onSignIn().then(() => {
-              sessionStorage.setItem('auth_reloading', '1');
-              window.location.reload();
-            });
-          } else {
-            sessionStorage.removeItem('auth_reloading');
-          }
-        } else if (event === 'INITIAL_SESSION') {
-          // Page load with existing session — sync silently
+        if (event === 'INITIAL_SESSION') {
+          // Page load with existing session — pull cloud data then re-render
+          SyncModule.onSignIn().then(() => {
+            userData = StorageManager.load();
+            updateDashboardStats();
+            VocabularyModule.refresh();
+            WordBankModule.refresh();
+          });
+        } else if (event === 'SIGNED_IN') {
+          // New login via modal — pull cloud data then re-render
           SyncModule.onSignIn().then(() => {
             userData = StorageManager.load();
             updateDashboardStats();
@@ -88,8 +86,10 @@ const App = (function() {
           });
         } else if (event === 'SIGNED_OUT') {
           SyncModule.onSignOut();
-          sessionStorage.setItem('auth_reloading', '1');
-          window.location.reload();
+          userData = StorageManager.load();
+          updateDashboardStats();
+          VocabularyModule.refresh();
+          WordBankModule.refresh();
         }
       });
     });
