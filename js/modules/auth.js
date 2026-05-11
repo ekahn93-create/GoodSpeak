@@ -27,18 +27,19 @@ const AuthModule = (function () {
     // INITIAL_SESSION covers the page-load case; SIGNED_IN covers new logins.
     supabase.auth.onAuthStateChange((event, session) => {
       if (event === 'INITIAL_SESSION') {
-        initialSessionHandled = true;
+        // Page load — session exists (returning user) or null (not logged in)
         if (session) {
           currentUser = session.user;
           if (onAuthChangeCallback) onAuthChangeCallback('INITIAL_SESSION', session.user);
         }
         _updateUI();
       } else if (event === 'SIGNED_IN') {
-        // Only fire callback for genuine new logins, not token refreshes on tab focus
+        // Only fire callback if this is a different user or first login
+        // Ignore token refresh events (same user, already signed in)
         const isNewLogin = !currentUser || currentUser.id !== session.user.id;
         currentUser = session.user;
         _updateUI();
-        if (isNewLogin && initialSessionHandled) {
+        if (isNewLogin) {
           if (onAuthChangeCallback) onAuthChangeCallback('SIGNED_IN', session.user);
         }
       } else if (event === 'SIGNED_OUT') {
