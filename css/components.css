@@ -852,6 +852,44 @@
   text-decoration: underline;
 }
 
+.auth-signup-fields {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding-bottom: 4px;
+  border-bottom: 1px solid var(--border-color);
+  margin-bottom: 4px;
+}
+
+.auth-name-row {
+  display: flex;
+  gap: 10px;
+}
+
+.auth-name-col {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  gap: 4px;
+}
+
+.auth-required {
+  color: var(--accent-color);
+  font-size: 12px;
+}
+
+.auth-optional {
+  color: var(--text-secondary);
+  font-size: 12px;
+  font-weight: 400;
+}
+
+.auth-field-hint {
+  margin: -6px 0 0;
+  font-size: var(--font-size-sm);
+  color: var(--text-secondary);
+}
+
 /* ==================== ANIMATIONS ==================== */
 @keyframes fadeInUp {
   from {

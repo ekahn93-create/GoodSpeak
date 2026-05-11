@@ -48,9 +48,19 @@ const AuthModule = (function () {
 
   // ── Public auth actions ───────────────────────────────────────────────────
 
-  async function signUp(email, password) {
+  async function signUp(email, password, firstName, lastName, nickname) {
     if (!supabase) return { error: 'Auth not configured' };
-    const { data, error } = await supabase.auth.signUp({ email, password });
+    const { data, error } = await supabase.auth.signUp({
+      email,
+      password,
+      options: {
+        data: {
+          first_name: firstName,
+          last_name: lastName,
+          nickname: nickname || ''
+        }
+      }
+    });
     return { data, error };
   }
 
@@ -77,6 +87,20 @@ const AuthModule = (function () {
     return supabase;
   }
 
+  function getDisplayName() {
+    if (!currentUser) return null;
+    const meta = currentUser.user_metadata || {};
+    return meta.nickname || meta.first_name || currentUser.email.split('@')[0];
+  }
+
+  function isNewUser() {
+    if (!currentUser) return false;
+    const created = new Date(currentUser.created_at).getTime();
+    const now = Date.now();
+    // Consider "new" if account created within the last 60 seconds
+    return (now - created) < 60000;
+  }
+
   // ── Internal ──────────────────────────────────────────────────────────────
 
   function _onSignedIn(user) {
@@ -97,13 +121,28 @@ const AuthModule = (function () {
     if (!btn || !label) return;
 
     if (currentUser) {
-      label.textContent = currentUser.email.split('@')[0];
+      label.textContent = getDisplayName();
       btn.classList.add('signed-in');
       btn.title = 'Account / Sign out';
     } else {
       label.textContent = 'Sign In';
       btn.classList.remove('signed-in');
       btn.title = 'Sign in to save progress across devices';
+    }
+
+    _updateWelcomeMessage();
+  }
+
+  function _updateWelcomeMessage() {
+    const el = document.getElementById('hero-welcome');
+    if (!el) return;
+
+    if (currentUser) {
+      const name = getDisplayName();
+      const greeting = isNewUser() ? 'Welcome' : 'Welcome back';
+      el.textContent = greeting + ', ' + name + '!';
+    } else {
+      el.textContent = 'Welcome to Articulation Trainer';
     }
   }
 
@@ -127,19 +166,24 @@ const AuthModule = (function () {
     const submitBtn = document.getElementById('auth-submit-btn');
     const switchLink = document.getElementById('auth-switch-link');
     const switchText = document.getElementById('auth-switch-text');
+    const signupFields = document.getElementById('auth-signup-fields');
 
     if (mode === 'signup') {
       title.textContent = 'Create Account';
       submitBtn.textContent = 'Create Account';
+      submitBtn.style.display = '';
       switchText.textContent = 'Already have an account?';
       switchLink.textContent = 'Sign in';
       submitBtn.dataset.mode = 'signup';
+      if (signupFields) signupFields.style.display = '';
     } else {
       title.textContent = 'Sign In';
       submitBtn.textContent = 'Sign In';
+      submitBtn.style.display = '';
       switchText.textContent = "Don't have an account?";
       switchLink.textContent = 'Sign up';
       submitBtn.dataset.mode = 'login';
+      if (signupFields) signupFields.style.display = 'none';
     }
     _clearModalError();
   }
@@ -197,7 +241,7 @@ const AuthModule = (function () {
     }
 
     // Enter key in fields
-    ['auth-email', 'auth-password'].forEach(id => {
+    ['auth-first-name', 'auth-last-name', 'auth-nickname', 'auth-email', 'auth-password'].forEach(id => {
       const el = document.getElementById(id);
       if (el) el.addEventListener('keydown', (e) => { if (e.key === 'Enter') _handleSubmit(); });
     });
@@ -213,6 +257,15 @@ const AuthModule = (function () {
       return;
     }
 
+    if (mode === 'signup') {
+      const firstName = document.getElementById('auth-first-name').value.trim();
+      const lastName = document.getElementById('auth-last-name').value.trim();
+      if (!firstName || !lastName) {
+        _showModalError('Please enter your first and last name.');
+        return;
+      }
+    }
+
     const submitBtn = document.getElementById('auth-submit-btn');
     submitBtn.disabled = true;
     submitBtn.textContent = 'Please wait...';
@@ -220,7 +273,10 @@ const AuthModule = (function () {
 
     let result;
     if (mode === 'signup') {
-      result = await signUp(email, password);
+      const firstName = document.getElementById('auth-first-name').value.trim();
+      const lastName = document.getElementById('auth-last-name').value.trim();
+      const nickname = document.getElementById('auth-nickname').value.trim();
+      result = await signUp(email, password, firstName, lastName, nickname);
     } else {
       result = await signIn(email, password);
     }
@@ -286,6 +342,7 @@ const AuthModule = (function () {
     getUser,
     isSignedIn,
     getClient,
+    getDisplayName,
     openModal,
     closeModal
   };

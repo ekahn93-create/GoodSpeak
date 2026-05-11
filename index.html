@@ -45,6 +45,21 @@
             <h2 id="auth-modal-title">Sign In</h2>
             <p class="auth-modal-subtitle">Save your progress and access it from any device.</p>
             <div class="auth-form">
+                <div id="auth-signup-fields" class="auth-signup-fields" style="display:none;">
+                    <div class="auth-name-row">
+                        <div class="auth-name-col">
+                            <label for="auth-first-name">First Name <span class="auth-required">*</span></label>
+                            <input type="text" id="auth-first-name" placeholder="First name" autocomplete="given-name" />
+                        </div>
+                        <div class="auth-name-col">
+                            <label for="auth-last-name">Last Name <span class="auth-required">*</span></label>
+                            <input type="text" id="auth-last-name" placeholder="Last name" autocomplete="family-name" />
+                        </div>
+                    </div>
+                    <label for="auth-nickname">Nickname <span class="auth-optional">(optional)</span></label>
+                    <p class="auth-field-hint">What should we call you?</p>
+                    <input type="text" id="auth-nickname" placeholder="e.g. Ace, Coach, Jazz..." autocomplete="nickname" />
+                </div>
                 <label for="auth-email">Email</label>
                 <input type="email" id="auth-email" placeholder="you@example.com" autocomplete="email" />
                 <label for="auth-password">Password</label>
@@ -73,7 +88,7 @@
             <div class="hero-section">
                 <div class="hero-top">
                     <div>
-                        <h1>Welcome to Articulation Trainer</h1>
+                        <h1 id="hero-welcome">Welcome to Articulation Trainer</h1>
                         <p class="subtitle">Learn the words. Polish your delivery. Practice out loud. Review your growth.</p>
                     </div>
                     <div class="tier-display">
