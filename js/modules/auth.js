@@ -22,20 +22,14 @@ const AuthModule = (function () {
 
     supabase = window.supabase.createClient(url, anonKey);
 
-    // Restore existing session
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      if (session) {
-        currentUser = session.user;
-        _onSignedIn(session.user);
-      }
-      _updateUI();
-    });
-
-    // Listen for auth state changes
+    // onAuthStateChange fires for both new logins and existing session restores.
+    // INITIAL_SESSION covers the page-load case; SIGNED_IN covers new logins.
     supabase.auth.onAuthStateChange((event, session) => {
-      if (event === 'SIGNED_IN') {
-        currentUser = session.user;
-        _onSignedIn(session.user);
+      if (event === 'INITIAL_SESSION' || event === 'SIGNED_IN') {
+        if (session) {
+          currentUser = session.user;
+          _onSignedIn(session.user);
+        }
       } else if (event === 'SIGNED_OUT') {
         currentUser = null;
         _onSignedOut();
