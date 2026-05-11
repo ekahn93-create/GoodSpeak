@@ -855,10 +855,10 @@
 .auth-signup-fields {
   display: flex;
   flex-direction: column;
-  gap: 10px;
-  padding-bottom: 4px;
+  gap: 4px;
+  padding-bottom: 10px;
   border-bottom: 1px solid var(--border-color);
-  margin-bottom: 4px;
+  margin-bottom: 2px;
 }
 
 .auth-name-row {
@@ -871,6 +871,7 @@
   flex-direction: column;
   flex: 1;
   gap: 4px;
+  margin-bottom: 6px;
 }
 
 .auth-required {
@@ -885,7 +886,7 @@
 }
 
 .auth-field-hint {
-  margin: -6px 0 0;
+  margin: 0;
   font-size: var(--font-size-sm);
   color: var(--text-secondary);
 }
