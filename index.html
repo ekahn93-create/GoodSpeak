@@ -30,7 +30,34 @@
             <li><a href="#storytelling" class="nav-link" data-view="storytelling"><span class="nav-label">Practice</span><span class="nav-sub">Storytelling &amp; Challenges</span></a></li>
             <li><a href="#progress" class="nav-link" data-view="progress"><span class="nav-label">Review</span><span class="nav-sub">Progress &amp; Stats</span></a></li>
         </ul>
+        <div class="nav-auth">
+            <button id="auth-nav-btn" class="auth-nav-btn" title="Sign in to save progress across devices">
+                <span class="auth-nav-icon">&#9786;</span>
+                <span id="auth-nav-label">Sign In</span>
+            </button>
+        </div>
     </nav>
+
+    <!-- Auth Modal -->
+    <div id="auth-modal" class="auth-modal-overlay" role="dialog" aria-modal="true" aria-labelledby="auth-modal-title">
+        <div class="auth-modal">
+            <button id="auth-modal-close" class="auth-modal-close" aria-label="Close">&times;</button>
+            <h2 id="auth-modal-title">Sign In</h2>
+            <p class="auth-modal-subtitle">Save your progress and access it from any device.</p>
+            <div class="auth-form">
+                <label for="auth-email">Email</label>
+                <input type="email" id="auth-email" placeholder="you@example.com" autocomplete="email" />
+                <label for="auth-password">Password</label>
+                <input type="password" id="auth-password" placeholder="Password" autocomplete="current-password" />
+                <p id="auth-error" class="auth-error"></p>
+                <button id="auth-submit-btn" class="btn btn-primary auth-submit-btn" data-mode="login">Sign In</button>
+            </div>
+            <p class="auth-switch">
+                <span id="auth-switch-text">Don't have an account?</span>
+                <a href="#" id="auth-switch-link">Sign up</a>
+            </p>
+        </div>
+    </div>
 
     <!-- Floating Word Bank Button -->
     <button id="word-bank-fab" class="word-bank-fab" title="Open Word Bank" aria-label="Open Word Bank">
@@ -2329,6 +2356,10 @@
     </div>
 
     <!-- JavaScript Files (Load in order of dependency) -->
+    <!-- Supabase SDK (CDN) -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+    <!-- App config (Supabase credentials) -->
+    <script src="js/config.js"></script>
     <script src="js/storage.js"></script>
     <script src="js/router.js"></script>
     <script src="js/data/vocabularyData.js"></script>
@@ -2354,6 +2385,8 @@
     <script src="js/modules/recordings.js"></script>
     <script src="js/modules/shadowing.js"></script>
     <script src="js/modules/progressCharts.js"></script>
+    <script src="js/modules/auth.js"></script>
+    <script src="js/modules/sync.js"></script>
     <script src="js/app.js"></script>
 
     <!-- KPI tooltip -->

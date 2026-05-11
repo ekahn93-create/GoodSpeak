@@ -652,6 +652,206 @@
   visibility: hidden;
 }
 
+/* ==================== AUTH ==================== */
+
+/* Nav button */
+.nav-auth {
+  display: flex;
+  align-items: center;
+  margin-left: var(--spacing-sm);
+  position: relative;
+}
+
+.auth-nav-btn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 14px;
+  border: 1.5px solid var(--border-color);
+  border-radius: 999px;
+  background: transparent;
+  color: var(--text-secondary);
+  font-size: var(--font-size-sm);
+  font-weight: 500;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  white-space: nowrap;
+}
+
+.auth-nav-btn:hover {
+  border-color: var(--primary-color);
+  color: var(--primary-color);
+}
+
+.auth-nav-btn.signed-in {
+  border-color: var(--secondary-color);
+  color: var(--secondary-color);
+}
+
+.auth-nav-icon {
+  font-size: 16px;
+  line-height: 1;
+}
+
+/* Account dropdown */
+.auth-account-menu {
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 0;
+  background: white;
+  border: 1px solid var(--border-color);
+  border-radius: var(--border-radius);
+  box-shadow: var(--shadow-md);
+  min-width: 200px;
+  z-index: 2000;
+  padding: var(--spacing-sm);
+}
+
+.auth-account-email {
+  font-size: var(--font-size-sm);
+  color: var(--text-secondary);
+  padding: 4px 8px 8px;
+  border-bottom: 1px solid var(--border-color);
+  margin-bottom: 6px;
+  word-break: break-all;
+}
+
+.auth-signout-btn {
+  width: 100%;
+  padding: 8px 12px;
+  text-align: left;
+  background: transparent;
+  border: none;
+  border-radius: 6px;
+  color: var(--accent-color);
+  font-size: var(--font-size-sm);
+  font-weight: 500;
+  cursor: pointer;
+  transition: background var(--transition-fast);
+}
+
+.auth-signout-btn:hover {
+  background: var(--bg-secondary);
+}
+
+/* Auth modal overlay */
+.auth-modal-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.45);
+  z-index: 3000;
+  align-items: center;
+  justify-content: center;
+}
+
+.auth-modal-overlay.active {
+  display: flex;
+}
+
+/* Auth modal box */
+.auth-modal {
+  background: white;
+  border-radius: var(--border-radius-lg);
+  box-shadow: var(--shadow-lg);
+  padding: var(--spacing-xl);
+  width: 100%;
+  max-width: 400px;
+  position: relative;
+  animation: fadeInUp 0.2s ease;
+}
+
+.auth-modal h2 {
+  margin: 0 0 6px;
+  font-size: var(--font-size-xl);
+  color: var(--text-primary);
+}
+
+.auth-modal-subtitle {
+  margin: 0 0 var(--spacing-lg);
+  color: var(--text-secondary);
+  font-size: var(--font-size-sm);
+}
+
+.auth-modal-close {
+  position: absolute;
+  top: 14px;
+  right: 16px;
+  background: transparent;
+  border: none;
+  font-size: 22px;
+  color: var(--text-secondary);
+  cursor: pointer;
+  line-height: 1;
+  padding: 2px 6px;
+  border-radius: 4px;
+  transition: background var(--transition-fast);
+}
+
+.auth-modal-close:hover {
+  background: var(--bg-secondary);
+}
+
+/* Auth form */
+.auth-form {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.auth-form label {
+  font-size: var(--font-size-sm);
+  font-weight: 500;
+  color: var(--text-primary);
+  margin-bottom: 2px;
+}
+
+.auth-form input {
+  padding: 10px 12px;
+  border: 1.5px solid var(--border-color);
+  border-radius: 8px;
+  font-size: var(--font-size-base);
+  color: var(--text-primary);
+  background: white;
+  transition: border-color var(--transition-fast);
+}
+
+.auth-form input:focus {
+  outline: none;
+  border-color: var(--primary-color);
+}
+
+.auth-error {
+  font-size: var(--font-size-sm);
+  color: var(--accent-color);
+  min-height: 18px;
+  margin: 0;
+}
+
+.auth-submit-btn {
+  margin-top: 6px;
+  width: 100%;
+}
+
+/* Switch mode */
+.auth-switch {
+  margin: var(--spacing-md) 0 0;
+  text-align: center;
+  font-size: var(--font-size-sm);
+  color: var(--text-secondary);
+}
+
+.auth-switch a {
+  color: var(--primary-color);
+  font-weight: 500;
+  text-decoration: none;
+  margin-left: 4px;
+}
+
+.auth-switch a:hover {
+  text-decoration: underline;
+}
+
 /* ==================== ANIMATIONS ==================== */
 @keyframes fadeInUp {
   from {
