@@ -59,11 +59,28 @@
                     <label for="auth-nickname">Nickname <span class="auth-optional">(optional)</span></label>
                     <p class="auth-field-hint">What should we call you?</p>
                     <input type="text" id="auth-nickname" placeholder="e.g. Ace, Coach, Jazz..." autocomplete="nickname" />
+                    <label for="auth-goal">My main goal <span class="auth-required">*</span></label>
+                    <select id="auth-goal">
+                        <option value="" disabled selected>Select a goal...</option>
+                        <option value="public_speaking">Public speaking</option>
+                        <option value="job_interviews">Job interviews</option>
+                        <option value="everyday_conversation">Everyday conversation</option>
+                        <option value="professional_presence">Professional presence</option>
+                        <option value="general">General improvement</option>
+                    </select>
                 </div>
                 <label for="auth-email">Email</label>
                 <input type="email" id="auth-email" placeholder="you@example.com" autocomplete="email" />
                 <label for="auth-password">Password</label>
-                <input type="password" id="auth-password" placeholder="Password" autocomplete="current-password" />
+                <div class="auth-password-wrapper">
+                    <input type="password" id="auth-password" placeholder="Password" autocomplete="current-password" />
+                    <button type="button" id="auth-password-toggle" class="auth-password-toggle" aria-label="Show password">
+                        <svg id="auth-eye-icon" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                            <circle cx="12" cy="12" r="3"/>
+                        </svg>
+                    </button>
+                </div>
                 <p id="auth-error" class="auth-error"></p>
                 <button id="auth-submit-btn" class="btn btn-primary auth-submit-btn" data-mode="login">Sign In</button>
             </div>
