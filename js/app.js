@@ -58,6 +58,14 @@ const App = (function() {
     // Listen for view changes to update data
     document.addEventListener('viewChanged', handleViewChange);
 
+    // Re-render all modules whenever a cloud sync completes
+    document.addEventListener('syncComplete', function() {
+      userData = StorageManager.load();
+      updateDashboardStats();
+      VocabularyModule.refresh();
+      WordBankModule.refresh();
+    });
+
     // Initialize router last so the initial viewChanged event fires
     // after all modules and listeners are ready
     Router.init();
