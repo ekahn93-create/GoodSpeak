@@ -68,13 +68,7 @@ const App = (function() {
     // Load remote config then initialize auth
     AppConfig.load().then(() => {
       AuthModule.init(function(event, user) {
-        if (event === 'SIGNED_IN') {
-          // New login — sync then reload so all modules start fresh with cloud data
-          SyncModule.onSignIn().then(() => {
-            window.location.reload();
-          });
-        } else if (event === 'INITIAL_SESSION') {
-          // Page load with existing session — sync silently, no reload needed
+        if (event === 'SIGNED_IN' || event === 'INITIAL_SESSION') {
           SyncModule.onSignIn().then(() => {
             userData = StorageManager.load();
             updateDashboardStats();
@@ -83,7 +77,10 @@ const App = (function() {
           });
         } else if (event === 'SIGNED_OUT') {
           SyncModule.onSignOut();
-          window.location.reload();
+          userData = StorageManager.load();
+          updateDashboardStats();
+          VocabularyModule.refresh();
+          WordBankModule.refresh();
         }
       });
     });
