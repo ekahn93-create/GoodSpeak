@@ -80,6 +80,17 @@ const App = (function() {
           SyncModule.onSignOut();
         }
       });
+
+      // If a session was already active when the page loaded (e.g. returning user),
+      // manually trigger a sync now that the client is ready.
+      if (AuthModule.isSignedIn()) {
+        SyncModule.onSignIn().then(() => {
+          userData = StorageManager.load();
+          updateDashboardStats();
+          VocabularyModule.refresh();
+          WordBankModule.refresh();
+        });
+      }
     });
 
     // Hook StorageManager.save to schedule a cloud sync on every local save
