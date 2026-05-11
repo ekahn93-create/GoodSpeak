@@ -300,6 +300,27 @@
   color: var(--text-white);
 }
 
+.badge-custom {
+  background-color: #C8960C;
+  color: #fff;
+}
+
+.btn-text-danger {
+  background: none;
+  border: 1px solid var(--accent-color);
+  border-radius: 999px;
+  padding: 3px 12px;
+  font-size: 0.75rem;
+  color: var(--accent-color);
+  cursor: pointer;
+  opacity: 0.7;
+}
+
+.btn-text-danger:hover {
+  opacity: 1;
+  background-color: rgba(var(--accent-rgb, 220, 80, 80), 0.08);
+}
+
 .badge-danger {
   background-color: var(--accent-color);
   color: var(--text-white);

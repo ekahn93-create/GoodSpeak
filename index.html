@@ -433,7 +433,10 @@
                             <input type="text" id="custom-synonyms" placeholder="e.g., beautiful, elegant, refined">
                         </div>
 
-                        <button type="button" id="add-word-btn" class="btn btn-primary">Add to Word Bank</button>
+                        <div style="display: flex; gap: 8px;">
+                            <button type="button" id="add-word-still-learning-btn" class="btn btn-secondary">Add to Still Learning</button>
+                            <button type="button" id="add-word-learned-btn" class="btn btn-primary">Add to Learned</button>
+                        </div>
                     </form>
                 </div>
 
@@ -461,10 +464,10 @@
                     </div>
                 </div>
 
-                <!-- Learned Words from App -->
+                <!-- Learned Words -->
                 <div class="word-bank-section">
                     <div class="word-bank-section-header">
-                        <h2>Words Learned from Vocabulary Builder (<span id="app-words-count">0</span>)</h2>
+                        <h2>Words Learned (<span id="app-words-count">0</span>)</h2>
                         <div class="word-bank-sort">
                             <label for="app-learned-sort">Sort by:</label>
                             <select id="app-learned-sort" class="sort-dropdown" onchange="WordBankModule.sortSection('appLearned', this.value)">
@@ -478,22 +481,6 @@
                     </div>
                 </div>
 
-                <!-- Custom Words -->
-                <div class="word-bank-section">
-                    <div class="word-bank-section-header">
-                        <h2>Custom Words (<span id="custom-words-count">0</span>)</h2>
-                        <div class="word-bank-sort">
-                            <label for="custom-words-sort">Sort by:</label>
-                            <select id="custom-words-sort" class="sort-dropdown" onchange="WordBankModule.sortSection('custom', this.value)">
-                                <option value="date">Date Added</option>
-                                <option value="alpha">Alphabetically</option>
-                            </select>
-                        </div>
-                    </div>
-                    <div id="custom-words-list" class="word-bank-grid">
-                        <!-- Custom words will be displayed here -->
-                    </div>
-                </div>
             </div>
 
             <!-- ========== KNOWLEDGE CHECK CATEGORY ========== -->

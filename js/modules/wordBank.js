@@ -15,10 +15,8 @@ const WordBankModule = (function() {
   let addWordForm = null;
   let appLearnedWordsContainer = null;
   let stillLearningWordsContainer = null;
-  let customWordsContainer = null;
   let appWordsCountElement = null;
   let stillLearningCountElement = null;
-  let customWordsCountElement = null;
   let lookupButton = null;
   let lookupStatus = null;
 
@@ -63,10 +61,8 @@ const WordBankModule = (function() {
     addWordForm = document.getElementById('add-custom-word-form');
     appLearnedWordsContainer = document.getElementById('app-learned-words');
     stillLearningWordsContainer = document.getElementById('still-learning-words');
-    customWordsContainer = document.getElementById('custom-words-list');
     appWordsCountElement = document.getElementById('app-words-count');
     stillLearningCountElement = document.getElementById('still-learning-words-count');
-    customWordsCountElement = document.getElementById('custom-words-count');
     lookupButton = document.getElementById('lookup-word-btn');
     lookupStatus = document.getElementById('lookup-status');
 
@@ -124,10 +120,14 @@ const WordBankModule = (function() {
    * Set up event listeners
    */
   function setupEventListeners() {
-    // Add to Word Bank button (click only — Enter key does not submit)
-    const addWordBtn = document.getElementById('add-word-btn');
-    if (addWordBtn) {
-      addWordBtn.addEventListener('click', handleAddCustomWord);
+    // Add custom word buttons
+    const addStillLearningBtn = document.getElementById('add-word-still-learning-btn');
+    if (addStillLearningBtn) {
+      addStillLearningBtn.addEventListener('click', () => handleAddCustomWord('stillLearning'));
+    }
+    const addLearnedBtn = document.getElementById('add-word-learned-btn');
+    if (addLearnedBtn) {
+      addLearnedBtn.addEventListener('click', () => handleAddCustomWord('learned'));
     }
 
     // Lookup button
@@ -338,7 +338,7 @@ const WordBankModule = (function() {
    * Handle add custom word form submission
    * @param {Event} e - Form submit event
    */
-  function handleAddCustomWord() {
+  function handleAddCustomWord(status) {
 
     // Get form values
     const word = document.getElementById('custom-word').value.trim();
@@ -365,6 +365,7 @@ const WordBankModule = (function() {
       exampleSentence: example || '',
       synonyms: synonyms,
       isCustom: true,
+      status: status, // 'stillLearning' or 'learned'
       addedDate: new Date().toISOString()
     };
 
@@ -376,13 +377,18 @@ const WordBankModule = (function() {
 
     // Save to storage
     if (StorageManager.save(userData)) {
-      showToast('Word added to your Word Bank!', 'success');
+      const label = status === 'learned' ? 'Learned Words' : 'Still Learning';
+      showToast(`Word added to ${label}!`, 'success');
 
       // Clear form
       addWordForm.reset();
 
       // Refresh display
-      displayCustomWords();
+      if (status === 'learned') {
+        displayAppLearnedWords();
+      } else {
+        displayStillLearningWords();
+      }
       updateCounts();
 
       // Fire background enrichment via Claude (non-blocking)
@@ -428,13 +434,6 @@ const WordBankModule = (function() {
   function displayAppLearnedWords(sortBy) {
     if (!appLearnedWordsContainer || !userData) return;
 
-    const learnedWords = userData.vocabulary.learned;
-
-    if (learnedWords.length === 0) {
-      appLearnedWordsContainer.innerHTML = '<p class="text-secondary">No words learned yet. Visit the Vocabulary Builder to start learning!</p>';
-      return;
-    }
-
     // Check if vocabularyDatabase is available and properly loaded
     if (typeof vocabularyDatabase === 'undefined' || !vocabularyDatabase.beginner) {
       console.warn('vocabularyDatabase not available in displayAppLearnedWords');
@@ -442,33 +441,46 @@ const WordBankModule = (function() {
       return;
     }
 
-    // Get word objects for learned word IDs
+    // Get word objects for learned word IDs from the database
     const allWords = [
       ...vocabularyDatabase.beginner,
       ...vocabularyDatabase.intermediate,
       ...vocabularyDatabase.advanced
     ];
 
-    const learnedWordObjects = learnedWords.map(id => {
+    const learnedWordObjects = (userData.vocabulary.learned || []).map(id => {
       return allWords.find(w => w.id === id);
     }).filter(w => w !== undefined);
+
+    // Add custom words marked as learned
+    const customLearned = (userData.customWords || []).filter(w => w.status === 'learned');
+
+    const combined = [...learnedWordObjects, ...customLearned];
+
+    if (combined.length === 0) {
+      appLearnedWordsContainer.innerHTML = '<p class="text-secondary">No words learned yet. Visit the Vocabulary Builder to start learning!</p>';
+      return;
+    }
 
     const difficultyOrder = { beginner: 1, intermediate: 2, advanced: 3 };
     const currentSort = sortBy || (document.getElementById('app-learned-sort') ? document.getElementById('app-learned-sort').value : 'alpha');
     if (currentSort === 'difficulty') {
-      learnedWordObjects.sort((a, b) => (difficultyOrder[a.difficulty] || 99) - (difficultyOrder[b.difficulty] || 99) || a.word.localeCompare(b.word));
+      combined.sort((a, b) => (difficultyOrder[a.difficulty] || 99) - (difficultyOrder[b.difficulty] || 99) || a.word.localeCompare(b.word));
     } else {
-      learnedWordObjects.sort((a, b) => a.word.localeCompare(b.word));
+      combined.sort((a, b) => a.word.localeCompare(b.word));
     }
 
     // Display as detailed cards
-    const html = learnedWordObjects.map(word => `
-      <div class="word-bank-card" onclick="WordBankModule.showWordDetail(${word.id}, false)">
+    const html = combined.map(word => `
+      <div class="word-bank-card" onclick="WordBankModule.showWordDetail(${word.id}, ${word.isCustom ? 'true' : 'false'})">
         <div class="word-bank-card-header">
           <div class="word-bank-word">${word.word}</div>
-          <span class="badge badge-primary">${word.partOfSpeech}</span>
+          <div>
+            ${word.partOfSpeech ? `<span class="badge badge-primary">${word.partOfSpeech}</span>` : ''}
+            ${word.isCustom ? '<span class="badge badge-custom">Custom</span>' : ''}
+          </div>
         </div>
-        <div class="word-bank-pronunciation">${word.pronunciation}</div>
+        ${word.pronunciation ? `<div class="word-bank-pronunciation">${word.pronunciation}</div>` : ''}
         <div class="word-bank-definition">${truncateText(word.definition, 80)}</div>
       </div>
     `).join('');
@@ -482,13 +494,6 @@ const WordBankModule = (function() {
   function displayStillLearningWords(sortBy) {
     if (!stillLearningWordsContainer || !userData) return;
 
-    const stillLearningWords = userData.vocabulary.stillLearning || [];
-
-    if (stillLearningWords.length === 0) {
-      stillLearningWordsContainer.innerHTML = '<p class="text-secondary">No words in Still Learning yet. Visit the Vocabulary Builder to add words!</p>';
-      return;
-    }
-
     // Check if vocabularyDatabase is available and properly loaded
     if (typeof vocabularyDatabase === 'undefined' || !vocabularyDatabase.beginner) {
       console.warn('vocabularyDatabase not available in displayStillLearningWords');
@@ -496,71 +501,43 @@ const WordBankModule = (function() {
       return;
     }
 
-    // Get word objects for still learning word IDs
+    // Get word objects for still learning word IDs from the database
     const allWords = [
       ...vocabularyDatabase.beginner,
       ...vocabularyDatabase.intermediate,
       ...vocabularyDatabase.advanced
     ];
 
-    const stillLearningWordObjects = stillLearningWords.map(id => {
+    const stillLearningWordObjects = (userData.vocabulary.stillLearning || []).map(id => {
       return allWords.find(w => w.id === id);
     }).filter(w => w !== undefined);
+
+    // Add custom words marked as stillLearning
+    const customStillLearning = (userData.customWords || []).filter(w => w.status === 'stillLearning');
+
+    const combined = [...stillLearningWordObjects, ...customStillLearning];
+
+    if (combined.length === 0) {
+      stillLearningWordsContainer.innerHTML = '<p class="text-secondary">No words in Still Learning yet. Visit the Vocabulary Builder to add words!</p>';
+      return;
+    }
 
     const difficultyOrder = { beginner: 1, intermediate: 2, advanced: 3 };
     const currentSort = sortBy || (document.getElementById('still-learning-sort') ? document.getElementById('still-learning-sort').value : 'alpha');
     if (currentSort === 'difficulty') {
-      stillLearningWordObjects.sort((a, b) => (difficultyOrder[a.difficulty] || 99) - (difficultyOrder[b.difficulty] || 99) || a.word.localeCompare(b.word));
+      combined.sort((a, b) => (difficultyOrder[a.difficulty] || 99) - (difficultyOrder[b.difficulty] || 99) || a.word.localeCompare(b.word));
     } else {
-      stillLearningWordObjects.sort((a, b) => a.word.localeCompare(b.word));
+      combined.sort((a, b) => a.word.localeCompare(b.word));
     }
 
     // Display as detailed cards
-    const html = stillLearningWordObjects.map(word => `
-      <div class="word-bank-card" onclick="WordBankModule.showStillLearningWordDetail(${word.id})">
-        <div class="word-bank-card-header">
-          <div class="word-bank-word">${word.word}</div>
-          ${word.partOfSpeech ? `<span class="badge badge-primary">${word.partOfSpeech}</span>` : ''}
-        </div>
-        <div class="word-bank-pronunciation">${word.pronunciation}</div>
-        <div class="word-bank-definition">${truncateText(word.definition, 80)}</div>
-      </div>
-    `).join('');
-
-    stillLearningWordsContainer.innerHTML = html;
-  }
-
-  /**
-   * Display custom words
-   */
-  function displayCustomWords(sortBy) {
-    if (!customWordsContainer || !userData) return;
-
-    const customWords = [...(userData.customWords || [])];
-
-    if (customWords.length === 0) {
-      customWordsContainer.innerHTML = '<p class="text-secondary">No custom words yet. Use the form above to add words you\'ve learned elsewhere!</p>';
-      return;
-    }
-
-    const currentSort = sortBy || (document.getElementById('custom-words-sort') ? document.getElementById('custom-words-sort').value : 'date');
-    if (currentSort === 'alpha') {
-      customWords.sort((a, b) => a.word.localeCompare(b.word));
-    } else {
-      // date: newest first
-      customWords.sort((a, b) => new Date(b.addedDate) - new Date(a.addedDate));
-    }
-
-    // Display as detailed cards with delete option
-    const html = customWords.map(word => `
-      <div class="word-bank-card custom-word-card" onclick="WordBankModule.showWordDetail(${word.id}, true)">
+    const html = combined.map(word => `
+      <div class="word-bank-card" onclick="${word.isCustom ? `WordBankModule.showCustomWordDetail(${word.id})` : `WordBankModule.showStillLearningWordDetail(${word.id})`}">
         <div class="word-bank-card-header">
           <div class="word-bank-word">${word.word}</div>
           <div>
-            ${word.partOfSpeech ? `<span class="badge badge-secondary">${word.partOfSpeech}</span>` : ''}
-            <button class="btn-icon" onclick="event.stopPropagation(); WordBankModule.deleteCustomWord(${word.id})" title="Delete word">
-              ✕
-            </button>
+            ${word.partOfSpeech ? `<span class="badge badge-primary">${word.partOfSpeech}</span>` : ''}
+            ${word.isCustom ? '<span class="badge badge-custom">Custom</span>' : ''}
           </div>
         </div>
         ${word.pronunciation ? `<div class="word-bank-pronunciation">${word.pronunciation}</div>` : ''}
@@ -568,7 +545,7 @@ const WordBankModule = (function() {
       </div>
     `).join('');
 
-    customWordsContainer.innerHTML = html;
+    stillLearningWordsContainer.innerHTML = html;
   }
 
   /**
@@ -605,7 +582,7 @@ const WordBankModule = (function() {
         ${word.pronunciation ? `<div class="word-pronunciation">${word.pronunciation}</div>` : ''}
         <div class="word-meta">
           ${word.partOfSpeech ? `<span class="badge badge-primary">${word.partOfSpeech}</span>` : ''}
-          ${isCustom ? '<span class="badge badge-secondary">Custom</span>' : `<span class="badge badge-secondary">${word.difficulty}</span>`}
+          ${isCustom ? '<span class="badge badge-custom">Custom</span>' : `<span class="badge badge-secondary">${word.difficulty}</span>`}
         </div>
         ${word.definition ? `
           <div class="word-definition">
@@ -639,14 +616,25 @@ const WordBankModule = (function() {
           <div class="word-meta" style="margin-top: 1rem; font-size: 0.85rem; color: var(--text-secondary);">
             Added: ${new Date(word.addedDate).toLocaleDateString()}
           </div>
-        ` : ''}
-        ${!isCustom ? `
+          <div class="action-buttons" style="margin-top: 1rem;">
+            ${word.status === 'learned'
+              ? `<button class="btn btn-secondary" onclick="WordBankModule.moveCustomWordToStillLearning(${wordId})">Move to Still Learning</button>`
+              : `<button class="btn btn-success" onclick="WordBankModule.moveCustomWordToLearned(${wordId})">Move to Learned</button>`
+            }
+          </div>
+          <div style="margin-top: 0.75rem; text-align: center;">
+            <button class="btn-text-danger" onclick="WordBankModule.deleteCustomWord(${wordId})">Remove from Word Bank</button>
+          </div>
+        ` : `
           <div class="action-buttons" style="margin-top: 1rem;">
             <button class="btn btn-secondary" onclick="WordBankModule.moveWordToStillLearning(${wordId})">
               Move to Still Learning
             </button>
           </div>
-        ` : ''}
+          <div style="margin-top: 0.75rem; text-align: center;">
+            <button class="btn-text-danger" onclick="WordBankModule.removeWordFromLearned(${wordId})">Remove from Word Bank</button>
+          </div>
+        `}
       </div>
     `;
 
@@ -697,10 +685,114 @@ const WordBankModule = (function() {
             Move to Learned Words
           </button>
         </div>
+        <div style="margin-top: 0.75rem; text-align: center;">
+          <button class="btn-text-danger" onclick="WordBankModule.removeWordFromStillLearning(${wordId})">Remove from Word Bank</button>
+        </div>
       </div>
     `;
 
     Modal.show(content);
+  }
+
+  /**
+   * Show detail modal for a custom word in Still Learning
+   * @param {number} wordId - The custom word ID
+   */
+  function showCustomWordDetail(wordId) {
+    showWordDetail(wordId, true);
+  }
+
+  /**
+   * Move a custom word's status to learned
+   * @param {number} wordId - The custom word ID
+   */
+  function moveCustomWordToLearned(wordId) {
+    if (!userData || !userData.customWords) return;
+    const word = userData.customWords.find(w => w.id === wordId);
+    if (!word) return;
+    word.status = 'learned';
+    if (StorageManager.save(userData)) {
+      showToast('Word moved to Learned!', 'success');
+      displayStillLearningWords();
+      displayAppLearnedWords();
+      updateCounts();
+      Modal.hide();
+    } else {
+      showToast('Failed to save progress', 'error');
+    }
+  }
+
+  /**
+   * Move a custom word's status to stillLearning
+   * @param {number} wordId - The custom word ID
+   */
+  function moveCustomWordToStillLearning(wordId) {
+    if (!userData || !userData.customWords) return;
+    const word = userData.customWords.find(w => w.id === wordId);
+    if (!word) return;
+    word.status = 'stillLearning';
+    if (StorageManager.save(userData)) {
+      showToast('Word moved to Still Learning!', 'success');
+      displayAppLearnedWords();
+      displayStillLearningWords();
+      updateCounts();
+      Modal.hide();
+    } else {
+      showToast('Failed to save progress', 'error');
+    }
+  }
+
+  /**
+   * Remove a DB word from the Learned list entirely
+   * @param {number} wordId - The word ID to remove
+   */
+  function removeWordFromLearned(wordId) {
+    if (!userData) return;
+    Modal.confirm({
+      title: 'Remove Word',
+      message: 'Remove this word from your Word Bank? You can re-learn it from the Vocabulary Builder.',
+      confirmText: 'Remove',
+      cancelText: 'Cancel',
+      onConfirm: () => {
+        userData.vocabulary.learned = userData.vocabulary.learned.filter(id => id !== wordId);
+        userData.vocabulary.totalWordsLearned = userData.vocabulary.learned.length;
+        if (StorageManager.save(userData)) {
+          showToast('Word removed', 'success');
+          displayAppLearnedWords();
+          updateCounts();
+          Modal.hide();
+          if (typeof VocabularyModule !== 'undefined' && VocabularyModule.refresh) VocabularyModule.refresh();
+        } else {
+          showToast('Failed to save', 'error');
+        }
+      }
+    });
+  }
+
+  /**
+   * Remove a DB word from the Still Learning list entirely
+   * @param {number} wordId - The word ID to remove
+   */
+  function removeWordFromStillLearning(wordId) {
+    if (!userData) return;
+    Modal.confirm({
+      title: 'Remove Word',
+      message: 'Remove this word from your Word Bank? You can re-add it from the Vocabulary Builder.',
+      confirmText: 'Remove',
+      cancelText: 'Cancel',
+      onConfirm: () => {
+        userData.vocabulary.stillLearning = (userData.vocabulary.stillLearning || []).filter(id => id !== wordId);
+        if (StorageManager.save(userData)) {
+          showToast('Word removed', 'success');
+          displayStillLearningWords();
+          updateCounts();
+          Modal.hide();
+          if (typeof VocabularyModule !== 'undefined' && VocabularyModule.refresh) VocabularyModule.refresh();
+        } else {
+          showToast('Failed to save', 'error');
+        }
+      }
+    });
   }
 
   /**
@@ -806,7 +898,8 @@ const WordBankModule = (function() {
         // Save
         if (StorageManager.save(userData)) {
           showToast('Word deleted', 'success');
-          displayCustomWords();
+          displayAppLearnedWords();
+          displayStillLearningWords();
           updateCounts();
         } else {
           showToast('Failed to delete word', 'error');
@@ -820,16 +913,14 @@ const WordBankModule = (function() {
    */
   function updateCounts() {
     if (appWordsCountElement && userData) {
-      appWordsCountElement.textContent = userData.vocabulary.learned.length;
+      const customLearnedCount = (userData.customWords || []).filter(w => w.status === 'learned').length;
+      appWordsCountElement.textContent = (userData.vocabulary.learned || []).length + customLearnedCount;
     }
 
     if (stillLearningCountElement && userData) {
-      const stillLearningCount = userData.vocabulary.stillLearning ? userData.vocabulary.stillLearning.length : 0;
-      stillLearningCountElement.textContent = stillLearningCount;
-    }
-
-    if (customWordsCountElement && userData) {
-      customWordsCountElement.textContent = userData.customWords ? userData.customWords.length : 0;
+      const customStillLearningCount = (userData.customWords || []).filter(w => w.status === 'stillLearning').length;
+      const stillLearningCount = (userData.vocabulary.stillLearning || []).length;
+      stillLearningCountElement.textContent = stillLearningCount + customStillLearningCount;
     }
   }
 
@@ -1336,7 +1427,6 @@ const WordBankModule = (function() {
 
     displayAppLearnedWords();
     displayStillLearningWords();
-    displayCustomWords();
     updateCounts();
 
     // Update quiz total words count based on current source selection
@@ -1394,7 +1484,6 @@ const WordBankModule = (function() {
 
     filterGrid(stillLearningWordsContainer);
     filterGrid(appLearnedWordsContainer);
-    filterGrid(customWordsContainer);
   }
 
   /**
@@ -1416,8 +1505,6 @@ const WordBankModule = (function() {
       displayStillLearningWords(sortBy);
     } else if (section === 'appLearned') {
       displayAppLearnedWords(sortBy);
-    } else if (section === 'custom') {
-      displayCustomWords(sortBy);
     }
   }
 
@@ -1426,8 +1513,13 @@ const WordBankModule = (function() {
     init: init,
     showWordDetail: showWordDetail,
     showStillLearningWordDetail: showStillLearningWordDetail,
+    showCustomWordDetail: showCustomWordDetail,
     moveWordToLearned: moveWordToLearned,
     moveWordToStillLearning: moveWordToStillLearning,
+    removeWordFromLearned: removeWordFromLearned,
+    removeWordFromStillLearning: removeWordFromStillLearning,
+    moveCustomWordToLearned: moveCustomWordToLearned,
+    moveCustomWordToStillLearning: moveCustomWordToStillLearning,
     deleteCustomWord: deleteCustomWord,
     refresh: refresh,
     sortSection: sortSection,
