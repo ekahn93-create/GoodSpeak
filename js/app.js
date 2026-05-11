@@ -18,12 +18,52 @@ const App = (function() {
   function init() {
     console.log('Articulation Trainer App initializing...');
 
-    // Check if LocalStorage is available
     if (!StorageManager.isAvailable()) {
       alert('LocalStorage is not available. The app requires LocalStorage to save your progress.');
       return;
     }
 
+    // Load config and check for existing session FIRST.
+    // If logged in, pull cloud data into localStorage before initializing modules.
+    AppConfig.load().then(() => {
+      AuthModule.init(function(event, user) {
+        if (event === 'SIGNED_IN') {
+          SyncModule.onSignIn().then(() => {
+            _refreshAllModules();
+          });
+        } else if (event === 'SIGNED_OUT') {
+          SyncModule.onSignOut();
+          _refreshAllModules();
+        }
+      });
+
+      // If a session already exists, sync cloud data before booting the app
+      const client = AuthModule.getClient();
+      if (client) {
+        client.auth.getSession().then(({ data: { session } }) => {
+          if (session) {
+            // Logged in — pull cloud data first, then boot
+            AuthModule._setCurrentUser(session.user);
+            SyncModule.onSignIn().then(() => _bootApp());
+          } else {
+            // Not logged in — boot immediately
+            _bootApp();
+          }
+        });
+      } else {
+        _bootApp();
+      }
+    });
+  }
+
+  function _refreshAllModules() {
+    userData = StorageManager.load();
+    updateDashboardStats();
+    VocabularyModule.refresh();
+    WordBankModule.refresh();
+  }
+
+  function _bootApp() {
     // Initialize or load user data
     userData = StorageManager.initialize();
 
@@ -37,8 +77,6 @@ const App = (function() {
     OnboardingModule.init();
 
     // Initialize all feature modules
-    // Note: VocabularyModule.init() restores the saved tab and calls refresh()
-    // on whichever sub-module was active, so those modules must be initialized first.
     WordBankModule.init();
     StorytellingModule.init();
     DailyWordModule.init();
@@ -58,49 +96,11 @@ const App = (function() {
     // Listen for view changes to update data
     document.addEventListener('viewChanged', handleViewChange);
 
-    // Re-render all modules whenever a cloud sync completes
-    document.addEventListener('syncComplete', function() {
-      userData = StorageManager.load();
-      updateDashboardStats();
-      VocabularyModule.refresh();
-      WordBankModule.refresh();
-    });
-
-    // Initialize router last so the initial viewChanged event fires
-    // after all modules and listeners are ready
+    // Initialize router last
     Router.init();
 
-    // Initialize progress view (handles case where progress is initial route)
+    // Initialize progress view
     initializeProgressView();
-
-    // Load remote config then initialize auth
-    AppConfig.load().then(() => {
-      AuthModule.init(function(event, user) {
-        if (event === 'INITIAL_SESSION') {
-          // Page load with existing session — pull cloud data then re-render
-          SyncModule.onSignIn().then(() => {
-            userData = StorageManager.load();
-            updateDashboardStats();
-            VocabularyModule.refresh();
-            WordBankModule.refresh();
-          });
-        } else if (event === 'SIGNED_IN') {
-          // New login via modal — pull cloud data then re-render
-          SyncModule.onSignIn().then(() => {
-            userData = StorageManager.load();
-            updateDashboardStats();
-            VocabularyModule.refresh();
-            WordBankModule.refresh();
-          });
-        } else if (event === 'SIGNED_OUT') {
-          SyncModule.onSignOut();
-          userData = StorageManager.load();
-          updateDashboardStats();
-          VocabularyModule.refresh();
-          WordBankModule.refresh();
-        }
-      });
-    });
 
     // Hook StorageManager.save to schedule a cloud sync on every local save
     const _originalSave = StorageManager.save;
@@ -110,11 +110,10 @@ const App = (function() {
       return result;
     };
 
-    // Mark as initialized
     isInitialized = true;
-
     console.log('Articulation Trainer App initialized successfully!');
   }
+
 
   /**
    * Initialize the dashboard (home view)

@@ -95,6 +95,10 @@ const AuthModule = (function () {
     return supabase;
   }
 
+  function _setCurrentUser(user) {
+    currentUser = user;
+  }
+
   function getDisplayName() {
     if (!currentUser) return null;
     const meta = currentUser.user_metadata || {};
@@ -375,7 +379,8 @@ const AuthModule = (function () {
     getClient,
     getDisplayName,
     openModal,
-    closeModal
+    closeModal,
+    _setCurrentUser
   };
 
 })();
