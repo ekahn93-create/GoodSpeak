@@ -42,17 +42,9 @@ const SyncModule = (function () {
         return;
       }
 
-      // Compare timestamps and keep the newer version
-      const cloudUpdated = new Date(data.updated_at).getTime();
-      const localUpdated = localData ? new Date(localData.lastVisit || 0).getTime() : 0;
-
-      if (cloudUpdated >= localUpdated) {
-        console.log('SyncModule: cloud data is newer, loading it');
-        StorageManager.save(data.data);
-      } else {
-        console.log('SyncModule: local data is newer, pushing it');
-        await _pushToCloud(user.id, localData);
-      }
+      // Always trust cloud data — it is the source of truth on login
+      console.log('SyncModule: loading cloud data');
+      StorageManager.save(data.data);
 
       // Notify app to re-render with updated data
       document.dispatchEvent(new CustomEvent('syncComplete'));
