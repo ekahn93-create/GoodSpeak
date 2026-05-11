@@ -756,7 +756,9 @@
   box-shadow: var(--shadow-lg);
   padding: var(--spacing-xl);
   width: 100%;
-  max-width: 400px;
+  max-width: 420px;
+  max-height: 92vh;
+  overflow-y: auto;
   position: relative;
   animation: fadeInUp 0.2s ease;
 }
@@ -796,7 +798,7 @@
 .auth-form {
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 4px;
 }
 
 .auth-form label {
@@ -814,6 +816,7 @@
   color: var(--text-primary);
   background: white;
   transition: border-color var(--transition-fast);
+  margin-bottom: 8px;
 }
 
 .auth-form input:focus {
