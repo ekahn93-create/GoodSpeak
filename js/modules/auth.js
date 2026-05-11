@@ -28,7 +28,7 @@ const AuthModule = (function () {
       if (event === 'INITIAL_SESSION' || event === 'SIGNED_IN') {
         if (session) {
           currentUser = session.user;
-          _onSignedIn(session.user);
+          if (onAuthChangeCallback) onAuthChangeCallback(event, session.user);
         }
       } else if (event === 'SIGNED_OUT') {
         currentUser = null;

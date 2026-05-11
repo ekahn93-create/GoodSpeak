@@ -69,8 +69,13 @@ const App = (function() {
     AppConfig.load().then(() => {
       AuthModule.init(function(event, user) {
         if (event === 'SIGNED_IN') {
+          // New login — sync then reload so all modules start fresh with cloud data
           SyncModule.onSignIn().then(() => {
-            // Re-render the whole app with the (potentially updated) data
+            window.location.reload();
+          });
+        } else if (event === 'INITIAL_SESSION') {
+          // Page load with existing session — sync silently, no reload needed
+          SyncModule.onSignIn().then(() => {
             userData = StorageManager.load();
             updateDashboardStats();
             VocabularyModule.refresh();
@@ -78,9 +83,9 @@ const App = (function() {
           });
         } else if (event === 'SIGNED_OUT') {
           SyncModule.onSignOut();
+          window.location.reload();
         }
       });
-
     });
 
     // Hook StorageManager.save to schedule a cloud sync on every local save
