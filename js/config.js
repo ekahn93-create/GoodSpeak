@@ -1,12 +1,25 @@
 // ============================================
 // APP CONFIG
-// Replace these values with your own from the Supabase dashboard.
-// These are safe to commit — the anon key is public by design.
+// Credentials are loaded at runtime from /.netlify/functions/get-config
+// so they are never stored in the repository.
 // ============================================
 
 const AppConfig = {
   supabase: {
-    url: 'https://aeveosypgqubhlwbyuml.supabase.co',
-    anonKey: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFldmVvc3lwZ3F1Ymhsd2J5dW1sIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzg0ODYzMjIsImV4cCI6MjA5NDA2MjMyMn0.aN6duiy3KNdsagXUCGhMryJVlK09Y_KaDTjW5dnrCVs'
+    url: null,
+    anonKey: null
+  },
+
+  // Call once at app startup before AuthModule.init()
+  async load() {
+    try {
+      const res = await fetch('/.netlify/functions/get-config');
+      if (!res.ok) throw new Error('Config fetch failed');
+      const cfg = await res.json();
+      this.supabase.url = cfg.supabaseUrl;
+      this.supabase.anonKey = cfg.supabaseAnonKey;
+    } catch (err) {
+      console.error('AppConfig: could not load config', err);
+    }
   }
 };

@@ -65,19 +65,21 @@ const App = (function() {
     // Initialize progress view (handles case where progress is initial route)
     initializeProgressView();
 
-    // Initialize auth — must come after all modules so syncComplete can refresh
-    AuthModule.init(function(event, user) {
-      if (event === 'SIGNED_IN') {
-        SyncModule.onSignIn().then(() => {
-          // Re-render the whole app with the (potentially updated) data
-          userData = StorageManager.load();
-          updateDashboardStats();
-          VocabularyModule.refresh();
-          WordBankModule.refresh();
-        });
-      } else if (event === 'SIGNED_OUT') {
-        SyncModule.onSignOut();
-      }
+    // Load remote config then initialize auth
+    AppConfig.load().then(() => {
+      AuthModule.init(function(event, user) {
+        if (event === 'SIGNED_IN') {
+          SyncModule.onSignIn().then(() => {
+            // Re-render the whole app with the (potentially updated) data
+            userData = StorageManager.load();
+            updateDashboardStats();
+            VocabularyModule.refresh();
+            WordBankModule.refresh();
+          });
+        } else if (event === 'SIGNED_OUT') {
+          SyncModule.onSignOut();
+        }
+      });
     });
 
     // Hook StorageManager.save to schedule a cloud sync on every local save
