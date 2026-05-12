@@ -185,6 +185,7 @@ const VocabularyModule = (function() {
           WordBankModule.refresh();
         }
         initTWAL();
+        switchKCTab('vocab');
         break;
       case 'grammar':
         if (typeof GrammarModule !== 'undefined') {
@@ -903,8 +904,11 @@ const VocabularyModule = (function() {
   // ============================================
 
   let currentKCTab = 'vocab';
+  let kcSubTabsSetup = false;
 
   function setupKCSubTabs() {
+    if (kcSubTabsSetup) return;
+    kcSubTabsSetup = true;
     const subtabs = document.querySelectorAll('.kc-subtab');
     subtabs.forEach(tab => {
       tab.addEventListener('click', function() {

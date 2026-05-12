@@ -3676,25 +3676,50 @@ canvas {
   align-items: center;
   gap: var(--spacing-md);
   padding: var(--spacing-lg);
-  background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-light) 100%);
-  color: var(--text-white);
-  cursor: pointer;
+  border-bottom: 1px solid var(--border-color);
 }
 
 .fluency-card-icon {
-  font-size: 40px;
   flex-shrink: 0;
+  color: var(--primary-color);
+  opacity: 0.85;
 }
 
 .fluency-card-header h3 {
   margin: 0 0 var(--spacing-xs) 0;
-  font-size: var(--font-size-xl);
+  font-size: var(--font-size-lg);
+  color: var(--text-primary);
 }
 
 .fluency-card-description {
   margin: 0;
-  opacity: 0.95;
+  font-size: var(--font-size-sm);
+  color: var(--text-secondary);
+}
+
+/* Shared exercise group label — Grammar, Polish, Practice */
+.exercise-group {
+  margin-bottom: var(--spacing-xl);
+}
+
+.exercise-group-label {
+  display: inline-block;
+  font-size: var(--font-size-lg);
+  font-weight: 600;
+  letter-spacing: 0.01em;
+  color: var(--primary-color);
+  background: rgba(99, 102, 241, 0.08);
+  border-left: 3px solid var(--primary-color);
+  border-radius: 0 var(--border-radius-sm) var(--border-radius-sm) 0;
+  padding: 8px var(--spacing-md) 8px var(--spacing-sm);
+  margin-bottom: var(--spacing-xs);
+}
+
+.exercise-group-subtitle {
+  color: var(--text-secondary);
   font-size: var(--font-size-base);
+  margin-bottom: var(--spacing-md);
+  padding-left: calc(var(--spacing-sm) + 3px);
 }
 
 .fluency-card-content {

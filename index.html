@@ -449,8 +449,8 @@
 
                 <!-- Knowledge Check Sub-Tabs -->
                 <div class="kc-subtabs">
-                    <button class="kc-subtab active" data-kc-tab="vocab">Vocab</button>
-                    <button class="kc-subtab" data-kc-tab="grammar">Grammar</button>
+                    <button class="kc-subtab active" data-kc-tab="vocab">Quiz</button>
+                    <button class="kc-subtab" data-kc-tab="grammar">Play</button>
                 </div>
 
                 <!-- ---- VOCAB SUB-PANEL ---- -->
@@ -600,7 +600,11 @@
                     <!-- Nudge: shown after quiz completes -->
                     <div id="nudge-quiz-done" class="nudge-slot"></div>
                 </div>
-                </div>
+
+                </div><!-- end #kc-vocab-panel -->
+
+                <!-- ---- GRAMMAR SUB-PANEL ---- -->
+                <div id="kc-grammar-panel" class="kc-panel">
 
                 <!-- 2 Words and a Lie -->
                 <div class="kc-game-section" id="two-words-lie-section">
@@ -648,11 +652,6 @@
                         <span>Score: <strong id="twal-score-correct">0</strong> correct / <strong id="twal-score-played">0</strong> played</span>
                     </div>
                 </div>
-
-                </div><!-- end #kc-vocab-panel -->
-
-                <!-- ---- GRAMMAR SUB-PANEL ---- -->
-                <div id="kc-grammar-panel" class="kc-panel">
 
                 <!-- Spot the Error -->
                 <div class="kc-game-section" id="spot-error-section">
@@ -970,6 +969,10 @@
         <!-- ========== PRACTICAL SPEAKING SKILLS CATEGORY ========== -->
         <div id="practical-category" class="storytelling-category">
 
+            <div class="exercise-group">
+                <div class="exercise-group-label">Conversation</div>
+                <p class="exercise-group-subtitle">Practice opening lines, small talk, and speaking on the spot</p>
+
             <!-- Impromptu Speaking -->
             <div class="fluency-card">
                 <div class="fluency-card-header">
@@ -1049,6 +1052,12 @@
                     </div>
                 </div>
             </div>
+
+            </div><!-- /exercise-group: Conversation -->
+
+            <div class="exercise-group">
+                <div class="exercise-group-label">Speaking Frameworks</div>
+                <p class="exercise-group-subtitle">Structure your thoughts and deliver with confidence</p>
 
             <!-- Topic Builder -->
             <div class="fluency-card">
@@ -1192,10 +1201,15 @@
                     </div>
                 </div>
             </div>
+            </div><!-- /exercise-group: Speaking Frameworks -->
         </div>
 
         <!-- ========== INTERACTIVE CHALLENGES CATEGORY ========== -->
         <div id="challenges-category" class="storytelling-category">
+
+            <div class="exercise-group">
+                <div class="exercise-group-label">Daily</div>
+                <p class="exercise-group-subtitle">A fresh prompt every day to keep your speaking sharp</p>
 
             <!-- Daily Speaking Prompt -->
             <div class="fluency-card">
@@ -1219,6 +1233,12 @@
                     </div>
                 </div>
             </div>
+
+            </div><!-- /exercise-group: Daily -->
+
+            <div class="exercise-group">
+                <div class="exercise-group-label">Timed Challenges</div>
+                <p class="exercise-group-subtitle">Push your limits with fast-thinking, high-pressure exercises</p>
 
             <!-- Word Association Speed Round -->
             <div class="fluency-card">
@@ -1371,6 +1391,7 @@
                     </div>
                 </div>
             </div>
+            </div><!-- /exercise-group: Timed Challenges -->
         </div>
 
         <!-- ========== LISTENING & COMPREHENSION CATEGORY ========== -->
@@ -1610,6 +1631,10 @@
             <!-- ========== PRONUNCIATION & ARTICULATION CATEGORY ========== -->
             <div id="pronunciation-category" class="fluency-category">
 
+                <div class="exercise-group">
+                    <div class="exercise-group-label">Sound Practice</div>
+                    <p class="exercise-group-subtitle">Sharpen clarity by drilling difficult sounds and distinctions</p>
+
                 <!-- Tongue Twisters -->
                 <div class="fluency-card">
                     <div class="fluency-card-header">
@@ -1656,6 +1681,12 @@
                     </div>
                 </div>
 
+                </div><!-- /exercise-group: Sound Practice -->
+
+                <div class="exercise-group">
+                    <div class="exercise-group-label">Rhythm & Stress</div>
+                    <p class="exercise-group-subtitle">Practice natural emphasis and syllable patterns</p>
+
                 <!-- Word Stress Training -->
                 <div class="fluency-card">
                     <div class="fluency-card-header">
@@ -1676,10 +1707,15 @@
                         </div>
                     </div>
                 </div>
+                </div><!-- /exercise-group: Rhythm & Stress -->
             </div>
 
             <!-- ========== FLUENCY BUILDING CATEGORY ========== -->
             <div id="fluency-category" class="fluency-category active">
+
+                <div class="exercise-group">
+                    <div class="exercise-group-label">Filler Reduction</div>
+                    <p class="exercise-group-subtitle">Eliminate verbal crutches and speak with more intention</p>
 
                 <!-- Filler Word Awareness -->
                 <div class="fluency-card">
@@ -1770,6 +1806,12 @@
 
                     </div>
                 </div>
+
+                </div><!-- /exercise-group: Filler Reduction -->
+
+                <div class="exercise-group">
+                    <div class="exercise-group-label">Pacing & Flow</div>
+                    <p class="exercise-group-subtitle">Develop rhythm, speed, and seamless transitions</p>
 
                 <!-- Pacing Practice -->
                 <div class="fluency-card">
@@ -1900,10 +1942,15 @@
                         </div>
                     </div>
                 </div>
+                </div><!-- /exercise-group: Pacing & Flow -->
             </div>
 
             <!-- ========== ELOQUENCE & EXPRESSION CATEGORY ========== -->
             <div id="eloquence-category" class="fluency-category">
+
+                <div class="exercise-group">
+                    <div class="exercise-group-label">Word Choice</div>
+                    <p class="exercise-group-subtitle">Elevate your vocabulary with more precise and powerful words</p>
 
                 <!-- Synonym Swapper -->
                 <div class="fluency-card">
@@ -1925,6 +1972,12 @@
                         </div>
                     </div>
                 </div>
+
+                </div><!-- /exercise-group: Word Choice -->
+
+                <div class="exercise-group">
+                    <div class="exercise-group-label">Figurative Language</div>
+                    <p class="exercise-group-subtitle">Master expressions and devices that make speech memorable</p>
 
                 <!-- Idioms & Expressions -->
                 <div class="fluency-card">
@@ -1995,6 +2048,7 @@
                         </div>
                     </div>
                 </div>
+                </div><!-- /exercise-group: Figurative Language -->
             </div>
 
             <!-- ========== READ ALOUD MODE CATEGORY ========== -->
