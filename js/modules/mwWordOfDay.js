@@ -175,9 +175,15 @@ const MWWordOfDayModule = (function() {
       ` : ''}
 
       <div class="mw-word-actions" style="margin-top: var(--spacing-md); text-align: center;">
-        <button class="btn btn-primary" onclick="MWWordOfDayModule.addToWordBank()" data-tooltip="Save this word to your Word Bank">
-          Add to Word Bank
-        </button>
+        <p style="margin-bottom: var(--spacing-sm); font-size: 0.9rem; color: var(--text-secondary);">Add to Word Bank</p>
+        <div style="display: flex; gap: var(--spacing-sm); justify-content: center; flex-wrap: wrap;">
+          <button class="btn btn-secondary" onclick="MWWordOfDayModule.addToWordBank('stillLearning')" data-tooltip="Save this word to Still Learning">
+            Still Learning
+          </button>
+          <button class="btn btn-success" onclick="MWWordOfDayModule.addToWordBank('learned')" data-tooltip="Save this word to Words Learned">
+            Words Learned
+          </button>
+        </div>
       </div>
 
       <div class="mw-word-footer" style="font-size: 0.85rem; color: var(--text-secondary); margin-top: var(--spacing-md);">
@@ -191,7 +197,7 @@ const MWWordOfDayModule = (function() {
   /**
    * Add current word to Word Bank
    */
-  function addToWordBank() {
+  function addToWordBank(status) {
     if (!cachedWord) {
       showToast('No word to add', 'error');
       return;
@@ -229,6 +235,7 @@ const MWWordOfDayModule = (function() {
       exampleSentence: cachedWord.example || '',
       synonyms: cachedWord.synonyms || [],
       isCustom: true,
+      status: status || 'stillLearning',
       addedDate: new Date().toISOString(),
       source: 'Word of the Day'
     };
@@ -238,7 +245,8 @@ const MWWordOfDayModule = (function() {
 
     // Save to storage
     if (StorageManager.save(userData)) {
-      showToast(`"${cachedWord.word}" added to Word Bank!`, 'success');
+      const label = status === 'learned' ? 'Words Learned' : 'Still Learning';
+      showToast(`"${cachedWord.word}" added to ${label}!`, 'success');
     } else {
       showToast('Failed to save word', 'error');
     }

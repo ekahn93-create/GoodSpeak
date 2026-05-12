@@ -305,9 +305,9 @@ const WordBankModule = (function() {
     if (!lookupStatus) return;
 
     const icons = {
-      info: 'ℹ️',
+      info: '',
       success: '✓',
-      warning: '⚠️',
+      warning: '',
       error: '✗'
     };
 
@@ -472,7 +472,7 @@ const WordBankModule = (function() {
 
     // Display as detailed cards
     const html = combined.map(word => `
-      <div class="word-bank-card" onclick="WordBankModule.showWordDetail(${word.id}, ${word.isCustom ? 'true' : 'false'})">
+      <div class="word-bank-card word-bank-card--learned" onclick="WordBankModule.showWordDetail(${word.id}, ${word.isCustom ? 'true' : 'false'})">
         <div class="word-bank-card-header">
           <div class="word-bank-word">${word.word}</div>
           <div>
@@ -532,7 +532,7 @@ const WordBankModule = (function() {
 
     // Display as detailed cards
     const html = combined.map(word => `
-      <div class="word-bank-card" onclick="${word.isCustom ? `WordBankModule.showCustomWordDetail(${word.id})` : `WordBankModule.showStillLearningWordDetail(${word.id})`}">
+      <div class="word-bank-card word-bank-card--still-learning" onclick="${word.isCustom ? `WordBankModule.showCustomWordDetail(${word.id})` : `WordBankModule.showStillLearningWordDetail(${word.id})`}">
         <div class="word-bank-card-header">
           <div class="word-bank-word">${word.word}</div>
           <div>
@@ -576,8 +576,9 @@ const WordBankModule = (function() {
 
     if (!word) return;
 
+    const statusClass = isCustom && word.status === 'stillLearning' ? 'word-card--still-learning' : 'word-card--learned';
     const content = `
-      <div class="word-card">
+      <div class="word-card ${statusClass}">
         <div class="word-main">${word.word}</div>
         ${word.pronunciation ? `<div class="word-pronunciation">${word.pronunciation}</div>` : ''}
         <div class="word-meta">
@@ -663,7 +664,7 @@ const WordBankModule = (function() {
     if (!word) return;
 
     const content = `
-      <div class="word-card">
+      <div class="word-card word-card--still-learning">
         <div class="word-main">${word.word}</div>
         <div class="word-pronunciation">${word.pronunciation}</div>
         <div class="word-meta">
@@ -703,6 +704,33 @@ const WordBankModule = (function() {
   }
 
   /**
+   * Update the open modal's border and move button after a status change
+   * @param {'learned'|'stillLearning'} newStatus
+   * @param {number} wordId
+   * @param {boolean} isCustom
+   */
+  function updateModalAfterMove(newStatus, wordId, isCustom) {
+    const card = document.querySelector('#modal-body .word-card');
+    if (!card) return;
+
+    card.classList.remove('word-card--learned', 'word-card--still-learning');
+    card.classList.add(newStatus === 'learned' ? 'word-card--learned' : 'word-card--still-learning');
+
+    const actionButtons = card.querySelector('.action-buttons');
+    if (!actionButtons) return;
+
+    if (isCustom) {
+      actionButtons.innerHTML = newStatus === 'learned'
+        ? `<button class="btn btn-secondary" onclick="WordBankModule.moveCustomWordToStillLearning(${wordId})">Move to Still Learning</button>`
+        : `<button class="btn btn-success" onclick="WordBankModule.moveCustomWordToLearned(${wordId})">Move to Learned</button>`;
+    } else {
+      actionButtons.innerHTML = newStatus === 'learned'
+        ? `<button class="btn btn-secondary" onclick="WordBankModule.moveWordToStillLearning(${wordId})">Move to Still Learning</button>`
+        : `<button class="btn btn-success" onclick="WordBankModule.moveWordToLearned(${wordId})">Move to Learned Words</button>`;
+    }
+  }
+
+  /**
    * Move a custom word's status to learned
    * @param {number} wordId - The custom word ID
    */
@@ -716,7 +744,7 @@ const WordBankModule = (function() {
       displayStillLearningWords();
       displayAppLearnedWords();
       updateCounts();
-      Modal.hide();
+      updateModalAfterMove('learned', wordId, true);
     } else {
       showToast('Failed to save progress', 'error');
     }
@@ -736,7 +764,7 @@ const WordBankModule = (function() {
       displayAppLearnedWords();
       displayStillLearningWords();
       updateCounts();
-      Modal.hide();
+      updateModalAfterMove('stillLearning', wordId, true);
     } else {
       showToast('Failed to save progress', 'error');
     }
@@ -823,9 +851,7 @@ const WordBankModule = (function() {
       displayAppLearnedWords();
       displayStillLearningWords();
       updateCounts();
-
-      // Close modal
-      Modal.hide();
+      updateModalAfterMove('learned', wordId, false);
 
       // Notify vocabulary module if available
       if (typeof VocabularyModule !== 'undefined' && VocabularyModule.refresh) {
@@ -863,9 +889,7 @@ const WordBankModule = (function() {
       displayAppLearnedWords();
       displayStillLearningWords();
       updateCounts();
-
-      // Close modal
-      Modal.hide();
+      updateModalAfterMove('stillLearning', wordId, false);
 
       // Notify vocabulary module if available
       if (typeof VocabularyModule !== 'undefined' && VocabularyModule.refresh) {
@@ -1508,6 +1532,15 @@ const WordBankModule = (function() {
     }
   }
 
+  function toggleSection(gridId, btnId) {
+    const grid = document.getElementById(gridId);
+    const btn = document.getElementById(btnId);
+    if (!grid || !btn) return;
+    const isCollapsed = grid.classList.toggle('collapsed');
+    btn.classList.toggle('collapsed', isCollapsed);
+    btn.setAttribute('aria-label', isCollapsed ? 'Expand' : 'Collapse');
+  }
+
   // Public API
   return {
     init: init,
@@ -1523,6 +1556,7 @@ const WordBankModule = (function() {
     deleteCustomWord: deleteCustomWord,
     refresh: refresh,
     sortSection: sortSection,
+    toggleSection: toggleSection,
     searchWords: searchWords,
     clearSearch: clearSearch
   };

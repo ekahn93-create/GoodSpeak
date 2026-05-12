@@ -216,7 +216,6 @@ const WebSpeechModule = (function() {
       return `
         <div style="background: var(--bg-card); border: 1px solid var(--border-color); border-radius: var(--border-radius-sm); padding: var(--spacing-md);">
           <div style="display: flex; align-items: center; gap: var(--spacing-sm); margin-bottom: var(--spacing-sm);">
-            <span style="font-size: 1.4rem;">${m.icon}</span>
             <span style="font-weight: 600; font-size: var(--font-size-base);">${m.title}</span>
           </div>
           <div style="font-size: var(--font-size-xl); font-weight: 700; color: var(--text-primary); margin-bottom: 4px;">${m.value}</div>
@@ -414,7 +413,7 @@ const WebSpeechModule = (function() {
 
     const header = document.createElement('div');
     header.style.cssText = 'display: flex; align-items: center; gap: var(--spacing-sm); margin-bottom: var(--spacing-md);';
-    header.innerHTML = '<span style="font-size: 1.4rem;">✨</span><span style="font-weight: 600; font-size: var(--font-size-base);">AI Feedback</span>';
+    header.innerHTML = '<span style="font-weight: 600; font-size: var(--font-size-base);">AI Feedback</span>';
     card.appendChild(header);
 
     const dimensions = [
@@ -615,7 +614,7 @@ const WebSpeechModule = (function() {
 
       clearTranscriptDisplay();
       toggleSpeakButtons(true);
-      setStatus('🎙️ Listening...');
+      setStatus('Listening...');
       recognition.start();
 
       updateTimerDisplay();
@@ -654,7 +653,7 @@ const WebSpeechModule = (function() {
       isListening = true;
       const stopBtn = el('stop-btn');
       if (stopBtn) { stopBtn.textContent = 'Stop'; stopBtn.onclick = stopSession; }
-      setStatus('🎙️ Listening...');
+      setStatus('Listening...');
       try { recognition.start(); } catch(e) {}
       timer = setInterval(() => {
         remainingSeconds--;
@@ -1058,7 +1057,7 @@ const WebSpeechModule = (function() {
 
     wsClearTranscriptDisplay();
     wsToggleButtons(true);
-    wsSetStatus('🎙️ Listening...');
+    wsSetStatus('Listening...');
     wsRecognition.start();
 
     wsUpdateTimerDisplay();

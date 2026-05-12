@@ -229,7 +229,7 @@ const SRSModule = (function() {
     if (msgEl) {
       msgEl.innerHTML = `
         <div style="text-align:center; padding: var(--spacing-md) 0;">
-          <div style="font-size: 48px; margin-bottom: var(--spacing-sm);">${pct >= 70 ? '🎉' : '💪'}</div>
+          <div style="font-size: var(--font-size-lg); font-weight:600; color: var(--secondary-color); margin-bottom: var(--spacing-sm);">${pct >= 70 ? 'Well done!' : 'Keep going!'}</div>
           <div style="font-size: var(--font-size-xxl); font-weight:700; color: var(--primary-color);">${pct}%</div>
           <div style="color: var(--text-secondary); margin-top: var(--spacing-xs);">
             ${sessionStats.correct} of ${sessionStats.reviewed} words recalled correctly

@@ -125,7 +125,7 @@ const DailyWordModule = (function() {
     if (StorageManager.save(userData)) {
       StorageManager.markActiveToday();
       updateStreakDisplay();
-      showToast(`${userData.dailyWord.currentStreak} day streak! 🔥`, 'success');
+      showToast(`${userData.dailyWord.currentStreak} day streak!`, 'success');
     }
   }
 
@@ -299,7 +299,7 @@ const DailyWordModule = (function() {
     markTodayCompleted();
 
     Modal.alert({
-      title: '🎉 Daily Practice Complete!',
+      title: 'Daily Practice Complete!',
       message: `Great work! You've completed today's word practice. Your current streak is ${userData.dailyWord.currentStreak} days. Keep it up!`,
       type: 'success'
     });

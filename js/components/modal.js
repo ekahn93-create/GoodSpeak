@@ -154,24 +154,13 @@ const Modal = (function() {
     const {
       title = 'Notice',
       message = '',
-      type = 'info',
       okText = 'OK',
       onClose = () => {}
     } = options;
 
-    // Icon based on type
-    const icons = {
-      info: 'ℹ️',
-      success: '✅',
-      warning: '⚠️',
-      danger: '❌'
-    };
-
-    const icon = icons[type] || icons.info;
-
     const content = `
       <div class="modal-header">
-        <h2>${icon} ${escapeHtml(title)}</h2>
+        <h2>${escapeHtml(title)}</h2>
       </div>
       <div class="modal-body">
         <p>${escapeHtml(message)}</p>

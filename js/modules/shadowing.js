@@ -116,7 +116,7 @@ const ShadowingModule = (function() {
 
     if (titleEl) titleEl.textContent = currentPassage.title;
     if (scriptEl) scriptEl.innerHTML = renderMarkup(currentPassage.raw) +
-      `<div class="shadowing-notes">💡 <em>${currentPassage.notes}</em></div>`;
+      `<div class="shadowing-notes"><em>${currentPassage.notes}</em></div>`;
 
     document.getElementById('shadowing-selector').style.display = 'none';
     document.getElementById('shadowing-active').style.display = '';

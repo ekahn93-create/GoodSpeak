@@ -300,7 +300,7 @@ const ReadAloudModule = (function() {
 
     const header = document.createElement('div');
     header.style.cssText = 'display: flex; align-items: center; gap: var(--spacing-sm); margin-bottom: var(--spacing-md);';
-    header.innerHTML = '<span style="font-size: 1.4rem;">✨</span><span style="font-weight: 600; font-size: var(--font-size-base);">AI Feedback</span>';
+    header.innerHTML = '<span style="font-weight: 600; font-size: var(--font-size-base);">AI Feedback</span>';
     card.appendChild(header);
 
     [['Coverage', 'coverage'], ['Delivery', 'delivery'], ['Accuracy', 'accuracy']].forEach(([label, key]) => {

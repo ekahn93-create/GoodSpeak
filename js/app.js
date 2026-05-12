@@ -320,15 +320,18 @@ const App = (function() {
         : 'Complete these to reach ' + nextTierName(tier) + ' level';
     }
 
-    // Render list
+    // Render list (inside collapsed body)
+    const body = card.querySelector('#bcl-body') || card;
     const list = card.querySelector('.bcl-list');
     const completeEl = card.querySelector('.bcl-complete');
     if (!list) return;
 
     let allDone = true;
+    let doneCount = 0;
     list.innerHTML = goals.map(function(g) {
       const done = g.check(words, stories, days, fluencyVisited);
       if (!done) allDone = false;
+      else doneCount++;
 
       var progressHtml = '';
       if (!done && g.target && g.current) {
@@ -355,9 +358,12 @@ const App = (function() {
         '</li>';
     }).join('');
 
+    // Update progress summary in toggle header
+    const summaryEl = document.getElementById('bcl-progress-summary');
+    if (summaryEl) summaryEl.textContent = doneCount + ' / ' + goals.length + ' complete';
+
     if (completeEl) {
       if (allDone && tier.name === 'Advanced') {
-        // Top tier complete — hide the whole card
         card.style.display = 'none';
         return;
       }
@@ -371,6 +377,21 @@ const App = (function() {
     }
 
     card.style.display = '';
+
+    // Wire toggle once
+    if (!card._toggleWired) {
+      card._toggleWired = true;
+      const toggle = document.getElementById('bcl-toggle');
+      const bclBody = document.getElementById('bcl-body');
+      if (toggle && bclBody) {
+        toggle.addEventListener('click', function() {
+          const open = !bclBody.hidden;
+          bclBody.hidden = open;
+          toggle.setAttribute('aria-expanded', String(!open));
+          toggle.classList.toggle('bcl-toggle--open', !open);
+        });
+      }
+    }
   }
 
   function nextTierName(tier) {
@@ -453,7 +474,6 @@ const App = (function() {
     container.innerHTML = shown.map(function(s) {
       const tabAttr = s.tab ? ' data-tab="' + s.tab + '"' : '';
       return '<div class="suggestion-item">' +
-        '<span class="suggestion-icon">' + s.icon + '</span>' +
         '<span class="suggestion-text">' + s.text + '</span>' +
         '<a href="' + s.link + '" class="suggestion-link btn btn-sm btn-primary"' + tabAttr + '>' + s.label + '</a>' +
         '</div>';

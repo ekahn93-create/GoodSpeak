@@ -15,12 +15,15 @@
     <link rel="stylesheet" href="css/styles.css">
     <link rel="stylesheet" href="css/components.css">
     <link rel="stylesheet" href="css/responsive.css">
+
+    <!-- Icons -->
+    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
 </head>
 <body>
     <!-- Navigation Bar -->
     <nav id="main-nav" class="nav-bar">
         <div class="nav-brand">
-            <span class="brand-icon">💬</span>
+            <span class="brand-icon"><i data-lucide="message-circle" style="width:22px;height:22px;stroke:currentColor;"></i></span>
             <span class="brand-text">Articulation Trainer</span>
         </div>
         <ul class="nav-menu">
@@ -93,7 +96,7 @@
 
     <!-- Floating Word Bank Button -->
     <button id="word-bank-fab" class="word-bank-fab" title="Open Word Bank" aria-label="Open Word Bank">
-        <span class="word-bank-fab-icon">📖</span>
+        <span class="word-bank-fab-icon"><i data-lucide="book-open" style="width:18px;height:18px;stroke:currentColor;"></i></span>
         <span class="word-bank-fab-label">Word Bank</span>
     </button>
 
@@ -104,12 +107,9 @@
         <section id="home-view" class="view active">
             <div class="hero-section">
                 <div class="hero-top">
-                    <div>
-                        <h1 id="hero-welcome">Welcome to Articulation Trainer</h1>
-                        <p class="subtitle">Learn the words. Polish your delivery. Practice out loud. Review your growth.</p>
-                    </div>
+                    <h1 id="hero-welcome">Welcome to Articulation Trainer</h1>
                     <div class="tier-display">
-                        <span class="tier-eyebrow">Your Current Level</span>
+                        <span class="tier-eyebrow">Your Level</span>
                         <span class="tier-badge" id="tier-badge">Beginner</span>
                         <span class="tier-description" id="tier-description">Just getting started</span>
                     </div>
@@ -121,8 +121,7 @@
                 <div class="lp-step" id="lp-step-learn">
                     <div class="lp-step-number">1</div>
                     <div class="lp-step-body">
-                        <div class="lp-step-label">Learn Words</div>
-                        <div class="lp-step-desc">Build your vocabulary &amp; grammar</div>
+                        <div class="lp-step-label">Learn</div>
                         <div class="lp-step-stat" id="lp-stat-learn">0 words learned</div>
                     </div>
                     <a href="#vocabulary" class="lp-step-btn btn btn-sm btn-primary">Go</a>
@@ -131,8 +130,7 @@
                 <div class="lp-step" id="lp-step-polish">
                     <div class="lp-step-number">2</div>
                     <div class="lp-step-body">
-                        <div class="lp-step-label">Polish Delivery</div>
-                        <div class="lp-step-desc">Pronunciation, pacing &amp; fluency</div>
+                        <div class="lp-step-label">Polish</div>
                         <div class="lp-step-stat" id="lp-stat-polish">Drills &amp; exercises</div>
                     </div>
                     <a href="#fluency" class="lp-step-btn btn btn-sm btn-primary">Go</a>
@@ -141,8 +139,7 @@
                 <div class="lp-step" id="lp-step-practice">
                     <div class="lp-step-number">3</div>
                     <div class="lp-step-body">
-                        <div class="lp-step-label">Practice Speaking</div>
-                        <div class="lp-step-desc">Storytelling &amp; real challenges</div>
+                        <div class="lp-step-label">Practice</div>
                         <div class="lp-step-stat" id="lp-stat-practice">0 stories completed</div>
                     </div>
                     <a href="#storytelling" class="lp-step-btn btn btn-sm btn-primary">Go</a>
@@ -151,27 +148,14 @@
                 <div class="lp-step" id="lp-step-review">
                     <div class="lp-step-number">4</div>
                     <div class="lp-step-body">
-                        <div class="lp-step-label">Review &amp; Test</div>
-                        <div class="lp-step-desc">Quizzes, SRS &amp; progress tracking</div>
+                        <div class="lp-step-label">Review</div>
                         <div class="lp-step-stat" id="lp-stat-review">0 day streak</div>
                     </div>
                     <a href="#progress" class="lp-step-btn btn btn-sm btn-primary">Go</a>
                 </div>
             </div>
 
-            <!-- ========== TIERED CHECKLIST (#4) ========== -->
-            <div class="beginner-checklist-card" id="beginner-checklist-card">
-                <div class="bcl-header">
-                    <div>
-                        <h3 class="bcl-title">Your First Steps</h3>
-                        <p class="bcl-subtitle">Complete these to get the full experience</p>
-                    </div>
-                </div>
-                <ul class="bcl-list"></ul>
-                <div class="bcl-complete" style="display:none;"></div>
-            </div>
-
-            <!-- Daily Suggestions (Option B) -->
+            <!-- Daily Suggestions -->
             <div class="suggestions-card">
                 <h3 class="suggestions-title">What to do today</h3>
                 <div class="suggestions-list" id="daily-suggestions">
@@ -179,74 +163,45 @@
                 </div>
             </div>
 
-            <div class="dashboard-grid">
-                <!-- Learn Card -->
-                <div class="dashboard-card">
-                    <div class="card-icon">📚</div>
-                    <h2>Learn</h2>
-                    <p>Build your vocabulary, master grammar, and sharpen your word choice</p>
-                    <ul class="card-contents">
-                        <li>Vocabulary Builder</li>
-                        <li>Daily Word</li>
-                        <li>Word Bank</li>
-                        <li>Grammar &amp; Structure</li>
-                    </ul>
-                    <div class="card-stats">
-                        <span id="vocab-learned-count">0</span> words learned
-                    </div>
-                    <a href="#vocabulary" class="btn btn-primary">Start Learning</a>
+            <!-- ========== TIERED CHECKLIST (collapsed) ========== -->
+            <div class="beginner-checklist-card" id="beginner-checklist-card">
+                <button class="bcl-toggle" id="bcl-toggle" aria-expanded="false">
+                    <span class="bcl-toggle-left">
+                        <span class="bcl-title">Your Next Goals</span>
+                        <span class="bcl-subtitle">Complete these to get the full experience</span>
+                    </span>
+                    <span class="bcl-toggle-right">
+                        <span class="bcl-progress-summary" id="bcl-progress-summary"></span>
+                        <span class="bcl-chevron">&#8250;</span>
+                    </span>
+                </button>
+                <div class="bcl-body" id="bcl-body" hidden>
+                    <ul class="bcl-list"></ul>
+                    <div class="bcl-complete" style="display:none;"></div>
                 </div>
+            </div>
 
-                <!-- Polish Card -->
-                <div class="dashboard-card">
-                    <div class="card-icon">🎤</div>
-                    <h2>Polish</h2>
-                    <p>Refine your pronunciation, pacing, and fluency before speaking</p>
-                    <ul class="card-contents">
-                        <li>Pronunciation Drills</li>
-                        <li>Tongue Twisters</li>
-                        <li>Pacing &amp; Rhythm</li>
-                        <li>Filler Word Awareness</li>
-                    </ul>
-                    <div class="card-stats">
-                        Pronunciation &amp; Fluency Drills
-                    </div>
-                    <a href="#fluency" class="btn btn-primary">Start Polishing</a>
-                </div>
-
-                <!-- Practice Card -->
-                <div class="dashboard-card">
-                    <div class="card-icon">📖</div>
-                    <h2>Practice</h2>
-                    <p>Put your skills to use with storytelling, challenges, and real speaking exercises</p>
-                    <ul class="card-contents">
-                        <li>Story-Telling Prompts</li>
-                        <li>Practical Skills</li>
-                        <li>Interactive Challenges</li>
-                        <li>Listening &amp; Comprehension</li>
-                    </ul>
-                    <div class="card-stats">
-                        <span id="stories-completed-count">0</span> stories completed
-                    </div>
-                    <a href="#storytelling" class="btn btn-primary">Start Practicing</a>
-                </div>
-
-                <!-- Review Card -->
-                <div class="dashboard-card">
-                    <div class="card-icon">📊</div>
-                    <h2>Review</h2>
-                    <p>Track your progress, review your word bank, and see how far you've come</p>
-                    <ul class="card-contents">
-                        <li>Progress Overview</li>
-                        <li>Daily Streak</li>
-                        <li>Achievement Badges</li>
-                        <li>Activity History</li>
-                    </ul>
-                    <div class="card-stats">
-                        <span id="daily-streak-count">0</span> day streak
-                    </div>
-                    <a href="#progress" class="btn btn-primary">View Progress</a>
-                </div>
+            <div class="stat-tiles">
+                <a href="#vocabulary" class="stat-tile">
+                    <span class="stat-tile-icon"><i data-lucide="book-open" style="width:22px;height:22px;stroke:currentColor;"></i></span>
+                    <span class="stat-tile-label">Learn</span>
+                    <span class="stat-tile-value"><span id="vocab-learned-count">0</span> words</span>
+                </a>
+                <a href="#fluency" class="stat-tile">
+                    <span class="stat-tile-icon"><i data-lucide="mic" style="width:22px;height:22px;stroke:currentColor;"></i></span>
+                    <span class="stat-tile-label">Polish</span>
+                    <span class="stat-tile-value">Drills &amp; exercises</span>
+                </a>
+                <a href="#storytelling" class="stat-tile">
+                    <span class="stat-tile-icon"><i data-lucide="message-square" style="width:22px;height:22px;stroke:currentColor;"></i></span>
+                    <span class="stat-tile-label">Practice</span>
+                    <span class="stat-tile-value"><span id="stories-completed-count">0</span> stories</span>
+                </a>
+                <a href="#progress" class="stat-tile">
+                    <span class="stat-tile-icon"><i data-lucide="bar-chart-2" style="width:22px;height:22px;stroke:currentColor;"></i></span>
+                    <span class="stat-tile-label">Review</span>
+                    <span class="stat-tile-value"><span id="daily-streak-count">0</span> day streak</span>
+                </a>
             </div>
 
         </section>
@@ -317,7 +272,7 @@
                 <!-- Word of the Day -->
                 <div id="mw-word-section" class="mw-word-section">
                     <div class="mw-word-header">
-                        <h2>📖 Word of the Day</h2>
+                        <h2>Word of the Day</h2>
                         <span class="mw-logo">Dictionary</span>
                     </div>
                     <div id="mw-word-content" class="mw-word-content">
@@ -342,7 +297,7 @@
 
                     <!-- Streak Display -->
                     <div class="streak-banner">
-                        <div class="streak-icon">🔥</div>
+                        <div class="streak-icon"><i data-lucide="flame" style="width:28px;height:28px;stroke:currentColor;fill:currentColor;"></i></div>
                         <div class="streak-info">
                             <div class="streak-number"><span id="current-streak">0</span> Day Streak</div>
                             <div class="streak-subtitle">Complete today's exercise to keep your streak alive</div>
@@ -442,7 +397,7 @@
 
                 <!-- Word Bank Search -->
                 <div class="word-bank-search-bar">
-                    <span class="word-bank-search-icon">🔍</span>
+                    <span class="word-bank-search-icon"><i data-lucide="search" style="width:16px;height:16px;stroke:currentColor;"></i></span>
                     <input type="text" id="word-bank-search" class="word-bank-search-input" placeholder="Search your Word Bank..." oninput="WordBankModule.searchWords(this.value)" autocomplete="off">
                     <button class="word-bank-search-clear" id="word-bank-search-clear" onclick="WordBankModule.clearSearch()" title="Clear search" style="display:none;">✕</button>
                 </div>
@@ -450,7 +405,10 @@
                 <!-- Still Learning Words -->
                 <div class="word-bank-section">
                     <div class="word-bank-section-header">
-                        <h2>Still Learning (<span id="still-learning-words-count">0</span>)</h2>
+                        <div class="word-bank-section-title">
+                            <h2>Still Learning (<span id="still-learning-words-count">0</span>)</h2>
+                            <button class="word-bank-toggle-btn" id="still-learning-toggle" onclick="WordBankModule.toggleSection('still-learning-words', 'still-learning-toggle')" aria-label="Collapse Still Learning">&#8963;</button>
+                        </div>
                         <div class="word-bank-sort">
                             <label for="still-learning-sort">Sort by:</label>
                             <select id="still-learning-sort" class="sort-dropdown" onchange="WordBankModule.sortSection('stillLearning', this.value)">
@@ -467,7 +425,10 @@
                 <!-- Learned Words -->
                 <div class="word-bank-section">
                     <div class="word-bank-section-header">
-                        <h2>Words Learned (<span id="app-words-count">0</span>)</h2>
+                        <div class="word-bank-section-title">
+                            <h2>Words Learned (<span id="app-words-count">0</span>)</h2>
+                            <button class="word-bank-toggle-btn" id="app-learned-toggle" onclick="WordBankModule.toggleSection('app-learned-words', 'app-learned-toggle')" aria-label="Collapse Words Learned">&#8963;</button>
+                        </div>
                         <div class="word-bank-sort">
                             <label for="app-learned-sort">Sort by:</label>
                             <select id="app-learned-sort" class="sort-dropdown" onchange="WordBankModule.sortSection('appLearned', this.value)">
@@ -499,7 +460,7 @@
                 <div class="srs-review-section" id="srs-review-section">
                     <div class="srs-header">
                         <div>
-                            <h2>🔁 Spaced Repetition Review</h2>
+                            <h2>Spaced Repetition Review</h2>
                             <p class="subtitle">Review words at the optimal time to lock them into long-term memory</p>
                         </div>
                         <div class="srs-badge-group">
@@ -526,7 +487,7 @@
                         </div>
                         <div class="srs-card" id="srs-card">
                             <div class="srs-card-word" id="srs-card-word"></div>
-                            <button class="tts-btn" style="font-size:22px;" onclick="SRSModule.speakCurrent()" title="Hear word">🔊</button>
+                            <button class="tts-btn" onclick="SRSModule.speakCurrent()" title="Hear word"><i data-lucide="volume-2" style="width:20px;height:20px;stroke:currentColor;"></i></button>
                             <div class="srs-card-hint">Do you know this word? Tap to reveal.</div>
                         </div>
                         <div id="srs-card-reveal" style="display:none;">
@@ -553,7 +514,7 @@
 
                 <!-- Quiz Yourself Section -->
                 <div class="word-bank-quiz-section">
-                    <h2>🎯 Quiz Yourself</h2>
+                    <h2>Quiz Yourself</h2>
                     <p class="subtitle">Test your knowledge of all your learned words</p>
 
                     <div id="quiz-start-screen">
@@ -621,7 +582,7 @@
 
                     <div id="quiz-results-screen" style="display: none;">
                         <div class="quiz-results">
-                            <h3>Quiz Complete! 🎉</h3>
+                            <h3>Quiz Complete!</h3>
                             <div class="quiz-final-score" id="final-score">0 / 10</div>
                             <div class="quiz-percentage" id="final-percentage">0%</div>
                             <p class="quiz-message">Great job practicing your vocabulary!</p>
@@ -910,8 +871,8 @@
                 <!-- Input mode toggle -->
                 <div style="margin-bottom: var(--spacing-lg);">
                     <div class="btn-group">
-                        <button class="btn btn-secondary active" id="story-mode-speak">🎙️ Speak</button>
-                        <button class="btn btn-secondary" id="story-mode-type">⌨️ Type</button>
+                        <button class="btn btn-secondary active" id="story-mode-speak">Speak</button>
+                        <button class="btn btn-secondary" id="story-mode-type">Type</button>
                     </div>
                 </div>
 
@@ -968,7 +929,7 @@
                         </div>
                     </div>
                     <div id="story-unsupported-msg" style="display: none; margin-top: var(--spacing-md); padding: var(--spacing-md); background: var(--accent-color); color: var(--text-white); border-radius: var(--border-radius-sm);">
-                        ⚠️ Your browser does not support the Web Speech API. Please try Chrome or Edge.
+                        Your browser does not support the Web Speech API. Please try Chrome or Edge.
                     </div>
                 </div>
 
@@ -1012,7 +973,7 @@
             <!-- Impromptu Speaking -->
             <div class="fluency-card">
                 <div class="fluency-card-header">
-                    <div class="fluency-card-icon">🎤</div>
+                    <div class="fluency-card-icon"><i data-lucide="mic" style="width:28px;height:28px;stroke:currentColor;"></i></div>
                     <div>
                         <h3>Impromptu Speaking</h3>
                         <p class="fluency-card-description">Random prompts with timed speaking challenges</p>
@@ -1021,8 +982,8 @@
                 <div class="fluency-card-content">
                     <div style="margin-bottom: var(--spacing-lg);">
                         <div class="btn-group">
-                            <button class="btn btn-secondary active" id="impromptu-mode-speak">🎙️ Speak</button>
-                            <button class="btn btn-secondary" id="impromptu-mode-type">⌨️ Type</button>
+                            <button class="btn btn-secondary active" id="impromptu-mode-speak">Speak</button>
+                            <button class="btn btn-secondary" id="impromptu-mode-type">Type</button>
                         </div>
                     </div>
 
@@ -1058,7 +1019,7 @@
                             </div>
                         </div>
                         <div id="impromptu-unsupported-msg" style="display: none; margin-top: var(--spacing-md); padding: var(--spacing-md); background: var(--accent-color); color: var(--text-white); border-radius: var(--border-radius-sm);">
-                            ⚠️ Your browser does not support the Web Speech API. Please try Chrome or Edge.
+                            Your browser does not support the Web Speech API. Please try Chrome or Edge.
                         </div>
                     </div>
 
@@ -1092,7 +1053,7 @@
             <!-- Topic Builder -->
             <div class="fluency-card">
                 <div class="fluency-card-header">
-                    <div class="fluency-card-icon">🏗️</div>
+                    <div class="fluency-card-icon"><i data-lucide="layers" style="width:28px;height:28px;stroke:currentColor;"></i></div>
                     <div>
                         <h3>Topic Builder</h3>
                         <p class="fluency-card-description">Structure your thoughts with frameworks</p>
@@ -1118,7 +1079,7 @@
             <!-- Conversation Starters -->
             <div class="fluency-card">
                 <div class="fluency-card-header">
-                    <div class="fluency-card-icon">💬</div>
+                    <div class="fluency-card-icon"><i data-lucide="message-circle" style="width:28px;height:28px;stroke:currentColor;"></i></div>
                     <div>
                         <h3>Conversation Starters</h3>
                         <p class="fluency-card-description">Practice opening lines and small talk</p>
@@ -1144,7 +1105,7 @@
             <!-- Elevator Pitch Builder -->
             <div class="fluency-card">
                 <div class="fluency-card-header">
-                    <div class="fluency-card-icon">🚀</div>
+                    <div class="fluency-card-icon"><i data-lucide="trending-up" style="width:28px;height:28px;stroke:currentColor;"></i></div>
                     <div>
                         <h3>Elevator Pitch Builder</h3>
                         <p class="fluency-card-description">Craft concise, compelling introductions</p>
@@ -1153,8 +1114,8 @@
                 <div class="fluency-card-content">
                     <div style="margin-bottom: var(--spacing-lg);">
                         <div class="btn-group">
-                            <button class="btn btn-secondary active" id="pitch-mode-speak">🎙️ Speak</button>
-                            <button class="btn btn-secondary" id="pitch-mode-type">⌨️ Type</button>
+                            <button class="btn btn-secondary active" id="pitch-mode-speak">Speak</button>
+                            <button class="btn btn-secondary" id="pitch-mode-type">Type</button>
                         </div>
                     </div>
 
@@ -1202,7 +1163,7 @@
                             </div>
                         </div>
                         <div id="pitch-unsupported-msg" style="display: none; margin-top: var(--spacing-md); padding: var(--spacing-md); background: var(--accent-color); color: var(--text-white); border-radius: var(--border-radius-sm);">
-                            ⚠️ Your browser does not support the Web Speech API. Please try Chrome or Edge.
+                            Your browser does not support the Web Speech API. Please try Chrome or Edge.
                         </div>
                     </div>
 
@@ -1239,7 +1200,7 @@
             <!-- Daily Speaking Prompt -->
             <div class="fluency-card">
                 <div class="fluency-card-header">
-                    <div class="fluency-card-icon">📅</div>
+                    <div class="fluency-card-icon"><i data-lucide="calendar" style="width:28px;height:28px;stroke:currentColor;"></i></div>
                     <div>
                         <h3>Daily Speaking Prompt</h3>
                         <p class="fluency-card-description">New topic each day with suggested vocabulary</p>
@@ -1262,7 +1223,7 @@
             <!-- Word Association Speed Round -->
             <div class="fluency-card">
                 <div class="fluency-card-header">
-                    <div class="fluency-card-icon">⚡</div>
+                    <div class="fluency-card-icon"><i data-lucide="zap" style="width:28px;height:28px;stroke:currentColor;"></i></div>
                     <div>
                         <h3>Word Association</h3>
                         <p class="fluency-card-description">Build a chain of associated words</p>
@@ -1307,7 +1268,7 @@
             <!-- Description Challenge -->
             <div class="fluency-card">
                 <div class="fluency-card-header">
-                    <div class="fluency-card-icon">🎨</div>
+                    <div class="fluency-card-icon"><i data-lucide="pen-tool" style="width:28px;height:28px;stroke:currentColor;"></i></div>
                     <div>
                         <h3>Description Challenge</h3>
                         <p class="fluency-card-description">Describe concepts without using common words</p>
@@ -1333,7 +1294,7 @@
             <!-- Speak for X Minutes -->
             <div class="fluency-card">
                 <div class="fluency-card-header">
-                    <div class="fluency-card-icon">⏱️</div>
+                    <div class="fluency-card-icon"><i data-lucide="timer" style="width:28px;height:28px;stroke:currentColor;"></i></div>
                     <div>
                         <h3>Speak for X Minutes</h3>
                         <p class="fluency-card-description">Endurance challenges on random topics</p>
@@ -1342,8 +1303,8 @@
                 <div class="fluency-card-content">
                     <div style="margin-bottom: var(--spacing-lg);">
                         <div class="btn-group">
-                            <button class="btn btn-secondary active" id="endurance-mode-speak">🎙️ Speak</button>
-                            <button class="btn btn-secondary" id="endurance-mode-type">⌨️ Type</button>
+                            <button class="btn btn-secondary active" id="endurance-mode-speak">Speak</button>
+                            <button class="btn btn-secondary" id="endurance-mode-type">Type</button>
                         </div>
                     </div>
 
@@ -1380,7 +1341,7 @@
                             </div>
                         </div>
                         <div id="endurance-unsupported-msg" style="display: none; margin-top: var(--spacing-md); padding: var(--spacing-md); background: var(--accent-color); color: var(--text-white); border-radius: var(--border-radius-sm);">
-                            ⚠️ Your browser does not support the Web Speech API. Please try Chrome or Edge.
+                            Your browser does not support the Web Speech API. Please try Chrome or Edge.
                         </div>
                     </div>
 
@@ -1418,7 +1379,7 @@
             <!-- Summarization Practice -->
             <div class="fluency-card">
                 <div class="fluency-card-header">
-                    <div class="fluency-card-icon">📝</div>
+                    <div class="fluency-card-icon"><i data-lucide="file-text" style="width:28px;height:28px;stroke:currentColor;"></i></div>
                     <div>
                         <h3>Summarization Practice</h3>
                         <p class="fluency-card-description">Read content, then summarize in your own words</p>
@@ -1427,8 +1388,8 @@
                 <div class="fluency-card-content">
                     <div style="margin-bottom: var(--spacing-lg);">
                         <div class="btn-group">
-                            <button class="btn btn-secondary active" id="summarization-mode-speak">🎙️ Speak</button>
-                            <button class="btn btn-secondary" id="summarization-mode-type">⌨️ Type</button>
+                            <button class="btn btn-secondary active" id="summarization-mode-speak">Speak</button>
+                            <button class="btn btn-secondary" id="summarization-mode-type">Type</button>
                         </div>
                     </div>
 
@@ -1467,7 +1428,7 @@
                             </div>
                         </div>
                         <div id="summarization-unsupported-msg" style="display: none; margin-top: var(--spacing-md); padding: var(--spacing-md); background: var(--accent-color); color: var(--text-white); border-radius: var(--border-radius-sm);">
-                            ⚠️ Your browser does not support the Web Speech API. Please try Chrome or Edge.
+                            Your browser does not support the Web Speech API. Please try Chrome or Edge.
                         </div>
                     </div>
 
@@ -1501,7 +1462,7 @@
             <!-- Paraphrasing Exercises -->
             <div class="fluency-card">
                 <div class="fluency-card-header">
-                    <div class="fluency-card-icon">🔄</div>
+                    <div class="fluency-card-icon"><i data-lucide="repeat" style="width:28px;height:28px;stroke:currentColor;"></i></div>
                     <div>
                         <h3>Paraphrasing Exercises</h3>
                         <p class="fluency-card-description">Restate sentences in multiple ways</p>
@@ -1510,8 +1471,8 @@
                 <div class="fluency-card-content">
                     <div style="margin-bottom: var(--spacing-lg);">
                         <div class="btn-group">
-                            <button class="btn btn-secondary active" id="paraphrasing-mode-speak">🎙️ Speak</button>
-                            <button class="btn btn-secondary" id="paraphrasing-mode-type">⌨️ Type</button>
+                            <button class="btn btn-secondary active" id="paraphrasing-mode-speak">Speak</button>
+                            <button class="btn btn-secondary" id="paraphrasing-mode-type">Type</button>
                         </div>
                     </div>
 
@@ -1550,7 +1511,7 @@
                             </div>
                         </div>
                         <div id="paraphrasing-unsupported-msg" style="display: none; margin-top: var(--spacing-md); padding: var(--spacing-md); background: var(--accent-color); color: var(--text-white); border-radius: var(--border-radius-sm);">
-                            ⚠️ Your browser does not support the Web Speech API. Please try Chrome or Edge.
+                            Your browser does not support the Web Speech API. Please try Chrome or Edge.
                         </div>
                     </div>
 
@@ -1588,7 +1549,7 @@
             <div id="recordings-category" class="storytelling-category">
                 <div class="fluency-card">
                     <div class="fluency-card-header">
-                        <div class="fluency-card-icon">🎙️</div>
+                        <div class="fluency-card-icon"><i data-lucide="mic-2" style="width:28px;height:28px;stroke:currentColor;"></i></div>
                         <div>
                             <h3>My Recordings</h3>
                             <p class="fluency-card-description">Record yourself speaking, play it back, and compare sessions over time</p>
@@ -1612,7 +1573,7 @@
                                 <button class="btn btn-secondary" id="rec-stop-btn" style="display:none;">Stop</button>
                             </div>
                             <div id="rec-unsupported" style="display:none; margin-top: var(--spacing-md); padding: var(--spacing-md); background: var(--accent-color); color:white; border-radius: var(--border-radius-sm);">
-                                ⚠️ Audio recording requires a modern browser with microphone access.
+                                Audio recording requires a modern browser with microphone access.
                             </div>
                         </div>
 
@@ -1652,7 +1613,7 @@
                 <!-- Tongue Twisters -->
                 <div class="fluency-card">
                     <div class="fluency-card-header">
-                        <div class="fluency-card-icon">👅</div>
+                        <div class="fluency-card-icon"><i data-lucide="wind" style="width:28px;height:28px;stroke:currentColor;"></i></div>
                         <div>
                             <h3>Tongue Twisters</h3>
                             <p class="fluency-card-description">Practice difficult sound combinations at progressive difficulty levels</p>
@@ -1676,7 +1637,7 @@
                 <!-- Minimal Pairs -->
                 <div class="fluency-card">
                     <div class="fluency-card-header">
-                        <div class="fluency-card-icon">🔊</div>
+                        <div class="fluency-card-icon"><i data-lucide="volume-2" style="width:28px;height:28px;stroke:currentColor;"></i></div>
                         <div>
                             <h3>Minimal Pairs Practice</h3>
                             <p class="fluency-card-description">Distinguish between similar-sounding words</p>
@@ -1698,7 +1659,7 @@
                 <!-- Word Stress Training -->
                 <div class="fluency-card">
                     <div class="fluency-card-header">
-                        <div class="fluency-card-icon">📊</div>
+                        <div class="fluency-card-icon"><i data-lucide="activity" style="width:28px;height:28px;stroke:currentColor;"></i></div>
                         <div>
                             <h3>Word Stress Training</h3>
                             <p class="fluency-card-description">Practice stress patterns in multi-syllable words</p>
@@ -1723,7 +1684,7 @@
                 <!-- Filler Word Awareness -->
                 <div class="fluency-card">
                     <div class="fluency-card-header">
-                        <div class="fluency-card-icon">🎯</div>
+                        <div class="fluency-card-icon"><i data-lucide="target" style="width:28px;height:28px;stroke:currentColor;"></i></div>
                         <div>
                             <h3>Filler Word Reducer</h3>
                             <p class="fluency-card-description">Speak for 30 seconds — live detection counts every "um," "uh," and "like"</p>
@@ -1749,7 +1710,7 @@
                                     <span class="filler-tag">kind of</span>
                                     <span class="filler-tag">right</span>
                                 </div>
-                                <p class="tip-text">💡 When you feel the urge to fill silence, pause instead. A confident pause sounds far better than "um."</p>
+                                <p class="tip-text">When you feel the urge to fill silence, pause instead. A confident pause sounds far better than "um."</p>
                             </div>
 
                             <div style="margin-bottom: var(--spacing-md);">
@@ -1785,7 +1746,7 @@
                                 </div>
                             </div>
 
-                            <div id="filler-mic-status" style="font-size: var(--font-size-sm); color: var(--text-secondary); margin-bottom: var(--spacing-lg);">🎙️ Listening...</div>
+                            <div id="filler-mic-status" style="font-size: var(--font-size-sm); color: var(--text-secondary); margin-bottom: var(--spacing-lg);">Listening...</div>
                             <button class="btn btn-danger" id="filler-stop-btn" style="width: 100%;">Stop Early</button>
                         </div>
 
@@ -1813,7 +1774,7 @@
                 <!-- Pacing Practice -->
                 <div class="fluency-card">
                     <div class="fluency-card-header">
-                        <div class="fluency-card-icon">⏱️</div>
+                        <div class="fluency-card-icon"><i data-lucide="timer" style="width:28px;height:28px;stroke:currentColor;"></i></div>
                         <div>
                             <h3>Pacing Practice</h3>
                             <p class="fluency-card-description">Develop optimal speaking speed and rhythm</p>
@@ -1838,7 +1799,7 @@
                 <!-- Smooth Transitions -->
                 <div class="fluency-card">
                     <div class="fluency-card-header">
-                        <div class="fluency-card-icon">🔗</div>
+                        <div class="fluency-card-icon"><i data-lucide="arrow-right-circle" style="width:28px;height:28px;stroke:currentColor;"></i></div>
                         <div>
                             <h3>Smooth Transitions</h3>
                             <p class="fluency-card-description">Master transition words to connect ideas seamlessly</p>
@@ -1898,7 +1859,7 @@
                 <!-- Sentence Combining -->
                 <div class="fluency-card">
                     <div class="fluency-card-header">
-                        <div class="fluency-card-icon">🔀</div>
+                        <div class="fluency-card-icon"><i data-lucide="git-merge" style="width:28px;height:28px;stroke:currentColor;"></i></div>
                         <div>
                             <h3>Sentence Combining</h3>
                             <p class="fluency-card-description">Transform simple sentences into complex, flowing structures</p>
@@ -1922,13 +1883,13 @@
                         </div>
                         <div id="fluency-combining-hint-section" style="display: none; margin-bottom: var(--spacing-md);">
                             <div style="background: var(--bg-card); padding: var(--spacing-md); border-radius: var(--border-radius-sm); border-left: 4px solid var(--secondary-color);">
-                                <p style="font-weight: 600; color: var(--text-secondary); margin-bottom: var(--spacing-xs);">💡 Hint:</p>
+                                <p style="font-weight: 600; color: var(--text-secondary); margin-bottom: var(--spacing-xs);">Hint:</p>
                                 <p id="fluency-combining-hint" style="margin: 0; color: var(--text-primary);"></p>
                             </div>
                         </div>
                         <div id="fluency-combining-example-section" style="display: none; margin-bottom: var(--spacing-md);">
                             <div style="background: var(--bg-hover); padding: var(--spacing-md); border-radius: var(--border-radius-sm); border-left: 4px solid var(--primary-color);">
-                                <p style="font-weight: 600; color: var(--text-secondary); margin-bottom: var(--spacing-xs);">✨ Example Solution:</p>
+                                <p style="font-weight: 600; color: var(--text-secondary); margin-bottom: var(--spacing-xs);">Example Solution:</p>
                                 <p id="fluency-combining-example" style="margin: 0; color: var(--text-primary); font-style: italic;"></p>
                             </div>
                         </div>
@@ -1947,7 +1908,7 @@
                 <!-- Synonym Swapper -->
                 <div class="fluency-card">
                     <div class="fluency-card-header">
-                        <div class="fluency-card-icon">📖</div>
+                        <div class="fluency-card-icon"><i data-lucide="replace" style="width:28px;height:28px;stroke:currentColor;"></i></div>
                         <div>
                             <h3>Synonym Swapper</h3>
                             <p class="fluency-card-description">Replace common words with more sophisticated alternatives</p>
@@ -1968,7 +1929,7 @@
                 <!-- Idioms & Expressions -->
                 <div class="fluency-card">
                     <div class="fluency-card-header">
-                        <div class="fluency-card-icon">💭</div>
+                        <div class="fluency-card-icon"><i data-lucide="quote" style="width:28px;height:28px;stroke:currentColor;"></i></div>
                         <div>
                             <h3>Idioms & Expressions</h3>
                             <p class="fluency-card-description">Learn natural phrases for everyday conversation</p>
@@ -1989,7 +1950,7 @@
                 <!-- Rhetorical Devices -->
                 <div class="fluency-card">
                     <div class="fluency-card-header">
-                        <div class="fluency-card-icon">✨</div>
+                        <div class="fluency-card-icon"><i data-lucide="feather" style="width:28px;height:28px;stroke:currentColor;"></i></div>
                         <div>
                             <h3>Rhetorical Devices</h3>
                             <p class="fluency-card-description">Master metaphors, similes, and other expressive techniques</p>
@@ -2016,7 +1977,7 @@
                 <!-- Power Words -->
                 <div class="fluency-card">
                     <div class="fluency-card-header">
-                        <div class="fluency-card-icon">⚡</div>
+                        <div class="fluency-card-icon"><i data-lucide="zap" style="width:28px;height:28px;stroke:currentColor;"></i></div>
                         <div>
                             <h3>Power Words Collection</h3>
                             <p class="fluency-card-description">Impactful words that add emphasis and emotion</p>
@@ -2040,7 +2001,7 @@
             <div id="readaloud-category" class="fluency-category">
                 <div class="fluency-card">
                     <div class="fluency-card-header">
-                        <div class="fluency-card-icon">📖</div>
+                        <div class="fluency-card-icon"><i data-lucide="book-open" style="width:28px;height:28px;stroke:currentColor;"></i></div>
                         <div>
                             <h3>Read Aloud Mode</h3>
                             <p class="fluency-card-description">Paste any text and read it aloud — get live WPM, filler word counts, and delivery feedback</p>
@@ -2064,7 +2025,7 @@
                                 <button class="btn btn-secondary" id="readaloud-sample-btn">Load Sample Text</button>
                             </div>
                             <div id="readaloud-unsupported-msg" style="display:none; margin-top: var(--spacing-md); padding: var(--spacing-md); background: var(--accent-color); color: white; border-radius: var(--border-radius-sm);">
-                                ⚠️ Read Aloud Mode requires Chrome or Edge for speech recognition.
+                                Read Aloud Mode requires Chrome or Edge for speech recognition.
                             </div>
                         </div>
 
@@ -2112,7 +2073,7 @@
             <div id="shadowing-category" class="fluency-category">
                 <div class="fluency-card">
                     <div class="fluency-card-header">
-                        <div class="fluency-card-icon">🎭</div>
+                        <div class="fluency-card-icon"><i data-lucide="copy" style="width:28px;height:28px;stroke:currentColor;"></i></div>
                         <div>
                             <h3>Shadowing Exercises</h3>
                             <p class="fluency-card-description">Read along with famous speeches — match the rhythm, stress, and pauses of great speakers</p>
@@ -2146,7 +2107,7 @@
                                 <strong>How to shadow:</strong> Listen (use TTS button), then read aloud simultaneously trying to match the natural rhythm and emphasis shown above.
                             </div>
                             <div class="exercise-controls" style="margin-top: var(--spacing-md);">
-                                <button class="btn btn-primary" id="shadowing-tts-btn">🔊 Hear it Read Aloud</button>
+                                <button class="btn btn-primary" id="shadowing-tts-btn">Hear it Read Aloud</button>
                                 <button class="btn btn-secondary" id="shadowing-tts-stop-btn" style="display:none;">Stop</button>
                             </div>
                         </div>
@@ -2185,7 +2146,7 @@
             <div class="review-kpi-row">
                 <div class="review-kpi-card review-kpi-green" role="button" onclick="Router.navigateTo('storytelling')">
                     <div class="review-kpi-top">
-                        <span class="review-kpi-icon">🔥</span>
+                        <span class="review-kpi-icon"><i data-lucide="flame" style="width:20px;height:20px;stroke:currentColor;"></i></span>
                         <span class="review-kpi-trend" id="kpi-streak-trend">—</span>
                     </div>
                     <div class="review-kpi-number" id="longest-streak-stat">0</div>
@@ -2195,7 +2156,7 @@
                 </div>
                 <div class="review-kpi-card review-kpi-primary" role="button" onclick="Router.navigateTo('vocabulary')">
                     <div class="review-kpi-top">
-                        <span class="review-kpi-icon">📚</span>
+                        <span class="review-kpi-icon"><i data-lucide="book-open" style="width:20px;height:20px;stroke:currentColor;"></i></span>
                         <span class="review-kpi-trend" id="kpi-words-trend">—</span>
                     </div>
                     <div class="review-kpi-number" id="total-words-stat">0</div>
@@ -2205,7 +2166,7 @@
                 </div>
                 <div class="review-kpi-card review-kpi-indigo" role="button" onclick="Router.navigateTo('vocabulary')">
                     <div class="review-kpi-top">
-                        <span class="review-kpi-icon">📝</span>
+                        <span class="review-kpi-icon"><i data-lucide="plus-circle" style="width:20px;height:20px;stroke:currentColor;"></i></span>
                         <span class="review-kpi-trend" id="kpi-today-trend">—</span>
                     </div>
                     <div class="review-kpi-number" id="words-today-stat">0</div>
@@ -2215,7 +2176,7 @@
                 </div>
                 <div class="review-kpi-card review-kpi-purple" role="button" onclick="Router.navigateTo('fluency')">
                     <div class="review-kpi-top">
-                        <span class="review-kpi-icon">🎙️</span>
+                        <span class="review-kpi-icon"><i data-lucide="mic-2" style="width:20px;height:20px;stroke:currentColor;"></i></span>
                         <span class="review-kpi-trend" id="kpi-wpm-trend">—</span>
                     </div>
                     <div class="review-kpi-number" id="kpi-avg-wpm">—</div>
@@ -2225,7 +2186,7 @@
                 </div>
                 <div class="review-kpi-card review-kpi-orange" role="button" onclick="Router.navigateTo('storytelling')">
                     <div class="review-kpi-top">
-                        <span class="review-kpi-icon">📖</span>
+                        <span class="review-kpi-icon"><i data-lucide="message-square" style="width:20px;height:20px;stroke:currentColor;"></i></span>
                         <span class="review-kpi-trend" id="kpi-stories-trend">—</span>
                     </div>
                     <div class="review-kpi-number" id="total-stories-stat">0</div>
@@ -2235,7 +2196,7 @@
                 </div>
                 <div class="review-kpi-card review-kpi-teal" role="button" onclick="Router.navigateTo('fluency')">
                     <div class="review-kpi-top">
-                        <span class="review-kpi-icon">⏱️</span>
+                        <span class="review-kpi-icon"><i data-lucide="calendar-days" style="width:20px;height:20px;stroke:currentColor;"></i></span>
                         <span class="review-kpi-trend" id="kpi-sessions-trend">—</span>
                     </div>
                     <div class="review-kpi-number" id="total-sessions-stat">0</div>
@@ -2471,6 +2432,144 @@
         document.addEventListener('click', function(e) {
           if (e.target.closest('[data-vocab-category]')) {
             setTimeout(syncFabVisibility, 10);
+          }
+        });
+      })();
+    </script>
+
+    <script>
+      // Initialize Lucide icons after DOM is ready
+      if (typeof lucide !== 'undefined') lucide.createIcons();
+    </script>
+
+    <!-- Footer Modals -->
+    <div id="footer-modal-overlay" class="footer-modal-overlay" role="dialog" aria-modal="true" hidden>
+      <div class="footer-modal">
+        <button class="footer-modal-close" id="footer-modal-close" aria-label="Close">&times;</button>
+        <h2 id="footer-modal-title"></h2>
+        <div id="footer-modal-body"></div>
+      </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="site-footer">
+      <div class="footer-inner">
+        <div class="footer-brand">
+          <span class="footer-brand-icon"><i data-lucide="message-circle" style="width:16px;height:16px;stroke:currentColor;"></i></span>
+          <span class="footer-brand-name">Articulation Trainer</span>
+          <span class="footer-tagline">Speak more eloquently, every day.</span>
+        </div>
+
+        <!-- Quick Stats -->
+        <div class="footer-stats">
+          <span class="footer-stat"><span id="footer-words-learned">0</span> words learned</span>
+          <span class="footer-stat-divider">·</span>
+          <span class="footer-stat"><span id="footer-streak">0</span> day streak</span>
+        </div>
+
+        <!-- Links row -->
+        <div class="footer-links">
+          <button class="footer-link" id="footer-share-btn">Share</button>
+          <button class="footer-link" data-footer-modal="about">About</button>
+          <button class="footer-link" data-footer-modal="privacy">Privacy</button>
+          <button class="footer-link" data-footer-modal="terms">Terms</button>
+          <a href="mailto:evankahn93@gmail.com?subject=Articulation Trainer Feedback" class="footer-link footer-link--feedback">Feedback</a>
+        </div>
+
+        <!-- Tip + copyright -->
+        <p class="footer-tip">Pro tip: use the tabs at the top to jump between sections anytime.</p>
+        <p class="footer-copy">&copy; <span id="footer-year"></span> Articulation Trainer. All rights reserved. &nbsp;v1.0</p>
+      </div>
+    </footer>
+
+    <script>
+      (function() {
+        // Year
+        document.getElementById('footer-year').textContent = new Date().getFullYear();
+
+        // Quick stats — read from StorageManager if available
+        function updateFooterStats() {
+          try {
+            var data = (typeof StorageManager !== 'undefined') ? StorageManager.load() : null;
+            if (data) {
+              var words = (data.vocabulary && data.vocabulary.learned) ? data.vocabulary.learned.length : 0;
+              var streak = (data.stats && data.stats.practiceStreak) || (data.dailyWord && data.dailyWord.currentStreak) || 0;
+              document.getElementById('footer-words-learned').textContent = words;
+              document.getElementById('footer-streak').textContent = streak;
+            }
+          } catch(e) {}
+        }
+        // Run on load and whenever views change (reuses existing router event)
+        updateFooterStats();
+        window.addEventListener('hashchange', updateFooterStats);
+
+        // Modal content
+        var modals = {
+          about: {
+            title: 'About Articulation Trainer',
+            body: '<p>Articulation Trainer is a personal speech and vocabulary coach designed to help you speak more eloquently every day.</p><p>Build your vocabulary with spaced repetition, sharpen your pronunciation, tell better stories, and track your growth — all in one place.</p><p>Built for anyone who wants to communicate with more confidence and clarity.</p>'
+          },
+          privacy: {
+            title: 'Privacy Policy',
+            body: '<p class="footer-modal-coming-soon">A full Privacy Policy is coming soon.</p><p>For now: your data is stored locally on your device. If you sign in, your progress is saved to a secure cloud database. We do not sell or share your data with third parties.</p>'
+          },
+          terms: {
+            title: 'Terms of Use',
+            body: '<p class="footer-modal-coming-soon">Full Terms of Use are coming soon.</p><p>By using Articulation Trainer you agree to use it for personal, non-commercial purposes. The app is provided as-is without warranty.</p>'
+          }
+        };
+
+        var overlay = document.getElementById('footer-modal-overlay');
+        var modalTitle = document.getElementById('footer-modal-title');
+        var modalBody = document.getElementById('footer-modal-body');
+
+        function openFooterModal(key) {
+          var m = modals[key];
+          if (!m) return;
+          modalTitle.textContent = m.title;
+          modalBody.innerHTML = m.body;
+          overlay.hidden = false;
+        }
+
+        function closeFooterModal() {
+          overlay.hidden = true;
+        }
+
+        document.getElementById('footer-modal-close').addEventListener('click', closeFooterModal);
+        overlay.addEventListener('click', function(e) {
+          if (e.target === overlay) closeFooterModal();
+        });
+        document.addEventListener('keydown', function(e) {
+          if (e.key === 'Escape' && !overlay.hidden) closeFooterModal();
+        });
+
+        document.querySelectorAll('[data-footer-modal]').forEach(function(btn) {
+          btn.addEventListener('click', function() {
+            openFooterModal(this.getAttribute('data-footer-modal'));
+          });
+        });
+
+        // Share — copy to clipboard
+        document.getElementById('footer-share-btn').addEventListener('click', function() {
+          var btn = this;
+          var url = window.location.origin + window.location.pathname;
+          if (navigator.clipboard && navigator.clipboard.writeText) {
+            navigator.clipboard.writeText(url).then(function() {
+              btn.textContent = 'Copied!';
+              setTimeout(function() { btn.textContent = 'Share'; }, 2000);
+            });
+          } else {
+            // Fallback
+            var ta = document.createElement('textarea');
+            ta.value = url;
+            ta.style.position = 'fixed';
+            ta.style.opacity = '0';
+            document.body.appendChild(ta);
+            ta.select();
+            document.execCommand('copy');
+            document.body.removeChild(ta);
+            btn.textContent = 'Copied!';
+            setTimeout(function() { btn.textContent = 'Share'; }, 2000);
           }
         });
       })();

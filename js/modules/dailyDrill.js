@@ -102,24 +102,24 @@ const DailyDrillModule = (function() {
     const steps = [
       {
         id: 'vocab',
-        icon: '📚',
+        icon: '',
         label: 'Vocabulary Word',
         detail: items.word
           ? `<strong>${items.word.word}</strong> <em>(${items.word.pronunciation})</em> — ${items.word.definition}`
           : 'Open the Learn tab and study one new word.',
         action: items.word ? `<a href="#vocabulary" class="btn btn-sm btn-primary drill-action-link">Go to Learn</a>
-          <button class="btn btn-sm btn-secondary drill-speak-btn" onclick="DailyDrillModule.speakWord('${(items.word.word || '').replace(/'/g, "\\'")}')">🔊 Hear it</button>` : ''
+          <button class="btn btn-sm btn-secondary drill-speak-btn" onclick="DailyDrillModule.speakWord('${(items.word.word || '').replace(/'/g, "\\'")}')">Hear it</button>` : ''
       },
       {
         id: 'twister',
-        icon: '👅',
+        icon: '',
         label: 'Tongue Twister',
         detail: `Say this 3 times fast: <em>"${items.twister}"</em>`,
         action: ''
       },
       {
         id: 'prompt',
-        icon: '🎤',
+        icon: '',
         label: 'Speak for 60 Seconds',
         detail: `Topic: <strong>"${items.prompt}"</strong>`,
         action: `<a href="#storytelling" class="btn btn-sm btn-primary drill-action-link">Go to Practice</a>
@@ -266,7 +266,7 @@ const DailyDrillModule = (function() {
 
     const header = document.createElement('div');
     header.style.cssText = 'display: flex; align-items: center; gap: var(--spacing-sm); margin-bottom: var(--spacing-md);';
-    header.innerHTML = '<span style="font-size: 1.2rem;">✨</span><span style="font-weight: 600; font-size: var(--font-size-sm);">AI Feedback</span>';
+    header.innerHTML = '<span style="font-weight: 600; font-size: var(--font-size-sm);">AI Feedback</span>';
     card.appendChild(header);
 
     [['Structure', 'structure'], ['Specificity', 'specificity'], ['Delivery', 'delivery']].forEach(([label, key]) => {

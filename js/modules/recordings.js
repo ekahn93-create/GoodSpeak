@@ -161,7 +161,7 @@ const RecordingsModule = (function() {
 
         document.getElementById('rec-start-btn').style.display = 'none';
         document.getElementById('rec-stop-btn').style.display = '';
-        setStatus('🔴 Recording…');
+        setStatus('Recording…');
         timerInterval = setInterval(updateTimer, 500);
       })
       .catch(err => {
@@ -218,7 +218,7 @@ const RecordingsModule = (function() {
         </div>
         <div class="rec-item-controls">
           <button class="btn btn-sm btn-primary" id="rec-play-btn-${r.id}" onclick="RecordingsModule.togglePlay('${r.id}')">▶ Play</button>
-          ${r.transcript ? `<button class="btn btn-sm btn-secondary" id="rec-feedback-btn-${r.id}" onclick="RecordingsModule.toggleFeedback('${r.id}')">📊 Speech Feedback</button>` : ''}
+          ${r.transcript ? `<button class="btn btn-sm btn-secondary" id="rec-feedback-btn-${r.id}" onclick="RecordingsModule.toggleFeedback('${r.id}')">Speech Feedback</button>` : ''}
           <button class="btn btn-sm btn-secondary" onclick="RecordingsModule.deleteRec('${r.id}')">Delete</button>
         </div>
         <div class="rec-player-wrap" id="rec-player-${r.id}" style="display:none; margin-top: var(--spacing-sm); width:100%;">
@@ -366,7 +366,7 @@ const RecordingsModule = (function() {
     const isVisible = panel.style.display !== 'none';
     if (isVisible) {
       panel.style.display = 'none';
-      if (btn) btn.textContent = '📊 Speech Feedback';
+      if (btn) btn.textContent = 'Speech Feedback';
       return;
     }
 
@@ -383,7 +383,7 @@ const RecordingsModule = (function() {
     }
 
     panel.style.display = '';
-    if (btn) btn.textContent = '📊 Hide Feedback';
+    if (btn) btn.textContent = 'Hide Feedback';
   }
 
   // ── Timer / status ─────────────────────────────────────────────

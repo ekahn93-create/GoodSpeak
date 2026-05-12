@@ -795,19 +795,19 @@ const FluencyModule = (function() {
     const rate = fillerCount / (fillerTotalDuration / 60);
     let emoji, label, sub, bannerColor;
     if (fillerCount === 0) {
-      emoji = '🏆'; label = 'Perfect — Zero Fillers!';
+      emoji = ''; label = 'Perfect — Zero Fillers!';
       sub = `You spoke for ${fillerTotalDuration} seconds with no filler words detected.`;
       bannerColor = '#d4edda';
     } else if (rate < 3) {
-      emoji = '🌟'; label = `Very Clean — ${fillerCount} filler${fillerCount > 1 ? 's' : ''}`;
+      emoji = ''; label = `Very Clean — ${fillerCount} filler${fillerCount > 1 ? 's' : ''}`;
       sub = `Only ${fillerCount} filler${fillerCount > 1 ? 's' : ''} in ${fillerTotalDuration} seconds. That's excellent.`;
       bannerColor = '#d4edda';
     } else if (rate < 6) {
-      emoji = '👍'; label = `Good — ${fillerCount} fillers detected`;
+      emoji = ''; label = `Good — ${fillerCount} fillers detected`;
       sub = `About ${rate.toFixed(1)} fillers per minute. A bit more practice and you'll be clean.`;
       bannerColor = '#fff3cd';
     } else {
-      emoji = '💪'; label = `${fillerCount} fillers — keep practicing`;
+      emoji = ''; label = `${fillerCount} fillers — keep practicing`;
       sub = `${rate.toFixed(1)} fillers per minute. Every attempt builds the habit.`;
       bannerColor = '#f8d7da';
     }
@@ -930,7 +930,7 @@ const FluencyModule = (function() {
       fillerRecognition.onerror = function(event) {
         if (event.error === 'not-allowed' || event.error === 'service-not-allowed') {
           const micEl = document.getElementById('filler-mic-status');
-          if (micEl) micEl.textContent = '⚠️ Microphone access denied — exercise continues without detection';
+          if (micEl) micEl.textContent = 'Microphone access denied — exercise continues without detection';
         }
       };
 
@@ -945,11 +945,11 @@ const FluencyModule = (function() {
         fillerRecognition.start();
       } catch(e) {
         const micEl = document.getElementById('filler-mic-status');
-        if (micEl) micEl.textContent = '⚠️ Speech recognition not available — exercise continues without detection';
+        if (micEl) micEl.textContent = 'Speech recognition not available — exercise continues without detection';
       }
     } else {
       const micEl = document.getElementById('filler-mic-status');
-      if (micEl) micEl.textContent = '⚠️ Speech recognition not supported in this browser';
+      if (micEl) micEl.textContent = 'Speech recognition not supported in this browser';
     }
   }
 
