@@ -78,8 +78,8 @@ const OnboardingModule = (function() {
     overlay.innerHTML = `
       <div class="onboarding-modal">
         <div class="onboarding-header">
-          <div class="onboarding-logo">💬</div>
-          <h2>Welcome to Articulation Trainer</h2>
+          <div class="onboarding-logo"><svg width="56" height="52" viewBox="0 0 220 200" xmlns="http://www.w3.org/2000/svg"><rect x="10" y="10" width="200" height="150" rx="28" ry="28" fill="#4F46E5"/><polygon points="60,155 30,190 100,155" fill="#4F46E5"/><polygon points="130,30 85,100 115,100 90,165 155,85 120,85 148,30" fill="white" opacity="0.95"/></svg></div>
+          <h2>Welcome to EZSpeaks</h2>
           <p>Answer 5 quick questions so we can recommend the best place to start.</p>
         </div>
         <div id="onboarding-body"></div>

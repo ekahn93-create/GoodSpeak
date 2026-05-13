@@ -154,7 +154,7 @@ const AuthModule = (function () {
       const greeting = isNewUser() ? 'Welcome' : 'Welcome back';
       el.textContent = greeting + ', ' + name + '!';
     } else {
-      el.textContent = 'Welcome to Articulation Trainer';
+      el.textContent = 'Welcome to EZSpeaks';
     }
   }
 
