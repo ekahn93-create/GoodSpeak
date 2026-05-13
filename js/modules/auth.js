@@ -9,6 +9,7 @@ const AuthModule = (function () {
   let currentUser = null;
   let onAuthChangeCallback = null;
   let initialSessionHandled = false;
+  let _justSignedIn = false; // true only when user explicitly submitted the login form
 
   // ── Init ──────────────────────────────────────────────────────────────────
 
@@ -74,7 +75,9 @@ const AuthModule = (function () {
 
   async function signIn(email, password) {
     if (!supabase) return { error: 'Auth not configured' };
+    _justSignedIn = true;
     const { data, error } = await supabase.auth.signInWithPassword({ email, password });
+    if (error) _justSignedIn = false;
     return { data, error };
   }
 
@@ -369,6 +372,10 @@ const AuthModule = (function () {
 
   // ── Public API ────────────────────────────────────────────────────────────
 
+  function isNewLogin() {
+    return _justSignedIn;
+  }
+
   return {
     init,
     signUp,
@@ -376,6 +383,7 @@ const AuthModule = (function () {
     signOut,
     getUser,
     isSignedIn,
+    isNewLogin,
     getClient,
     getDisplayName,
     openModal,

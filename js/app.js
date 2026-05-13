@@ -28,10 +28,13 @@ const App = (function() {
     AppConfig.load().then(() => {
       AuthModule.init(function(event, user) {
         if (event === 'SIGNED_IN') {
-          // Full page reload after sign-in so cloud data is fetched fresh on boot
-          SyncModule.onSignIn().then(() => {
-            window.location.reload();
-          });
+          // Only reload if the user just logged in via the modal (not a token refresh on page load).
+          // The boot path already handles sync for existing sessions.
+          if (AuthModule.isNewLogin()) {
+            SyncModule.onSignIn().then(() => {
+              window.location.reload();
+            });
+          }
         } else if (event === 'SIGNED_OUT') {
           SyncModule.onSignOut();
           window.location.reload();
