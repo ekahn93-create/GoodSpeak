@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="Improve your speaking skills with vocabulary building, story-telling practice, and daily word exercises.">
-    <title>EZSpeaks - Speak More Eloquently</title>
+    <title>EZSpeaks - Review</title>
 
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -19,7 +19,7 @@
     <!-- Icons -->
     <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
 </head>
-<body data-page="home">
+<body data-page="progress">
     <!-- Navigation Bar -->
     <nav id="main-nav" class="nav-bar">
         <div class="nav-brand">
@@ -98,140 +98,226 @@
         </div>
     </div>
 
-    <!-- Floating Word Bank Button -->
-    <button id="word-bank-fab" class="word-bank-fab" title="Open Word Bank" aria-label="Open Word Bank">
-        <span class="word-bank-fab-icon"><i data-lucide="book-open" style="width:18px;height:18px;stroke:currentColor;"></i></span>
-        <span class="word-bank-fab-label">Word Bank</span>
-    </button>
 
     <!-- Main Content Container -->
     <main id="app-container">
 
-        <!-- ==================== HOME/DASHBOARD VIEW ==================== -->
-        <section id="home-view" class="view active">
-            <div class="hero-section">
-                <div class="hero-top">
-                    <h1 id="hero-welcome">Welcome to EZSpeaks</h1>
-                    <div class="tier-display">
-                        <span class="tier-eyebrow">Your Level</span>
-                        <span class="tier-badge" id="tier-badge">Beginner</span>
-                        <span class="tier-description" id="tier-description">Just getting started</span>
+        <section id="progress-view" class="view active">
+
+            <!-- Dark Hero Header -->
+            <div class="review-hero">
+                <div class="review-hero-left">
+                    <div class="review-hero-label">Your Progress</div>
+                    <h1 class="review-hero-title">Performance Dashboard</h1>
+                    <p class="review-hero-sub">Track every step of your articulation journey</p>
+                    <div class="review-hero-days-active">
+                        <span class="review-hero-days-number" id="total-days-active">0</span>
+                        <span class="review-hero-days-label">total days practiced</span>
+                    </div>
+                </div>
+                <div class="review-hero-right">
+                    <div class="review-hero-goal">
+                        <div class="review-goal-label">Weekly Goal</div>
+                        <canvas id="chart-goal-ring" width="120" height="120"></canvas>
+                        <div class="review-goal-pct" id="review-goal-pct">0%</div>
+                        <div class="review-goal-sub" id="review-goal-sub">sessions this week</div>
                     </div>
                 </div>
             </div>
 
-            <!-- ========== LEARNING PATH STEPPER (#1) ========== -->
-            <div class="learning-path-strip" id="learning-path-strip">
-                <div class="lp-step" id="lp-step-learn">
-                    <div class="lp-step-number">1</div>
-                    <div class="lp-step-body">
-                        <div class="lp-step-label">Learn</div>
-                        <div class="lp-step-stat" id="lp-stat-learn">0 words learned</div>
+            <!-- KPI Cards Row -->
+            <div class="review-kpi-row">
+                <div class="review-kpi-card review-kpi-green" role="button" onclick="Router.navigateTo('storytelling')">
+                    <div class="review-kpi-top">
+                        <span class="review-kpi-icon"><i data-lucide="flame" style="width:20px;height:20px;stroke:currentColor;"></i></span>
+                        <span class="review-kpi-trend" id="kpi-streak-trend">—</span>
                     </div>
-                    <a href="/learn" class="lp-step-btn btn btn-sm btn-primary">Go</a>
+                    <div class="review-kpi-number" id="longest-streak-stat">0</div>
+                    <div class="review-kpi-label">Best Streak</div>
+                    <div class="review-kpi-sub" id="kpi-streak-sub">learn a word, complete a story,<br>or do a Read Aloud each day</div>
+                    <div class="review-kpi-goto" data-tip="Go to Practice">Practice →</div>
                 </div>
-                <div class="lp-arrow">&#8594;</div>
-                <div class="lp-step" id="lp-step-polish">
-                    <div class="lp-step-number">2</div>
-                    <div class="lp-step-body">
-                        <div class="lp-step-label">Polish</div>
-                        <div class="lp-step-stat" id="lp-stat-polish">Drills &amp; exercises</div>
+                <div class="review-kpi-card review-kpi-primary" role="button" onclick="Router.navigateTo('vocabulary')">
+                    <div class="review-kpi-top">
+                        <span class="review-kpi-icon"><i data-lucide="book-open" style="width:20px;height:20px;stroke:currentColor;"></i></span>
+                        <span class="review-kpi-trend" id="kpi-words-trend">—</span>
                     </div>
-                    <a href="/polish" class="lp-step-btn btn btn-sm btn-primary">Go</a>
+                    <div class="review-kpi-number" id="total-words-stat">0</div>
+                    <div class="review-kpi-label">Words Learned</div>
+                    <div class="review-kpi-sub">marked as learned in<br>Vocabulary Builder</div>
+                    <div class="review-kpi-goto" data-tip="Go to Vocabulary">Practice →</div>
                 </div>
-                <div class="lp-arrow">&#8594;</div>
-                <div class="lp-step" id="lp-step-practice">
-                    <div class="lp-step-number">3</div>
-                    <div class="lp-step-body">
-                        <div class="lp-step-label">Practice</div>
-                        <div class="lp-step-stat" id="lp-stat-practice">0 stories completed</div>
+                <div class="review-kpi-card review-kpi-indigo" role="button" onclick="Router.navigateTo('vocabulary')">
+                    <div class="review-kpi-top">
+                        <span class="review-kpi-icon"><i data-lucide="plus-circle" style="width:20px;height:20px;stroke:currentColor;"></i></span>
+                        <span class="review-kpi-trend" id="kpi-today-trend">—</span>
                     </div>
-                    <a href="/practice" class="lp-step-btn btn btn-sm btn-primary">Go</a>
+                    <div class="review-kpi-number" id="words-today-stat">0</div>
+                    <div class="review-kpi-label">Learned Today</div>
+                    <div class="review-kpi-sub">vocabulary words<br>marked as learned today</div>
+                    <div class="review-kpi-goto" data-tip="Go to Vocabulary">Practice →</div>
                 </div>
-                <div class="lp-arrow">&#8594;</div>
-                <div class="lp-step" id="lp-step-review">
-                    <div class="lp-step-number">4</div>
-                    <div class="lp-step-body">
-                        <div class="lp-step-label">Review</div>
-                        <div class="lp-step-stat" id="lp-stat-review">0 day streak</div>
+                <div class="review-kpi-card review-kpi-purple" role="button" onclick="Router.navigateTo('fluency')">
+                    <div class="review-kpi-top">
+                        <span class="review-kpi-icon"><i data-lucide="mic-2" style="width:20px;height:20px;stroke:currentColor;"></i></span>
+                        <span class="review-kpi-trend" id="kpi-wpm-trend">—</span>
                     </div>
-                    <a href="/review" class="lp-step-btn btn btn-sm btn-primary">Go</a>
+                    <div class="review-kpi-number" id="kpi-avg-wpm">—</div>
+                    <div class="review-kpi-label">Avg WPM</div>
+                    <div class="review-kpi-sub">average speaking speed<br>from Read Aloud sessions</div>
+                    <div class="review-kpi-goto" data-tip="Go to Fluency">Practice →</div>
+                </div>
+                <div class="review-kpi-card review-kpi-orange" role="button" onclick="Router.navigateTo('storytelling')">
+                    <div class="review-kpi-top">
+                        <span class="review-kpi-icon"><i data-lucide="message-square" style="width:20px;height:20px;stroke:currentColor;"></i></span>
+                        <span class="review-kpi-trend" id="kpi-stories-trend">—</span>
+                    </div>
+                    <div class="review-kpi-number" id="total-stories-stat">0</div>
+                    <div class="review-kpi-label">Stories Done</div>
+                    <div class="review-kpi-sub">storytelling prompts<br>completed in full</div>
+                    <div class="review-kpi-goto" data-tip="Go to Storytelling">Practice →</div>
+                </div>
+                <div class="review-kpi-card review-kpi-teal" role="button" onclick="Router.navigateTo('fluency')">
+                    <div class="review-kpi-top">
+                        <span class="review-kpi-icon"><i data-lucide="calendar-days" style="width:20px;height:20px;stroke:currentColor;"></i></span>
+                        <span class="review-kpi-trend" id="kpi-sessions-trend">—</span>
+                    </div>
+                    <div class="review-kpi-number" id="total-sessions-stat">0</div>
+                    <div class="review-kpi-label">Sessions</div>
+                    <div class="review-kpi-sub">total app sessions<br>since you started</div>
+                    <div class="review-kpi-goto" data-tip="Go to Read Aloud">Practice →</div>
                 </div>
             </div>
 
-            <!-- Daily Suggestions -->
-            <div class="suggestions-card">
-                <h3 class="suggestions-title">What to do today</h3>
-                <div class="suggestions-list" id="daily-suggestions">
-                    <!-- Rendered by JS -->
+            <!-- Charts Row: Speech Metrics + Weekly Activity -->
+            <div class="review-charts-row">
+
+                <!-- Speech Metrics — big chart -->
+                <div class="review-chart-panel review-chart-wide">
+                    <div class="review-panel-header">
+                        <div>
+                            <div class="review-panel-title">Speech Metrics Over Time</div>
+                            <div class="review-panel-sub">WPM &amp; filler words per session</div>
+                        </div>
+                        <div class="review-legend">
+                            <span class="review-legend-dot" style="background:#818cf8"></span><span>WPM</span>
+                            <span class="review-legend-dot" style="background:#f43f5e; margin-left:12px"></span><span>Fillers</span>
+                        </div>
+                    </div>
+                    <canvas id="chart-wpm"></canvas>
+                    <div class="chart-empty" id="chart-wpm-empty">Complete a Web Speech session to start tracking your metrics.</div>
+                </div>
+
+                <!-- Weekly Activity Bar Chart -->
+                <div class="review-chart-panel review-chart-narrow">
+                    <div class="review-panel-header">
+                        <div>
+                            <div class="review-panel-title">Weekly Activity</div>
+                            <div class="review-panel-sub">sessions &amp; words this week</div>
+                        </div>
+                    </div>
+                    <canvas id="chart-weekly"></canvas>
+                    <div class="chart-empty" id="chart-weekly-empty">No activity this week yet.</div>
                 </div>
             </div>
 
-            <!-- ========== TIERED CHECKLIST (collapsed) ========== -->
-            <div class="beginner-checklist-card" id="beginner-checklist-card">
-                <button class="bcl-toggle" id="bcl-toggle" aria-expanded="false">
-                    <span class="bcl-toggle-left">
-                        <span class="bcl-title">Your Next Goals</span>
-                        <span class="bcl-subtitle">Complete these to get the full experience</span>
-                    </span>
-                    <span class="bcl-toggle-right">
-                        <span class="bcl-progress-summary" id="bcl-progress-summary"></span>
-                        <span class="bcl-chevron">&#8250;</span>
-                    </span>
-                </button>
-                <div class="bcl-body" id="bcl-body" hidden>
-                    <ul class="bcl-list"></ul>
-                    <div class="bcl-complete" style="display:none;"></div>
+            <!-- Second Row: Vocab Growth + Filler Trend + Speech Quality -->
+            <div class="review-charts-row three-col">
+
+                <!-- Vocab Growth -->
+                <div class="review-chart-panel">
+                    <div class="review-panel-header">
+                        <div>
+                            <div class="review-panel-title">Vocabulary Growth</div>
+                            <div class="review-panel-sub">cumulative words learned</div>
+                        </div>
+                    </div>
+                    <canvas id="chart-vocab"></canvas>
+                    <div class="chart-empty" id="chart-vocab-empty">Start learning words to see your growth curve.</div>
+                </div>
+
+                <!-- Filler Word Trend -->
+                <div class="review-chart-panel">
+                    <div class="review-panel-header">
+                        <div>
+                            <div class="review-panel-title">Filler Word Trend</div>
+                            <div class="review-panel-sub">lower is better</div>
+                        </div>
+                    </div>
+                    <canvas id="chart-fillers"></canvas>
+                    <div class="chart-empty" id="chart-fillers-empty">Complete Web Speech sessions to track filler words.</div>
+                </div>
+
+                <!-- Speech Quality Breakdown -->
+                <div class="review-chart-panel">
+                    <div class="review-panel-header">
+                        <div>
+                            <div class="review-panel-title">Last Session Quality</div>
+                            <div class="review-panel-sub">speech analysis snapshot</div>
+                        </div>
+                    </div>
+                    <div id="review-quality-breakdown" class="review-quality-list">
+                        <div class="review-quality-empty">No speech session recorded yet.</div>
+                    </div>
                 </div>
             </div>
 
-            <div class="stat-tiles">
-                <a href="/learn" class="stat-tile">
-                    <span class="stat-tile-icon"><i data-lucide="book-open" style="width:22px;height:22px;stroke:currentColor;"></i></span>
-                    <span class="stat-tile-label">Learn</span>
-                    <span class="stat-tile-value"><span id="vocab-learned-count">0</span> words</span>
-                </a>
-                <a href="/polish" class="stat-tile">
-                    <span class="stat-tile-icon"><i data-lucide="mic" style="width:22px;height:22px;stroke:currentColor;"></i></span>
-                    <span class="stat-tile-label">Polish</span>
-                    <span class="stat-tile-value">Drills &amp; exercises</span>
-                </a>
-                <a href="/practice" class="stat-tile">
-                    <span class="stat-tile-icon"><i data-lucide="message-square" style="width:22px;height:22px;stroke:currentColor;"></i></span>
-                    <span class="stat-tile-label">Practice</span>
-                    <span class="stat-tile-value"><span id="stories-completed-count">0</span> stories</span>
-                </a>
-                <a href="/review" class="stat-tile">
-                    <span class="stat-tile-icon"><i data-lucide="bar-chart-2" style="width:22px;height:22px;stroke:currentColor;"></i></span>
-                    <span class="stat-tile-label">Review</span>
-                    <span class="stat-tile-value"><span id="daily-streak-count">0</span> day streak</span>
-                </a>
+            <!-- Bottom Row: Vocabulary Breakdown + Activity Feed -->
+            <div class="review-bottom-row">
+
+                <!-- Vocab by Difficulty -->
+                <div class="review-panel review-panel-medium">
+                    <div class="review-panel-header">
+                        <div class="review-panel-title">Vocabulary by Difficulty</div>
+                        <div class="review-panel-sub">words mastered per level</div>
+                    </div>
+                    <div id="vocab-progress-bars" class="review-vocab-bars">
+                        <!-- Progress bars dynamically added -->
+                    </div>
+                </div>
+
+                <!-- Recent Activity Feed -->
+                <div class="review-panel review-panel-medium">
+                    <div class="review-panel-header">
+                        <div class="review-panel-title">Recent Activity</div>
+                        <div class="review-panel-sub">your latest practice moments</div>
+                    </div>
+                    <div id="recent-activity" class="activity-list">
+                        <!-- Recent activities dynamically added -->
+                    </div>
+                </div>
             </div>
 
-            <button class="page-next-btn" onclick="window.location.href='/learn'" aria-label="Go to Learn">
-                <span class="page-next-label">Ready to start? Head to Learn to build your vocabulary</span>
+            <!-- Achievements -->
+            <div class="review-panel review-panel-full">
+                <div class="review-panel-header">
+                    <div class="review-panel-title">Achievements</div>
+                    <div class="review-panel-sub" id="achievements-unlocked-count">0 unlocked</div>
+                </div>
+                <div id="achievements-grid" class="review-achievements-grid">
+                    <!-- Achievement badges dynamically added -->
+                </div>
+            </div>
+
+            <button class="page-next-btn" onclick="Router.navigateTo('vocabulary')" aria-label="Go to Learn">
+                <span class="page-next-label">Keep growing — head back to Learn and add more words</span>
                 <i data-lucide="chevron-down" style="width:22px;height:22px;stroke:currentColor;"></i>
             </button>
 
         </section>
 
-        <!-- Other views live on their own pages: /learn /polish /practice /review -->
     </main>
 
     <!-- Modal Overlay for Dialogs -->
     <div id="modal-overlay" class="modal-overlay">
         <div class="modal-content">
             <button class="modal-close">&times;</button>
-            <div id="modal-body">
-                <!-- Dynamic modal content will be added here -->
-            </div>
+            <div id="modal-body"></div>
         </div>
     </div>
 
     <!-- Toast Notifications Container -->
-    <div id="toast-container" class="toast-container">
-        <!-- Toast notifications will be dynamically added here -->
-    </div>
+    <div id="toast-container" class="toast-container"></div>
 
     <!-- JavaScript Files -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
@@ -243,14 +329,19 @@
     <script src="js/components/modal.js"></script>
     <script src="js/components/progressBar.js"></script>
     <script src="js/modules/nudge.js"></script>
+    <script src="js/modules/api-service.js"></script>
     <script src="js/modules/vocabulary.js"></script>
     <script src="js/modules/storytelling.js"></script>
     <script src="js/modules/wordBank.js"></script>
     <script src="js/modules/grammar.js"></script>
     <script src="js/modules/fluency.js"></script>
+    <script src="js/modules/webSpeech.js"></script>
     <script src="js/modules/onboarding.js"></script>
     <script src="js/modules/dailyDrill.js"></script>
+    <script src="js/modules/readAloud.js"></script>
     <script src="js/modules/srs.js"></script>
+    <script src="js/modules/recordings.js"></script>
+    <script src="js/modules/shadowing.js"></script>
     <script src="js/modules/progressCharts.js"></script>
     <script src="js/modules/auth.js"></script>
     <script src="js/modules/sync.js"></script>
@@ -288,41 +379,6 @@
       })();
     </script>
 
-    <!-- Word Bank FAB -->
-    <script>
-      (function() {
-        var fab = document.getElementById('word-bank-fab');
-        fab.addEventListener('click', function() {
-          Router.navigateTo('vocabulary');
-          // After the view switches, click the Word Bank tab
-          setTimeout(function() {
-            var tab = document.querySelector('[data-vocab-category="bank"]');
-            if (tab) tab.click();
-          }, 50);
-        });
-
-        // Hide FAB when the Word Bank tab is active, show it otherwise
-        function syncFabVisibility() {
-          var bankTab = document.querySelector('[data-vocab-category="bank"]');
-          var onVocabView = document.getElementById('vocabulary-view') &&
-                            document.getElementById('vocabulary-view').classList.contains('active');
-          if (onVocabView && bankTab && bankTab.classList.contains('active')) {
-            fab.classList.add('word-bank-fab--hidden');
-          } else {
-            fab.classList.remove('word-bank-fab--hidden');
-          }
-        }
-
-        document.addEventListener('viewChanged', syncFabVisibility);
-
-        // Also sync when vocab tabs are clicked
-        document.addEventListener('click', function(e) {
-          if (e.target.closest('[data-vocab-category]')) {
-            setTimeout(syncFabVisibility, 10);
-          }
-        });
-      })();
-    </script>
 
     <script>
       // Initialize Lucide icons after DOM is ready
@@ -465,5 +521,7 @@
         });
       })();
     </script>
+</body>
+</html>
 </body>
 </html>

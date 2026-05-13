@@ -28,12 +28,13 @@ const App = (function() {
     AppConfig.load().then(() => {
       AuthModule.init(function(event, user) {
         if (event === 'SIGNED_IN') {
+          // Full page reload after sign-in so cloud data is fetched fresh on boot
           SyncModule.onSignIn().then(() => {
-            _refreshAllModules();
+            window.location.reload();
           });
         } else if (event === 'SIGNED_OUT') {
           SyncModule.onSignOut();
-          _refreshAllModules();
+          window.location.reload();
         }
       });
 
@@ -59,8 +60,9 @@ const App = (function() {
   function _refreshAllModules() {
     userData = StorageManager.load();
     updateDashboardStats();
-    VocabularyModule.refresh();
-    WordBankModule.refresh();
+    updateLearningPath();
+    if (typeof VocabularyModule !== 'undefined' && VocabularyModule.refresh) VocabularyModule.refresh();
+    if (typeof WordBankModule !== 'undefined' && WordBankModule.refresh) WordBankModule.refresh();
   }
 
   function _bootApp() {
@@ -76,19 +78,20 @@ const App = (function() {
     // Show onboarding for new users
     OnboardingModule.init();
 
-    // Initialize all feature modules
-    WordBankModule.init();
-    StorytellingModule.init();
-    DailyWordModule.init();
-    MWWordOfDayModule.init();
-    GrammarModule.init();
-    FluencyModule.init();
-    VocabularyModule.init();
-    ReadAloudModule.init();
-    SRSModule.init();
-    RecordingsModule.init();
-    ShadowingModule.init();
-    ProgressChartsModule.init();
+    // Initialize all feature modules — guard each call since not every module
+    // is loaded on every page (multi-page architecture)
+    if (typeof WordBankModule       !== 'undefined') WordBankModule.init();
+    if (typeof StorytellingModule   !== 'undefined') StorytellingModule.init();
+    if (typeof DailyWordModule      !== 'undefined') DailyWordModule.init();
+    if (typeof MWWordOfDayModule    !== 'undefined') MWWordOfDayModule.init();
+    if (typeof GrammarModule        !== 'undefined') GrammarModule.init();
+    if (typeof FluencyModule        !== 'undefined') FluencyModule.init();
+    if (typeof VocabularyModule     !== 'undefined') VocabularyModule.init();
+    if (typeof ReadAloudModule      !== 'undefined') ReadAloudModule.init();
+    if (typeof SRSModule            !== 'undefined') SRSModule.init();
+    if (typeof RecordingsModule     !== 'undefined') RecordingsModule.init();
+    if (typeof ShadowingModule      !== 'undefined') ShadowingModule.init();
+    if (typeof ProgressChartsModule !== 'undefined') ProgressChartsModule.init();
 
     // Initialize dashboard
     initializeDashboard();
@@ -277,27 +280,27 @@ const App = (function() {
   // At Advanced tier, goals shift to sustaining mastery.
   const TIER_GOALS = {
     Beginner: [
-      { key: 'words',   text: 'Learn 5 words',                  link: '#vocabulary',  linkLabel: 'Vocabulary Builder',  check: function(w,s,d) { return w >= 5;  }, target: 5,  current: function(w,s,d) { return w; }, unit: 'words' },
-      { key: 'polish',  text: 'Try a pronunciation drill',       link: '#fluency',     linkLabel: 'Polish',              check: function(w,s,d,f) { return f;    } },
-      { key: 'stories', text: 'Complete a storytelling prompt',  link: '#storytelling',linkLabel: 'Practice',            check: function(w,s,d) { return s >= 1;  }, target: 1,  current: function(w,s,d) { return s; }, unit: 'completed' },
-      { key: 'days',    text: 'Use the app 3 different days',    link: '#vocabulary',  linkLabel: 'Keep going',          check: function(w,s,d) { return d >= 3;  }, target: 3,  current: function(w,s,d) { return d; }, unit: 'days' }
+      { key: 'words',   text: 'Learn 5 words',                  link: '/learn',  linkLabel: 'Vocabulary Builder',  check: function(w,s,d) { return w >= 5;  }, target: 5,  current: function(w,s,d) { return w; }, unit: 'words' },
+      { key: 'polish',  text: 'Try a pronunciation drill',       link: '/polish',     linkLabel: 'Polish',              check: function(w,s,d,f) { return f;    } },
+      { key: 'stories', text: 'Complete a storytelling prompt',  link: '/practice',linkLabel: 'Practice',            check: function(w,s,d) { return s >= 1;  }, target: 1,  current: function(w,s,d) { return s; }, unit: 'completed' },
+      { key: 'days',    text: 'Use the app 3 different days',    link: '/learn',  linkLabel: 'Keep going',          check: function(w,s,d) { return d >= 3;  }, target: 3,  current: function(w,s,d) { return d; }, unit: 'days' }
     ],
     Building: [
-      { key: 'words',   text: 'Reach 20 words learned',          link: '#vocabulary',  linkLabel: 'Vocabulary Builder',  check: function(w,s,d) { return w >= 20; }, target: 20, current: function(w,s,d) { return w; }, unit: 'words' },
-      { key: 'stories', text: 'Complete 5 storytelling prompts', link: '#storytelling',linkLabel: 'Practice',            check: function(w,s,d) { return s >= 5;  }, target: 5,  current: function(w,s,d) { return s; }, unit: 'completed' },
-      { key: 'days',    text: 'Stay active for 14 days',         link: '#vocabulary',  linkLabel: 'Keep going',          check: function(w,s,d) { return d >= 14; }, target: 14, current: function(w,s,d) { return d; }, unit: 'days' },
-      { key: 'quiz',    text: 'Pass a Knowledge Check quiz',     link: '#vocabulary',  linkLabel: 'Knowledge Check',    check: function(w,s,d) { return w >= 10; } }
+      { key: 'words',   text: 'Reach 20 words learned',          link: '/learn',  linkLabel: 'Vocabulary Builder',  check: function(w,s,d) { return w >= 20; }, target: 20, current: function(w,s,d) { return w; }, unit: 'words' },
+      { key: 'stories', text: 'Complete 5 storytelling prompts', link: '/practice',linkLabel: 'Practice',            check: function(w,s,d) { return s >= 5;  }, target: 5,  current: function(w,s,d) { return s; }, unit: 'completed' },
+      { key: 'days',    text: 'Stay active for 14 days',         link: '/learn',  linkLabel: 'Keep going',          check: function(w,s,d) { return d >= 14; }, target: 14, current: function(w,s,d) { return d; }, unit: 'days' },
+      { key: 'quiz',    text: 'Pass a Knowledge Check quiz',     link: '/learn',  linkLabel: 'Knowledge Check',    check: function(w,s,d) { return w >= 10; } }
     ],
     Intermediate: [
-      { key: 'words',   text: 'Reach 50 words learned',          link: '#vocabulary',  linkLabel: 'Vocabulary Builder',  check: function(w,s,d) { return w >= 50; }, target: 50, current: function(w,s,d) { return w; }, unit: 'words' },
-      { key: 'stories', text: 'Complete 15 storytelling prompts',link: '#storytelling',linkLabel: 'Practice',            check: function(w,s,d) { return s >= 15; }, target: 15, current: function(w,s,d) { return s; }, unit: 'completed' },
-      { key: 'days',    text: 'Stay active for 30 days',         link: '#vocabulary',  linkLabel: 'Keep going',          check: function(w,s,d) { return d >= 30; }, target: 30, current: function(w,s,d) { return d; }, unit: 'days' },
-      { key: 'drill',   text: 'Finish 10 daily drills',          link: '#home',        linkLabel: 'Daily Drill',         check: function(w,s,d) { return d >= 10; } }
+      { key: 'words',   text: 'Reach 50 words learned',          link: '/learn',  linkLabel: 'Vocabulary Builder',  check: function(w,s,d) { return w >= 50; }, target: 50, current: function(w,s,d) { return w; }, unit: 'words' },
+      { key: 'stories', text: 'Complete 15 storytelling prompts',link: '/practice',linkLabel: 'Practice',            check: function(w,s,d) { return s >= 15; }, target: 15, current: function(w,s,d) { return s; }, unit: 'completed' },
+      { key: 'days',    text: 'Stay active for 30 days',         link: '/learn',  linkLabel: 'Keep going',          check: function(w,s,d) { return d >= 30; }, target: 30, current: function(w,s,d) { return d; }, unit: 'days' },
+      { key: 'drill',   text: 'Finish 10 daily drills',          link: '/',        linkLabel: 'Daily Drill',         check: function(w,s,d) { return d >= 10; } }
     ],
     Advanced: [
-      { key: 'words',   text: '100 words learned — sustain it',  link: '#vocabulary',  linkLabel: 'Vocabulary Builder',  check: function(w,s,d) { return w >= 100; }, target: 100, current: function(w,s,d) { return w; }, unit: 'words' },
-      { key: 'stories', text: '30 stories completed',            link: '#storytelling',linkLabel: 'Practice',            check: function(w,s,d) { return s >= 30;  }, target: 30,  current: function(w,s,d) { return s; }, unit: 'completed' },
-      { key: 'days',    text: 'Active on 60+ different days',    link: '#vocabulary',  linkLabel: 'Keep going',          check: function(w,s,d) { return d >= 60;  }, target: 60,  current: function(w,s,d) { return d; }, unit: 'days' }
+      { key: 'words',   text: '100 words learned — sustain it',  link: '/learn',  linkLabel: 'Vocabulary Builder',  check: function(w,s,d) { return w >= 100; }, target: 100, current: function(w,s,d) { return w; }, unit: 'words' },
+      { key: 'stories', text: '30 stories completed',            link: '/practice',linkLabel: 'Practice',            check: function(w,s,d) { return s >= 30;  }, target: 30,  current: function(w,s,d) { return s; }, unit: 'completed' },
+      { key: 'days',    text: 'Active on 60+ different days',    link: '/learn',  linkLabel: 'Keep going',          check: function(w,s,d) { return d >= 60;  }, target: 60,  current: function(w,s,d) { return d; }, unit: 'days' }
     ]
   };
 
@@ -415,7 +418,7 @@ const App = (function() {
       suggestions.push({
         icon: '🔁',
         text: srsData + ' word' + (srsData === 1 ? '' : 's') + ' due for review — keep them fresh',
-        link: '#vocabulary',
+        link: '/learn',
         tab: 'knowledge-check',
         label: 'Start Review'
       });
@@ -431,7 +434,7 @@ const App = (function() {
       suggestions.push({
         icon: '🔥',
         text: 'Your ' + streak + '-day streak is at risk — do something today',
-        link: '#home',
+        link: '/',
         tab: null,
         label: 'Do Today\'s Drill'
       });
@@ -440,62 +443,43 @@ const App = (function() {
     // Priority 3 — tier-specific nudges
     if (tier.name === 'Beginner') {
       if (words < 5) {
-        suggestions.push({ icon: '📚', text: 'Start with your first words — even one a day adds up', link: '#vocabulary', tab: 'builder', label: 'Learn a Word' });
+        suggestions.push({ icon: '📚', text: 'Start with your first words — even one a day adds up', link: '/learn', tab: 'builder', label: 'Learn a Word' });
       }
       if (!fluencyVisited) {
-        suggestions.push({ icon: '🎤', text: 'Try a pronunciation drill to build confidence out loud', link: '#fluency', tab: null, label: 'Go to Polish' });
+        suggestions.push({ icon: '🎤', text: 'Try a pronunciation drill to build confidence out loud', link: '/polish', tab: null, label: 'Go to Polish' });
       }
       if (words >= 3 && stories === 0) {
-        suggestions.push({ icon: '📖', text: 'You have some words — try putting them into a story', link: '#storytelling', tab: 'storytelling', label: 'Try a Prompt' });
+        suggestions.push({ icon: '📖', text: 'You have some words — try putting them into a story', link: '/practice', tab: 'storytelling', label: 'Try a Prompt' });
       }
     } else if (tier.name === 'Building') {
       if (words < 20) {
-        suggestions.push({ icon: '📚', text: 'Keep building — you need ' + (20 - words) + ' more words to reach Intermediate', link: '#vocabulary', tab: 'builder', label: 'Learn Words' });
+        suggestions.push({ icon: '📚', text: 'Keep building — you need ' + (20 - words) + ' more words to reach Intermediate', link: '/learn', tab: 'builder', label: 'Learn Words' });
       }
       if (stories < 5) {
-        suggestions.push({ icon: '📖', text: 'Practice makes permanent — ' + (5 - stories) + ' more stories to reach Intermediate', link: '#storytelling', tab: 'storytelling', label: 'Tell a Story' });
+        suggestions.push({ icon: '📖', text: 'Practice makes permanent — ' + (5 - stories) + ' more stories to reach Intermediate', link: '/practice', tab: 'storytelling', label: 'Tell a Story' });
       }
-      suggestions.push({ icon: '🎯', text: 'Challenge yourself with a quiz on your word bank', link: '#vocabulary', tab: 'knowledge-check', label: 'Take a Quiz' });
+      suggestions.push({ icon: '🎯', text: 'Challenge yourself with a quiz on your word bank', link: '/learn', tab: 'knowledge-check', label: 'Take a Quiz' });
     } else if (tier.name === 'Intermediate') {
-      suggestions.push({ icon: '🗣️', text: 'Try Impromptu Speaking — 60 seconds, no preparation', link: '#storytelling', tab: 'practical', label: 'Speak Now' });
+      suggestions.push({ icon: '🗣️', text: 'Try Impromptu Speaking — 60 seconds, no preparation', link: '/practice', tab: 'practical', label: 'Speak Now' });
       if (words < 50) {
-        suggestions.push({ icon: '📚', text: (50 - words) + ' more words to reach Advanced', link: '#vocabulary', tab: 'builder', label: 'Learn Words' });
+        suggestions.push({ icon: '📚', text: (50 - words) + ' more words to reach Advanced', link: '/learn', tab: 'builder', label: 'Learn Words' });
       }
-      suggestions.push({ icon: '👥', text: 'Try shadowing to refine your delivery and rhythm', link: '#fluency', tab: null, label: 'Go to Shadowing' });
+      suggestions.push({ icon: '👥', text: 'Try shadowing to refine your delivery and rhythm', link: '/polish', tab: null, label: 'Go to Shadowing' });
     } else if (tier.name === 'Advanced') {
-      suggestions.push({ icon: '🏆', text: 'Advanced tier — focus on consistency and nuance', link: '#storytelling', tab: 'storytelling', label: 'New Story' });
-      suggestions.push({ icon: '🔁', text: 'Keep your SRS reviews up to maintain long-term retention', link: '#vocabulary', tab: 'knowledge-check', label: 'Review Words' });
-      suggestions.push({ icon: '🎙️', text: 'Read Aloud mode builds pace and clarity — try it today', link: '#fluency', tab: null, label: 'Read Aloud' });
+      suggestions.push({ icon: '🏆', text: 'Advanced tier — focus on consistency and nuance', link: '/practice', tab: 'storytelling', label: 'New Story' });
+      suggestions.push({ icon: '🔁', text: 'Keep your SRS reviews up to maintain long-term retention', link: '/learn', tab: 'knowledge-check', label: 'Review Words' });
+      suggestions.push({ icon: '🎙️', text: 'Read Aloud mode builds pace and clarity — try it today', link: '/polish', tab: null, label: 'Read Aloud' });
     }
 
     // Cap at 3 suggestions
     const shown = suggestions.slice(0, 3);
 
     container.innerHTML = shown.map(function(s) {
-      const tabAttr = s.tab ? ' data-tab="' + s.tab + '"' : '';
       return '<div class="suggestion-item">' +
         '<span class="suggestion-text">' + s.text + '</span>' +
-        '<a href="' + s.link + '" class="suggestion-link btn btn-sm btn-primary"' + tabAttr + '>' + s.label + '</a>' +
+        '<a href="' + s.link + '" class="suggestion-link btn btn-sm btn-primary">' + s.label + '</a>' +
         '</div>';
     }).join('');
-
-    // Wire up tab-switching for suggestion links
-    container.querySelectorAll('[data-tab]').forEach(function(link) {
-      link.addEventListener('click', function() {
-        const tab = this.getAttribute('data-tab');
-        const href = this.getAttribute('href').replace('#', '');
-        if (tab && href) {
-          setTimeout(function() {
-            if (href === 'vocabulary' && typeof VocabularyModule !== 'undefined') {
-              VocabularyModule.switchVocabCategory(tab);
-            } else if (href === 'storytelling') {
-              const btn = document.querySelector('.storytelling-category-tab[data-story-category="' + tab + '"]');
-              if (btn) btn.click();
-            }
-          }, 150);
-        }
-      });
-    });
   }
 
   function getSRSDueCount() {
@@ -550,7 +534,7 @@ const App = (function() {
     if (Router.getCurrentRoute() === 'progress') {
       requestAnimationFrame(function() {
         updateProgressView();
-        ProgressChartsModule.refresh();
+        if (typeof ProgressChartsModule !== 'undefined') ProgressChartsModule.refresh();
       });
     }
   }
@@ -822,18 +806,16 @@ const App = (function() {
       case 'progress':
         updateProgressView();
         requestAnimationFrame(function() {
-          ProgressChartsModule.refresh();
+          if (typeof ProgressChartsModule !== 'undefined') ProgressChartsModule.refresh();
         });
         break;
       case 'vocabulary':
-        // Handled by VocabularyModule
-        SRSModule.refresh();
+        if (typeof SRSModule !== 'undefined') SRSModule.refresh();
         break;
       case 'storytelling':
-        // Handled by StorytellingModule
         break;
       case 'fluency':
-        FluencyModule.refresh();
+        if (typeof FluencyModule !== 'undefined') FluencyModule.refresh();
         localStorage.setItem('fluency_visited', '1');
         break;
     }

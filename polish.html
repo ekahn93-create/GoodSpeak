@@ -1,0 +1,890 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Improve your speaking skills with vocabulary building, story-telling practice, and daily word exercises.">
+    <title>EZSpeaks - Polish</title>
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+    <!-- Stylesheets -->
+    <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="css/components.css">
+    <link rel="stylesheet" href="css/responsive.css">
+
+    <!-- Icons -->
+    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+</head>
+<body data-page="fluency">
+    <!-- Navigation Bar -->
+    <nav id="main-nav" class="nav-bar">
+        <div class="nav-brand">
+            <svg width="36" height="32" viewBox="0 0 220 200" xmlns="http://www.w3.org/2000/svg" style="display:inline-block;vertical-align:middle;flex-shrink:0;">
+                <rect x="10" y="10" width="200" height="150" rx="28" ry="28" fill="#4F46E5"/>
+                <polygon points="60,155 30,190 100,155" fill="#4F46E5"/>
+                <polygon points="130,30 85,100 115,100 90,165 155,85 120,85 148,30" fill="white" opacity="0.95"/>
+            </svg>
+            <span class="brand-text">EZSpeaks</span>
+        </div>
+        <ul class="nav-menu">
+            <li><a href="/" class="nav-link" data-view="home"><span class="nav-label">Home</span><span class="nav-sub">Dashboard</span></a></li>
+            <li><a href="/learn" class="nav-link" data-view="vocabulary"><span class="nav-label">Learn</span><span class="nav-sub">Words &amp; Grammar</span></a></li>
+            <li><a href="/polish" class="nav-link" data-view="fluency"><span class="nav-label">Polish</span><span class="nav-sub">Pronunciation &amp; Fluency</span></a></li>
+            <li><a href="/practice" class="nav-link" data-view="storytelling"><span class="nav-label">Practice</span><span class="nav-sub">Storytelling &amp; Challenges</span></a></li>
+            <li><a href="/review" class="nav-link" data-view="progress"><span class="nav-label">Review</span><span class="nav-sub">Progress &amp; Stats</span></a></li>
+        </ul>
+        <div class="nav-auth">
+            <button id="auth-nav-btn" class="auth-nav-btn" title="Sign in to save progress across devices">
+                <span class="auth-nav-icon">&#9786;</span>
+                <span id="auth-nav-label">Sign In</span>
+            </button>
+        </div>
+    </nav>
+
+    <!-- Auth Modal -->
+    <div id="auth-modal" class="auth-modal-overlay" role="dialog" aria-modal="true" aria-labelledby="auth-modal-title">
+        <div class="auth-modal">
+            <button id="auth-modal-close" class="auth-modal-close" aria-label="Close">&times;</button>
+            <h2 id="auth-modal-title">Sign In</h2>
+            <p class="auth-modal-subtitle">Save your progress and access it from any device.</p>
+            <div class="auth-form">
+                <div id="auth-signup-fields" class="auth-signup-fields" style="display:none;">
+                    <div class="auth-name-row">
+                        <div class="auth-name-col">
+                            <label for="auth-first-name">First Name <span class="auth-required">*</span></label>
+                            <input type="text" id="auth-first-name" placeholder="First name" autocomplete="given-name" />
+                        </div>
+                        <div class="auth-name-col">
+                            <label for="auth-last-name">Last Name <span class="auth-required">*</span></label>
+                            <input type="text" id="auth-last-name" placeholder="Last name" autocomplete="family-name" />
+                        </div>
+                    </div>
+                    <label for="auth-nickname">Nickname <span class="auth-optional">(optional)</span></label>
+                    <p class="auth-field-hint">What should we call you?</p>
+                    <input type="text" id="auth-nickname" placeholder="e.g. Ace, Coach, Jazz..." autocomplete="nickname" />
+                    <label for="auth-goal">My main goal <span class="auth-required">*</span></label>
+                    <select id="auth-goal">
+                        <option value="" disabled selected>Select a goal...</option>
+                        <option value="public_speaking">Public speaking</option>
+                        <option value="job_interviews">Job interviews</option>
+                        <option value="everyday_conversation">Everyday conversation</option>
+                        <option value="professional_presence">Professional presence</option>
+                        <option value="general">General improvement</option>
+                    </select>
+                </div>
+                <label for="auth-email">Email</label>
+                <input type="email" id="auth-email" placeholder="you@example.com" autocomplete="email" />
+                <label for="auth-password">Password</label>
+                <div class="auth-password-wrapper">
+                    <input type="password" id="auth-password" placeholder="Password" autocomplete="current-password" />
+                    <button type="button" id="auth-password-toggle" class="auth-password-toggle" aria-label="Show password">
+                        <svg id="auth-eye-icon" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                            <circle cx="12" cy="12" r="3"/>
+                        </svg>
+                    </button>
+                </div>
+                <p id="auth-error" class="auth-error"></p>
+                <button id="auth-submit-btn" class="btn btn-primary auth-submit-btn" data-mode="login">Sign In</button>
+            </div>
+            <p class="auth-switch">
+                <span id="auth-switch-text">Don't have an account?</span>
+                <a href="#" id="auth-switch-link">Sign up</a>
+            </p>
+        </div>
+    </div>
+
+
+    <!-- Main Content Container -->
+    <main id="app-container">
+
+        <section id="fluency-view" class="view active">
+            <div class="view-header">
+                <h1>Polish</h1>
+                <p>Refine your pronunciation, pacing, and fluency before speaking</p>
+            </div>
+
+            <!-- Category Navigation -->
+            <div class="fluency-categories">
+                <button class="category-tab active" data-category="fluency">Fluency Building</button>
+                <button class="category-tab" data-category="eloquence">Eloquence & Expression</button>
+                <button class="category-tab" data-category="pronunciation">Pronunciation & Articulation</button>
+                <button class="category-tab" data-category="readaloud">Read Aloud Mode</button>
+                <button class="category-tab" data-category="shadowing">Shadowing</button>
+            </div>
+
+            <!-- ========== PRONUNCIATION & ARTICULATION CATEGORY ========== -->
+            <div id="pronunciation-category" class="fluency-category">
+
+                <div class="exercise-group">
+                    <div class="exercise-group-label">Sound Practice</div>
+                    <p class="exercise-group-subtitle">Sharpen clarity by drilling difficult sounds and distinctions</p>
+
+                <!-- Tongue Twisters -->
+                <div class="fluency-card">
+                    <div class="fluency-card-header">
+                        <div class="fluency-card-icon"><i data-lucide="wind" style="width:28px;height:28px;stroke:currentColor;"></i></div>
+                        <div>
+                            <h3>Tongue Twisters</h3>
+                            <p class="fluency-card-description">Practice difficult sound combinations at progressive difficulty levels</p>
+                        </div>
+                    </div>
+                    <div class="fluency-card-content" id="tongue-twisters-content">
+                        <div class="difficulty-selector">
+                            <button class="difficulty-btn active" data-difficulty="easy">Easy</button>
+                            <button class="difficulty-btn" data-difficulty="medium">Medium</button>
+                            <button class="difficulty-btn" data-difficulty="hard">Hard</button>
+                        </div>
+                        <div id="tongue-twister-display" class="exercise-display">
+                            <p class="exercise-text">Select a difficulty level to start</p>
+                        </div>
+                        <div class="exercise-controls">
+                            <button class="btn btn-secondary" id="new-tongue-twister-btn">New Twister</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Minimal Pairs -->
+                <div class="fluency-card">
+                    <div class="fluency-card-header">
+                        <div class="fluency-card-icon"><i data-lucide="volume-2" style="width:28px;height:28px;stroke:currentColor;"></i></div>
+                        <div>
+                            <h3>Minimal Pairs Practice</h3>
+                            <p class="fluency-card-description">Distinguish between similar-sounding words</p>
+                        </div>
+                    </div>
+                    <div class="fluency-card-content" id="minimal-pairs-content">
+                        <div id="minimal-pairs-display" class="exercise-display">
+                            <p class="minimal-pair-instruction">Practice saying these words clearly and notice the difference:</p>
+                            <div id="minimal-pair-words" class="minimal-pair-container">
+                                <!-- Pairs will be displayed here -->
+                            </div>
+                        </div>
+                        <div class="exercise-controls">
+                            <button class="btn btn-secondary" id="new-minimal-pair-btn">New Pair</button>
+                        </div>
+                    </div>
+                </div>
+
+                </div><!-- /exercise-group: Sound Practice -->
+
+                <button class="section-next-btn" onclick="document.getElementById('pronunciation-rhythm-group').scrollIntoView({behavior:'smooth', block:'start'})" aria-label="Next section">
+                    <span class="section-next-label">Practice rhythm and word stress patterns</span>
+                    <i data-lucide="chevron-down" style="width:22px;height:22px;stroke:currentColor;"></i>
+                </button>
+
+                <div class="exercise-group" id="pronunciation-rhythm-group">
+                    <div class="exercise-group-label">Rhythm & Stress</div>
+                    <p class="exercise-group-subtitle">Practice natural emphasis and syllable patterns</p>
+
+                <!-- Word Stress Training -->
+                <div class="fluency-card">
+                    <div class="fluency-card-header">
+                        <div class="fluency-card-icon"><i data-lucide="activity" style="width:28px;height:28px;stroke:currentColor;"></i></div>
+                        <div>
+                            <h3>Word Stress Training</h3>
+                            <p class="fluency-card-description">Practice stress patterns in multi-syllable words</p>
+                        </div>
+                    </div>
+                    <div class="fluency-card-content" id="stress-training-content">
+                        <div id="stress-training-display" class="exercise-display">
+                            <div id="stress-word-display">
+                                <!-- Word with stress pattern will be displayed here -->
+                            </div>
+                        </div>
+                        <div class="exercise-controls">
+                            <button class="btn btn-secondary" id="new-stress-word-btn">New Word</button>
+                        </div>
+                    </div>
+                </div>
+                </div><!-- /exercise-group: Rhythm & Stress -->
+
+                <button class="page-next-btn" onclick="FluencyModule.switchCategory('readaloud')" aria-label="Go to Read Aloud">
+                    <span class="page-next-label">Next: Read Aloud — practice reading passages out loud with feedback</span>
+                    <i data-lucide="chevron-down" style="width:22px;height:22px;stroke:currentColor;"></i>
+                </button>
+            </div>
+
+            <!-- ========== FLUENCY BUILDING CATEGORY ========== -->
+            <div id="fluency-category" class="fluency-category active">
+
+                <div class="exercise-group">
+                    <div class="exercise-group-label">Filler Reduction</div>
+                    <p class="exercise-group-subtitle">Eliminate verbal crutches and speak with more intention</p>
+
+                <!-- Filler Word Awareness -->
+                <div class="fluency-card">
+                    <div class="fluency-card-header">
+                        <div class="fluency-card-icon"><i data-lucide="target" style="width:28px;height:28px;stroke:currentColor;"></i></div>
+                        <div>
+                            <h3>Filler Word Reducer</h3>
+                            <p class="fluency-card-description">Speak for 30 seconds — live detection counts every "um," "uh," and "like"</p>
+                        </div>
+                    </div>
+                    <div class="fluency-card-content" id="filler-words-content">
+
+                        <!-- Setup screen -->
+                        <div id="filler-setup">
+                            <div class="info-box">
+                                <h4>Filler Words Being Tracked:</h4>
+                                <div class="filler-words-list">
+                                    <span class="filler-tag">um</span>
+                                    <span class="filler-tag">uh</span>
+                                    <span class="filler-tag">er</span>
+                                    <span class="filler-tag">like</span>
+                                    <span class="filler-tag">you know</span>
+                                    <span class="filler-tag">i mean</span>
+                                    <span class="filler-tag">actually</span>
+                                    <span class="filler-tag">basically</span>
+                                    <span class="filler-tag">literally</span>
+                                    <span class="filler-tag">sort of</span>
+                                    <span class="filler-tag">kind of</span>
+                                    <span class="filler-tag">right</span>
+                                </div>
+                                <p class="tip-text">When you feel the urge to fill silence, pause instead. A confident pause sounds far better than "um."</p>
+                            </div>
+
+                            <div style="margin-bottom: var(--spacing-md);">
+                                <label style="font-weight: 600; display: block; margin-bottom: var(--spacing-sm);">Duration:</label>
+                                <div class="btn-group" id="filler-duration-group">
+                                    <button class="btn btn-secondary active" data-seconds="30">30 sec</button>
+                                    <button class="btn btn-secondary" data-seconds="60">1 min</button>
+                                    <button class="btn btn-secondary" data-seconds="120">2 min</button>
+                                </div>
+                            </div>
+
+                            <button class="btn btn-primary" id="filler-start-btn" style="width: 100%;">Start Exercise</button>
+                        </div>
+
+                        <!-- Active exercise screen -->
+                        <div id="filler-active" style="display:none; text-align:center;">
+                            <div id="filler-topic-box" style="background: var(--bg-hover); border-radius: var(--border-radius-sm); padding: var(--spacing-lg); margin-bottom: var(--spacing-lg);">
+                                <div style="font-size: var(--font-size-sm); color: var(--text-secondary); margin-bottom: var(--spacing-xs); text-transform: uppercase; letter-spacing: 1px;">Your Topic</div>
+                                <div id="filler-topic-text" style="font-size: var(--font-size-xl); font-weight: 600; color: var(--text-primary);"></div>
+                            </div>
+
+                            <div id="filler-countdown" style="font-size: 3.5rem; font-weight: 700; color: var(--primary-color); line-height: 1; margin-bottom: var(--spacing-sm);">30</div>
+                            <div style="font-size: var(--font-size-sm); color: var(--text-secondary); margin-bottom: var(--spacing-lg);">seconds remaining</div>
+
+                            <div style="display: flex; justify-content: center; gap: var(--spacing-xl); margin-bottom: var(--spacing-lg);">
+                                <div>
+                                    <div id="filler-live-count" style="font-size: 2.5rem; font-weight: 700; color: var(--accent-color);">0</div>
+                                    <div style="font-size: var(--font-size-sm); color: var(--text-secondary);">fillers detected</div>
+                                </div>
+                                <div>
+                                    <div id="filler-last-detected" style="font-size: 2.5rem; font-weight: 700; color: var(--text-secondary);">—</div>
+                                    <div style="font-size: var(--font-size-sm); color: var(--text-secondary);">last filler</div>
+                                </div>
+                            </div>
+
+                            <div id="filler-mic-status" style="font-size: var(--font-size-sm); color: var(--text-secondary); margin-bottom: var(--spacing-lg);">Listening...</div>
+                            <button class="btn btn-danger" id="filler-stop-btn" style="width: 100%;">Stop Early</button>
+                        </div>
+
+                        <!-- Results screen -->
+                        <div id="filler-results" style="display:none;">
+                            <div id="filler-score-banner" style="text-align:center; padding: var(--spacing-xl); border-radius: var(--border-radius-sm); margin-bottom: var(--spacing-lg);">
+                                <div id="filler-score-emoji" style="font-size: 3rem; margin-bottom: var(--spacing-sm);"></div>
+                                <div id="filler-score-label" style="font-size: var(--font-size-xl); font-weight: 700; margin-bottom: var(--spacing-xs);"></div>
+                                <div id="filler-score-sub" style="font-size: var(--font-size-md); color: var(--text-secondary);"></div>
+                            </div>
+
+                            <div id="filler-breakdown" style="margin-bottom: var(--spacing-lg);"></div>
+
+                            <div id="filler-tip-box" class="info-box" style="margin-bottom: var(--spacing-lg);"></div>
+
+                            <div style="display: flex; gap: var(--spacing-md);">
+                                <button class="btn btn-primary" id="filler-try-again-btn" style="flex: 1;">Try Again</button>
+                                <button class="btn btn-secondary" id="filler-new-topic-btn" style="flex: 1;">New Topic</button>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+
+                </div><!-- /exercise-group: Filler Reduction -->
+
+                <button class="section-next-btn" onclick="document.getElementById('fluency-pacing-group').scrollIntoView({behavior:'smooth', block:'start'})" aria-label="Next section">
+                    <span class="section-next-label">Work on pacing, transitions, and sentence flow</span>
+                    <i data-lucide="chevron-down" style="width:22px;height:22px;stroke:currentColor;"></i>
+                </button>
+
+                <div class="exercise-group" id="fluency-pacing-group">
+                    <div class="exercise-group-label">Pacing & Flow</div>
+                    <p class="exercise-group-subtitle">Develop rhythm, speed, and seamless transitions</p>
+
+                <!-- Pacing Practice -->
+                <div class="fluency-card">
+                    <div class="fluency-card-header">
+                        <div class="fluency-card-icon"><i data-lucide="timer" style="width:28px;height:28px;stroke:currentColor;"></i></div>
+                        <div>
+                            <h3>Pacing Practice</h3>
+                            <p class="fluency-card-description">Develop optimal speaking speed and rhythm</p>
+                        </div>
+                    </div>
+                    <div class="fluency-card-content" id="pacing-content">
+                        <div class="pacing-info">
+                            <p><strong>Target Speaking Rate:</strong> 150-160 words per minute (conversational)</p>
+                            <p><strong>Presentation Rate:</strong> 120-150 words per minute (clear and authoritative)</p>
+                        </div>
+                        <div id="pacing-exercise-display" class="exercise-display">
+                            <div id="pacing-passage">
+                                <!-- Reading passage will be displayed here -->
+                            </div>
+                        </div>
+                        <div class="exercise-controls">
+                            <button class="btn btn-secondary" id="new-pacing-passage-btn">New Passage</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Smooth Transitions -->
+                <div class="fluency-card">
+                    <div class="fluency-card-header">
+                        <div class="fluency-card-icon"><i data-lucide="arrow-right-circle" style="width:28px;height:28px;stroke:currentColor;"></i></div>
+                        <div>
+                            <h3>Smooth Transitions</h3>
+                            <p class="fluency-card-description">Master transition words to connect ideas seamlessly</p>
+                        </div>
+                    </div>
+                    <div class="fluency-card-content" id="transitions-content">
+                        <div class="transition-categories">
+                            <div class="transition-group">
+                                <h4>Addition</h4>
+                                <div class="transition-words">
+                                    <span class="transition-word">Furthermore</span>
+                                    <span class="transition-word">Moreover</span>
+                                    <span class="transition-word">Additionally</span>
+                                    <span class="transition-word">In addition</span>
+                                </div>
+                            </div>
+                            <div class="transition-group">
+                                <h4>Contrast</h4>
+                                <div class="transition-words">
+                                    <span class="transition-word">However</span>
+                                    <span class="transition-word">Nevertheless</span>
+                                    <span class="transition-word">On the other hand</span>
+                                    <span class="transition-word">Conversely</span>
+                                </div>
+                            </div>
+                            <div class="transition-group">
+                                <h4>Cause & Effect</h4>
+                                <div class="transition-words">
+                                    <span class="transition-word">Therefore</span>
+                                    <span class="transition-word">Consequently</span>
+                                    <span class="transition-word">As a result</span>
+                                    <span class="transition-word">Thus</span>
+                                </div>
+                            </div>
+                            <div class="transition-group">
+                                <h4>Time</h4>
+                                <div class="transition-words">
+                                    <span class="transition-word">Meanwhile</span>
+                                    <span class="transition-word">Subsequently</span>
+                                    <span class="transition-word">Previously</span>
+                                    <span class="transition-word">Ultimately</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div id="transitions-exercise-display" class="exercise-display">
+                            <p class="exercise-prompt">Practice: Connect these two ideas using an appropriate transition word</p>
+                            <div id="transition-exercise-content">
+                                <!-- Exercise sentences will be displayed here -->
+                            </div>
+                        </div>
+                        <div class="exercise-controls">
+                            <button class="btn btn-secondary" id="new-transition-exercise-btn">New Exercise</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Sentence Combining -->
+                <div class="fluency-card">
+                    <div class="fluency-card-header">
+                        <div class="fluency-card-icon"><i data-lucide="git-merge" style="width:28px;height:28px;stroke:currentColor;"></i></div>
+                        <div>
+                            <h3>Sentence Combining</h3>
+                            <p class="fluency-card-description">Transform simple sentences into complex, flowing structures</p>
+                        </div>
+                    </div>
+                    <div class="fluency-card-content" id="sentence-combining-content">
+                        <p style="color: var(--text-secondary); margin-bottom: var(--spacing-md);">
+                            <strong>Challenge:</strong> Combine these simple sentences into one sophisticated sentence.
+                        </p>
+                        <div id="combining-exercise-display" class="exercise-display">
+                            <div id="simple-sentences">
+                                <!-- Simple sentences will be displayed here -->
+                            </div>
+                        </div>
+                        <div class="practice-area">
+                            <textarea
+                                id="combining-answer-input"
+                                placeholder="Type your combined sentence here or practice speaking it aloud..."
+                                rows="5">
+                            </textarea>
+                        </div>
+                        <div id="fluency-combining-hint-section" style="display: none; margin-bottom: var(--spacing-md);">
+                            <div style="background: var(--bg-card); padding: var(--spacing-md); border-radius: var(--border-radius-sm); border-left: 4px solid var(--secondary-color);">
+                                <p style="font-weight: 600; color: var(--text-secondary); margin-bottom: var(--spacing-xs);">Hint:</p>
+                                <p id="fluency-combining-hint" style="margin: 0; color: var(--text-primary);"></p>
+                            </div>
+                        </div>
+                        <div id="fluency-combining-example-section" style="display: none; margin-bottom: var(--spacing-md);">
+                            <div style="background: var(--bg-hover); padding: var(--spacing-md); border-radius: var(--border-radius-sm); border-left: 4px solid var(--primary-color);">
+                                <p style="font-weight: 600; color: var(--text-secondary); margin-bottom: var(--spacing-xs);">Example Solution:</p>
+                                <p id="fluency-combining-example" style="margin: 0; color: var(--text-primary); font-style: italic;"></p>
+                            </div>
+                        </div>
+                        <div class="exercise-controls">
+                            <button class="btn btn-secondary" id="show-fluency-combining-hint-btn">Show Hint</button>
+                            <button class="btn btn-secondary" id="show-fluency-combining-example-btn">Show Example</button>
+                            <button class="btn btn-primary" id="new-fluency-combining-exercise-btn">New Exercise</button>
+                        </div>
+                    </div>
+                </div>
+                </div><!-- /exercise-group: Pacing & Flow -->
+
+                <button class="page-next-btn" onclick="FluencyModule.switchCategory('eloquence')" aria-label="Go to Eloquence">
+                    <span class="page-next-label">Next: Eloquence &amp; Expression — elevate your word choice and style</span>
+                    <i data-lucide="chevron-down" style="width:22px;height:22px;stroke:currentColor;"></i>
+                </button>
+            </div>
+
+            <!-- ========== ELOQUENCE & EXPRESSION CATEGORY ========== -->
+            <div id="eloquence-category" class="fluency-category">
+
+                <div class="exercise-group">
+                    <div class="exercise-group-label">Word Choice</div>
+                    <p class="exercise-group-subtitle">Elevate your vocabulary with more precise and powerful words</p>
+
+                <!-- Synonym Swapper -->
+                <div class="fluency-card">
+                    <div class="fluency-card-header">
+                        <div class="fluency-card-icon"><i data-lucide="replace" style="width:28px;height:28px;stroke:currentColor;"></i></div>
+                        <div>
+                            <h3>Synonym Swapper</h3>
+                            <p class="fluency-card-description">Replace common words with more sophisticated alternatives</p>
+                        </div>
+                    </div>
+                    <div class="fluency-card-content" id="synonym-content">
+                        <div id="synonym-exercise-display" class="exercise-display">
+                            <div id="synonym-word-display">
+                                <!-- Common word and alternatives will be displayed here -->
+                            </div>
+                        </div>
+                        <div class="exercise-controls">
+                            <button class="btn btn-secondary" id="new-synonym-btn">New Word</button>
+                        </div>
+                    </div>
+                </div>
+
+                </div><!-- /exercise-group: Word Choice -->
+
+                <button class="section-next-btn" onclick="document.getElementById('eloquence-figurative-group').scrollIntoView({behavior:'smooth', block:'start'})" aria-label="Next section">
+                    <span class="section-next-label">Master figurative language — metaphors, similes, and more</span>
+                    <i data-lucide="chevron-down" style="width:22px;height:22px;stroke:currentColor;"></i>
+                </button>
+
+                <div class="exercise-group" id="eloquence-figurative-group">
+                    <div class="exercise-group-label">Figurative Language</div>
+                    <p class="exercise-group-subtitle">Master expressions and devices that make speech memorable</p>
+
+                <!-- Idioms & Expressions -->
+                <div class="fluency-card">
+                    <div class="fluency-card-header">
+                        <div class="fluency-card-icon"><i data-lucide="quote" style="width:28px;height:28px;stroke:currentColor;"></i></div>
+                        <div>
+                            <h3>Idioms & Expressions</h3>
+                            <p class="fluency-card-description">Learn natural phrases for everyday conversation</p>
+                        </div>
+                    </div>
+                    <div class="fluency-card-content" id="idioms-content">
+                        <div id="idiom-display" class="exercise-display">
+                            <div id="idiom-content-display">
+                                <!-- Idiom and meaning will be displayed here -->
+                            </div>
+                        </div>
+                        <div class="exercise-controls">
+                            <button class="btn btn-secondary" id="new-idiom-btn">New Idiom</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Rhetorical Devices -->
+                <div class="fluency-card">
+                    <div class="fluency-card-header">
+                        <div class="fluency-card-icon"><i data-lucide="feather" style="width:28px;height:28px;stroke:currentColor;"></i></div>
+                        <div>
+                            <h3>Rhetorical Devices</h3>
+                            <p class="fluency-card-description">Master metaphors, similes, and other expressive techniques</p>
+                        </div>
+                    </div>
+                    <div class="fluency-card-content" id="rhetorical-content">
+                        <div class="rhetorical-types">
+                            <button class="rhetorical-btn active" data-type="metaphor">Metaphor</button>
+                            <button class="rhetorical-btn" data-type="simile">Simile</button>
+                            <button class="rhetorical-btn" data-type="analogy">Analogy</button>
+                            <button class="rhetorical-btn" data-type="alliteration">Alliteration</button>
+                        </div>
+                        <div id="rhetorical-display" class="exercise-display">
+                            <div id="rhetorical-content-display">
+                                <!-- Rhetorical device examples will be displayed here -->
+                            </div>
+                        </div>
+                        <div class="exercise-controls">
+                            <button class="btn btn-secondary" id="new-rhetorical-btn">New Example</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Power Words -->
+                <div class="fluency-card">
+                    <div class="fluency-card-header">
+                        <div class="fluency-card-icon"><i data-lucide="zap" style="width:28px;height:28px;stroke:currentColor;"></i></div>
+                        <div>
+                            <h3>Power Words Collection</h3>
+                            <p class="fluency-card-description">Impactful words that add emphasis and emotion</p>
+                        </div>
+                    </div>
+                    <div class="fluency-card-content" id="power-words-content">
+                        <div class="power-words-categories">
+                            <button class="power-category-btn active" data-category="persuasive">Persuasive</button>
+                            <button class="power-category-btn" data-category="emotional">Emotional</button>
+                            <button class="power-category-btn" data-category="confident">Confident</button>
+                            <button class="power-category-btn" data-category="descriptive">Descriptive</button>
+                        </div>
+                        <div id="power-words-display" class="power-words-grid">
+                            <!-- Power words will be displayed here -->
+                        </div>
+                    </div>
+                </div>
+                </div><!-- /exercise-group: Figurative Language -->
+
+                <button class="page-next-btn" onclick="FluencyModule.switchCategory('pronunciation')" aria-label="Go to Pronunciation">
+                    <span class="page-next-label">Next: Pronunciation &amp; Articulation — sharpen your sounds and rhythm</span>
+                    <i data-lucide="chevron-down" style="width:22px;height:22px;stroke:currentColor;"></i>
+                </button>
+            </div>
+
+            <!-- ========== READ ALOUD MODE CATEGORY ========== -->
+            <div id="readaloud-category" class="fluency-category">
+                <div class="fluency-card">
+                    <div class="fluency-card-header">
+                        <div class="fluency-card-icon"><i data-lucide="book-open" style="width:28px;height:28px;stroke:currentColor;"></i></div>
+                        <div>
+                            <h3>Read Aloud Mode</h3>
+                            <p class="fluency-card-description">Paste any text and read it aloud — get live WPM, filler word counts, and delivery feedback</p>
+                        </div>
+                    </div>
+                    <div class="fluency-card-content" id="readaloud-content">
+
+                        <!-- Text Input -->
+                        <div id="readaloud-setup">
+                            <label style="font-weight:600; display:block; margin-bottom: var(--spacing-sm);">Paste your text below:</label>
+                            <textarea id="readaloud-text-input" rows="6"
+                                placeholder="Paste a speech, article, email, or any text you want to practice reading aloud..."
+                                style="width:100%; padding: var(--spacing-md); font-size: var(--font-size-base); border: 1px solid var(--border-color); border-radius: var(--border-radius-sm); resize: vertical; font-family: inherit; line-height: 1.6;"></textarea>
+                            <div style="margin-top: var(--spacing-sm); display:flex; gap: var(--spacing-sm); align-items: center; flex-wrap: wrap;">
+                                <span style="font-size: var(--font-size-sm); color: var(--text-secondary);">
+                                    Est. reading time: <strong id="readaloud-est-time">—</strong>
+                                </span>
+                            </div>
+                            <div class="exercise-controls" style="margin-top: var(--spacing-md);">
+                                <button class="btn btn-primary" id="readaloud-start-btn">Start Reading</button>
+                                <button class="btn btn-secondary" id="readaloud-sample-btn">Load Sample Text</button>
+                            </div>
+                            <div id="readaloud-unsupported-msg" style="display:none; margin-top: var(--spacing-md); padding: var(--spacing-md); background: var(--accent-color); color: white; border-radius: var(--border-radius-sm);">
+                                Read Aloud Mode requires Chrome or Edge for speech recognition.
+                            </div>
+                        </div>
+
+                        <!-- Active Reading Screen -->
+                        <div id="readaloud-active" style="display:none;">
+                            <div class="readaloud-script-box" id="readaloud-script-display">
+                                <!-- Highlighted script rendered here -->
+                            </div>
+                            <div class="readaloud-live-stats">
+                                <div class="readaloud-stat">
+                                    <div class="readaloud-stat-num" id="readaloud-wpm">—</div>
+                                    <div class="readaloud-stat-label">WPM</div>
+                                </div>
+                                <div class="readaloud-stat">
+                                    <div class="readaloud-stat-num" id="readaloud-fillers">0</div>
+                                    <div class="readaloud-stat-label">Filler Words</div>
+                                </div>
+                                <div class="readaloud-stat">
+                                    <div class="readaloud-stat-num" id="readaloud-elapsed">0:00</div>
+                                    <div class="readaloud-stat-label">Elapsed</div>
+                                </div>
+                            </div>
+                            <div style="margin-top: var(--spacing-sm); font-size: var(--font-size-sm); color: var(--text-secondary); text-align: center;" id="readaloud-status"></div>
+                            <div class="exercise-controls" style="margin-top: var(--spacing-md);">
+                                <button class="btn btn-secondary" id="readaloud-stop-btn">Stop &amp; See Results</button>
+                            </div>
+                        </div>
+
+                        <!-- Results Screen -->
+                        <div id="readaloud-results" style="display:none;">
+                            <h4 style="margin-bottom: var(--spacing-md);">Session Results</h4>
+                            <div id="readaloud-results-grid" style="display:grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: var(--spacing-md); margin-bottom: var(--spacing-lg);"></div>
+                            <div id="readaloud-filler-breakdown" style="margin-bottom: var(--spacing-lg);"></div>
+                            <div class="exercise-controls">
+                                <button class="btn btn-primary" id="readaloud-retry-btn">Try Again</button>
+                                <button class="btn btn-secondary" id="readaloud-new-btn">New Text</button>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+
+                <button class="page-next-btn" onclick="FluencyModule.switchCategory('shadowing')" aria-label="Go to Shadowing">
+                    <span class="page-next-label">Next: Shadowing — mimic native rhythm and emphasis</span>
+                    <i data-lucide="chevron-down" style="width:22px;height:22px;stroke:currentColor;"></i>
+                </button>
+            </div>
+
+            <!-- ========== SHADOWING CATEGORY ========== -->
+            <div id="shadowing-category" class="fluency-category">
+                <div class="fluency-card">
+                    <div class="fluency-card-header">
+                        <div class="fluency-card-icon"><i data-lucide="copy" style="width:28px;height:28px;stroke:currentColor;"></i></div>
+                        <div>
+                            <h3>Shadowing Exercises</h3>
+                            <p class="fluency-card-description">Read along with famous speeches — match the rhythm, stress, and pauses of great speakers</p>
+                        </div>
+                    </div>
+                    <div class="fluency-card-content" id="shadowing-content">
+
+                        <!-- Passage Selector -->
+                        <div class="shadowing-selector" id="shadowing-selector">
+                            <h4 style="margin-bottom: var(--spacing-md);">Choose a passage:</h4>
+                            <div id="shadowing-passage-list" class="shadowing-passage-list">
+                                <!-- Rendered by JS -->
+                            </div>
+                        </div>
+
+                        <!-- Active Shadowing View -->
+                        <div id="shadowing-active" style="display:none;">
+                            <div class="shadowing-controls-top">
+                                <button class="btn btn-secondary btn-sm" id="shadowing-back-btn">← Back</button>
+                                <span class="shadowing-passage-title" id="shadowing-passage-title"></span>
+                            </div>
+                            <div class="shadowing-legend">
+                                <span class="shadow-key shadow-stress">BOLD = stress this word</span>
+                                <span class="shadow-key shadow-pause">/ = pause here</span>
+                                <span class="shadow-key shadow-slow">~ = slow down</span>
+                            </div>
+                            <div class="shadowing-script" id="shadowing-script">
+                                <!-- Marked-up passage rendered here -->
+                            </div>
+                            <div style="margin-top: var(--spacing-lg); color: var(--text-secondary); font-size: var(--font-size-sm);">
+                                <strong>How to shadow:</strong> Listen (use TTS button), then read aloud simultaneously trying to match the natural rhythm and emphasis shown above.
+                            </div>
+                            <div class="exercise-controls" style="margin-top: var(--spacing-md);">
+                                <button class="btn btn-primary" id="shadowing-tts-btn">Hear it Read Aloud</button>
+                                <button class="btn btn-secondary" id="shadowing-tts-stop-btn" style="display:none;">Stop</button>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+
+                <button class="page-next-btn" onclick="Router.navigateTo('storytelling')" aria-label="Go to Practice">
+                    <span class="page-next-label">Done with Polish — put your skills to work in Practice</span>
+                    <i data-lucide="chevron-down" style="width:22px;height:22px;stroke:currentColor;"></i>
+                </button>
+            </div>
+
+        </section>
+
+    </main>
+
+    <!-- Modal Overlay for Dialogs -->
+    <div id="modal-overlay" class="modal-overlay">
+        <div class="modal-content">
+            <button class="modal-close">&times;</button>
+            <div id="modal-body"></div>
+        </div>
+    </div>
+
+    <!-- Toast Notifications Container -->
+    <div id="toast-container" class="toast-container"></div>
+
+    <!-- JavaScript Files -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+    <script src="js/config.js"></script>
+    <script src="js/storage.js"></script>
+    <script src="js/router.js"></script>
+    <script src="js/data/vocabularyData.js"></script>
+    <script src="js/data/storyPrompts.js"></script>
+    <script src="js/components/modal.js"></script>
+    <script src="js/components/progressBar.js"></script>
+    <script src="js/modules/nudge.js"></script>
+    <script src="js/modules/api-service.js"></script>
+    <script src="js/modules/vocabulary.js"></script>
+    <script src="js/modules/storytelling.js"></script>
+    <script src="js/modules/wordBank.js"></script>
+    <script src="js/modules/grammar.js"></script>
+    <script src="js/modules/fluency.js"></script>
+    <script src="js/modules/webSpeech.js"></script>
+    <script src="js/modules/onboarding.js"></script>
+    <script src="js/modules/dailyDrill.js"></script>
+    <script src="js/modules/readAloud.js"></script>
+    <script src="js/modules/srs.js"></script>
+    <script src="js/modules/recordings.js"></script>
+    <script src="js/modules/shadowing.js"></script>
+    <script src="js/modules/progressCharts.js"></script>
+    <script src="js/modules/auth.js"></script>
+    <script src="js/modules/sync.js"></script>
+    <script src="js/app.js"></script>
+
+
+    <script>
+      // Initialize Lucide icons after DOM is ready
+      if (typeof lucide !== 'undefined') lucide.createIcons();
+    </script>
+
+    <!-- Footer Modals -->
+    <div id="footer-modal-overlay" class="footer-modal-overlay" role="dialog" aria-modal="true" hidden>
+      <div class="footer-modal">
+        <button class="footer-modal-close" id="footer-modal-close" aria-label="Close">&times;</button>
+        <h2 id="footer-modal-title"></h2>
+        <div id="footer-modal-body"></div>
+      </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="site-footer">
+      <div class="footer-inner">
+        <div class="footer-brand">
+          <svg width="20" height="18" viewBox="0 0 220 200" xmlns="http://www.w3.org/2000/svg" style="display:inline-block;vertical-align:middle;flex-shrink:0;">
+            <rect x="10" y="10" width="200" height="150" rx="28" ry="28" fill="#4F46E5"/>
+            <polygon points="60,155 30,190 100,155" fill="#4F46E5"/>
+            <polygon points="130,30 85,100 115,100 90,165 155,85 120,85 148,30" fill="white" opacity="0.95"/>
+          </svg>
+          <span class="footer-brand-name">EZSpeaks</span>
+          <span class="footer-tagline">Speak more eloquently, every day.</span>
+        </div>
+
+        <!-- Quick Stats -->
+        <div class="footer-stats">
+          <span class="footer-stat"><span id="footer-words-learned">0</span> words learned</span>
+          <span class="footer-stat-divider">·</span>
+          <span class="footer-stat"><span id="footer-streak">0</span> day streak</span>
+        </div>
+
+        <!-- Links row -->
+        <div class="footer-links">
+          <button class="footer-link" id="footer-share-btn">Share</button>
+          <button class="footer-link" data-footer-modal="about">About</button>
+          <button class="footer-link" data-footer-modal="privacy">Privacy</button>
+          <button class="footer-link" data-footer-modal="terms">Terms</button>
+          <a href="mailto:evankahn93@gmail.com?subject=EZSpeaks Feedback" class="footer-link footer-link--feedback">Feedback</a>
+        </div>
+
+        <!-- Tip + copyright -->
+        <p class="footer-tip">Pro tip: use the tabs at the top to jump between sections anytime.</p>
+        <p class="footer-copy">&copy; <span id="footer-year"></span> EZSpeaks. All rights reserved. &nbsp;v1.0</p>
+      </div>
+    </footer>
+
+    <script>
+      (function() {
+        // Year
+        document.getElementById('footer-year').textContent = new Date().getFullYear();
+
+        // Quick stats — read from StorageManager if available
+        function updateFooterStats() {
+          try {
+            var data = (typeof StorageManager !== 'undefined') ? StorageManager.load() : null;
+            if (data) {
+              var words = (data.vocabulary && data.vocabulary.learned) ? data.vocabulary.learned.length : 0;
+              var streak = (data.stats && data.stats.practiceStreak) || (data.dailyWord && data.dailyWord.currentStreak) || 0;
+              document.getElementById('footer-words-learned').textContent = words;
+              document.getElementById('footer-streak').textContent = streak;
+            }
+          } catch(e) {}
+        }
+        // Run on load and whenever views change (reuses existing router event)
+        updateFooterStats();
+        window.addEventListener('hashchange', updateFooterStats);
+
+        // Modal content
+        var modals = {
+          about: {
+            title: 'About EZSpeaks',
+            body: '<p>EZSpeaks is a personal speech and vocabulary coach designed to help you speak more eloquently every day.</p><p>Build your vocabulary with spaced repetition, sharpen your pronunciation, tell better stories, and track your growth — all in one place.</p><p>Built for anyone who wants to communicate with more confidence and clarity.</p>'
+          },
+          privacy: {
+            title: 'Privacy Policy',
+            body: '<p class="footer-modal-coming-soon">A full Privacy Policy is coming soon.</p><p>For now: your data is stored locally on your device. If you sign in, your progress is saved to a secure cloud database. We do not sell or share your data with third parties.</p>'
+          },
+          terms: {
+            title: 'Terms of Use',
+            body: '<p class="footer-modal-coming-soon">Full Terms of Use are coming soon.</p><p>By using EZSpeaks you agree to use it for personal, non-commercial purposes. The app is provided as-is without warranty.</p>'
+          }
+        };
+
+        var overlay = document.getElementById('footer-modal-overlay');
+        var modalTitle = document.getElementById('footer-modal-title');
+        var modalBody = document.getElementById('footer-modal-body');
+
+        function openFooterModal(key) {
+          var m = modals[key];
+          if (!m) return;
+          modalTitle.textContent = m.title;
+          modalBody.innerHTML = m.body;
+          overlay.hidden = false;
+        }
+
+        function closeFooterModal() {
+          overlay.hidden = true;
+        }
+
+        document.getElementById('footer-modal-close').addEventListener('click', closeFooterModal);
+        overlay.addEventListener('click', function(e) {
+          if (e.target === overlay) closeFooterModal();
+        });
+        document.addEventListener('keydown', function(e) {
+          if (e.key === 'Escape' && !overlay.hidden) closeFooterModal();
+        });
+
+        document.querySelectorAll('[data-footer-modal]').forEach(function(btn) {
+          btn.addEventListener('click', function() {
+            openFooterModal(this.getAttribute('data-footer-modal'));
+          });
+        });
+
+        // Share — copy to clipboard
+        document.getElementById('footer-share-btn').addEventListener('click', function() {
+          var btn = this;
+          var url = window.location.origin + window.location.pathname;
+          if (navigator.clipboard && navigator.clipboard.writeText) {
+            navigator.clipboard.writeText(url).then(function() {
+              btn.textContent = 'Copied!';
+              setTimeout(function() { btn.textContent = 'Share'; }, 2000);
+            });
+          } else {
+            // Fallback
+            var ta = document.createElement('textarea');
+            ta.value = url;
+            ta.style.position = 'fixed';
+            ta.style.opacity = '0';
+            document.body.appendChild(ta);
+            ta.select();
+            document.execCommand('copy');
+            document.body.removeChild(ta);
+            btn.textContent = 'Copied!';
+            setTimeout(function() { btn.textContent = 'Share'; }, 2000);
+          }
+        });
+      })();
+    </script>
+</body>
+</html>
+</body>
+</html>
