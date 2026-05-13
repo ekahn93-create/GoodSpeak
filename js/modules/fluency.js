@@ -40,6 +40,14 @@ const FluencyModule = (function() {
   let fillerStartBtn = null;
   let pacingPassage = null;
   let newPacingPassageBtn = null;
+  let pacingStartBtn = null;
+  let pacingDoneBtn = null;
+  let pacingTimer = null;
+  let pacingStartTime = null;
+  let pacingWordCount = 0;
+  let pacingRecognition = null;
+  let pacingSpokenWords = 0;
+  let pacingUsingSpeech = false;
   let transitionExerciseContent = null;
   let newTransitionExerciseBtn = null;
   let simpleSentences = null;
@@ -512,6 +520,16 @@ const FluencyModule = (function() {
       newPacingPassageBtn.addEventListener('click', showNewPacingPassage);
     }
 
+    pacingStartBtn = document.getElementById('pacing-start-btn');
+    pacingDoneBtn = document.getElementById('pacing-done-btn');
+
+    if (pacingStartBtn) {
+      pacingStartBtn.addEventListener('click', startPacingTimer);
+    }
+    if (pacingDoneBtn) {
+      pacingDoneBtn.addEventListener('click', stopPacingTimer);
+    }
+
     if (newTransitionExerciseBtn) {
       newTransitionExerciseBtn.addEventListener('click', showNewTransitionExercise);
     }
@@ -959,13 +977,146 @@ const FluencyModule = (function() {
   function showNewPacingPassage() {
     if (!pacingPassage) return;
 
+    // Reset timer state on new passage
+    if (pacingTimer) { clearInterval(pacingTimer); pacingTimer = null; }
+    document.getElementById('pacing-timer-display').style.display = 'none';
+    document.getElementById('pacing-results').style.display = 'none';
+    if (pacingStartBtn) { pacingStartBtn.style.display = ''; pacingStartBtn.textContent = 'Start Timer'; pacingStartBtn.disabled = false; }
+    if (pacingDoneBtn) { pacingDoneBtn.style.display = 'none'; }
+
     const randomPassage = pacingPassages[Math.floor(Math.random() * pacingPassages.length)];
-    const wordCount = randomPassage.split(' ').length;
+    pacingWordCount = randomPassage.split(/\s+/).length;
+    const targetSecs = Math.round(pacingWordCount / 2.5); // 150 WPM
 
     pacingPassage.innerHTML = `
       <p class="exercise-text">${randomPassage}</p>
-      <p class="pacing-info"><strong>Word count:</strong> ${wordCount} words | <strong>Target time:</strong> ${Math.round(wordCount / 2.5)} seconds (150 WPM)</p>
+      <p class="pacing-info" style="margin-top: var(--spacing-sm);"><strong>${pacingWordCount} words</strong> &mdash; target: ~${targetSecs}s at 150 WPM</p>
     `;
+  }
+
+  function startPacingTimer() {
+    if (pacingTimer) return;
+    if (pacingStartBtn) pacingStartBtn.disabled = true;
+    pacingStartTime = Date.now();
+    pacingSpokenWords = 0;
+    pacingUsingSpeech = false;
+    document.getElementById('pacing-results').style.display = 'none';
+    document.getElementById('pacing-timer-display').style.display = 'block';
+    document.getElementById('pacing-live-words').textContent = '0';
+    document.getElementById('pacing-mic-status').textContent = 'Listening...';
+    if (pacingStartBtn) pacingStartBtn.style.display = 'none';
+    if (pacingDoneBtn) { pacingDoneBtn.style.display = ''; pacingDoneBtn.disabled = false; }
+
+    pacingTimer = setInterval(() => {
+      const elapsed = (Date.now() - pacingStartTime) / 1000;
+      const el = document.getElementById('pacing-elapsed');
+      if (el) el.textContent = elapsed.toFixed(1) + 's';
+    }, 100);
+
+    // Speech recognition to count spoken words
+    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+    if (SpeechRecognition) {
+      pacingRecognition = new SpeechRecognition();
+      pacingRecognition.continuous = true;
+      pacingRecognition.interimResults = true;
+      pacingRecognition.lang = 'en-US';
+      pacingUsingSpeech = true;
+
+      let finalTranscript = '';
+
+      pacingRecognition.onresult = function(event) {
+        let interim = '';
+        for (let i = event.resultIndex; i < event.results.length; i++) {
+          const transcript = event.results[i][0].transcript;
+          if (event.results[i].isFinal) {
+            finalTranscript += transcript + ' ';
+          } else {
+            interim += transcript;
+          }
+        }
+        // Count words from final transcript + current interim
+        const allText = (finalTranscript + interim).trim();
+        pacingSpokenWords = allText ? allText.split(/\s+/).length : 0;
+        const liveEl = document.getElementById('pacing-live-words');
+        if (liveEl) liveEl.textContent = pacingSpokenWords;
+      };
+
+      pacingRecognition.onerror = function(event) {
+        if (event.error === 'not-allowed' || event.error === 'service-not-allowed') {
+          pacingUsingSpeech = false;
+          const micEl = document.getElementById('pacing-mic-status');
+          if (micEl) micEl.textContent = 'Mic access denied — stop timer when done reading';
+        }
+      };
+
+      pacingRecognition.onend = function() {
+        if (pacingTimer) {
+          try { pacingRecognition.start(); } catch(e) {}
+        }
+      };
+
+      try {
+        pacingRecognition.start();
+      } catch(e) {
+        pacingUsingSpeech = false;
+        const micEl = document.getElementById('pacing-mic-status');
+        if (micEl) micEl.textContent = 'Speech recognition unavailable — stop timer when done reading';
+      }
+    } else {
+      const micEl = document.getElementById('pacing-mic-status');
+      if (micEl) micEl.textContent = 'Speech recognition not supported — stop timer when done reading';
+    }
+  }
+
+  function stopPacingTimer() {
+    if (!pacingTimer) return;
+    clearInterval(pacingTimer);
+    pacingTimer = null;
+
+    if (pacingRecognition) {
+      try { pacingRecognition.stop(); } catch(e) {}
+      pacingRecognition = null;
+    }
+
+    const elapsedSecs = (Date.now() - pacingStartTime) / 1000;
+    // Use spoken word count if speech was active and heard something, else fall back to passage word count
+    const wordsForCalc = (pacingUsingSpeech && pacingSpokenWords > 5) ? pacingSpokenWords : pacingWordCount;
+    const wpm = Math.round((wordsForCalc / elapsedSecs) * 60);
+
+    document.getElementById('pacing-timer-display').style.display = 'none';
+    if (pacingDoneBtn) pacingDoneBtn.style.display = 'none';
+    if (pacingStartBtn) { pacingStartBtn.style.display = ''; pacingStartBtn.textContent = 'Try Again'; pacingStartBtn.disabled = false; }
+
+    // Determine feedback
+    let bannerColor, label, sub;
+    if (wpm < 100) {
+      bannerColor = '#f8d7da';
+      label = 'Too slow';
+      sub = 'Try to speak more naturally — aim for 120+ WPM.';
+    } else if (wpm < 120) {
+      bannerColor = '#fff3cd';
+      label = 'A bit slow';
+      sub = 'Good for a deliberate presentation pace. Push slightly faster for conversational flow.';
+    } else if (wpm <= 160) {
+      bannerColor = '#d4edda';
+      label = 'Right on target';
+      sub = wpm <= 150 ? 'Solid presentation pace — clear and authoritative.' : 'Natural conversational pace — well done.';
+    } else if (wpm <= 180) {
+      bannerColor = '#fff3cd';
+      label = 'A bit fast';
+      sub = 'Slightly above conversational range. Try slowing down to let ideas land.';
+    } else {
+      bannerColor = '#f8d7da';
+      label = 'Too fast';
+      sub = 'Slow down — your audience needs time to absorb what you\'re saying.';
+    }
+
+    const banner = document.getElementById('pacing-result-banner');
+    banner.style.background = bannerColor;
+    document.getElementById('pacing-result-wpm').textContent = wpm + ' WPM';
+    document.getElementById('pacing-result-label').textContent = label;
+    document.getElementById('pacing-result-sub').textContent = sub;
+    document.getElementById('pacing-results').style.display = 'block';
   }
 
   /**

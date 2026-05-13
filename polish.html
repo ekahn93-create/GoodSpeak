@@ -283,6 +283,24 @@
 
                             <div id="filler-mic-status" style="font-size: var(--font-size-sm); color: var(--text-secondary); margin-bottom: var(--spacing-lg);">Listening...</div>
                             <button class="btn btn-danger" id="filler-stop-btn" style="width: 100%;">Stop Early</button>
+
+                            <div style="margin-top: var(--spacing-lg); text-align: left;">
+                                <div style="font-size: var(--font-size-sm); font-weight: 600; color: var(--text-secondary); margin-bottom: var(--spacing-sm); text-transform: uppercase; letter-spacing: 1px;">Words to Avoid</div>
+                                <div class="filler-words-list">
+                                    <span class="filler-tag">um</span>
+                                    <span class="filler-tag">uh</span>
+                                    <span class="filler-tag">er</span>
+                                    <span class="filler-tag">like</span>
+                                    <span class="filler-tag">you know</span>
+                                    <span class="filler-tag">i mean</span>
+                                    <span class="filler-tag">actually</span>
+                                    <span class="filler-tag">basically</span>
+                                    <span class="filler-tag">literally</span>
+                                    <span class="filler-tag">sort of</span>
+                                    <span class="filler-tag">kind of</span>
+                                    <span class="filler-tag">right</span>
+                                </div>
+                            </div>
                         </div>
 
                         <!-- Results screen -->
@@ -327,16 +345,43 @@
                         </div>
                     </div>
                     <div class="fluency-card-content" id="pacing-content">
-                        <div class="pacing-info">
-                            <p><strong>Target Speaking Rate:</strong> 150-160 words per minute (conversational)</p>
-                            <p><strong>Presentation Rate:</strong> 120-150 words per minute (clear and authoritative)</p>
+                        <div class="info-box" style="margin-bottom: var(--spacing-md);">
+                            <p style="margin: 0 0 var(--spacing-xs);"><strong>Conversational:</strong> 150–160 WPM</p>
+                            <p style="margin: 0;"><strong>Presentation:</strong> 120–150 WPM</p>
                         </div>
-                        <div id="pacing-exercise-display" class="exercise-display">
-                            <div id="pacing-passage">
-                                <!-- Reading passage will be displayed here -->
+
+                        <!-- Passage display -->
+                        <div id="pacing-exercise-display" class="exercise-display" style="margin-bottom: var(--spacing-md);">
+                            <div id="pacing-passage"></div>
+                        </div>
+
+                        <!-- Timer display (shown while running) -->
+                        <div id="pacing-timer-display" style="display:none; text-align:center; margin-bottom: var(--spacing-lg);">
+                            <div style="display:flex; justify-content:center; gap: var(--spacing-xl); margin-bottom: var(--spacing-sm);">
+                                <div>
+                                    <div id="pacing-elapsed" style="font-size: 3rem; font-weight: 700; color: var(--primary-color); line-height: 1;">0.0s</div>
+                                    <div style="font-size: var(--font-size-sm); color: var(--text-secondary);">elapsed</div>
+                                </div>
+                                <div>
+                                    <div id="pacing-live-words" style="font-size: 3rem; font-weight: 700; color: var(--accent-color); line-height: 1;">0</div>
+                                    <div style="font-size: var(--font-size-sm); color: var(--text-secondary);">words heard</div>
+                                </div>
+                            </div>
+                            <div id="pacing-mic-status" style="font-size: var(--font-size-sm); color: var(--text-secondary);">Listening...</div>
+                        </div>
+
+                        <!-- Results (shown after done) -->
+                        <div id="pacing-results" style="display:none; margin-bottom: var(--spacing-lg);">
+                            <div id="pacing-result-banner" style="text-align:center; padding: var(--spacing-lg); border-radius: var(--border-radius-sm); margin-bottom: var(--spacing-md);">
+                                <div id="pacing-result-wpm" style="font-size: 2.5rem; font-weight: 700;"></div>
+                                <div id="pacing-result-label" style="font-size: var(--font-size-md); font-weight: 600; margin-top: var(--spacing-xs);"></div>
+                                <div id="pacing-result-sub" style="font-size: var(--font-size-sm); color: var(--text-secondary); margin-top: var(--spacing-xs);"></div>
                             </div>
                         </div>
+
                         <div class="exercise-controls">
+                            <button class="btn btn-primary" id="pacing-start-btn">Start Timer</button>
+                            <button class="btn btn-danger" id="pacing-done-btn" style="display:none;">Done Reading</button>
                             <button class="btn btn-secondary" id="new-pacing-passage-btn">New Passage</button>
                         </div>
                     </div>
