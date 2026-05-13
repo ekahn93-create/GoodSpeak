@@ -238,6 +238,45 @@ const APIService = (function() {
   }
 
   /**
+   * Fetch all definitions for a word, grouped by part of speech
+   * @param {string} word - The word to get definitions for
+   * @returns {Promise<Array>} Array of { partOfSpeech, definition, example } objects
+   */
+  async function getAllDefinitions(word) {
+    return getCached(cache.definitions, `all_${word}`, async () => {
+      const response = await fetch(`${FREE_DICTIONARY_API}/${encodeURIComponent(word)}`);
+
+      if (!response.ok) {
+        throw new Error(`Free Dictionary API error: ${response.status}`);
+      }
+
+      const data = await response.json();
+      const results = [];
+
+      if (data && data.length > 0) {
+        for (const entry of data) {
+          for (const meaning of (entry.meanings || [])) {
+            for (const def of (meaning.definitions || [])) {
+                  const synonyms = [
+                ...(meaning.synonyms || []),
+                ...(def.synonyms || [])
+              ];
+              results.push({
+                partOfSpeech: meaning.partOfSpeech || '',
+                definition: def.definition || '',
+                example: def.example || '',
+                synonyms: [...new Set(synonyms)]
+              });
+            }
+          }
+        }
+      }
+
+      return results;
+    });
+  }
+
+  /**
    * Clear all caches
    */
   function clearCache() {
@@ -268,6 +307,7 @@ const APIService = (function() {
     getRhymes,
     getRelatedWords,
     getWordDefinition,
+    getAllDefinitions,
     getSophisticatedSynonyms,
     searchByTopic,
     getSoundAlike,

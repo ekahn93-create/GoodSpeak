@@ -204,6 +204,11 @@
                 </a>
             </div>
 
+            <button class="page-next-btn" onclick="Router.navigateTo('vocabulary')" aria-label="Go to Learn">
+                <span class="page-next-label">Ready to start? Head to Learn to build your vocabulary</span>
+                <i data-lucide="chevron-down" style="width:22px;height:22px;stroke:currentColor;"></i>
+            </button>
+
         </section>
 
         <!-- ==================== LEARN VIEW ==================== -->
@@ -250,6 +255,11 @@
                 <!-- Nudge: shown after marking a word as learned -->
                 <div id="nudge-vocab-learned" class="nudge-slot"></div>
 
+                <button class="section-next-btn" onclick="document.querySelector('#builder-category .learned-words-section').scrollIntoView({behavior:'smooth', block:'start'})" aria-label="Next section">
+                    <span class="section-next-label">Review words you're still working on</span>
+                    <i data-lucide="chevron-down" style="width:22px;height:22px;stroke:currentColor;"></i>
+                </button>
+
                 <!-- Still Learning Words List -->
                 <div class="learned-words-section">
                     <h3>Still Learning (<span id="still-learning-count">0</span>)</h3>
@@ -258,6 +268,11 @@
                     </div>
                 </div>
 
+                <button class="section-next-btn" onclick="document.querySelectorAll('#builder-category .learned-words-section')[1].scrollIntoView({behavior:'smooth', block:'start'})" aria-label="Next section">
+                    <span class="section-next-label">See all the words you've mastered</span>
+                    <i data-lucide="chevron-down" style="width:22px;height:22px;stroke:currentColor;"></i>
+                </button>
+
                 <!-- Learned Words List -->
                 <div class="learned-words-section">
                     <h3>Your Learned Words (<span id="learned-count">0</span>)</h3>
@@ -265,6 +280,11 @@
                         <!-- Learned words will be dynamically added here -->
                     </div>
                 </div>
+
+                <button class="page-next-btn" onclick="VocabularyModule.switchVocabCategory('daily')" aria-label="Go to Daily Word">
+                    <span class="page-next-label">Next: Daily Word — practice replacing overused words</span>
+                    <i data-lucide="chevron-down" style="width:22px;height:22px;stroke:currentColor;"></i>
+                </button>
             </div>
 
             <!-- ========== DAILY WORD CATEGORY ========== -->
@@ -280,6 +300,11 @@
                     </div>
                 </div>
 
+                <button class="section-next-btn" onclick="document.getElementById('daily-word-display').scrollIntoView({behavior:'smooth', block:'start'})" aria-label="Next section">
+                    <span class="section-next-label">See a weak word to replace today</span>
+                    <i data-lucide="chevron-down" style="width:22px;height:22px;stroke:currentColor;"></i>
+                </button>
+
                 <!-- Word of the Day -->
                 <div id="daily-word-display" class="daily-word-card">
                     <h2>Common Word of the Day</h2>
@@ -287,6 +312,11 @@
                         <!-- Dynamic content will be added here -->
                     </div>
                 </div>
+
+                <button class="section-next-btn" onclick="document.getElementById('daily-exercise').scrollIntoView({behavior:'smooth', block:'start'})" aria-label="Next section">
+                    <span class="section-next-label">Practice replacing it in a sentence</span>
+                    <i data-lucide="chevron-down" style="width:22px;height:22px;stroke:currentColor;"></i>
+                </button>
 
                 <!-- Practice Exercise -->
                 <div id="daily-exercise" class="exercise-section">
@@ -301,6 +331,62 @@
                         <div class="streak-info">
                             <div class="streak-number"><span id="current-streak">0</span> Day Streak</div>
                             <div class="streak-subtitle">Complete today's exercise to keep your streak alive</div>
+                        </div>
+                    </div>
+                </div>
+
+                <button class="section-next-btn" onclick="document.getElementById('daily-speaking-section').scrollIntoView({behavior:'smooth', block:'start'})" aria-label="Next section">
+                    <span class="section-next-label">Now say it out loud — get AI feedback on your delivery</span>
+                    <i data-lucide="chevron-down" style="width:22px;height:22px;stroke:currentColor;"></i>
+                </button>
+
+                <!-- Daily Speaking Prompt -->
+                <div id="daily-speaking-section" class="daily-speaking-card">
+                    <div class="daily-speaking-header">
+                        <h3>Speaking Challenge</h3>
+                        <p class="subtitle">Use today's word out loud. Record your response and get AI feedback on your delivery.</p>
+                    </div>
+
+                    <!-- Idle state -->
+                    <div id="dsp-idle">
+                        <div class="dsp-prompt" id="dsp-prompt-text"></div>
+                        <div class="dsp-mic-wrap">
+                            <button class="dsp-mic-btn" id="dsp-mic-btn" title="Start recording">
+                                <i data-lucide="mic" style="width:28px;height:28px;stroke:currentColor;"></i>
+                            </button>
+                            <span class="dsp-mic-label">Tap to speak</span>
+                        </div>
+                        <div id="dsp-no-speech-msg" class="kc-empty-state" style="display:none;">
+                            <p>Speech recognition is not supported in this browser. Try Chrome or Edge.</p>
+                        </div>
+                    </div>
+
+                    <!-- Recording state -->
+                    <div id="dsp-recording" style="display:none;">
+                        <div class="dsp-prompt" id="dsp-recording-prompt"></div>
+                        <div class="dsp-mic-wrap">
+                            <button class="dsp-mic-btn dsp-mic-active" id="dsp-stop-btn" title="Stop recording">
+                                <i data-lucide="square" style="width:28px;height:28px;stroke:currentColor;fill:currentColor;"></i>
+                            </button>
+                            <span class="dsp-mic-label dsp-recording-label">Recording... tap to stop</span>
+                        </div>
+                        <div class="dsp-transcript-live" id="dsp-transcript-live"></div>
+                    </div>
+
+                    <!-- Loading state -->
+                    <div id="dsp-loading" style="display:none;">
+                        <div class="twal-loading-wrap">
+                            <div class="kc-spinner"></div>
+                            <p>Claude is reviewing your response...</p>
+                        </div>
+                    </div>
+
+                    <!-- Feedback state -->
+                    <div id="dsp-feedback" style="display:none;">
+                        <div class="dsp-transcript-display" id="dsp-transcript-display"></div>
+                        <div class="dsp-feedback-grid" id="dsp-feedback-grid"></div>
+                        <div class="dsp-actions">
+                            <button class="btn btn-primary" id="dsp-try-again-btn">Try Again</button>
                         </div>
                     </div>
                 </div>
@@ -331,6 +417,11 @@
                         </div>
                     </div>
                 </div>
+
+                <button class="page-next-btn" onclick="VocabularyModule.switchVocabCategory('bank')" aria-label="Go to Word Bank">
+                    <span class="page-next-label">Next: Word Bank — save and manage your personal word list</span>
+                    <i data-lucide="chevron-down" style="width:22px;height:22px;stroke:currentColor;"></i>
+                </button>
             </div>
 
             <!-- ========== WORD BANK CATEGORY ========== -->
@@ -442,6 +533,10 @@
                     </div>
                 </div>
 
+                <button class="page-next-btn" onclick="VocabularyModule.switchVocabCategory('grammar')" aria-label="Go to Grammar">
+                    <span class="page-next-label">Next: Grammar &amp; Structure — strengthen your sentence-level skills</span>
+                    <i data-lucide="chevron-down" style="width:22px;height:22px;stroke:currentColor;"></i>
+                </button>
             </div>
 
             <!-- ========== KNOWLEDGE CHECK CATEGORY ========== -->
@@ -601,6 +696,63 @@
                     <div id="nudge-quiz-done" class="nudge-slot"></div>
                 </div>
 
+                <!-- Use It in a Sentence -->
+                <div class="kc-game-section" id="use-in-sentence-section">
+                    <div class="kc-game-header">
+                        <h2>Use It in a Sentence</h2>
+                        <p class="subtitle">Pick a word from your Word Bank and write a sentence using it. Claude will grade your usage.</p>
+                    </div>
+
+                    <!-- Word picker -->
+                    <div id="uis-picker" class="uis-picker">
+                        <div id="uis-no-words-msg" class="kc-empty-state" style="display:none;">
+                            <p>You need at least 1 word in your Word Bank to use this feature. Head to the <strong>Word Bank</strong> tab and add some words!</p>
+                        </div>
+                        <div id="uis-ready">
+                            <div class="uis-word-row">
+                                <div class="uis-word-display">
+                                    <span class="uis-word-label">Word:</span>
+                                    <span class="uis-word" id="uis-word">—</span>
+                                    <span class="uis-pos" id="uis-pos"></span>
+                                </div>
+                                <button class="btn btn-sm btn-secondary" id="uis-shuffle-btn">Shuffle</button>
+                            </div>
+                            <div class="uis-definition" id="uis-definition"></div>
+                            <textarea id="uis-textarea" class="uis-textarea" placeholder="Write a sentence using this word..." rows="3" maxlength="400"></textarea>
+                            <div class="uis-actions">
+                                <button class="btn btn-primary" id="uis-submit-btn">Check My Sentence</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Loading state -->
+                    <div id="uis-loading" style="display:none;">
+                        <div class="twal-loading-wrap">
+                            <div class="kc-spinner"></div>
+                            <p>Claude is reviewing your sentence...</p>
+                        </div>
+                    </div>
+
+                    <!-- Feedback state -->
+                    <div id="uis-feedback" style="display:none;">
+                        <div class="uis-word-row">
+                            <div class="uis-word-display">
+                                <span class="uis-word-label">Word:</span>
+                                <span class="uis-word" id="uis-feedback-word"></span>
+                            </div>
+                        </div>
+                        <div class="uis-submitted-sentence" id="uis-submitted-sentence"></div>
+                        <div id="uis-result-card" class="uis-result-card"></div>
+                        <div class="uis-actions">
+                            <button class="btn btn-primary" id="uis-try-again-btn">Try Another Word</button>
+                        </div>
+                    </div>
+                </div>
+
+                    <button class="section-next-btn" onclick="VocabularyModule.switchKCTab('grammar')" aria-label="Go to Play tab">
+                        <span class="section-next-label">Next: Play — try 2 Words and a Lie and other games</span>
+                        <i data-lucide="chevron-down" style="width:22px;height:22px;stroke:currentColor;"></i>
+                    </button>
                 </div><!-- end #kc-vocab-panel -->
 
                 <!-- ---- GRAMMAR SUB-PANEL ---- -->
@@ -692,6 +844,10 @@
                     </div>
                 </div>
 
+                    <button class="page-next-btn" onclick="Router.navigateTo('fluency')" aria-label="Go to Polish">
+                        <span class="page-next-label">Done with Learn — head to Polish to refine your delivery</span>
+                        <i data-lucide="chevron-down" style="width:22px;height:22px;stroke:currentColor;"></i>
+                    </button>
                 </div><!-- end #kc-grammar-panel -->
 
             </div><!-- end #knowledge-check-category -->
@@ -699,9 +855,9 @@
             <!-- ========== GRAMMAR & STRUCTURE CATEGORY ========== -->
             <div id="grammar-category" class="vocab-category">
                 <!-- Sentence Structure -->
-                <div class="grammar-exercise-section">
-                    <h2>Sentence Structure</h2>
-                    <p class="subtitle">Master different sentence types and improve clarity</p>
+                <div class="exercise-group">
+                    <div class="exercise-group-label">Sentence Structure</div>
+                    <p class="exercise-group-subtitle">Master different sentence types and improve clarity</p>
 
                     <div class="grammar-exercise-card">
                         <h3>Simple to Complex</h3>
@@ -728,12 +884,17 @@
                         </div>
                         <div id="combining-hint" class="hint-text hidden"></div>
                     </div>
-                </div>
+                </div><!-- /exercise-group: Sentence Structure -->
+
+                <button class="section-next-btn" onclick="document.getElementById('grammar-mistakes-group').scrollIntoView({behavior:'smooth', block:'start'})" aria-label="Next section">
+                    <span class="section-next-label">Practice spotting common grammar mistakes</span>
+                    <i data-lucide="chevron-down" style="width:22px;height:22px;stroke:currentColor;"></i>
+                </button>
 
                 <!-- Common Grammar Mistakes -->
-                <div class="grammar-exercise-section">
-                    <h2>Common Grammar Mistakes</h2>
-                    <p class="subtitle">Identify and correct frequent errors</p>
+                <div class="exercise-group" id="grammar-mistakes-group">
+                    <div class="exercise-group-label">Common Grammar Mistakes</div>
+                    <p class="exercise-group-subtitle">Identify and correct frequent errors</p>
 
                     <div class="grammar-exercise-card">
                         <h3>Error Correction</h3>
@@ -747,12 +908,17 @@
                         </div>
                         <div id="correction-display" class="correction-display" style="display: none;"></div>
                     </div>
-                </div>
+                </div><!-- /exercise-group: Common Grammar Mistakes -->
+
+                <button class="section-next-btn" onclick="document.getElementById('grammar-agreement-group').scrollIntoView({behavior:'smooth', block:'start'})" aria-label="Next section">
+                    <span class="section-next-label">Work on subject-verb agreement</span>
+                    <i data-lucide="chevron-down" style="width:22px;height:22px;stroke:currentColor;"></i>
+                </button>
 
                 <!-- Subject-Verb Agreement -->
-                <div class="grammar-exercise-section">
-                    <h2>Subject-Verb Agreement</h2>
-                    <p class="subtitle">Practice proper agreement in various contexts</p>
+                <div class="exercise-group" id="grammar-agreement-group">
+                    <div class="exercise-group-label">Subject-Verb Agreement</div>
+                    <p class="exercise-group-subtitle">Practice proper agreement in various contexts</p>
 
                     <div class="grammar-exercise-card">
                         <h3>Agreement Practice</h3>
@@ -765,12 +931,17 @@
                             <button class="btn btn-primary" id="new-agreement-btn">New Exercise</button>
                         </div>
                     </div>
-                </div>
+                </div><!-- /exercise-group: Subject-Verb Agreement -->
+
+                <button class="section-next-btn" onclick="document.getElementById('grammar-punctuation-group').scrollIntoView({behavior:'smooth', block:'start'})" aria-label="Next section">
+                    <span class="section-next-label">Review punctuation rules</span>
+                    <i data-lucide="chevron-down" style="width:22px;height:22px;stroke:currentColor;"></i>
+                </button>
 
                 <!-- Punctuation Practice -->
-                <div class="grammar-exercise-section">
-                    <h2>Punctuation Mastery</h2>
-                    <p class="subtitle">Learn proper punctuation usage</p>
+                <div class="exercise-group" id="grammar-punctuation-group">
+                    <div class="exercise-group-label">Punctuation Mastery</div>
+                    <p class="exercise-group-subtitle">Learn proper punctuation usage</p>
 
                     <div class="grammar-exercise-card">
                         <h3>Punctuation Rules</h3>
@@ -802,12 +973,17 @@
                             </div>
                         </div>
                     </div>
-                </div>
+                </div><!-- /exercise-group: Punctuation Mastery -->
+
+                <button class="section-next-btn" onclick="document.getElementById('grammar-voice-group').scrollIntoView({behavior:'smooth', block:'start'})" aria-label="Next section">
+                    <span class="section-next-label">Practice active vs. passive voice</span>
+                    <i data-lucide="chevron-down" style="width:22px;height:22px;stroke:currentColor;"></i>
+                </button>
 
                 <!-- Active vs Passive Voice -->
-                <div class="grammar-exercise-section">
-                    <h2>Active vs. Passive Voice</h2>
-                    <p class="subtitle">Transform between voice types for better communication</p>
+                <div class="exercise-group" id="grammar-voice-group">
+                    <div class="exercise-group-label">Active vs. Passive Voice</div>
+                    <p class="exercise-group-subtitle">Transform between voice types for better communication</p>
 
                     <div class="grammar-exercise-card">
                         <h3>Voice Transformation</h3>
@@ -822,8 +998,14 @@
                         </div>
                         <div id="voice-hint" class="hint-text hidden"></div>
                     </div>
-                </div>
+                </div><!-- /exercise-group: Active vs. Passive Voice -->
+
+                <button class="page-next-btn" onclick="VocabularyModule.switchVocabCategory('knowledge-check')" aria-label="Go to Knowledge Check">
+                    <span class="page-next-label">Next: Knowledge Check — test what you've learned</span>
+                    <i data-lucide="chevron-down" style="width:22px;height:22px;stroke:currentColor;"></i>
+                </button>
             </div>
+
         </section>
 
         <!-- ==================== PRACTICE VIEW ==================== -->
@@ -964,6 +1146,11 @@
                     <p style="margin-top: var(--spacing-sm); font-size: var(--font-size-sm); color: var(--text-secondary);">Done with this prompt? Mark it complete to track your progress.</p>
                 </div>
             </div>
+
+            <button class="page-next-btn" onclick="StorytellingModule.switchStoryCategory('practical')" aria-label="Go to Practical Skills">
+                <span class="page-next-label">Next: Practical Skills — impromptu speaking, pitches, and frameworks</span>
+                <i data-lucide="chevron-down" style="width:22px;height:22px;stroke:currentColor;"></i>
+            </button>
         </div>
 
         <!-- ========== PRACTICAL SPEAKING SKILLS CATEGORY ========== -->
@@ -1055,7 +1242,12 @@
 
             </div><!-- /exercise-group: Conversation -->
 
-            <div class="exercise-group">
+            <button class="section-next-btn" onclick="document.getElementById('practical-frameworks-group').scrollIntoView({behavior:'smooth', block:'start'})" aria-label="Next section">
+                <span class="section-next-label">Structure your thoughts with speaking frameworks</span>
+                <i data-lucide="chevron-down" style="width:22px;height:22px;stroke:currentColor;"></i>
+            </button>
+
+            <div class="exercise-group" id="practical-frameworks-group">
                 <div class="exercise-group-label">Speaking Frameworks</div>
                 <p class="exercise-group-subtitle">Structure your thoughts and deliver with confidence</p>
 
@@ -1202,6 +1394,11 @@
                 </div>
             </div>
             </div><!-- /exercise-group: Speaking Frameworks -->
+
+            <button class="page-next-btn" onclick="StorytellingModule.switchStoryCategory('challenges')" aria-label="Go to Interactive Challenges">
+                <span class="page-next-label">Next: Interactive Challenges — fast-thinking, high-pressure drills</span>
+                <i data-lucide="chevron-down" style="width:22px;height:22px;stroke:currentColor;"></i>
+            </button>
         </div>
 
         <!-- ========== INTERACTIVE CHALLENGES CATEGORY ========== -->
@@ -1236,7 +1433,12 @@
 
             </div><!-- /exercise-group: Daily -->
 
-            <div class="exercise-group">
+            <button class="section-next-btn" onclick="document.getElementById('challenges-timed-group').scrollIntoView({behavior:'smooth', block:'start'})" aria-label="Next section">
+                <span class="section-next-label">Push your limits with timed speaking challenges</span>
+                <i data-lucide="chevron-down" style="width:22px;height:22px;stroke:currentColor;"></i>
+            </button>
+
+            <div class="exercise-group" id="challenges-timed-group">
                 <div class="exercise-group-label">Timed Challenges</div>
                 <p class="exercise-group-subtitle">Push your limits with fast-thinking, high-pressure exercises</p>
 
@@ -1392,6 +1594,11 @@
                 </div>
             </div>
             </div><!-- /exercise-group: Timed Challenges -->
+
+            <button class="page-next-btn" onclick="StorytellingModule.switchStoryCategory('listening')" aria-label="Go to Listening">
+                <span class="page-next-label">Next: Listening &amp; Comprehension — summarize and paraphrase what you hear</span>
+                <i data-lucide="chevron-down" style="width:22px;height:22px;stroke:currentColor;"></i>
+            </button>
         </div>
 
         <!-- ========== LISTENING & COMPREHENSION CATEGORY ========== -->
@@ -1480,8 +1687,13 @@
                 </div>
             </div>
 
+            <button class="section-next-btn" onclick="document.getElementById('listening-paraphrasing-card').scrollIntoView({behavior:'smooth', block:'start'})" aria-label="Next section">
+                <span class="section-next-label">Practice restating ideas in your own words</span>
+                <i data-lucide="chevron-down" style="width:22px;height:22px;stroke:currentColor;"></i>
+            </button>
+
             <!-- Paraphrasing Exercises -->
-            <div class="fluency-card">
+            <div class="fluency-card" id="listening-paraphrasing-card">
                 <div class="fluency-card-header">
                     <div class="fluency-card-icon"><i data-lucide="repeat" style="width:28px;height:28px;stroke:currentColor;"></i></div>
                     <div>
@@ -1562,6 +1774,11 @@
                     </div>
                 </div>
             </div>
+
+            <button class="page-next-btn" onclick="Router.navigateTo('fluency')" aria-label="Go to Polish">
+                <span class="page-next-label">Done with Practice — refine your delivery in Polish</span>
+                <i data-lucide="chevron-down" style="width:22px;height:22px;stroke:currentColor;"></i>
+            </button>
         </div>
 
         <!-- ========== WEB SPEECH TEST CATEGORY ========== -->
@@ -1683,7 +1900,12 @@
 
                 </div><!-- /exercise-group: Sound Practice -->
 
-                <div class="exercise-group">
+                <button class="section-next-btn" onclick="document.getElementById('pronunciation-rhythm-group').scrollIntoView({behavior:'smooth', block:'start'})" aria-label="Next section">
+                    <span class="section-next-label">Practice rhythm and word stress patterns</span>
+                    <i data-lucide="chevron-down" style="width:22px;height:22px;stroke:currentColor;"></i>
+                </button>
+
+                <div class="exercise-group" id="pronunciation-rhythm-group">
                     <div class="exercise-group-label">Rhythm & Stress</div>
                     <p class="exercise-group-subtitle">Practice natural emphasis and syllable patterns</p>
 
@@ -1708,6 +1930,11 @@
                     </div>
                 </div>
                 </div><!-- /exercise-group: Rhythm & Stress -->
+
+                <button class="page-next-btn" onclick="FluencyModule.switchCategory('readaloud')" aria-label="Go to Read Aloud">
+                    <span class="page-next-label">Next: Read Aloud — practice reading passages out loud with feedback</span>
+                    <i data-lucide="chevron-down" style="width:22px;height:22px;stroke:currentColor;"></i>
+                </button>
             </div>
 
             <!-- ========== FLUENCY BUILDING CATEGORY ========== -->
@@ -1809,7 +2036,12 @@
 
                 </div><!-- /exercise-group: Filler Reduction -->
 
-                <div class="exercise-group">
+                <button class="section-next-btn" onclick="document.getElementById('fluency-pacing-group').scrollIntoView({behavior:'smooth', block:'start'})" aria-label="Next section">
+                    <span class="section-next-label">Work on pacing, transitions, and sentence flow</span>
+                    <i data-lucide="chevron-down" style="width:22px;height:22px;stroke:currentColor;"></i>
+                </button>
+
+                <div class="exercise-group" id="fluency-pacing-group">
                     <div class="exercise-group-label">Pacing & Flow</div>
                     <p class="exercise-group-subtitle">Develop rhythm, speed, and seamless transitions</p>
 
@@ -1943,6 +2175,11 @@
                     </div>
                 </div>
                 </div><!-- /exercise-group: Pacing & Flow -->
+
+                <button class="page-next-btn" onclick="FluencyModule.switchCategory('eloquence')" aria-label="Go to Eloquence">
+                    <span class="page-next-label">Next: Eloquence &amp; Expression — elevate your word choice and style</span>
+                    <i data-lucide="chevron-down" style="width:22px;height:22px;stroke:currentColor;"></i>
+                </button>
             </div>
 
             <!-- ========== ELOQUENCE & EXPRESSION CATEGORY ========== -->
@@ -1975,7 +2212,12 @@
 
                 </div><!-- /exercise-group: Word Choice -->
 
-                <div class="exercise-group">
+                <button class="section-next-btn" onclick="document.getElementById('eloquence-figurative-group').scrollIntoView({behavior:'smooth', block:'start'})" aria-label="Next section">
+                    <span class="section-next-label">Master figurative language — metaphors, similes, and more</span>
+                    <i data-lucide="chevron-down" style="width:22px;height:22px;stroke:currentColor;"></i>
+                </button>
+
+                <div class="exercise-group" id="eloquence-figurative-group">
                     <div class="exercise-group-label">Figurative Language</div>
                     <p class="exercise-group-subtitle">Master expressions and devices that make speech memorable</p>
 
@@ -2049,6 +2291,11 @@
                     </div>
                 </div>
                 </div><!-- /exercise-group: Figurative Language -->
+
+                <button class="page-next-btn" onclick="FluencyModule.switchCategory('pronunciation')" aria-label="Go to Pronunciation">
+                    <span class="page-next-label">Next: Pronunciation &amp; Articulation — sharpen your sounds and rhythm</span>
+                    <i data-lucide="chevron-down" style="width:22px;height:22px;stroke:currentColor;"></i>
+                </button>
             </div>
 
             <!-- ========== READ ALOUD MODE CATEGORY ========== -->
@@ -2121,6 +2368,11 @@
 
                     </div>
                 </div>
+
+                <button class="page-next-btn" onclick="FluencyModule.switchCategory('shadowing')" aria-label="Go to Shadowing">
+                    <span class="page-next-label">Next: Shadowing — mimic native rhythm and emphasis</span>
+                    <i data-lucide="chevron-down" style="width:22px;height:22px;stroke:currentColor;"></i>
+                </button>
             </div>
 
             <!-- ========== SHADOWING CATEGORY ========== -->
@@ -2168,6 +2420,11 @@
 
                     </div>
                 </div>
+
+                <button class="page-next-btn" onclick="Router.navigateTo('storytelling')" aria-label="Go to Practice">
+                    <span class="page-next-label">Done with Polish — put your skills to work in Practice</span>
+                    <i data-lucide="chevron-down" style="width:22px;height:22px;stroke:currentColor;"></i>
+                </button>
             </div>
 
         </section>
@@ -2369,6 +2626,11 @@
                     <!-- Achievement badges dynamically added -->
                 </div>
             </div>
+
+            <button class="page-next-btn" onclick="Router.navigateTo('vocabulary')" aria-label="Go to Learn">
+                <span class="page-next-label">Keep growing — head back to Learn and add more words</span>
+                <i data-lucide="chevron-down" style="width:22px;height:22px;stroke:currentColor;"></i>
+            </button>
 
         </section>
 

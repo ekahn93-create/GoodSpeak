@@ -1350,6 +1350,7 @@ const FluencyModule = (function() {
 
   return {
     init: init,
-    refresh: refresh
+    refresh: refresh,
+    switchCategory: switchCategory
   };
 })();

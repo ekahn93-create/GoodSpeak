@@ -1231,7 +1231,8 @@ case 'recordings':
     init: init,
     startPractice: startPractice,
     refresh: refresh,
-    getProgress: getProgress
+    getProgress: getProgress,
+    switchStoryCategory: switchStoryCategory
   };
 })();
 

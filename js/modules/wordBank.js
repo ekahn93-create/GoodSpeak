@@ -19,6 +19,7 @@ const WordBankModule = (function() {
   let stillLearningCountElement = null;
   let lookupButton = null;
   let lookupStatus = null;
+  let pickerDefs = [];
 
   // Quiz elements
   let quizStartScreen = null;
@@ -242,49 +243,38 @@ const WordBankModule = (function() {
     }
 
     // Show loading state
+    pickerDefs = [];
     lookupButton.disabled = true;
     lookupButton.textContent = 'Looking up...';
     showLookupStatus('Fetching definition...', 'info');
 
     try {
-      // Use APIService for caching and consistent error handling
       if (typeof APIService !== 'undefined') {
-        const wordData = await APIService.getWordDefinition(word);
+        const [wordData, allDefs] = await Promise.all([
+          APIService.getWordDefinition(word),
+          APIService.getAllDefinitions(word)
+        ]);
 
         if (wordData) {
-          // Populate form fields
+          // Populate pronunciation and synonyms from primary lookup
           if (wordData.phonetic) {
             document.getElementById('custom-pronunciation').value = convertIPAToReadable(wordData.phonetic);
           }
-
-          if (wordData.partOfSpeech) {
-            const posSelect = document.getElementById('custom-part-of-speech');
-            const normalizedPos = wordData.partOfSpeech.toLowerCase();
-            if (['noun', 'verb', 'adjective', 'adverb'].includes(normalizedPos)) {
-              posSelect.value = normalizedPos;
-            } else {
-              posSelect.value = 'other';
-            }
-          }
-
-          if (wordData.definition) {
-            document.getElementById('custom-definition').value = wordData.definition;
-          }
-
-          if (wordData.example) {
-            document.getElementById('custom-example').value = wordData.example;
-          }
-
           if (wordData.synonyms && wordData.synonyms.length > 0) {
             document.getElementById('custom-synonyms').value = wordData.synonyms.slice(0, 5).join(', ');
           }
 
-          showLookupStatus('✓ Definition loaded! You can edit any fields before adding.', 'success');
+          // If multiple definitions exist, show picker; otherwise auto-fill
+          if (allDefs && allDefs.length > 1) {
+            showDefinitionPicker(allDefs);
+          } else {
+            applyDefinition(wordData.partOfSpeech, wordData.definition, wordData.example, wordData.synonyms);
+            showLookupStatus('✓ Definition loaded! You can edit any fields before adding.', 'success');
+          }
         } else {
           showLookupStatus('Word not found in dictionary. You can still add it manually.', 'warning');
         }
       } else {
-        // Fallback to direct API call if APIService not loaded
         throw new Error('APIService not available');
       }
     } catch (error) {
@@ -294,6 +284,52 @@ const WordBankModule = (function() {
       lookupButton.disabled = false;
       lookupButton.textContent = 'Look Up';
     }
+  }
+
+  /**
+   * Apply a selected definition to the form fields
+   */
+  function applyDefinition(partOfSpeech, definition, example, synonyms) {
+    if (partOfSpeech) {
+      const posSelect = document.getElementById('custom-part-of-speech');
+      const normalized = partOfSpeech.toLowerCase();
+      posSelect.value = ['noun', 'verb', 'adjective', 'adverb'].includes(normalized) ? normalized : 'other';
+    }
+    if (definition) {
+      document.getElementById('custom-definition').value = definition;
+    }
+    document.getElementById('custom-example').value = example || '';
+    if (synonyms && synonyms.length > 0) {
+      document.getElementById('custom-synonyms').value = synonyms.slice(0, 5).join(', ');
+    } else {
+      document.getElementById('custom-synonyms').value = '';
+    }
+  }
+
+  /**
+   * Render a clickable definition picker below the lookup status
+   */
+  function showDefinitionPicker(defs) {
+    pickerDefs = defs;
+
+    // Auto-fill with the first definition
+    applyDefinition(defs[0].partOfSpeech, defs[0].definition, defs[0].example, defs[0].synonyms);
+
+    if (!lookupStatus) return;
+
+    const items = defs.map((d, i) => `
+      <div class="def-picker-item${i === 0 ? ' def-picker-item--selected' : ''}"
+           onclick="WordBankModule.selectDefinition(${i})"
+           data-index="${i}">
+        <span class="def-picker-pos">${d.partOfSpeech}</span>
+        <span class="def-picker-text">${d.definition}</span>
+      </div>
+    `).join('');
+
+    lookupStatus.innerHTML = `
+      <div style="color: #4A90E2; margin-bottom: 8px; font-size: var(--font-size-sm); font-weight: 500;">✓ Multiple definitions found — select one:</div>
+      <div id="def-picker-list" class="def-picker-list">${items}</div>
+    `;
   }
 
   /**
@@ -995,36 +1031,39 @@ const WordBankModule = (function() {
     // Check if vocabularyDatabase is available and properly loaded
     if (typeof vocabularyDatabase === 'undefined' || !vocabularyDatabase.beginner) {
       console.warn('vocabularyDatabase not available');
-      // Only return custom words if database isn't loaded
       const customWords = userData.customWords || [];
       customWords.forEach(word => {
-        if (word.definition) {
+        if (word.definition && (word.status === 'learned' || word.status === 'stillLearning')) {
           words.push(word);
         }
       });
       return words;
     }
 
-    // Get learned words from vocabulary builder
-    const learnedWords = userData.vocabulary.learned || [];
-    const allWords = [
+    const dbWords = [
       ...vocabularyDatabase.beginner,
       ...vocabularyDatabase.intermediate,
       ...vocabularyDatabase.advanced
     ];
 
-    learnedWords.forEach(id => {
-      const word = allWords.find(w => w.id === id);
-      if (word) {
-        words.push(word);
-      }
+    // Learned db words
+    const learnedIds = userData.vocabulary.learned || [];
+    learnedIds.forEach(id => {
+      const word = dbWords.find(w => w.id === id);
+      if (word) words.push({ ...word, _quizStatus: 'learned' });
     });
 
-    // Add custom words
+    // Still learning db words
+    const stillLearningIds = userData.vocabulary.stillLearning || [];
+    stillLearningIds.forEach(id => {
+      const word = dbWords.find(w => w.id === id);
+      if (word) words.push({ ...word, _quizStatus: 'stillLearning' });
+    });
+
+    // Custom words with a status
     const customWords = userData.customWords || [];
     customWords.forEach(word => {
-      // Only include custom words that have a definition
-      if (word.definition) {
+      if (word.definition && (word.status === 'learned' || word.status === 'stillLearning')) {
         words.push(word);
       }
     });
@@ -1043,15 +1082,9 @@ const WordBankModule = (function() {
     let allWords = getAllQuizWords();
 
     if (selectedSource === 'stillLearning') {
-      const stillLearningIds = userData.vocabulary.stillLearning || [];
-      const dbWords = [
-        ...vocabularyDatabase.beginner,
-        ...vocabularyDatabase.intermediate,
-        ...vocabularyDatabase.advanced
-      ];
-      allWords = stillLearningIds.map(id => dbWords.find(w => w.id === id)).filter(w => w !== undefined);
+      allWords = allWords.filter(word => word._quizStatus === 'stillLearning' || word.status === 'stillLearning');
     } else if (selectedSource === 'learned') {
-      allWords = allWords.filter(word => typeof word.id === 'number' && word.id < 1000000);
+      allWords = allWords.filter(word => word._quizStatus === 'learned' || word.status === 'learned');
     } else if (selectedSource === 'custom') {
       allWords = allWords.filter(word => word.isCustom === true || word.id >= 1000000);
     }
@@ -1071,19 +1104,10 @@ const WordBankModule = (function() {
     const selectedSource = quizSourceSelect ? quizSourceSelect.value : 'all';
 
     if (selectedSource === 'stillLearning') {
-      // Only include still learning words
-      const stillLearningIds = userData.vocabulary.stillLearning || [];
-      const dbWords = [
-        ...vocabularyDatabase.beginner,
-        ...vocabularyDatabase.intermediate,
-        ...vocabularyDatabase.advanced
-      ];
-      allWords = stillLearningIds.map(id => dbWords.find(w => w.id === id)).filter(w => w !== undefined);
+      allWords = allWords.filter(word => word._quizStatus === 'stillLearning' || word.status === 'stillLearning');
     } else if (selectedSource === 'learned') {
-      // Only include words from vocabulary builder (have numeric IDs from database)
-      allWords = allWords.filter(word => typeof word.id === 'number' && word.id < 1000000);
+      allWords = allWords.filter(word => word._quizStatus === 'learned' || word.status === 'learned');
     } else if (selectedSource === 'custom') {
-      // Only include custom words (have large timestamp-based IDs or isCustom flag)
       allWords = allWords.filter(word => word.isCustom === true || word.id >= 1000000);
     }
     // If 'all', no filtering needed
@@ -1542,9 +1566,24 @@ const WordBankModule = (function() {
   }
 
   // Public API
+  /**
+   * Called when a definition picker item is clicked
+   */
+  function selectDefinition(index) {
+    if (!pickerDefs.length) return;
+
+    const d = pickerDefs[index];
+    applyDefinition(d.partOfSpeech, d.definition, d.example, d.synonyms);
+
+    document.querySelectorAll('.def-picker-item').forEach((el, i) => {
+      el.classList.toggle('def-picker-item--selected', i === index);
+    });
+  }
+
   return {
     init: init,
     showWordDetail: showWordDetail,
+    selectDefinition: selectDefinition,
     showStillLearningWordDetail: showStillLearningWordDetail,
     showCustomWordDetail: showCustomWordDetail,
     moveWordToLearned: moveWordToLearned,

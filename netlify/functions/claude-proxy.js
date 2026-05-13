@@ -174,6 +174,48 @@ Respond ONLY with valid JSON in this exact format, no other text:
   "label": "..."
 }`;
 
+  } else if (task === 'grade_sentence') {
+    const { word, partOfSpeech, definition, sentence } = payload;
+    prompt = `You are a vocabulary coach grading a student's use of a word in a sentence.
+
+Word: "${word}"
+Part of speech: ${partOfSpeech}
+Definition: ${definition}
+
+Student's sentence: "${sentence}"
+
+Evaluate whether the student used the word correctly. Be encouraging but honest. Keep feedback to 1–2 sentences.
+
+Respond ONLY with valid JSON in this exact format, no other text:
+{
+  "correct": true or false,
+  "feedback": "...",
+  "suggestion": "An example of a better or alternative sentence using the word (only if correct is false, otherwise null)."
+}`;
+
+  } else if (task === 'daily_speaking_feedback') {
+    const { word, definition, partOfSpeech, transcript } = payload;
+    prompt = `You are a speaking coach reviewing a student's spoken response about a vocabulary word.
+
+Word: "${word}"
+Part of speech: ${partOfSpeech}
+Definition: ${definition}
+
+What the student said (transcribed from speech):
+"""
+${transcript}
+"""
+
+Evaluate on 3 dimensions and give one actionable tip. Be encouraging but honest. Keep each to 1–2 sentences.
+
+Respond ONLY with valid JSON in this exact format, no other text:
+{
+  "word_usage": "Did they use or meaningfully reference the word? Was it correct?",
+  "clarity": "How clear and well-structured was their response?",
+  "vocabulary": "Any notes on their overall word choice and expression.",
+  "tip": "One specific, actionable improvement tip."
+}`;
+
   } else {
     return { statusCode: 400, body: JSON.stringify({ error: 'Unknown task.' }) };
   }

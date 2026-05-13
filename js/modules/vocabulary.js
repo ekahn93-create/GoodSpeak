@@ -185,6 +185,7 @@ const VocabularyModule = (function() {
           WordBankModule.refresh();
         }
         initTWAL();
+        initUIS();
         switchKCTab('vocab');
         break;
       case 'grammar':
@@ -560,7 +561,7 @@ const VocabularyModule = (function() {
 
     // Display as chips
     const html = learnedWordObjects.map(word => `
-      <div class="word-chip" onclick="VocabularyModule.showLearnedWord(${word.id})" title="${word.definition}">
+      <div class="word-chip word-chip--learned" onclick="VocabularyModule.showLearnedWord(${word.id})" title="${word.definition}">
         ${word.word}
       </div>
     `).join('');
@@ -595,7 +596,7 @@ const VocabularyModule = (function() {
 
     // Display as chips with option to move to learned
     const html = stillLearningWordObjects.map(word => `
-      <div class="word-chip" onclick="VocabularyModule.showStillLearningWord(${word.id})" title="${word.definition}">
+      <div class="word-chip word-chip--still-learning" onclick="VocabularyModule.showStillLearningWord(${word.id})" title="${word.definition}">
         ${word.word}
       </div>
     `).join('');
@@ -619,7 +620,7 @@ const VocabularyModule = (function() {
     if (!word) return;
 
     const content = `
-      <div class="word-card">
+      <div class="word-card word-card--learned">
         <div class="word-main">${word.word}</div>
         <div class="word-pronunciation">${word.pronunciation}</div>
         <div class="word-meta">
@@ -662,7 +663,7 @@ const VocabularyModule = (function() {
     if (!word) return;
 
     const content = `
-      <div class="word-card">
+      <div class="word-card word-card--still-learning">
         <div class="word-main">${word.word}</div>
         <div class="word-pronunciation">${word.pronunciation}</div>
         <div class="word-meta">
@@ -1137,6 +1138,144 @@ const VocabularyModule = (function() {
     if (active) active.style.display = state === 'active' ? 'block' : 'none';
   }
 
+  // ============================================
+  // USE IT IN A SENTENCE
+  // ============================================
+
+  let uisCurrentWord = null;
+  let uisSetup = false;
+
+  function initUIS() {
+    if (uisSetup) return;
+    uisSetup = true;
+
+    const shuffleBtn = document.getElementById('uis-shuffle-btn');
+    const submitBtn = document.getElementById('uis-submit-btn');
+    const tryAgainBtn = document.getElementById('uis-try-again-btn');
+
+    if (shuffleBtn) shuffleBtn.addEventListener('click', uisPickWord);
+    if (submitBtn) submitBtn.addEventListener('click', uisSubmit);
+    if (tryAgainBtn) tryAgainBtn.addEventListener('click', uisReset);
+
+    uisPickWord();
+  }
+
+  function uisGetWordBank() {
+    return twalGetWordBank(); // reuse same word bank helper
+  }
+
+  function uisPickWord() {
+    const words = uisGetWordBank();
+    const noWordsMsg = document.getElementById('uis-no-words-msg');
+    const readyDiv = document.getElementById('uis-ready');
+
+    if (words.length === 0) {
+      if (noWordsMsg) noWordsMsg.style.display = 'block';
+      if (readyDiv) readyDiv.style.display = 'none';
+      return;
+    }
+
+    if (noWordsMsg) noWordsMsg.style.display = 'none';
+    if (readyDiv) readyDiv.style.display = 'block';
+
+    uisCurrentWord = words[Math.floor(Math.random() * words.length)];
+
+    const wordEl = document.getElementById('uis-word');
+    const posEl = document.getElementById('uis-pos');
+    const defEl = document.getElementById('uis-definition');
+    const textarea = document.getElementById('uis-textarea');
+
+    if (wordEl) wordEl.textContent = uisCurrentWord.word;
+    if (posEl) posEl.textContent = uisCurrentWord.partOfSpeech;
+    if (defEl) defEl.textContent = uisCurrentWord.definition;
+    if (textarea) textarea.value = '';
+
+    uisSetState('picker');
+  }
+
+  async function uisSubmit() {
+    const textarea = document.getElementById('uis-textarea');
+    const sentence = textarea ? textarea.value.trim() : '';
+
+    if (!sentence) {
+      showToast('Write a sentence first.', 'error');
+      return;
+    }
+
+    if (!uisCurrentWord) return;
+
+    uisSetState('loading');
+
+    try {
+      const response = await fetch('/.netlify/functions/claude-proxy', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          task: 'grade_sentence',
+          payload: {
+            word: uisCurrentWord.word,
+            partOfSpeech: uisCurrentWord.partOfSpeech,
+            definition: uisCurrentWord.definition,
+            sentence: sentence
+          }
+        })
+      });
+
+      if (!response.ok) throw new Error(`Server error ${response.status}`);
+      const result = await response.json();
+      if (typeof result.correct === 'undefined') throw new Error('Bad response shape');
+
+      uisShowFeedback(sentence, result);
+      StorageManager.markActiveToday();
+    } catch (err) {
+      console.error('UIS fetch error:', err);
+      uisSetState('picker');
+      showToast('Could not check sentence. Try again.', 'error');
+    }
+  }
+
+  function uisShowFeedback(sentence, result) {
+    const feedbackWordEl = document.getElementById('uis-feedback-word');
+    const submittedEl = document.getElementById('uis-submitted-sentence');
+    const resultCard = document.getElementById('uis-result-card');
+
+    if (feedbackWordEl) feedbackWordEl.textContent = uisCurrentWord.word;
+    if (submittedEl) submittedEl.textContent = `"${sentence}"`;
+
+    if (resultCard) {
+      const icon = result.correct ? '✓' : '✗';
+      const cls = result.correct ? 'uis-result-correct' : 'uis-result-incorrect';
+      const suggestionHtml = (!result.correct && result.suggestion)
+        ? `<div class="uis-suggestion"><strong>Try this instead:</strong> <em>${result.suggestion}</em></div>`
+        : '';
+
+      resultCard.className = `uis-result-card ${cls}`;
+      resultCard.innerHTML = `
+        <div class="uis-result-header">
+          <span class="uis-result-icon">${icon}</span>
+          <span class="uis-result-label">${result.correct ? 'Correct usage!' : 'Not quite right'}</span>
+        </div>
+        <div class="uis-result-feedback">${result.feedback}</div>
+        ${suggestionHtml}
+      `;
+    }
+
+    uisSetState('feedback');
+  }
+
+  function uisReset() {
+    uisPickWord();
+  }
+
+  function uisSetState(state) {
+    const picker = document.getElementById('uis-picker');
+    const loading = document.getElementById('uis-loading');
+    const feedback = document.getElementById('uis-feedback');
+    if (picker) picker.style.display = state === 'picker' ? 'block' : 'none';
+    if (loading) loading.style.display = state === 'loading' ? 'block' : 'none';
+    if (feedback) feedback.style.display = state === 'feedback' ? 'block' : 'none';
+  }
+
   // Public API
   return {
     init: init,
@@ -1155,6 +1294,7 @@ const VocabularyModule = (function() {
     switchVocabCategory: switchVocabCategory,
     speakWord: speakWord,
     initTWAL: initTWAL,
+    initUIS: initUIS,
     switchKCTab: switchKCTab
   };
 })();

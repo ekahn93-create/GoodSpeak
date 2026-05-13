@@ -52,6 +52,9 @@ const DailyWordModule = (function() {
     // Update streak display
     updateStreakDisplay();
 
+    // Init speaking prompt
+    initSpeakingPrompt();
+
     // Listen for view changes
     document.addEventListener('viewChanged', function(e) {
       // No longer auto-refresh on view changes
@@ -312,6 +315,194 @@ const DailyWordModule = (function() {
     displayExercise();
   }
 
+  // ============================================
+  // DAILY SPEAKING PROMPT
+  // ============================================
+
+  let dspRecognition = null;
+  let dspTranscript = '';
+  let dspSetup = false;
+
+  const DSP_PROMPTS = [
+    'Describe a situation where using the word "{word}" would make your speech more precise.',
+    'Tell a short story — real or imagined — where the word "{word}" plays a role.',
+    'Explain what "{word}" means in your own words, then use it in a sentence.',
+    'Describe someone you know whose behavior could be described as "{word}".',
+    'Give an example from your own life where you could have used the word "{word}".'
+  ];
+
+  function initSpeakingPrompt() {
+    if (dspSetup) return;
+    dspSetup = true;
+
+    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+
+    const promptText = document.getElementById('dsp-prompt-text');
+    const micBtn = document.getElementById('dsp-mic-btn');
+    const stopBtn = document.getElementById('dsp-stop-btn');
+    const tryAgainBtn = document.getElementById('dsp-try-again-btn');
+    const noSpeechMsg = document.getElementById('dsp-no-speech-msg');
+
+    if (!SpeechRecognition) {
+      if (noSpeechMsg) noSpeechMsg.style.display = 'block';
+      if (micBtn) micBtn.style.display = 'none';
+      return;
+    }
+
+    // Set prompt text
+    if (promptText && todaysWord) {
+      const template = DSP_PROMPTS[Math.floor(Math.random() * DSP_PROMPTS.length)];
+      promptText.textContent = template.replace('{word}', todaysWord.word);
+    }
+
+    if (micBtn) micBtn.addEventListener('click', dspStartRecording);
+    if (stopBtn) stopBtn.addEventListener('click', dspStopRecording);
+    if (tryAgainBtn) tryAgainBtn.addEventListener('click', dspReset);
+  }
+
+  function dspStartRecording() {
+    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+    if (!SpeechRecognition) return;
+
+    dspTranscript = '';
+    dspRecognition = new SpeechRecognition();
+    dspRecognition.continuous = true;
+    dspRecognition.interimResults = true;
+    dspRecognition.lang = 'en-US';
+
+    const liveEl = document.getElementById('dsp-transcript-live');
+    const recordingPrompt = document.getElementById('dsp-recording-prompt');
+    const promptText = document.getElementById('dsp-prompt-text');
+
+    if (recordingPrompt && promptText) {
+      recordingPrompt.textContent = promptText.textContent;
+    }
+
+    dspRecognition.onresult = function(e) {
+      let interim = '';
+      let final = '';
+      for (let i = e.resultIndex; i < e.results.length; i++) {
+        if (e.results[i].isFinal) {
+          final += e.results[i][0].transcript + ' ';
+        } else {
+          interim += e.results[i][0].transcript;
+        }
+      }
+      dspTranscript += final;
+      if (liveEl) liveEl.textContent = (dspTranscript + interim).trim();
+    };
+
+    dspRecognition.onerror = function(e) {
+      console.error('DSP speech error:', e.error);
+      dspSetState('idle');
+      showToast('Recording error. Please try again.', 'error');
+    };
+
+    dspRecognition.start();
+    dspSetState('recording');
+  }
+
+  function dspStopRecording() {
+    if (dspRecognition) {
+      dspRecognition.stop();
+      dspRecognition = null;
+    }
+
+    const transcript = dspTranscript.trim();
+    if (!transcript) {
+      dspSetState('idle');
+      showToast('No speech detected. Try again.', 'error');
+      return;
+    }
+
+    dspSubmitFeedback(transcript);
+  }
+
+  async function dspSubmitFeedback(transcript) {
+    if (!todaysWord) return;
+    dspSetState('loading');
+
+    try {
+      const response = await fetch('/.netlify/functions/claude-proxy', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          task: 'daily_speaking_feedback',
+          payload: {
+            word: todaysWord.word,
+            partOfSpeech: 'word',
+            definition: todaysWord.commonAlternative
+              ? `A weak word to replace with: ${todaysWord.commonAlternative}`
+              : todaysWord.word,
+            transcript: transcript
+          }
+        })
+      });
+
+      if (!response.ok) throw new Error(`Server error ${response.status}`);
+      const result = await response.json();
+      if (!result.tip) throw new Error('Bad response shape');
+
+      dspShowFeedback(transcript, result);
+      markTodayCompleted();
+      StorageManager.markActiveToday();
+    } catch (err) {
+      console.error('DSP fetch error:', err);
+      dspSetState('idle');
+      showToast('Could not get feedback. Try again.', 'error');
+    }
+  }
+
+  function dspShowFeedback(transcript, result) {
+    const transcriptEl = document.getElementById('dsp-transcript-display');
+    const gridEl = document.getElementById('dsp-feedback-grid');
+
+    if (transcriptEl) {
+      transcriptEl.innerHTML = `<strong>You said:</strong> <em>"${transcript}"</em>`;
+    }
+
+    if (gridEl) {
+      gridEl.innerHTML = `
+        <div class="dsp-feedback-item">
+          <div class="dsp-feedback-label">Word Usage</div>
+          <div class="dsp-feedback-text">${result.word_usage}</div>
+        </div>
+        <div class="dsp-feedback-item">
+          <div class="dsp-feedback-label">Clarity</div>
+          <div class="dsp-feedback-text">${result.clarity}</div>
+        </div>
+        <div class="dsp-feedback-item">
+          <div class="dsp-feedback-label">Vocabulary</div>
+          <div class="dsp-feedback-text">${result.vocabulary}</div>
+        </div>
+        <div class="dsp-feedback-item dsp-feedback-tip">
+          <div class="dsp-feedback-label">Tip</div>
+          <div class="dsp-feedback-text">${result.tip}</div>
+        </div>
+      `;
+    }
+
+    dspSetState('feedback');
+  }
+
+  function dspReset() {
+    dspTranscript = '';
+    const liveEl = document.getElementById('dsp-transcript-live');
+    if (liveEl) liveEl.textContent = '';
+    dspSetState('idle');
+  }
+
+  function dspSetState(state) {
+    const idle = document.getElementById('dsp-idle');
+    const recording = document.getElementById('dsp-recording');
+    const loading = document.getElementById('dsp-loading');
+    const feedback = document.getElementById('dsp-feedback');
+    if (idle) idle.style.display = state === 'idle' ? 'block' : 'none';
+    if (recording) recording.style.display = state === 'recording' ? 'block' : 'none';
+    if (loading) loading.style.display = state === 'loading' ? 'block' : 'none';
+    if (feedback) feedback.style.display = state === 'feedback' ? 'block' : 'none';
+  }
+
   /**
    * Update streak display
    */
@@ -392,7 +583,8 @@ const DailyWordModule = (function() {
     completeToday: completeToday,
     retryExercise: retryExercise,
     refresh: refresh,
-    getProgress: getProgress
+    getProgress: getProgress,
+    stopSpeaking: dspStopRecording
   };
 })();
 
