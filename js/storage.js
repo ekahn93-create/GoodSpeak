@@ -59,7 +59,9 @@ const StorageManager = (function() {
         practiceStreak: 0,     // Current multi-activity streak
         longestPracticeStreak: 0,
         wordsLearnedToday: 0,  // Words learned on wordsLearnedDate
-        wordsLearnedDate: null
+        wordsLearnedDate: null,
+        speechSessions: [],    // Array of {date, wpm, fillers, ts} — cloud-synced
+        vocabHistory: []       // Array of {date, count, ts} — cloud-synced
       }
     };
   }
@@ -187,6 +189,8 @@ const StorageManager = (function() {
     if (merged.stats.longestPracticeStreak === undefined) merged.stats.longestPracticeStreak = 0;
     if (merged.stats.wordsLearnedToday === undefined) merged.stats.wordsLearnedToday = 0;
     if (merged.stats.wordsLearnedDate === undefined) merged.stats.wordsLearnedDate = null;
+    if (!merged.stats.speechSessions) merged.stats.speechSessions = [];
+    if (!merged.stats.vocabHistory) merged.stats.vocabHistory = [];
 
     return merged;
   }

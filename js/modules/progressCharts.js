@@ -5,41 +5,57 @@
 
 const ProgressChartsModule = (function() {
 
-  const SPEECH_SESSIONS_KEY = 'speechSessions'; // array of {date, wpm, fillers, ts}
-  const VOCAB_HISTORY_KEY   = 'vocabHistory';    // array of {date, count, ts}
-  const WEEKLY_GOAL = 5; // target sessions per week
+  const WEEKLY_GOAL = 5; // target active days per week
 
   // ---- Storage helpers ----
+  // All chart data lives inside articulationAppData so it cloud-syncs automatically.
 
-  function getData(key) {
-    try { return JSON.parse(localStorage.getItem(key)) || []; }
-    catch(e) { return []; }
+  function getSpeechSessions() {
+    if (typeof StorageManager === 'undefined') return [];
+    const d = StorageManager.load();
+    return (d && d.stats && d.stats.speechSessions) ? d.stats.speechSessions : [];
+  }
+
+  function getVocabHistory() {
+    if (typeof StorageManager === 'undefined') return [];
+    const d = StorageManager.load();
+    return (d && d.stats && d.stats.vocabHistory) ? d.stats.vocabHistory : [];
   }
 
   // Called externally when a Web Speech session ends
   function logSpeechSession(wpm, fillerCount) {
-    const sessions = getData(SPEECH_SESSIONS_KEY);
-    sessions.push({
+    if (typeof StorageManager === 'undefined') return;
+    const data = StorageManager.load();
+    if (!data) return;
+    if (!data.stats.speechSessions) data.stats.speechSessions = [];
+    data.stats.speechSessions.push({
       date: new Date().toLocaleDateString(),
       wpm: wpm,
       fillers: fillerCount,
       ts: Date.now()
     });
-    localStorage.setItem(SPEECH_SESSIONS_KEY, JSON.stringify(sessions.slice(-20)));
-    if (typeof StorageManager !== 'undefined') StorageManager.markActiveToday();
+    // Keep last 50 sessions
+    data.stats.speechSessions = data.stats.speechSessions.slice(-50);
+    StorageManager.save(data);
+    StorageManager.markActiveToday();
   }
 
   // Called externally when vocab count changes
   function logVocabCount(count) {
-    const history = getData(VOCAB_HISTORY_KEY);
+    if (typeof StorageManager === 'undefined') return;
+    const data = StorageManager.load();
+    if (!data) return;
+    if (!data.stats.vocabHistory) data.stats.vocabHistory = [];
     const today = new Date().toLocaleDateString();
-    const idx = history.findIndex(h => h.date === today);
+    const idx = data.stats.vocabHistory.findIndex(h => h.date === today);
     if (idx > -1) {
-      history[idx].count = count;
+      data.stats.vocabHistory[idx].count = count;
     } else {
-      history.push({ date: today, count, ts: Date.now() });
+      data.stats.vocabHistory.push({ date: today, count, ts: Date.now() });
     }
-    localStorage.setItem(VOCAB_HISTORY_KEY, JSON.stringify(history.slice(-30)));
+    // Keep last 60 entries (~2 months)
+    data.stats.vocabHistory = data.stats.vocabHistory.slice(-60);
+    StorageManager.save(data);
   }
 
   // ---- Aggregate speech sessions by day ----
@@ -372,19 +388,24 @@ const ProgressChartsModule = (function() {
   }
 
   // ---- Weekly activity data ----
-  function getWeeklyData(speechSessions) {
+  // Returns 7 days ending today. active=1 if the user did anything that day, 0 otherwise.
+  function getWeeklyData(activeDates) {
     const days = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
     const today = new Date();
+    // activeDates are YYYY-MM-DD strings
+    const activeSet = new Set(activeDates || []);
     const weekData = [];
 
     for (let i = 6; i >= 0; i--) {
       const d = new Date(today);
       d.setDate(today.getDate() - i);
       const label = days[d.getDay()];
-      const dateStr = d.toLocaleDateString();
-
-      const sessCount = speechSessions.filter(s => s.date === dateStr).length;
-      weekData.push({ label, sessCount, date: dateStr });
+      // Build YYYY-MM-DD key to match activeDates format
+      const yyyy = d.getFullYear();
+      const mm   = String(d.getMonth() + 1).padStart(2, '0');
+      const dd   = String(d.getDate()).padStart(2, '0');
+      const dateKey = yyyy + '-' + mm + '-' + dd;
+      weekData.push({ label, active: activeSet.has(dateKey) ? 1 : 0, date: dateKey });
     }
 
     return weekData;
@@ -442,32 +463,30 @@ const ProgressChartsModule = (function() {
 
   // ---- Main render ----
   function render() {
-    const speechSessions  = getData(SPEECH_SESSIONS_KEY);
+    const speechSessions = getSpeechSessions();
 
-    // Refresh vocab history with current count
+    // Refresh vocab history with current learned count
     if (typeof StorageManager !== 'undefined') {
       const ud = StorageManager.load();
-      if (ud) logVocabCount(ud.vocabulary.totalWordsLearned || 0);
+      if (ud) logVocabCount(ud.vocabulary.totalWordsLearned || ud.vocabulary.learned.length || 0);
     }
-    const vocabHistory = getData(VOCAB_HISTORY_KEY);
+    const vocabHistory = getVocabHistory();
 
-    // ---- Aggregate sessions to one point per day (needed for KPI too) ----
+    // ---- Aggregate sessions to one point per day ----
     const dailySpeech = aggregateSpeechByDay(speechSessions);
-    // Active days only (days with at least one session) for averages
-    const activeDays = dailySpeech.filter(s => s.wpm > 0);
+    // Only days where at least one speech session was recorded
+    const speechDays = dailySpeech.filter(s => s.wpm > 0);
 
     // ---- KPI: avg WPM ----
     const avgWpmEl = document.getElementById('kpi-avg-wpm');
     if (avgWpmEl) {
-      if (activeDays.length > 0) {
-        const avg = Math.round(activeDays.reduce((a,b) => a + b.wpm, 0) / activeDays.length);
+      if (speechDays.length > 0) {
+        const avg = Math.round(speechDays.reduce((a,b) => a + b.wpm, 0) / speechDays.length);
         avgWpmEl.textContent = avg;
-        if (activeDays.length >= 2) {
-          const half   = Math.floor(activeDays.length / 2);
-          const recentDays = activeDays.slice(-half);
-          const olderDays  = activeDays.slice(0, half);
-          const recentAvg  = Math.round(recentDays.reduce((a,b) => a + b.wpm, 0) / half);
-          const olderAvg   = Math.round(olderDays.reduce((a,b) => a + b.wpm, 0) / half);
+        if (speechDays.length >= 2) {
+          const half      = Math.floor(speechDays.length / 2);
+          const recentAvg = Math.round(speechDays.slice(-half).reduce((a,b) => a + b.wpm, 0) / half);
+          const olderAvg  = Math.round(speechDays.slice(0, half).reduce((a,b) => a + b.wpm, 0) / half);
           const diff = recentAvg - olderAvg;
           setTrend('kpi-wpm-trend', diff, ' wpm', true,
             'Recent avg: ' + recentAvg + ' wpm vs earlier avg: ' + olderAvg + ' wpm');
@@ -481,21 +500,21 @@ const ProgressChartsModule = (function() {
     if (typeof StorageManager !== 'undefined') {
       const ud = StorageManager.load();
       if (ud) {
-        // Words: this week vs last week (from vocabHistory)
-        const nowMs = Date.now();
+        const nowMs  = Date.now();
         const weekMs = 7 * 24 * 60 * 60 * 1000;
-        const vocabThisWeek  = vocabHistory.filter(v => nowMs - new Date(v.date).getTime() <= weekMs).length;
-        const vocabLastWeek  = vocabHistory.filter(v => {
+
+        // Words: days with new vocab this week vs last week
+        const vocabThisWeek = vocabHistory.filter(v => nowMs - new Date(v.date).getTime() <= weekMs).length;
+        const vocabLastWeek = vocabHistory.filter(v => {
           const age = nowMs - new Date(v.date).getTime();
           return age > weekMs && age <= 2 * weekMs;
         }).length;
-        const wordDiff = vocabThisWeek - vocabLastWeek;
         if (vocabHistory.length > 0) {
-          setTrend('kpi-words-trend', wordDiff, '', true,
-            'This week: ' + vocabThisWeek + ' days active vs last week: ' + vocabLastWeek);
+          setTrend('kpi-words-trend', vocabThisWeek - vocabLastWeek, '', true,
+            'This week: ' + vocabThisWeek + ' days with new words vs last week: ' + vocabLastWeek);
         }
 
-        // Streak: show current streak in the badge
+        // Streak: show current streak value in the trend badge
         const current = ud.stats.practiceStreak || ud.dailyWord.currentStreak || 0;
         const longest = ud.stats.longestPracticeStreak || ud.dailyWord.longestStreak || 0;
         const streakEl = document.getElementById('kpi-streak-trend');
@@ -521,18 +540,19 @@ const ProgressChartsModule = (function() {
             'This month: ' + thisMonth + '  |  Last month: ' + lastMonth);
         }
 
-        // Sessions: this week vs last week
-        const sessThisWeek = speechSessions.filter(s => nowMs - new Date(s.date).getTime() <= weekMs).length;
-        const sessLastWeek = speechSessions.filter(s => {
-          const age = nowMs - new Date(s.date).getTime();
+        // Sessions (active days): this week vs last week from activeDates
+        const activeDates = ud.stats.activeDates || [];
+        const activeThisWeek = activeDates.filter(d => nowMs - new Date(d).getTime() <= weekMs).length;
+        const activeLastWeek = activeDates.filter(d => {
+          const age = nowMs - new Date(d).getTime();
           return age > weekMs && age <= 2 * weekMs;
         }).length;
-        if (speechSessions.length > 0) {
-          setTrend('kpi-sessions-trend', sessThisWeek - sessLastWeek, '', true,
-            'This week: ' + sessThisWeek + ' sessions  |  Last week: ' + sessLastWeek);
+        if (activeDates.length > 0) {
+          setTrend('kpi-sessions-trend', activeThisWeek - activeLastWeek, '', true,
+            'This week: ' + activeThisWeek + ' active days  |  Last week: ' + activeLastWeek);
         }
 
-        // Words today vs yesterday
+        // Words today
         const wordsToday = StorageManager.getWordsLearnedToday();
         if (wordsToday > 0) {
           setTrend('kpi-today-trend', wordsToday, '', true, wordsToday + ' words learned today');
@@ -540,15 +560,20 @@ const ProgressChartsModule = (function() {
       }
     }
 
-    // ---- Goal ring ----
-    const weekData = getWeeklyData(speechSessions);
-    const weekSessions = weekData.reduce((a,b) => a + b.sessCount, 0);
-    const goalPct = weekSessions / WEEKLY_GOAL;
+    // ---- Goal ring + Weekly Activity bar ----
+    // Both use activeDates so any practice counts, not just speech sessions.
+    const activeDatesAll = (typeof StorageManager !== 'undefined')
+      ? ((StorageManager.load() || {}).stats || {}).activeDates || []
+      : [];
+    const weekData    = getWeeklyData(activeDatesAll);
+    const activeDays  = weekData.reduce((a,b) => a + b.active, 0);
+    const goalPct     = activeDays / WEEKLY_GOAL;
+
     drawGoalRing('chart-goal-ring', goalPct);
     const pctEl = document.getElementById('review-goal-pct');
     if (pctEl) pctEl.textContent = Math.min(100, Math.round(goalPct * 100)) + '%';
     const subEl = document.getElementById('review-goal-sub');
-    if (subEl) subEl.textContent = weekSessions + ' / ' + WEEKLY_GOAL + ' sessions this week';
+    if (subEl) subEl.textContent = activeDays + ' / ' + WEEKLY_GOAL + ' days active this week';
 
     // ---- Dual line: WPM + Fillers ----
     drawDualLineChart('chart-wpm', 'chart-wpm-empty',
@@ -572,17 +597,14 @@ const ProgressChartsModule = (function() {
       COLORS.rose
     );
 
-    // ---- Bar chart: weekly activity ----
-    const barColors = weekData.map((_, i) => {
-      const d = new Date();
-      d.setDate(d.getDate() - (6 - i));
-      return d.toLocaleDateString() === new Date().toLocaleDateString()
-        ? COLORS.indigo
-        : '#475569';
-    });
+    // ---- Bar chart: weekly activity (1 = active, 0 = inactive) ----
+    const today = new Date().toLocaleDateString();
+    const barColors = weekData.map((d) =>
+      new Date(d.date).toLocaleDateString() === today ? COLORS.indigo : '#475569'
+    );
     drawBarChart('chart-weekly', 'chart-weekly-empty',
       weekData.map(d => d.label),
-      weekData.map(d => d.sessCount),
+      weekData.map(d => d.active),
       barColors
     );
 
