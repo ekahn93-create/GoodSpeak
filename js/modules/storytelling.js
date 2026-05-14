@@ -1369,6 +1369,8 @@ case 'recordings':
   }
 
   function loadDescriptionChallenge() {
+    // Guard: elements only exist when the challenges tab is active
+    if (!document.getElementById('description-display')) return;
     // Show loading state
     const objectElement = document.getElementById('description-object');
     const forbiddenList = document.getElementById('forbidden-words-list');
