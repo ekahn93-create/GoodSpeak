@@ -80,10 +80,11 @@ User's response:
 ${transcript}
 """
 
-Evaluate the response on these 4 dimensions and give one actionable improvement tip. Be encouraging but honest. Keep each dimension to 1–2 sentences.
+Evaluate the response on these 5 dimensions and give one actionable improvement tip. Be encouraging but honest. Keep each dimension to 1–2 sentences.
 
 Respond ONLY with valid JSON in this exact format, no other text:
 {
+  "relevance": "...",
   "structure": "...",
   "engagement": "...",
   "vocabulary": "...",

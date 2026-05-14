@@ -253,7 +253,7 @@ case 'recordings':
           <p>${prompt.prompt}</p>
           <div class="prompt-meta">
             <span class="badge badge-secondary">${prompt.difficulty}</span>
-            <span class="badge badge-primary">${prompt.estimatedTime}</span>
+            <span class="badge" style="background-color: #fef3c7; color: #b45309;">${(DIFFICULTY_TIME[prompt.difficulty] || DIFFICULTY_TIME.beginner).label}</span>
           </div>
           <div style="display:flex; align-items:center; gap: var(--spacing-sm); flex-wrap:wrap; margin-top: var(--spacing-xs);">
             ${isCompleted ? '<div class="badge badge-success">✓ Completed</div>' : ''}
@@ -333,6 +333,18 @@ case 'recordings':
     if (guidanceBeginning) guidanceBeginning.textContent = prompt.guidance.beginning;
     if (guidanceMiddle) guidanceMiddle.textContent = prompt.guidance.middle;
     if (guidanceEnd) guidanceEnd.textContent = prompt.guidance.end;
+
+    // Set timer duration from difficulty and show estimated time
+    const timeInfo = (typeof DIFFICULTY_TIME !== 'undefined' && DIFFICULTY_TIME[prompt.difficulty])
+      ? DIFFICULTY_TIME[prompt.difficulty]
+      : { label: '2-5 minutes', seconds: 300 };
+    const estimatedTimeEl = document.getElementById('story-estimated-time');
+    if (estimatedTimeEl) {
+      estimatedTimeEl.textContent = `Suggested: ${timeInfo.label}`;
+    }
+    if (storyWebSpeechInstance) {
+      storyWebSpeechInstance.setDuration(timeInfo.seconds);
+    }
 
     // Update "Mark as Complete" button state
     const markCompleteBtn = document.getElementById('mark-story-complete-btn');

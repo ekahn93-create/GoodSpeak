@@ -20,7 +20,6 @@ const storyPromptsDatabase = {
         end: "How did this change you? What do you think about it now with hindsight?"
       },
       difficulty: "beginner",
-      estimatedTime: "5-10 minutes",
       theme: "personal"
     },
     {
@@ -33,7 +32,6 @@ const storyPromptsDatabase = {
         end: "What did you ultimately learn? How has this lesson affected you since?"
       },
       difficulty: "beginner",
-      estimatedTime: "7-12 minutes",
       theme: "personal"
     },
     {
@@ -46,7 +44,6 @@ const storyPromptsDatabase = {
         end: "How did this experience change your self-perception?"
       },
       difficulty: "intermediate",
-      estimatedTime: "8-15 minutes",
       theme: "personal"
     },
     {
@@ -59,7 +56,6 @@ const storyPromptsDatabase = {
         end: "How has this friendship impacted your life? What makes it meaningful?"
       },
       difficulty: "beginner",
-      estimatedTime: "6-10 minutes",
       theme: "personal"
     },
     {
@@ -72,7 +68,6 @@ const storyPromptsDatabase = {
         end: "How do you feel about that fear now? What did overcoming it teach you?"
       },
       difficulty: "intermediate",
-      estimatedTime: "8-12 minutes",
       theme: "personal"
     },
     {
@@ -85,7 +80,6 @@ const storyPromptsDatabase = {
         end: "How did this conversation change you? What actions did you take afterward?"
       },
       difficulty: "intermediate",
-      estimatedTime: "7-12 minutes",
       theme: "personal"
     },
     {
@@ -98,7 +92,6 @@ const storyPromptsDatabase = {
         end: "Why are you grateful for this mistake now? What unexpected benefits resulted?"
       },
       difficulty: "intermediate",
-      estimatedTime: "8-13 minutes",
       theme: "personal"
     },
     {
@@ -111,7 +104,6 @@ const storyPromptsDatabase = {
         end: "What was the outcome? How did it affect your confidence going forward?"
       },
       difficulty: "advanced",
-      estimatedTime: "10-15 minutes",
       theme: "personal"
     },
     {
@@ -124,7 +116,6 @@ const storyPromptsDatabase = {
         end: "How did this place shape your values, interests, or personality?"
       },
       difficulty: "intermediate",
-      estimatedTime: "8-14 minutes",
       theme: "personal"
     },
     {
@@ -137,7 +128,6 @@ const storyPromptsDatabase = {
         end: "How did this clarity change your understanding or approach to something?"
       },
       difficulty: "advanced",
-      estimatedTime: "9-15 minutes",
       theme: "personal"
     }
   ],
@@ -153,7 +143,6 @@ const storyPromptsDatabase = {
         end: "How does this discovery change them or their world?"
       },
       difficulty: "intermediate",
-      estimatedTime: "10-15 minutes",
       theme: "fictional"
     },
     {
@@ -166,7 +155,6 @@ const storyPromptsDatabase = {
         end: "How do they finally break the cycle, or do they? What do they learn?"
       },
       difficulty: "advanced",
-      estimatedTime: "12-20 minutes",
       theme: "fictional"
     },
     {
@@ -179,7 +167,6 @@ const storyPromptsDatabase = {
         end: "How does the conversation resolve? What impact does it have on both?"
       },
       difficulty: "advanced",
-      estimatedTime: "10-16 minutes",
       theme: "fictional"
     },
     {
@@ -192,7 +179,6 @@ const storyPromptsDatabase = {
         end: "How do they resolve the conflict? What does this reveal about communication?"
       },
       difficulty: "advanced",
-      estimatedTime: "12-18 minutes",
       theme: "fictional"
     },
     {
@@ -205,7 +191,6 @@ const storyPromptsDatabase = {
         end: "Does the message prove true? What does the character learn from the experience?"
       },
       difficulty: "intermediate",
-      estimatedTime: "10-15 minutes",
       theme: "fictional"
     },
     {
@@ -218,7 +203,6 @@ const storyPromptsDatabase = {
         end: "How is the journey resolved? What was significant about this particular object?"
       },
       difficulty: "intermediate",
-      estimatedTime: "10-14 minutes",
       theme: "fictional"
     },
     {
@@ -231,7 +215,6 @@ const storyPromptsDatabase = {
         end: "Reveal any truth or resolution. What does this say about perspective?"
       },
       difficulty: "advanced",
-      estimatedTime: "14-20 minutes",
       theme: "fictional"
     },
     {
@@ -244,7 +227,6 @@ const storyPromptsDatabase = {
         end: "How is it finally resolved? What could have prevented it?"
       },
       difficulty: "intermediate",
-      estimatedTime: "10-15 minutes",
       theme: "fictional"
     },
     {
@@ -257,7 +239,6 @@ const storyPromptsDatabase = {
         end: "Do they find each other? What unexpected connection results from this exchange?"
       },
       difficulty: "intermediate",
-      estimatedTime: "10-14 minutes",
       theme: "fictional"
     },
     {
@@ -270,7 +251,6 @@ const storyPromptsDatabase = {
         end: "What do they choose? What are the consequences? Do they have regrets?"
       },
       difficulty: "advanced",
-      estimatedTime: "12-18 minutes",
       theme: "fictional"
     }
   ],
@@ -286,7 +266,6 @@ const storyPromptsDatabase = {
         end: "What emotion or atmosphere defines this place? What makes it unique?"
       },
       difficulty: "intermediate",
-      estimatedTime: "6-10 minutes",
       theme: "descriptive"
     },
     {
@@ -299,7 +278,6 @@ const storyPromptsDatabase = {
         end: "How does this routine prepare someone for the day? What makes it meaningful?"
       },
       difficulty: "beginner",
-      estimatedTime: "6-10 minutes",
       theme: "descriptive"
     },
     {
@@ -312,7 +290,6 @@ const storyPromptsDatabase = {
         end: "What did you imagine about their story? Why did they stay in your memory?"
       },
       difficulty: "intermediate",
-      estimatedTime: "6-10 minutes",
       theme: "descriptive"
     },
     {
@@ -325,7 +302,6 @@ const storyPromptsDatabase = {
         end: "What feelings does this transition evoke? What does it symbolize?"
       },
       difficulty: "intermediate",
-      estimatedTime: "7-12 minutes",
       theme: "descriptive"
     },
     {
@@ -338,7 +314,6 @@ const storyPromptsDatabase = {
         end: "How do all these elements combine to evoke the unnamed emotion?"
       },
       difficulty: "advanced",
-      estimatedTime: "10-15 minutes",
       theme: "descriptive"
     },
     {
@@ -351,7 +326,6 @@ const storyPromptsDatabase = {
         end: "What feeling or realization does this memory hold? Why does it persist?"
       },
       difficulty: "intermediate",
-      estimatedTime: "8-12 minutes",
       theme: "descriptive"
     },
     {
@@ -364,7 +338,6 @@ const storyPromptsDatabase = {
         end: "What do these sounds mean? What story do they tell together?"
       },
       difficulty: "intermediate",
-      estimatedTime: "6-10 minutes",
       theme: "descriptive"
     },
     {
@@ -377,7 +350,6 @@ const storyPromptsDatabase = {
         end: "What do these changes or consistencies reveal about time's passage?"
       },
       difficulty: "advanced",
-      estimatedTime: "10-16 minutes",
       theme: "descriptive"
     },
     {
@@ -390,7 +362,6 @@ const storyPromptsDatabase = {
         end: "What mood or meaning does this weather-character create?"
       },
       difficulty: "intermediate",
-      estimatedTime: "6-10 minutes",
       theme: "descriptive"
     },
     {
@@ -403,7 +374,6 @@ const storyPromptsDatabase = {
         end: "Looking back, how do you understand this period now? What quality defined it?"
       },
       difficulty: "advanced",
-      estimatedTime: "10-15 minutes",
       theme: "descriptive"
     }
   ]
@@ -442,6 +412,17 @@ function getPromptById(promptId) {
   const allPrompts = getAllPrompts();
   return allPrompts.find(prompt => prompt.id === promptId) || null;
 }
+
+/**
+ * Time ranges and timer defaults by difficulty
+ * label: shown on card badge and in practice interface
+ * seconds: countdown timer default (upper bound of range)
+ */
+const DIFFICULTY_TIME = {
+  beginner:     { label: '2-5 minutes',   seconds: 300  },
+  intermediate: { label: '5-10 minutes',  seconds: 600  },
+  advanced:     { label: '10-15 minutes', seconds: 900  }
+};
 
 // Log that story prompts database is loaded
 console.log('Story prompts database loaded: 30 prompts total');

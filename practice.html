@@ -150,14 +150,11 @@
                     </div>
                 </div>
 
-                <div class="time-selector">
-                    <button class="ws-inst-time-btn active" data-time="30">30 Seconds</button>
-                    <button class="ws-inst-time-btn" data-time="60">1 Minute</button>
-                    <button class="ws-inst-time-btn" data-time="120">2 Minutes</button>
-                </div>
-
                 <div class="prompt-details">
                     <p id="prompt-text" class="prompt-text"></p>
+                    <div style="margin-top: var(--spacing-sm);">
+                        <span id="story-estimated-time" class="badge" style="font-size: var(--font-size-sm); background-color: #fef3c7; color: #b45309;"></span>
+                    </div>
                 </div>
 
                 <!-- Story Structure Guidance -->
@@ -181,7 +178,7 @@
 
                 <!-- Speak mode controls -->
                 <div id="story-speak-controls">
-                    <p style="text-align: center; color: var(--text-secondary); font-size: var(--font-size-sm); margin-bottom: var(--spacing-md); font-style: italic;">Take a moment, take a deep breath, and when you're ready...</p>
+                    <p style="text-align: center; color: var(--text-primary); font-size: var(--font-size-lg); font-weight: 500; margin-bottom: var(--spacing-md); font-style: italic;">Take a moment, take a deep breath, and when you're ready...</p>
                     <div class="exercise-controls">
                         <button class="btn btn-primary" id="story-start-btn">Start Timer &amp; Listen</button>
                         <button class="btn btn-secondary" id="story-stop-btn" style="display: none;">Stop</button>
@@ -190,7 +187,7 @@
                     </div>
                     <div id="story-status" style="margin-top: var(--spacing-md); font-size: var(--font-size-sm); color: var(--text-secondary); text-align: center; min-height: 1.5rem;"></div>
                     <div class="timer-display">
-                        <div class="timer-number" id="story-timer-seconds">0:30</div>
+                        <div class="timer-number" id="story-timer-seconds">5:00</div>
                         <div class="timer-label">remaining</div>
                     </div>
                     <div id="story-transcript-section" style="margin-top: var(--spacing-lg); display: none;">
@@ -215,7 +212,7 @@
                         <button class="btn btn-secondary" id="story-type-reset-btn" style="display: none;">Reset</button>
                     </div>
                     <div class="timer-display">
-                        <div class="timer-number" id="story-type-timer-seconds">0:30</div>
+                        <div class="timer-number" id="story-type-timer-seconds">5:00</div>
                         <div class="timer-label">remaining</div>
                     </div>
                     <div style="margin-top: var(--spacing-lg);">
@@ -1004,7 +1001,7 @@
           <button class="footer-link" data-footer-modal="about">About</button>
           <button class="footer-link" data-footer-modal="privacy">Privacy</button>
           <button class="footer-link" data-footer-modal="terms">Terms</button>
-          <a href="mailto:evankahn93@gmail.com?subject=EZSpeaks Feedback" class="footer-link footer-link--feedback">Feedback</a>
+          <a href="mailto:admin@ezspeaks.com?subject=EZSpeaks Feedback" class="footer-link footer-link--feedback">Feedback</a>
         </div>
 
         <!-- Tip + copyright -->

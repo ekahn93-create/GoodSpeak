@@ -96,19 +96,6 @@ const WebSpeechModule = (function() {
     return Math.round((new Set(words).size / words.length) * 100);
   }
 
-  function calcTopicRelevance(transcript, prompt) {
-    const stopWords = new Set(['the','a','an','and','or','but','in','on','at','to','for',
-      'of','with','by','from','is','are','was','were','be','been','have','has','had',
-      'do','does','did','will','would','could','should','may','might','i','you','we',
-      'they','he','she','it','my','your','our','their','its','this','that','these','those',
-      'if','as','so','then','than','when','what','how','who','which','about','into','out']);
-    const promptWords = tokenize(prompt).filter(w => !stopWords.has(w) && w.length > 3);
-    if (promptWords.length === 0) return 100;
-    const transcriptLower = transcript.toLowerCase();
-    const matched = promptWords.filter(w => transcriptLower.includes(w));
-    return Math.round((matched.length / promptWords.length) * 100);
-  }
-
   function calcWeakWords(words) {
     const breakdown = {};
     let total = 0;
@@ -156,12 +143,6 @@ const WebSpeechModule = (function() {
     if (avg <= 20)  return { label: 'Good sentence length', color: '#27ae60' };
     if (avg <= 30)  return { label: 'Sentences are long', color: '#f39c12' };
     return          { label: 'Sentences are very long', color: '#e74c3c' };
-  }
-
-  function rateTopicRelevance(pct) {
-    if (pct >= 60)  return { label: 'Stayed on topic', color: '#27ae60' };
-    if (pct >= 35)  return { label: 'Mostly on topic', color: '#f39c12' };
-    return          { label: 'Drifted off topic', color: '#e74c3c' };
   }
 
   function rateWeakWords(total, words) {
@@ -250,8 +231,6 @@ const WebSpeechModule = (function() {
     }
     const diversity = calcDiversity(words);
     const weakWords = calcWeakWords(words);
-    const relevance = calcTopicRelevance(trimmed, promptText || '');
-
     let avgSentLen, sentenceCount;
     if (isSpeech) {
       avgSentLen    = pauseChunks.length > 0 ? Math.round(words.length / pauseChunks.length) : words.length;
@@ -292,13 +271,6 @@ const WebSpeechModule = (function() {
         value: `~${avgSentLen} words/${isSpeech ? 'thought' : 'sentence'}`,
         detail: `${sentenceCount} ${isSpeech ? 'natural pause' : 'sentence'}${sentenceCount !== 1 ? 's' : ''} detected · Ideal range: 6–20 words`,
         rating: rateSentenceLength(avgSentLen)
-      },
-      {
-        icon: '🎯',
-        title: 'Topic Relevance',
-        value: `${relevance}% match`,
-        detail: 'Based on key words from the prompt',
-        rating: rateTopicRelevance(relevance)
       },
       {
         icon: '💬',
@@ -417,6 +389,7 @@ const WebSpeechModule = (function() {
     card.appendChild(header);
 
     const dimensions = [
+      { label: 'Relevance', key: 'relevance' },
       { label: 'Structure', key: 'structure' },
       { label: 'Engagement', key: 'engagement' },
       { label: 'Vocabulary', key: 'vocabulary' }
@@ -600,7 +573,7 @@ const WebSpeechModule = (function() {
 
     function _doStartSession() {
       const activeBtn = cardScope.querySelector('.ws-inst-time-btn.active');
-      totalSeconds = activeBtn ? parseInt(activeBtn.dataset.time) : 30;
+      if (activeBtn) totalSeconds = parseInt(activeBtn.dataset.time);
       remainingSeconds = totalSeconds;
       elapsedSeconds = 0;
       isListening = true;
@@ -715,7 +688,8 @@ const WebSpeechModule = (function() {
     // ── Type session ────────────────────────────────────────────────────────
     function startTypeSession() {
       const activeBtn = cardScope.querySelector('.ws-inst-time-btn.active');
-      typeRemainingSeconds = activeBtn ? parseInt(activeBtn.dataset.time) : 30;
+      if (activeBtn) typeRemainingSeconds = parseInt(activeBtn.dataset.time);
+      else typeRemainingSeconds = totalSeconds;
       isTypeTimerActive = true;
 
       const feedbackSection = el('feedback-section');
@@ -883,7 +857,7 @@ const WebSpeechModule = (function() {
       if (typeTimer) { clearInterval(typeTimer); typeTimer = null; }
 
       const activeBtn = cardScope ? cardScope.querySelector('.ws-inst-time-btn.active') : null;
-      totalSeconds = activeBtn ? parseInt(activeBtn.dataset.time) : 30;
+      totalSeconds = activeBtn ? parseInt(activeBtn.dataset.time) : totalSeconds;
       remainingSeconds = totalSeconds;
       typeRemainingSeconds = totalSeconds;
       elapsedSeconds = 0;
@@ -917,7 +891,22 @@ const WebSpeechModule = (function() {
       if (typeTextarea) typeTextarea.value = '';
     }
 
-    return { init, stopAndReset };
+    function setDuration(seconds) {
+      if (isListening || isTypeTimerActive) return;
+      totalSeconds = seconds;
+      remainingSeconds = seconds;
+      typeRemainingSeconds = seconds;
+      // Sync the active time button if one matches, otherwise clear all active states
+      if (cardScope) {
+        cardScope.querySelectorAll('.ws-inst-time-btn').forEach(b => {
+          b.classList.toggle('active', parseInt(b.dataset.time) === seconds);
+        });
+      }
+      updateTimerDisplay();
+      updateTypeTimerDisplay();
+    }
+
+    return { init, stopAndReset, setDuration };
   }
 
   // ═══════════════════════════════════════════════════════════════════════════
