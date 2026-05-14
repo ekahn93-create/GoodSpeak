@@ -724,9 +724,29 @@ case 'recordings':
     }
 
     // Description Challenge
+    const newDescriptionBtnSetup = document.getElementById('new-description-btn-setup');
+    if (newDescriptionBtnSetup) {
+      newDescriptionBtnSetup.addEventListener('click', loadDescriptionChallenge);
+    }
     const newDescriptionBtn = document.getElementById('new-description-btn');
     if (newDescriptionBtn) {
       newDescriptionBtn.addEventListener('click', loadDescriptionChallenge);
+    }
+    const descriptionStartBtn = document.getElementById('description-start-btn');
+    if (descriptionStartBtn) {
+      descriptionStartBtn.addEventListener('click', startDescriptionExercise);
+    }
+    const descriptionStopBtn = document.getElementById('description-stop-btn');
+    if (descriptionStopBtn) {
+      descriptionStopBtn.addEventListener('click', () => stopDescriptionExercise(false));
+    }
+    const descriptionTryAgainBtn = document.getElementById('description-try-again-btn');
+    if (descriptionTryAgainBtn) {
+      descriptionTryAgainBtn.addEventListener('click', () => {
+        document.getElementById('description-results').style.display = 'none';
+        document.getElementById('description-controls').style.display = 'flex';
+        startDescriptionExercise();
+      });
     }
 
     // Speak for X Minutes - New Topic buttons
@@ -991,6 +1011,154 @@ case 'recordings':
 
   // ========== Interactive Challenges Implementation ==========
 
+  // Description Challenge state
+  let currentForbiddenWords = [];
+  let descriptionTimer = null;
+  let descriptionRecognition = null;
+  let descriptionSecondsElapsed = 0;
+  let descriptionHitCount = 0;
+  let descriptionBreakdown = {};
+
+  function formatDescriptionTime(secs) {
+    const m = Math.floor(secs / 60);
+    const s = secs % 60;
+    return m + ':' + String(s).padStart(2, '0');
+  }
+
+  function resetDescriptionState() {
+    descriptionSecondsElapsed = 0;
+    descriptionHitCount = 0;
+    descriptionBreakdown = {};
+    const elapsed = document.getElementById('description-elapsed');
+    if (elapsed) elapsed.textContent = '0:00';
+    const liveCount = document.getElementById('description-live-count');
+    if (liveCount) liveCount.textContent = '0';
+    const lastDetected = document.getElementById('description-last-detected');
+    if (lastDetected) lastDetected.textContent = '—';
+    document.getElementById('description-active').style.display = 'none';
+  }
+
+  function startDescriptionExercise() {
+    if (!currentForbiddenWords.length) return;
+    resetDescriptionState();
+
+    document.getElementById('description-start-btn').style.display = 'none';
+    document.getElementById('description-stop-btn').style.display = '';
+    document.getElementById('description-active').style.display = 'block';
+
+    descriptionTimer = setInterval(() => {
+      descriptionSecondsElapsed++;
+      const el = document.getElementById('description-elapsed');
+      if (el) el.textContent = formatDescriptionTime(descriptionSecondsElapsed);
+    }, 1000);
+
+    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+    if (SpeechRecognition) {
+      descriptionRecognition = new SpeechRecognition();
+      descriptionRecognition.continuous = true;
+      descriptionRecognition.interimResults = true;
+      descriptionRecognition.lang = 'en-US';
+
+      descriptionRecognition.onresult = function(event) {
+        for (let i = event.resultIndex; i < event.results.length; i++) {
+          if (event.results[i].isFinal) {
+            const chunk = event.results[i][0].transcript.toLowerCase() + ' ';
+            currentForbiddenWords.forEach(word => {
+              const pattern = '(?:^|\\s)' + word.replace(/\s+/g, '\\s+') + '(?:\\s|$)';
+              const matches = chunk.match(new RegExp(pattern, 'gi'));
+              if (matches) {
+                descriptionHitCount += matches.length;
+                descriptionBreakdown[word] = (descriptionBreakdown[word] || 0) + matches.length;
+                const liveEl = document.getElementById('description-live-count');
+                const lastEl = document.getElementById('description-last-detected');
+                if (liveEl) { liveEl.textContent = descriptionHitCount; liveEl.style.color = descriptionHitCount > 3 ? '#e74c3c' : 'var(--accent-color)'; }
+                if (lastEl) lastEl.textContent = '"' + word + '"';
+              }
+            });
+          }
+        }
+      };
+
+      descriptionRecognition.onerror = function(event) {
+        if (event.error === 'not-allowed' || event.error === 'service-not-allowed') {
+          const micEl = document.getElementById('description-mic-status');
+          if (micEl) micEl.textContent = 'Microphone access denied';
+        }
+      };
+
+      descriptionRecognition.onend = function() {
+        if (descriptionTimer) {
+          try { descriptionRecognition.start(); } catch(e) {}
+        }
+      };
+
+      try { descriptionRecognition.start(); } catch(e) {
+        const micEl = document.getElementById('description-mic-status');
+        if (micEl) micEl.textContent = 'Speech recognition not available';
+      }
+    } else {
+      const micEl = document.getElementById('description-mic-status');
+      if (micEl) micEl.textContent = 'Speech recognition not supported in this browser';
+    }
+  }
+
+  function stopDescriptionExercise(silent) {
+    if (descriptionTimer) { clearInterval(descriptionTimer); descriptionTimer = null; }
+    if (descriptionRecognition) {
+      try { descriptionRecognition.stop(); } catch(e) {}
+      descriptionRecognition = null;
+    }
+    if (silent) return;
+    showDescriptionResults();
+  }
+
+  function showDescriptionResults() {
+    document.getElementById('description-controls').style.display = 'none';
+    document.getElementById('description-active').style.display = 'none';
+    document.getElementById('description-results').style.display = 'block';
+
+    const duration = descriptionSecondsElapsed;
+    const count = descriptionHitCount;
+    let label, sub, bannerColor;
+    if (count === 0) {
+      label = 'Perfect — Zero Forbidden Words!';
+      sub = `You spoke for ${formatDescriptionTime(duration)} without using any forbidden words.`;
+      bannerColor = '#d4edda';
+    } else if (count <= 2) {
+      label = `Good — ${count} forbidden word${count > 1 ? 's' : ''} used`;
+      sub = `${formatDescriptionTime(duration)} of speaking with only ${count} slip${count > 1 ? 's' : ''}. Nearly clean.`;
+      bannerColor = '#d4edda';
+    } else if (count <= 5) {
+      label = `Fair — ${count} forbidden words used`;
+      sub = `Try again and focus on pausing before each sentence to choose your words deliberately.`;
+      bannerColor = '#fff3cd';
+    } else {
+      label = `${count} forbidden words — keep practicing`;
+      sub = `Awareness is the first step. Try slowing down and planning each sentence before you speak it.`;
+      bannerColor = '#f8d7da';
+    }
+
+    const banner = document.getElementById('description-score-banner');
+    banner.style.background = bannerColor;
+    banner.innerHTML = `<div style="font-size: var(--font-size-xl); font-weight: 700; margin-bottom: var(--spacing-xs);">${label}</div><div style="font-size: var(--font-size-md); color: var(--text-secondary);">${sub}</div>`;
+
+    const breakdown = document.getElementById('description-breakdown');
+    if (Object.keys(descriptionBreakdown).length > 0) {
+      breakdown.innerHTML = Object.entries(descriptionBreakdown)
+        .sort((a, b) => b[1] - a[1])
+        .map(([word, n]) => `
+          <div style="display:flex; justify-content:space-between; align-items:center; padding: var(--spacing-sm) var(--spacing-md); background: var(--bg-hover); border-radius: var(--border-radius-sm); margin-bottom: var(--spacing-xs);">
+            <span style="font-weight:600;">"${word}"</span>
+            <span style="color: var(--accent-color); font-weight:700;">${n}×</span>
+          </div>`).join('');
+    } else {
+      breakdown.innerHTML = '';
+    }
+
+    document.getElementById('description-tip-box').innerHTML =
+      '<strong>Tip:</strong> Before you speak, mentally note which words are forbidden. Pausing to think is better than slipping into familiar vocabulary.';
+  }
+
   /**
    * Start word association game
    */
@@ -1166,29 +1334,69 @@ case 'recordings':
   /**
    * Load description challenge
    */
-  function loadDescriptionChallenge() {
-    const challenges = [
-      { object: "Coffee", forbidden: ["drink", "hot", "caffeine", "cup", "morning"] },
-      { object: "Smartphone", forbidden: ["phone", "mobile", "screen", "apps", "call"] },
-      { object: "Book", forbidden: ["read", "pages", "story", "novel", "words"] },
-      { object: "Bicycle", forbidden: ["bike", "ride", "wheels", "pedal", "cycle"] },
-      { object: "Pizza", forbidden: ["food", "cheese", "Italian", "slice", "eat"] },
-      { object: "Music", forbidden: ["sound", "song", "listen", "melody", "hear"] },
-      { object: "Ocean", forbidden: ["water", "sea", "blue", "waves", "beach"] },
-      { object: "Computer", forbidden: ["laptop", "keyboard", "screen", "type", "internet"] }
-    ];
+  const descriptionFallbacks = [
+    { object: "Coffee", forbidden: ["drink", "hot", "caffeine", "cup", "morning"] },
+    { object: "Smartphone", forbidden: ["phone", "mobile", "screen", "apps", "call"] },
+    { object: "Book", forbidden: ["read", "pages", "story", "novel", "words"] },
+    { object: "Bicycle", forbidden: ["bike", "ride", "wheels", "pedal", "cycle"] },
+    { object: "Pizza", forbidden: ["food", "cheese", "Italian", "slice", "eat"] },
+    { object: "Music", forbidden: ["sound", "song", "listen", "melody", "hear"] },
+    { object: "Ocean", forbidden: ["water", "sea", "blue", "waves", "beach"] },
+    { object: "Computer", forbidden: ["laptop", "keyboard", "screen", "type", "internet"] }
+  ];
 
-    const randomChallenge = challenges[Math.floor(Math.random() * challenges.length)];
+  function applyDescriptionChallenge(challenge) {
+    currentForbiddenWords = challenge.forbidden;
 
     const objectElement = document.getElementById('description-object');
     const forbiddenList = document.getElementById('forbidden-words-list');
-
-    if (objectElement) objectElement.textContent = randomChallenge.object;
+    if (objectElement) objectElement.textContent = challenge.object;
     if (forbiddenList) {
-      forbiddenList.innerHTML = randomChallenge.forbidden.map(word =>
+      forbiddenList.innerHTML = challenge.forbidden.map(word =>
         `<span style="display: inline-block; margin: var(--spacing-xs); padding: var(--spacing-xs) var(--spacing-sm); background: rgba(255,255,255,0.2); border-radius: 4px;">${word}</span>`
       ).join('');
     }
+
+    stopDescriptionExercise(true);
+    resetDescriptionState();
+
+    document.getElementById('description-display').style.display = 'block';
+    document.getElementById('description-timer-section').style.display = 'block';
+    document.getElementById('description-results').style.display = 'none';
+    document.getElementById('description-controls').style.display = 'flex';
+    document.getElementById('description-start-btn').style.display = '';
+    document.getElementById('description-stop-btn').style.display = 'none';
+  }
+
+  function loadDescriptionChallenge() {
+    // Show loading state
+    const objectElement = document.getElementById('description-object');
+    const forbiddenList = document.getElementById('forbidden-words-list');
+    if (objectElement) objectElement.textContent = 'Loading…';
+    if (forbiddenList) forbiddenList.innerHTML = '';
+    document.getElementById('description-display').style.display = 'block';
+    document.getElementById('description-timer-section').style.display = 'none';
+    document.getElementById('description-controls').style.display = 'none';
+    document.getElementById('description-results').style.display = 'none';
+    stopDescriptionExercise(true);
+
+    fetch('/.netlify/functions/claude-proxy', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ task: 'description_challenge', payload: {} })
+    })
+      .then(r => r.json())
+      .then(data => {
+        if (data.object && Array.isArray(data.forbidden)) {
+          applyDescriptionChallenge(data);
+        } else {
+          throw new Error('Invalid response');
+        }
+      })
+      .catch(() => {
+        const fallback = descriptionFallbacks[Math.floor(Math.random() * descriptionFallbacks.length)];
+        applyDescriptionChallenge(fallback);
+      });
   }
 
   /**

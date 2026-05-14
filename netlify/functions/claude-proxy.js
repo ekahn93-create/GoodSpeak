@@ -217,6 +217,19 @@ Respond ONLY with valid JSON in this exact format, no other text:
   "tip": "One specific, actionable improvement tip."
 }`;
 
+  } else if (task === 'description_challenge') {
+    prompt = `You are generating a challenge for a speaking exercise app.
+
+Generate a common, everyday object and exactly 5 words that someone would naturally and obviously use when describing it. The forbidden words should be the most obvious/instinctive words for that object — the ones the speaker will have to actively avoid.
+
+Avoid abstract concepts, proper nouns, or anything too obscure. Stick to concrete, familiar objects.
+
+Respond ONLY with valid JSON in this exact format, no other text:
+{
+  "object": "...",
+  "forbidden": ["word1", "word2", "word3", "word4", "word5"]
+}`;
+
   } else {
     return { statusCode: 400, body: JSON.stringify({ error: 'Unknown task.' }) };
   }

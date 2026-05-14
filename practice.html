@@ -587,6 +587,7 @@
                     </div>
                 </div>
                 <div class="fluency-card-content">
+                    <!-- Setup / active display -->
                     <div id="description-display" class="exercise-display">
                         <h4 id="description-object" style="color: var(--primary-color); font-size: var(--font-size-xxl); margin-bottom: var(--spacing-lg);"></h4>
                         <div id="forbidden-words" style="background: var(--accent-color); color: var(--text-white); padding: var(--spacing-md); border-radius: var(--border-radius-sm); margin-bottom: var(--spacing-md);">
@@ -595,10 +596,48 @@
                                 <!-- Forbidden words will be displayed here -->
                             </div>
                         </div>
-                        <p style="font-style: italic; color: var(--text-secondary);">Describe this object in 30-60 seconds without using the forbidden words</p>
+                        <p style="font-style: italic; color: var(--text-secondary);">Describe this object without using the forbidden words</p>
                     </div>
-                    <div class="exercise-controls">
-                        <button class="btn btn-secondary" id="new-description-btn">New Challenge</button>
+
+                    <!-- Timer (always visible once challenge loaded) -->
+                    <div id="description-timer-section" style="display:none;">
+                        <div class="timer-display" style="margin-bottom: var(--spacing-lg);">
+                            <div class="timer-number" id="description-elapsed">0:00</div>
+                            <div class="timer-label">elapsed</div>
+                        </div>
+
+                        <!-- Live stats (shown while running) -->
+                        <div id="description-active" style="display:none; margin-bottom: var(--spacing-lg);">
+                            <div style="display:flex; justify-content:center; gap: var(--spacing-xl); margin-bottom: var(--spacing-md);">
+                                <div style="text-align:center;">
+                                    <div id="description-live-count" style="font-size: 2.5rem; font-weight: 700; color: var(--accent-color);">0</div>
+                                    <div style="font-size: var(--font-size-sm); color: var(--text-secondary);">forbidden used</div>
+                                </div>
+                                <div style="text-align:center;">
+                                    <div id="description-last-detected" style="font-size: 2.5rem; font-weight: 700; color: var(--text-secondary);">—</div>
+                                    <div style="font-size: var(--font-size-sm); color: var(--text-secondary);">last caught</div>
+                                </div>
+                            </div>
+                            <div id="description-mic-status" style="font-size: var(--font-size-sm); color: var(--text-secondary); text-align:center;">Listening...</div>
+                        </div>
+                    </div>
+
+                    <!-- Results screen -->
+                    <div id="description-results" style="display:none;">
+                        <div id="description-score-banner" style="text-align:center; padding: var(--spacing-xl); border-radius: var(--border-radius-sm); margin-bottom: var(--spacing-lg);"></div>
+                        <div id="description-breakdown" style="margin-bottom: var(--spacing-lg);"></div>
+                        <div id="description-tip-box" class="info-box" style="margin-bottom: var(--spacing-lg);"></div>
+                        <div class="exercise-controls">
+                            <button class="btn btn-primary" id="description-try-again-btn">Try Again</button>
+                            <button class="btn btn-secondary" id="new-description-btn">New Challenge</button>
+                        </div>
+                    </div>
+
+                    <!-- Controls -->
+                    <div id="description-controls" class="exercise-controls">
+                        <button class="btn btn-primary" id="description-start-btn" style="display:none;">Start</button>
+                        <button class="btn btn-danger" id="description-stop-btn" style="display:none;">Stop</button>
+                        <button class="btn btn-secondary" id="new-description-btn-setup">New Challenge</button>
                     </div>
                 </div>
             </div>

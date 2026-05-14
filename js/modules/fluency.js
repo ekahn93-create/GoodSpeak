@@ -496,14 +496,17 @@ const FluencyModule = (function() {
       fillerDurationGroup.addEventListener('click', function(e) {
         const btn = e.target.closest('[data-seconds]');
         if (!btn) return;
-        fillerDurationGroup.querySelectorAll('.btn').forEach(b => b.classList.remove('active'));
+        fillerDurationGroup.querySelectorAll('.ws-inst-time-btn').forEach(b => b.classList.remove('active'));
         btn.classList.add('active');
+        const secs = parseInt(btn.dataset.seconds, 10);
+        const countEl = document.getElementById('filler-countdown');
+        if (countEl) countEl.textContent = formatFillerTime(secs);
       });
     }
 
     const fillerStopBtn = document.getElementById('filler-stop-btn');
     if (fillerStopBtn) {
-      fillerStopBtn.addEventListener('click', () => stopFillerExercise(false));
+      fillerStopBtn.addEventListener('click', () => stopFillerExercise(true));
     }
 
     const fillerTryAgainBtn = document.getElementById('filler-try-again-btn');
@@ -717,6 +720,12 @@ const FluencyModule = (function() {
 
   // ========== Fluency Building Functions ==========
 
+  function formatFillerTime(secs) {
+    const m = Math.floor(secs / 60);
+    const s = secs % 60;
+    return m + ':' + String(s).padStart(2, '0');
+  }
+
   // Filler exercise state
   let fillerTimer = null;
   let fillerRecognition = null;
@@ -785,17 +794,21 @@ const FluencyModule = (function() {
   }
 
   function detectFillers(transcript) {
-    const lower = transcript.toLowerCase();
+    const lower = transcript.toLowerCase().trim();
+    console.log('[FillerDetect] chunk:', JSON.stringify(lower));
     const sorted = [...FILLER_WORDS_LIST].sort((a, b) => b.split(' ').length - a.split(' ').length);
     let found = [];
     sorted.forEach(filler => {
-      const regex = new RegExp('\\b' + filler.replace(/\s+/g, '\\s+') + '\\b', 'gi');
+      const pattern = '(?:^|\\s)' + filler.replace(/\s+/g, '\\s+') + '(?:\\s|$)';
+      const regex = new RegExp(pattern, 'gi');
       const matches = lower.match(regex);
+      console.log('[FillerDetect] testing "' + filler + '":', matches);
       if (matches) {
         matches.forEach(() => found.push(filler));
         fillerBreakdown[filler] = (fillerBreakdown[filler] || 0) + matches.length;
       }
     });
+    console.log('[FillerDetect] found:', found);
     return found;
   }
 
@@ -803,12 +816,19 @@ const FluencyModule = (function() {
     document.getElementById('filler-setup').style.display = 'block';
     document.getElementById('filler-active').style.display = 'none';
     document.getElementById('filler-results').style.display = 'none';
+    document.getElementById('filler-topic-box').style.display = 'none';
+    // Reset timer display to selected duration
+    const activeBtn = document.querySelector('#filler-duration-group .ws-inst-time-btn.active');
+    const secs = activeBtn ? parseInt(activeBtn.dataset.seconds, 10) : 30;
+    const countEl = document.getElementById('filler-countdown');
+    if (countEl) countEl.textContent = formatFillerTime(secs);
   }
 
   function showFillerResults() {
     document.getElementById('filler-setup').style.display = 'none';
     document.getElementById('filler-active').style.display = 'none';
     document.getElementById('filler-results').style.display = 'block';
+    document.getElementById('filler-topic-box').style.display = 'none';
 
     const rate = fillerCount / (fillerTotalDuration / 60);
     let emoji, label, sub, bannerColor;
@@ -883,7 +903,7 @@ const FluencyModule = (function() {
     }
 
     // Get selected duration
-    const activeBtn = document.querySelector('#filler-duration-group .btn.active');
+    const activeBtn = document.querySelector('#filler-duration-group .ws-inst-time-btn.active');
     fillerTotalDuration = activeBtn ? parseInt(activeBtn.dataset.seconds, 10) : 30;
     fillerSecondsLeft = fillerTotalDuration;
     fillerCount = 0;
@@ -893,9 +913,10 @@ const FluencyModule = (function() {
     document.getElementById('filler-setup').style.display = 'none';
     document.getElementById('filler-active').style.display = 'block';
     document.getElementById('filler-results').style.display = 'none';
+    document.getElementById('filler-topic-box').style.display = 'block';
 
     document.getElementById('filler-topic-text').textContent = topic;
-    document.getElementById('filler-countdown').textContent = fillerSecondsLeft;
+    document.getElementById('filler-countdown').textContent = formatFillerTime(fillerSecondsLeft);
     document.getElementById('filler-live-count').textContent = '0';
     document.getElementById('filler-last-detected').textContent = '—';
 
@@ -903,7 +924,7 @@ const FluencyModule = (function() {
     fillerTimer = setInterval(() => {
       fillerSecondsLeft--;
       const countEl = document.getElementById('filler-countdown');
-      if (countEl) countEl.textContent = fillerSecondsLeft;
+      if (countEl) countEl.textContent = formatFillerTime(fillerSecondsLeft);
       if (fillerSecondsLeft <= 0) {
         stopFillerExercise(true);
       }
@@ -917,30 +938,22 @@ const FluencyModule = (function() {
       fillerRecognition.interimResults = true;
       fillerRecognition.lang = 'en-US';
 
-      let processedLength = 0;
+      let accumulatedFinal = '';
 
       fillerRecognition.onresult = function(event) {
-        let interimText = '';
-        let finalText = '';
         for (let i = event.resultIndex; i < event.results.length; i++) {
-          const transcript = event.results[i][0].transcript;
           if (event.results[i].isFinal) {
-            finalText += transcript + ' ';
-          } else {
-            interimText += transcript;
-          }
-        }
-        if (finalText) {
-          const newChunk = finalText.slice(processedLength);
-          processedLength = finalText.length;
-          const found = detectFillers(newChunk);
-          if (found.length > 0) {
-            fillerCount += found.length;
-            const liveEl = document.getElementById('filler-live-count');
-            const lastEl = document.getElementById('filler-last-detected');
-            if (liveEl) liveEl.textContent = fillerCount;
-            if (lastEl) lastEl.textContent = '"' + found[found.length - 1] + '"';
-            if (liveEl) liveEl.style.color = fillerCount > 5 ? '#e74c3c' : 'var(--accent-color)';
+            const newChunk = event.results[i][0].transcript + ' ';
+            accumulatedFinal += newChunk;
+            const found = detectFillers(newChunk);
+            if (found.length > 0) {
+              fillerCount += found.length;
+              const liveEl = document.getElementById('filler-live-count');
+              const lastEl = document.getElementById('filler-last-detected');
+              if (liveEl) liveEl.textContent = fillerCount;
+              if (lastEl) lastEl.textContent = '"' + found[found.length - 1] + '"';
+              if (liveEl) liveEl.style.color = fillerCount > 5 ? '#e74c3c' : 'var(--accent-color)';
+            }
           }
         }
       };

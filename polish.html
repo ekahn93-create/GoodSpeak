@@ -227,79 +227,67 @@
                     </div>
                     <div class="fluency-card-content" id="filler-words-content">
 
+                        <!-- Filler words info (always visible) -->
+                        <div class="info-box" style="margin-bottom: var(--spacing-md);">
+                            <h4>Filler Words Being Tracked:</h4>
+                            <div class="filler-words-list">
+                                <span class="filler-tag">um</span>
+                                <span class="filler-tag">uh</span>
+                                <span class="filler-tag">er</span>
+                                <span class="filler-tag">like</span>
+                                <span class="filler-tag">you know</span>
+                                <span class="filler-tag">i mean</span>
+                                <span class="filler-tag">actually</span>
+                                <span class="filler-tag">basically</span>
+                                <span class="filler-tag">literally</span>
+                                <span class="filler-tag">sort of</span>
+                                <span class="filler-tag">kind of</span>
+                                <span class="filler-tag">right</span>
+                            </div>
+                            <p class="tip-text">When you feel the urge to fill silence, pause instead. A confident pause sounds far better than "um."</p>
+                        </div>
+
+                        <!-- Topic box (shown during active exercise) -->
+                        <div id="filler-topic-box" style="display:none; background: var(--bg-hover); border-radius: var(--border-radius-sm); padding: var(--spacing-lg); margin-bottom: var(--spacing-lg);">
+                            <div style="font-size: var(--font-size-sm); color: var(--text-secondary); margin-bottom: var(--spacing-xs); text-transform: uppercase; letter-spacing: 1px;">Your Topic</div>
+                            <div id="filler-topic-text" style="font-size: var(--font-size-xl); font-weight: 600; color: var(--text-primary);"></div>
+                        </div>
+
+                        <!-- Timer display (always visible) -->
+                        <div class="timer-display" style="margin-bottom: var(--spacing-lg);">
+                            <div class="timer-number" id="filler-countdown">0:30</div>
+                            <div class="timer-label">remaining</div>
+                        </div>
+
                         <!-- Setup screen -->
                         <div id="filler-setup">
-                            <div class="info-box">
-                                <h4>Filler Words Being Tracked:</h4>
-                                <div class="filler-words-list">
-                                    <span class="filler-tag">um</span>
-                                    <span class="filler-tag">uh</span>
-                                    <span class="filler-tag">er</span>
-                                    <span class="filler-tag">like</span>
-                                    <span class="filler-tag">you know</span>
-                                    <span class="filler-tag">i mean</span>
-                                    <span class="filler-tag">actually</span>
-                                    <span class="filler-tag">basically</span>
-                                    <span class="filler-tag">literally</span>
-                                    <span class="filler-tag">sort of</span>
-                                    <span class="filler-tag">kind of</span>
-                                    <span class="filler-tag">right</span>
-                                </div>
-                                <p class="tip-text">When you feel the urge to fill silence, pause instead. A confident pause sounds far better than "um."</p>
+                            <div class="time-selector" id="filler-duration-group">
+                                <button class="ws-inst-time-btn active" data-seconds="30">30 Seconds</button>
+                                <button class="ws-inst-time-btn" data-seconds="60">1 Minute</button>
+                                <button class="ws-inst-time-btn" data-seconds="120">2 Minutes</button>
                             </div>
 
-                            <div style="margin-bottom: var(--spacing-md);">
-                                <label style="font-weight: 600; display: block; margin-bottom: var(--spacing-sm);">Duration:</label>
-                                <div class="btn-group" id="filler-duration-group">
-                                    <button class="btn btn-secondary active" data-seconds="30">30 sec</button>
-                                    <button class="btn btn-secondary" data-seconds="60">1 min</button>
-                                    <button class="btn btn-secondary" data-seconds="120">2 min</button>
-                                </div>
+                            <div class="exercise-controls">
+                                <button class="btn btn-primary" id="filler-start-btn">Start Exercise</button>
                             </div>
-
-                            <button class="btn btn-primary" id="filler-start-btn" style="width: 100%;">Start Exercise</button>
                         </div>
 
                         <!-- Active exercise screen -->
-                        <div id="filler-active" style="display:none; text-align:center;">
-                            <div id="filler-topic-box" style="background: var(--bg-hover); border-radius: var(--border-radius-sm); padding: var(--spacing-lg); margin-bottom: var(--spacing-lg);">
-                                <div style="font-size: var(--font-size-sm); color: var(--text-secondary); margin-bottom: var(--spacing-xs); text-transform: uppercase; letter-spacing: 1px;">Your Topic</div>
-                                <div id="filler-topic-text" style="font-size: var(--font-size-xl); font-weight: 600; color: var(--text-primary);"></div>
-                            </div>
-
-                            <div id="filler-countdown" style="font-size: 3.5rem; font-weight: 700; color: var(--primary-color); line-height: 1; margin-bottom: var(--spacing-sm);">30</div>
-                            <div style="font-size: var(--font-size-sm); color: var(--text-secondary); margin-bottom: var(--spacing-lg);">seconds remaining</div>
-
+                        <div id="filler-active" style="display:none;">
                             <div style="display: flex; justify-content: center; gap: var(--spacing-xl); margin-bottom: var(--spacing-lg);">
-                                <div>
+                                <div style="text-align:center;">
                                     <div id="filler-live-count" style="font-size: 2.5rem; font-weight: 700; color: var(--accent-color);">0</div>
                                     <div style="font-size: var(--font-size-sm); color: var(--text-secondary);">fillers detected</div>
                                 </div>
-                                <div>
+                                <div style="text-align:center;">
                                     <div id="filler-last-detected" style="font-size: 2.5rem; font-weight: 700; color: var(--text-secondary);">—</div>
                                     <div style="font-size: var(--font-size-sm); color: var(--text-secondary);">last filler</div>
                                 </div>
                             </div>
 
-                            <div id="filler-mic-status" style="font-size: var(--font-size-sm); color: var(--text-secondary); margin-bottom: var(--spacing-lg);">Listening...</div>
-                            <button class="btn btn-danger" id="filler-stop-btn" style="width: 100%;">Stop Early</button>
-
-                            <div style="margin-top: var(--spacing-lg); text-align: left;">
-                                <div style="font-size: var(--font-size-sm); font-weight: 600; color: var(--text-secondary); margin-bottom: var(--spacing-sm); text-transform: uppercase; letter-spacing: 1px;">Words to Avoid</div>
-                                <div class="filler-words-list">
-                                    <span class="filler-tag">um</span>
-                                    <span class="filler-tag">uh</span>
-                                    <span class="filler-tag">er</span>
-                                    <span class="filler-tag">like</span>
-                                    <span class="filler-tag">you know</span>
-                                    <span class="filler-tag">i mean</span>
-                                    <span class="filler-tag">actually</span>
-                                    <span class="filler-tag">basically</span>
-                                    <span class="filler-tag">literally</span>
-                                    <span class="filler-tag">sort of</span>
-                                    <span class="filler-tag">kind of</span>
-                                    <span class="filler-tag">right</span>
-                                </div>
+                            <div id="filler-mic-status" style="font-size: var(--font-size-sm); color: var(--text-secondary); margin-bottom: var(--spacing-lg); text-align:center;">Listening...</div>
+                            <div class="exercise-controls">
+                                <button class="btn btn-danger" id="filler-stop-btn">Stop Early</button>
                             </div>
                         </div>
 
@@ -315,9 +303,9 @@
 
                             <div id="filler-tip-box" class="info-box" style="margin-bottom: var(--spacing-lg);"></div>
 
-                            <div style="display: flex; gap: var(--spacing-md);">
-                                <button class="btn btn-primary" id="filler-try-again-btn" style="flex: 1;">Try Again</button>
-                                <button class="btn btn-secondary" id="filler-new-topic-btn" style="flex: 1;">New Topic</button>
+                            <div class="exercise-controls">
+                                <button class="btn btn-primary" id="filler-try-again-btn">Try Again</button>
+                                <button class="btn btn-secondary" id="filler-new-topic-btn">New Topic</button>
                             </div>
                         </div>
 
@@ -828,7 +816,7 @@
           <button class="footer-link" data-footer-modal="about">About</button>
           <button class="footer-link" data-footer-modal="privacy">Privacy</button>
           <button class="footer-link" data-footer-modal="terms">Terms</button>
-          <a href="mailto:evankahn93@gmail.com?subject=EZSpeaks Feedback" class="footer-link footer-link--feedback">Feedback</a>
+          <a href="mailto:admin@ezspeaks.com?subject=EZSpeaks Feedback" class="footer-link footer-link--feedback">Feedback</a>
         </div>
 
         <!-- Tip + copyright -->
