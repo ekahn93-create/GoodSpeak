@@ -149,6 +149,113 @@ const ProgressChartsModule = (function() {
     return { ctx, W: displayW, H: displayH };
   }
 
+  // ---- Shared canvas tooltip ----
+  // One floating div reused by all charts. Works on both mouse and touch.
+
+  const _tip = (function() {
+    const el = document.createElement('div');
+    el.id = 'chart-tooltip';
+    el.style.cssText = [
+      'position:fixed',
+      'background:rgba(15,23,42,0.92)',
+      'color:#f1f5f9',
+      'font:600 12px/1.4 Inter,sans-serif',
+      'padding:6px 10px',
+      'border-radius:7px',
+      'pointer-events:none',
+      'white-space:nowrap',
+      'z-index:9999',
+      'display:none',
+      'box-shadow:0 4px 16px rgba(0,0,0,0.4)',
+      'border:1px solid rgba(255,255,255,0.08)'
+    ].join(';');
+    document.addEventListener('DOMContentLoaded', () => document.body.appendChild(el));
+    // Also append immediately in case DOM is already ready
+    if (document.body) document.body.appendChild(el);
+    return el;
+  })();
+
+  let _tipHideTimer = null;
+
+  function showTip(html, clientX, clientY) {
+    clearTimeout(_tipHideTimer);
+    _tip.innerHTML = html;
+    _tip.style.display = 'block';
+    _positionTip(clientX, clientY);
+  }
+
+  function hideTip(delay) {
+    clearTimeout(_tipHideTimer);
+    if (delay) {
+      _tipHideTimer = setTimeout(() => { _tip.style.display = 'none'; }, delay);
+    } else {
+      _tip.style.display = 'none';
+    }
+  }
+
+  function _positionTip(cx, cy) {
+    const margin = 10;
+    const tw = _tip.offsetWidth;
+    const th = _tip.offsetHeight;
+    let x = cx - tw / 2;
+    let y = cy - th - 14;
+    if (y < margin) y = cy + 18;
+    x = Math.max(margin, Math.min(x, window.innerWidth - tw - margin));
+    _tip.style.left = x + 'px';
+    _tip.style.top  = y + 'px';
+  }
+
+  // Attach hover+touch interaction to a canvas.
+  // getPoints(canvasW, canvasH) → array of { x, y, tip } in CSS-pixel space.
+  function attachTooltip(canvas, getPoints) {
+    // Remove old listeners by replacing the canvas node's event clone
+    // (simplest way without tracking refs)
+    function getCoordsFromEvent(e) {
+      const rect = canvas.getBoundingClientRect();
+      if (e.touches && e.touches.length > 0) {
+        return { cx: e.touches[0].clientX, cy: e.touches[0].clientY,
+                 x: e.touches[0].clientX - rect.left, y: e.touches[0].clientY - rect.top };
+      }
+      return { cx: e.clientX, cy: e.clientY,
+               x: e.clientX - rect.left, y: e.clientY - rect.top };
+    }
+
+    function findNearest(px, py) {
+      const pts = getPoints(canvas.getBoundingClientRect().width, canvas.getBoundingClientRect().height);
+      let best = null, bestDist = Infinity;
+      pts.forEach(p => {
+        const d = Math.hypot(p.x - px, p.y - py);
+        if (d < bestDist) { bestDist = d; best = p; }
+      });
+      // Only snap if within 40px
+      return bestDist <= 40 ? best : null;
+    }
+
+    canvas._ttMousemove = function(e) {
+      const { cx, cy, x, y } = getCoordsFromEvent(e);
+      const pt = findNearest(x, y);
+      if (pt) { showTip(pt.tip, cx, cy); canvas.style.cursor = 'crosshair'; }
+      else     { hideTip(); canvas.style.cursor = ''; }
+    };
+    canvas._ttMouseleave = function() { hideTip(); canvas.style.cursor = ''; };
+    canvas._ttTouchstart = function(e) {
+      const { cx, cy, x, y } = getCoordsFromEvent(e);
+      const pt = findNearest(x, y);
+      if (pt) { e.preventDefault(); showTip(pt.tip, cx, cy); }
+    };
+    canvas._ttTouchend = function() { hideTip(1800); };
+
+    canvas.removeEventListener('mousemove',  canvas._ttMousemove);
+    canvas.removeEventListener('mouseleave', canvas._ttMouseleave);
+    canvas.removeEventListener('touchstart', canvas._ttTouchstart);
+    canvas.removeEventListener('touchend',   canvas._ttTouchend);
+
+    canvas.addEventListener('mousemove',  canvas._ttMousemove);
+    canvas.addEventListener('mouseleave', canvas._ttMouseleave);
+    canvas.addEventListener('touchstart', canvas._ttTouchstart, { passive: false });
+    canvas.addEventListener('touchend',   canvas._ttTouchend);
+  }
+
   // ---- Smooth line chart (dual series) ----
   function drawDualLineChart(canvasId, emptyId, labels, series1, series2, color1, color2) {
     const canvas = document.getElementById(canvasId);
@@ -256,6 +363,27 @@ const ProgressChartsModule = (function() {
       ctx.fillText(label, x, labelY);
       lastDrawnX = x;
     });
+
+    // Attach hover/touch tooltip — build point list from series1 (primary)
+    attachTooltip(canvas, function() {
+      const pts = [];
+      const n = labels.length;
+      if (series1 && series1.length) {
+        series1.forEach((v, i) => {
+          if (v == null) return;
+          pts.push({
+            x: pad.left + (i / Math.max(n - 1, 1)) * w,
+            y: pad.top + h - (v / maxVal) * h,
+            tip: '<span style="color:' + (color1||'#818cf8') + '">●</span> ' +
+                 formatShortDate(labels[i]) + ': <b>' + v + '</b>' +
+                 (series2 && series2[i] != null
+                   ? '&nbsp;&nbsp;<span style="color:' + (color2||'#f43f5e') + '">●</span> fillers: <b>' + series2[i] + '</b>'
+                   : '')
+          });
+        });
+      }
+      return pts;
+    });
   }
 
   // ---- Single line chart ----
@@ -341,6 +469,15 @@ const ProgressChartsModule = (function() {
       ctx.font = '11px Inter, sans-serif';
       ctx.textAlign = 'center';
       ctx.fillText(labels[i], x + barW / 2, pad.top + h + 20);
+    });
+
+    // Attach hover/touch tooltip — snap to bar centre
+    attachTooltip(canvas, function() {
+      return values.map((val, i) => ({
+        x: pad.left + i * gap + gap / 2,
+        y: val > 0 ? pad.top + h - (val / Math.max(...values, 1)) * h : pad.top + h,
+        tip: '<b>' + labels[i] + '</b>: ' + (val > 0 ? 'active' : 'no activity')
+      }));
     });
   }
 
