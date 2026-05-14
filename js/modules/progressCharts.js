@@ -65,10 +65,15 @@ const ProgressChartsModule = (function() {
     if (!sessions || sessions.length === 0) return [];
 
     // Group by date string
+    // wpmCount tracks only sessions that actually have a WPM value (>0),
+    // so filler-only sessions don't drag down the average.
     const byDate = {};
     sessions.forEach(s => {
-      if (!byDate[s.date]) byDate[s.date] = { wpmSum: 0, fillerSum: 0, count: 0 };
-      byDate[s.date].wpmSum    += s.wpm    || 0;
+      if (!byDate[s.date]) byDate[s.date] = { wpmSum: 0, wpmCount: 0, fillerSum: 0, count: 0 };
+      if (s.wpm > 0) {
+        byDate[s.date].wpmSum   += s.wpm;
+        byDate[s.date].wpmCount += 1;
+      }
       byDate[s.date].fillerSum += s.fillers || 0;
       byDate[s.date].count     += 1;
     });
@@ -89,7 +94,7 @@ const ProgressChartsModule = (function() {
         const g = byDate[key];
         result.push({
           date:    key,
-          wpm:     Math.round(g.wpmSum / g.count),
+          wpm:     g.wpmCount > 0 ? Math.round(g.wpmSum / g.wpmCount) : 0,
           fillers: g.fillerSum  // sum fillers across all sessions that day
         });
       } else {

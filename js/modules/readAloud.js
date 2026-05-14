@@ -229,6 +229,11 @@ const ReadAloudModule = (function() {
       breakdownEl.innerHTML = '';
     }
 
+    // Log to progress charts (cloud-synced)
+    if (typeof ProgressChartsModule !== 'undefined') {
+      ProgressChartsModule.logSpeechSession(wpm, fillerCount);
+    }
+
     renderReadAloudAIButton(currentText, finalTranscript);
 
     document.getElementById('readaloud-results').style.display = '';

@@ -875,6 +875,11 @@ const FluencyModule = (function() {
 
     document.getElementById('filler-tip-box').innerHTML =
       `<strong>Tip:</strong> ${getFillerTip(fillerCount, fillerTotalDuration)}`;
+
+    // Log to progress charts (cloud-synced); no WPM for filler-only exercise
+    if (typeof ProgressChartsModule !== 'undefined') {
+      ProgressChartsModule.logSpeechSession(0, fillerCount);
+    }
   }
 
   function stopFillerExercise(finished) {
