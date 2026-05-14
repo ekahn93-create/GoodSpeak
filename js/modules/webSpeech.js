@@ -96,6 +96,33 @@ const WebSpeechModule = (function() {
     return Math.round((new Set(words).size / words.length) * 100);
   }
 
+  function calcConfidence(wpm, fillerTotal, weakTotal, wordCount) {
+    if (wordCount === 0) return 0;
+    // WPM score: 100 at ideal range, drops off outside it
+    let wpmScore;
+    if (wpm >= 130 && wpm <= 160) wpmScore = 100;
+    else if (wpm >= 110 && wpm < 130) wpmScore = 60 + (wpm - 110) * 2;
+    else if (wpm > 160 && wpm <= 190) wpmScore = 100 - (wpm - 160) * 1.5;
+    else if (wpm < 110 && wpm > 0)   wpmScore = Math.max(0, wpm - 60);
+    else if (wpm > 190)              wpmScore = Math.max(0, 55 - (wpm - 190) * 2);
+    else wpmScore = 0;
+    // Filler score: 0 fillers = 100, degrades with rate
+    const fillerRate = (fillerTotal / wordCount) * 100;
+    const fillerScore = Math.max(0, 100 - fillerRate * 12);
+    // Weak word score: 0 weak words = 100, degrades with rate
+    const weakRate = (weakTotal / wordCount) * 100;
+    const weakScore = Math.max(0, 100 - weakRate * 8);
+    return Math.round(wpmScore * 0.4 + fillerScore * 0.4 + weakScore * 0.2);
+  }
+
+  function rateConfidence(score) {
+    if (score === 0)  return { label: 'No speech detected', color: '#aaa' };
+    if (score >= 75)  return { label: 'Sounds confident', color: '#27ae60' };
+    if (score >= 50)  return { label: 'Mostly confident', color: '#27ae60' };
+    if (score >= 25)  return { label: 'Building confidence', color: '#f39c12' };
+    return            { label: 'Needs work', color: '#e74c3c' };
+  }
+
   function calcWeakWords(words) {
     const breakdown = {};
     let total = 0;
@@ -190,14 +217,22 @@ const WebSpeechModule = (function() {
       </div>`;
   }
 
+  function gradeIcon(color) {
+    if (color === '#27ae60') return '<span style="color: #27ae60; font-size: 1.6em;">✓</span>';
+    if (color === '#f39c12') return '<span style="color: #f39c12; font-size: 1.6em;">~</span>';
+    if (color === '#e74c3c') return '<span style="color: #e74c3c; font-size: 1.6em;">✗</span>';
+    return '';
+  }
+
   function renderMetricCards(grid, metrics, weakBreakdown) {
     grid.innerHTML = metrics.map(m => {
       const isVocab = m.title === 'Vocabulary Strength';
       const drilldown = isVocab ? buildWeakDrilldown(weakBreakdown) : '';
       return `
         <div style="background: var(--bg-card); border: 1px solid var(--border-color); border-radius: var(--border-radius-sm); padding: var(--spacing-md);">
-          <div style="display: flex; align-items: center; gap: var(--spacing-sm); margin-bottom: var(--spacing-sm);">
+          <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: var(--spacing-sm);">
             <span style="font-weight: 600; font-size: var(--font-size-base);">${m.title}</span>
+            ${gradeIcon(m.rating.color)}
           </div>
           <div style="font-size: var(--font-size-xl); font-weight: 700; color: var(--text-primary); margin-bottom: 4px;">${m.value}</div>
           <div style="font-size: var(--font-size-sm); font-weight: 600; color: ${m.rating.color}; margin-bottom: 4px;">${m.rating.label}</div>
@@ -229,8 +264,9 @@ const WebSpeechModule = (function() {
     if (isSpeech && typeof ProgressChartsModule !== 'undefined') {
       ProgressChartsModule.logSpeechSession(wpm, fillers.count);
     }
-    const diversity = calcDiversity(words);
-    const weakWords = calcWeakWords(words);
+    const diversity   = calcDiversity(words);
+    const weakWords   = calcWeakWords(words);
+    const confidence  = calcConfidence(wpm, fillers.total, weakWords.total, words.length);
     let avgSentLen, sentenceCount;
     if (isSpeech) {
       avgSentLen    = pauseChunks.length > 0 ? Math.round(words.length / pauseChunks.length) : words.length;
@@ -278,6 +314,13 @@ const WebSpeechModule = (function() {
         value: `${weakWords.total} weak word${weakWords.total !== 1 ? 's' : ''}`,
         detail: weakWords.total === 0 ? 'No weak words detected' : 'Click below to see replacements',
         rating: rateWeakWords(weakWords.total, words.length)
+      },
+      {
+        icon: '💪',
+        title: 'Confidence Score',
+        value: `${confidence}/100`,
+        detail: 'Based on pace, filler words, and word strength',
+        rating: rateConfidence(confidence)
       }
     ];
 
