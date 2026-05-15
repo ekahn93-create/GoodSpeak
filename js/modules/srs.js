@@ -69,22 +69,33 @@ const SRSModule = (function() {
 
   function getDueWords() {
     const today = getTodayKey();
-    const data = getData();
     enrollAllLearned();
     const updatedData = getData();
 
-    if (typeof vocabularyDatabase === 'undefined') return [];
+    // SRS data keys are word strings (may also include legacy integer IDs)
+    // Build a lookup of all known word objects from vocabularyDatabase + VocabularyModule cache
+    const wordLookup = new Map();
 
-    const allWords = [
-      ...vocabularyDatabase.beginner,
-      ...vocabularyDatabase.intermediate,
-      ...vocabularyDatabase.advanced
-    ];
+    if (typeof vocabularyDatabase !== 'undefined') {
+      const allHardcoded = [
+        ...vocabularyDatabase.beginner,
+        ...vocabularyDatabase.intermediate,
+        ...vocabularyDatabase.advanced
+      ];
+      allHardcoded.forEach(w => {
+        wordLookup.set(String(w.id), w);
+        wordLookup.set(w.word, w);
+      });
+    }
 
-    return allWords.filter(word => {
-      const entry = updatedData[word.id];
-      return entry && entry.nextReview <= today;
-    });
+    // Return due word objects; for unknown keys synthesize a minimal object
+    return Object.keys(updatedData)
+      .filter(key => updatedData[key].nextReview <= today)
+      .map(key => {
+        if (wordLookup.has(key)) return wordLookup.get(key);
+        // Dynamic word — create a minimal stub; SRS card will show what it has
+        return { id: key, word: key, definition: '', exampleSentence: '', synonyms: [] };
+      });
   }
 
   // ---- Rating & scheduling ----
@@ -94,7 +105,8 @@ const SRSModule = (function() {
     if (!currentWord) return;
 
     const data = getData();
-    const entry = data[currentWord.id] || { interval: 1, repetitions: 0, easeFactor: 2.5 };
+    const srsKey = currentWord.id !== undefined ? String(currentWord.id) : currentWord.word;
+    const entry = data[srsKey] || { interval: 1, repetitions: 0, easeFactor: 2.5 };
 
     sessionStats.reviewed++;
     if (quality >= 3) sessionStats.correct++;
@@ -123,7 +135,7 @@ const SRSModule = (function() {
     next.setDate(next.getDate() + entry.interval);
     entry.nextReview = next.toISOString().split('T')[0];
 
-    data[currentWord.id] = entry;
+    data[srsKey] = entry;
     saveData(data);
 
     // Move to next

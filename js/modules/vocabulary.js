@@ -15,6 +15,88 @@ const VocabularyModule = (function() {
   let userData = null;
   let isExerciseMode = false;
 
+  // Dynamic word pool — arrays of { word, category } objects per difficulty
+  // Backed by localStorage keys: wordPool_beginner, wordPool_intermediate, wordPool_advanced
+  const POOL_KEY = diff => `wordPool_${diff}`;
+  // In-session cache of full word objects fetched from the API, keyed by word string
+  const wordCache = new Map();
+
+  function loadPool(diff) {
+    try {
+      return JSON.parse(localStorage.getItem(POOL_KEY(diff)) || '[]');
+    } catch { return []; }
+  }
+
+  function savePool(diff, pool) {
+    localStorage.setItem(POOL_KEY(diff), JSON.stringify(pool));
+  }
+
+  // Seed the pool from the hardcoded database so it works immediately on first use
+  function seedPoolFromDatabase(diff) {
+    if (typeof vocabularyDatabase === 'undefined') return;
+    const pool = vocabularyDatabase[diff].map(w => ({ word: w.word, category: w.category }));
+    savePool(diff, pool);
+    // Also pre-populate the word cache from hardcoded data
+    vocabularyDatabase[diff].forEach(w => wordCache.set(w.word, w));
+  }
+
+  // Ensure a pool exists for the given difficulty; seed from DB if empty
+  function ensurePool(diff) {
+    let pool = loadPool(diff);
+    if (pool.length === 0) {
+      seedPoolFromDatabase(diff);
+      pool = loadPool(diff);
+    }
+    return pool;
+  }
+
+  // Background-refill the pool from Datamuse when it runs low
+  async function refillPoolIfNeeded(diff) {
+    const pool = loadPool(diff);
+    if (pool.length >= (typeof POOL_REFILL_THRESHOLD !== 'undefined' ? POOL_REFILL_THRESHOLD : 20)) return;
+
+    console.log(`Word pool for ${diff} is low (${pool.length}), refilling from Datamuse...`);
+    try {
+      const candidates = await APIService.buildWordPool(diff);
+      if (!candidates.length) return;
+
+      // Filter out words already in the pool
+      const existing = new Set(pool.map(p => p.word.toLowerCase()));
+      const newWords = candidates.filter(c => !existing.has(c.word.toLowerCase()));
+
+      const maxSize = typeof POOL_MAX_SIZE !== 'undefined' ? POOL_MAX_SIZE : 200;
+      const merged = [...pool, ...newWords].slice(0, maxSize);
+      savePool(diff, merged);
+      console.log(`Pool for ${diff} refilled to ${merged.length} words`);
+    } catch (err) {
+      console.warn('Pool refill failed:', err);
+    }
+  }
+
+  // Look up a full word object — from cache first, then API
+  async function resolveWord(wordStr, category, diff) {
+    if (wordCache.has(wordStr)) return wordCache.get(wordStr);
+
+    // Check hardcoded database
+    if (typeof vocabularyDatabase !== 'undefined') {
+      const all = [
+        ...vocabularyDatabase.beginner,
+        ...vocabularyDatabase.intermediate,
+        ...vocabularyDatabase.advanced
+      ];
+      const found = all.find(w => w.word === wordStr);
+      if (found) {
+        wordCache.set(wordStr, found);
+        return found;
+      }
+    }
+
+    // Fetch from API
+    const wordObj = await APIService.getWordData(wordStr, diff, category);
+    if (wordObj) wordCache.set(wordStr, wordObj);
+    return wordObj;
+  }
+
   // DOM elements - Category tabs
   let vocabCategoryTabs = null;
   let vocabCategories = null;
@@ -197,37 +279,57 @@ const VocabularyModule = (function() {
   }
 
   /**
-   * Show a new word
+   * Show a new word (async — may fetch from API)
    */
-  function showNewWord() {
-    // Get unlearned words for current difficulty (exclude both learned and still learning)
-    const availableWords = vocabularyDatabase[currentDifficulty].filter(word => {
-      return !userData.vocabulary.learned.includes(word.id) &&
-             !userData.vocabulary.stillLearning.includes(word.id);
-    });
+  async function showNewWord() {
+    if (!userData) return;
 
-    if (availableWords.length === 0) {
-      Modal.alert({
-        title: 'Congratulations!',
-        message: `You've learned all ${currentDifficulty} words! Try a different difficulty level.`,
-        type: 'success'
-      });
+    // Show loading state
+    if (wordDisplay) {
+      wordDisplay.innerHTML = '<div class="empty-state"><p>Finding a word for you...</p></div>';
+    }
+
+    // Ensure pool exists for current difficulty
+    const pool = ensurePool(currentDifficulty);
+
+    // Filter out already learned/still-learning words
+    const learned = new Set(userData.vocabulary.learned);
+    const stillLearning = new Set(userData.vocabulary.stillLearning);
+    const available = pool.filter(p => !learned.has(p.word) && !stillLearning.has(p.word));
+
+    if (available.length === 0) {
+      if (wordDisplay) {
+        wordDisplay.innerHTML = '<div class="empty-state"><p>No more words available at this level. Try a different difficulty!</p></div>';
+      }
+      // Trigger a background refill for next time
+      refillPoolIfNeeded(currentDifficulty);
       return;
     }
 
-    // Pick a random word
-    const randomIndex = Math.floor(Math.random() * availableWords.length);
-    currentWord = availableWords[randomIndex];
+    // Pick a random candidate
+    const candidate = available[Math.floor(Math.random() * available.length)];
 
-    // Display the word
+    // Resolve full word data (cache → hardcoded DB → API)
+    const wordObj = await resolveWord(candidate.word, candidate.category, currentDifficulty);
+
+    if (!wordObj) {
+      // Word not in dictionary — remove from pool and try again
+      const updatedPool = loadPool(currentDifficulty).filter(p => p.word !== candidate.word);
+      savePool(currentDifficulty, updatedPool);
+      return showNewWord();
+    }
+
+    currentWord = wordObj;
     displayWord(currentWord);
 
-    // Show practice button
     if (practiceBtn) {
       practiceBtn.style.display = 'inline-block';
     }
 
     isExerciseMode = false;
+
+    // Kick off background refill if pool is getting low
+    refillPoolIfNeeded(currentDifficulty);
   }
 
   /**
@@ -237,17 +339,18 @@ const VocabularyModule = (function() {
   function displayWord(word) {
     if (!wordDisplay) return;
 
+    const safeWord = word.word.replace(/'/g, "\\'");
     const html = `
       <div class="word-card">
         <div class="word-main">
           ${word.word}
-          <button class="tts-btn" onclick="VocabularyModule.speakWord('${word.word.replace(/'/g, "\\'")}')" title="Hear pronunciation" aria-label="Hear pronunciation">
+          <button class="tts-btn" onclick="VocabularyModule.speakWord('${safeWord}')" title="Hear pronunciation" aria-label="Hear pronunciation">
             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/></svg>
           </button>
         </div>
-        <div class="word-pronunciation">${word.pronunciation}</div>
+        ${word.pronunciation ? `<div class="word-pronunciation">${word.pronunciation}</div>` : ''}
         <div class="word-meta">
-          <span class="badge badge-primary">${word.partOfSpeech}</span>
+          ${word.partOfSpeech ? `<span class="badge badge-primary">${word.partOfSpeech}</span>` : ''}
           <span class="badge badge-secondary">${word.difficulty}</span>
         </div>
         <div class="action-buttons" style="margin-bottom: 1rem;">
@@ -259,17 +362,13 @@ const VocabularyModule = (function() {
           <div class="word-definition">
             <strong>Definition:</strong> ${word.definition}
           </div>
-          <div class="word-example">
-            <strong>Example:</strong> "${word.exampleSentence}"
-          </div>
-          <div class="word-synonyms">
-            <strong>Synonyms:</strong> <span class="synonyms-list">${word.synonyms.join(', ')}</span>
-          </div>
+          ${word.exampleSentence ? `<div class="word-example"><strong>Example:</strong> "${word.exampleSentence}"</div>` : ''}
+          ${word.synonyms && word.synonyms.length > 0 ? `<div class="word-synonyms"><strong>Synonyms:</strong> <span class="synonyms-list">${word.synonyms.join(', ')}</span></div>` : ''}
           <div class="action-buttons">
-            <button class="btn btn-success" onclick="VocabularyModule.markAsLearned(${word.id})" data-tooltip="This word will be added to Learned Words bank">
+            <button class="btn btn-success" onclick="VocabularyModule.markAsLearned('${safeWord}')" data-tooltip="This word will be added to Learned Words bank">
               Mark as Learned
             </button>
-            <button class="btn btn-secondary" onclick="VocabularyModule.markAsStillLearning(${word.id})" data-tooltip="This word will be added to Still Learning">
+            <button class="btn btn-secondary" onclick="VocabularyModule.markAsStillLearning('${safeWord}')" data-tooltip="This word will be added to Still Learning">
               Mark as Still Learning
             </button>
           </div>
@@ -298,7 +397,7 @@ const VocabularyModule = (function() {
 
   /**
    * Mark a word as learned
-   * @param {number} wordId - The ID of the word to mark as learned
+   * @param {string} wordId - The word string used as ID
    */
   function markAsLearned(wordId) {
     if (!userData) return;
@@ -361,7 +460,7 @@ const VocabularyModule = (function() {
 
   /**
    * Mark a word as still learning
-   * @param {number} wordId - The ID of the word to mark as still learning
+   * @param {string} wordId - The word string used as ID
    */
   function markAsStillLearning(wordId) {
     if (!userData) return;
@@ -416,14 +515,18 @@ const VocabularyModule = (function() {
    * @param {Object} word - The word to create an exercise for
    */
   function generateMultipleChoiceExercise(word) {
-    // Get 3 random wrong definitions from other words; fall back to all difficulties if needed
-    let pool = vocabularyDatabase[currentDifficulty].filter(w => w.id !== word.id);
-    if (pool.length < 3) {
-      pool = [
+    // Build a pool of wrong-answer candidates from the word cache + hardcoded DB
+    const allCached = Array.from(wordCache.values()).filter(w => w.word !== word.word && w.definition);
+    let pool = allCached.length >= 3 ? allCached : [];
+
+    if (pool.length < 3 && typeof vocabularyDatabase !== 'undefined') {
+      const hardcoded = [
         ...vocabularyDatabase.beginner,
         ...vocabularyDatabase.intermediate,
         ...vocabularyDatabase.advanced
-      ].filter(w => w.id !== word.id);
+      ].filter(w => w.word !== word.word);
+      const hardcodedWords = new Set(pool.map(w => w.word));
+      pool = [...pool, ...hardcoded.filter(w => !hardcodedWords.has(w.word))];
     }
 
     // Shuffle and get 3 wrong options
@@ -467,7 +570,7 @@ const VocabularyModule = (function() {
     const optionElements = document.querySelectorAll('.exercise-option');
     optionElements.forEach(option => {
       option.addEventListener('click', function() {
-        handleExerciseAnswer(this, word.id);
+        handleExerciseAnswer(this, word.word);
       });
     });
   }
@@ -500,10 +603,10 @@ const VocabularyModule = (function() {
         <div class="exercise-feedback correct">
           ✓ Correct! Great job!
           <div style="margin-top: 1rem;">
-            <button class="btn btn-success" onclick="VocabularyModule.markAsLearned(${wordId})" data-tooltip="This word will be added to Learned Words bank">
+            <button class="btn btn-success js-mark-learned" data-tooltip="This word will be added to Learned Words bank">
               Mark as Learned
             </button>
-            <button class="btn btn-secondary" onclick="VocabularyModule.markAsStillLearning(${wordId})" data-tooltip="This word will be added to Still Learning">
+            <button class="btn btn-secondary js-mark-still-learning" data-tooltip="This word will be added to Still Learning">
               Mark as Still Learning
             </button>
             <button class="btn btn-secondary" onclick="VocabularyModule.showNewWord()" data-tooltip="Word will remain in pool and can come up again">
@@ -512,6 +615,8 @@ const VocabularyModule = (function() {
           </div>
         </div>
       `;
+      feedbackElement.querySelector('.js-mark-learned').addEventListener('click', () => markAsLearned(wordId));
+      feedbackElement.querySelector('.js-mark-still-learning').addEventListener('click', () => markAsStillLearning(wordId));
 
       // Add to mastered if not already
       if (!userData.vocabulary.mastered.includes(wordId)) {
@@ -523,7 +628,7 @@ const VocabularyModule = (function() {
         <div class="exercise-feedback incorrect">
           ✗ Not quite. Try again with another word!
           <div style="margin-top: 1rem;">
-            <button class="btn btn-secondary" onclick="VocabularyModule.markAsStillLearning(${wordId})" data-tooltip="This word will be added to Still Learning">
+            <button class="btn btn-secondary js-mark-still-learning" data-tooltip="This word will be added to Still Learning">
               Mark as Still Learning
             </button>
             <button class="btn btn-secondary" onclick="VocabularyModule.showNewWord()" data-tooltip="Word will remain in pool and can come up again">
@@ -532,6 +637,7 @@ const VocabularyModule = (function() {
           </div>
         </div>
       `;
+      feedbackElement.querySelector('.js-mark-still-learning').addEventListener('click', () => markAsStillLearning(wordId));
     }
   }
 
@@ -548,20 +654,11 @@ const VocabularyModule = (function() {
       return;
     }
 
-    // Get word objects for learned word IDs
-    const allWords = [
-      ...vocabularyDatabase.beginner,
-      ...vocabularyDatabase.intermediate,
-      ...vocabularyDatabase.advanced
-    ];
-
-    const learnedWordObjects = learnedWords.map(id => {
-      return allWords.find(w => w.id === id);
-    }).filter(w => w !== undefined);
+    const learnedWordObjects = learnedWords.map(id => wordCache.get(id) || { word: id, id, definition: '' }).filter(w => w);
 
     // Display as chips
     const html = learnedWordObjects.map(word => `
-      <div class="word-chip word-chip--learned" onclick="VocabularyModule.showLearnedWord(${word.id})" title="${word.definition}">
+      <div class="word-chip word-chip--learned" onclick="VocabularyModule.showLearnedWord('${word.word.replace(/'/g, "\\'")}')" title="${word.definition}">
         ${word.word}
       </div>
     `).join('');
@@ -583,20 +680,11 @@ const VocabularyModule = (function() {
       return;
     }
 
-    // Get word objects for still learning word IDs
-    const allWords = [
-      ...vocabularyDatabase.beginner,
-      ...vocabularyDatabase.intermediate,
-      ...vocabularyDatabase.advanced
-    ];
-
-    const stillLearningWordObjects = stillLearningWords.map(id => {
-      return allWords.find(w => w.id === id);
-    }).filter(w => w !== undefined);
+    const stillLearningWordObjects = stillLearningWords.map(id => wordCache.get(id) || { word: id, id, definition: '' }).filter(w => w);
 
     // Display as chips with option to move to learned
     const html = stillLearningWordObjects.map(word => `
-      <div class="word-chip word-chip--still-learning" onclick="VocabularyModule.showStillLearningWord(${word.id})" title="${word.definition}">
+      <div class="word-chip word-chip--still-learning" onclick="VocabularyModule.showStillLearningWord('${word.word.replace(/'/g, "\\'")}')" title="${word.definition}">
         ${word.word}
       </div>
     `).join('');
@@ -609,35 +697,22 @@ const VocabularyModule = (function() {
    * @param {number} wordId - The word ID to show
    */
   function showLearnedWord(wordId) {
-    const allWords = [
-      ...vocabularyDatabase.beginner,
-      ...vocabularyDatabase.intermediate,
-      ...vocabularyDatabase.advanced
-    ];
-
-    const word = allWords.find(w => w.id === wordId);
-
-    if (!word) return;
+    const word = wordCache.get(wordId) || { word: wordId, id: wordId, definition: '', pronunciation: '', partOfSpeech: '', difficulty: '', exampleSentence: '', synonyms: [] };
+    const safeId = wordId.replace(/'/g, "\\'");
 
     const content = `
       <div class="word-card word-card--learned">
         <div class="word-main">${word.word}</div>
-        <div class="word-pronunciation">${word.pronunciation}</div>
+        ${word.pronunciation ? `<div class="word-pronunciation">${word.pronunciation}</div>` : ''}
         <div class="word-meta">
-          <span class="badge badge-primary">${word.partOfSpeech}</span>
-          <span class="badge badge-secondary">${word.difficulty}</span>
+          ${word.partOfSpeech ? `<span class="badge badge-primary">${word.partOfSpeech}</span>` : ''}
+          ${word.difficulty ? `<span class="badge badge-secondary">${word.difficulty}</span>` : ''}
         </div>
-        <div class="word-definition">
-          <strong>Definition:</strong> ${word.definition}
-        </div>
-        <div class="word-example">
-          <strong>Example:</strong> "${word.exampleSentence}"
-        </div>
-        <div class="word-synonyms">
-          <strong>Synonyms:</strong> ${word.synonyms.join(', ')}
-        </div>
+        ${word.definition ? `<div class="word-definition"><strong>Definition:</strong> ${word.definition}</div>` : ''}
+        ${word.exampleSentence ? `<div class="word-example"><strong>Example:</strong> "${word.exampleSentence}"</div>` : ''}
+        ${word.synonyms && word.synonyms.length ? `<div class="word-synonyms"><strong>Synonyms:</strong> ${word.synonyms.join(', ')}</div>` : ''}
         <div class="action-buttons" style="margin-top: 1rem;">
-          <button class="btn btn-secondary" onclick="VocabularyModule.moveToStillLearning(${wordId})">
+          <button class="btn btn-secondary" onclick="VocabularyModule.moveToStillLearning('${safeId}')">
             Move to Still Learning
           </button>
         </div>
@@ -652,36 +727,23 @@ const VocabularyModule = (function() {
    * @param {number} wordId - The word ID to show
    */
   function showStillLearningWord(wordId) {
-    const allWords = [
-      ...vocabularyDatabase.beginner,
-      ...vocabularyDatabase.intermediate,
-      ...vocabularyDatabase.advanced
-    ];
-
-    const word = allWords.find(w => w.id === wordId);
-
-    if (!word) return;
+    const word = wordCache.get(wordId) || { word: wordId, id: wordId, definition: '', pronunciation: '', partOfSpeech: '', difficulty: '', exampleSentence: '', synonyms: [] };
+    const safeId = wordId.replace(/'/g, "\\'");
 
     const content = `
       <div class="word-card word-card--still-learning">
         <div class="word-main">${word.word}</div>
-        <div class="word-pronunciation">${word.pronunciation}</div>
+        ${word.pronunciation ? `<div class="word-pronunciation">${word.pronunciation}</div>` : ''}
         <div class="word-meta">
-          <span class="badge badge-primary">${word.partOfSpeech}</span>
-          <span class="badge badge-secondary">${word.difficulty}</span>
+          ${word.partOfSpeech ? `<span class="badge badge-primary">${word.partOfSpeech}</span>` : ''}
+          ${word.difficulty ? `<span class="badge badge-secondary">${word.difficulty}</span>` : ''}
           <span class="badge badge-warning">Still Learning</span>
         </div>
-        <div class="word-definition">
-          <strong>Definition:</strong> ${word.definition}
-        </div>
-        <div class="word-example">
-          <strong>Example:</strong> "${word.exampleSentence}"
-        </div>
-        <div class="word-synonyms">
-          <strong>Synonyms:</strong> ${word.synonyms.join(', ')}
-        </div>
+        ${word.definition ? `<div class="word-definition"><strong>Definition:</strong> ${word.definition}</div>` : ''}
+        ${word.exampleSentence ? `<div class="word-example"><strong>Example:</strong> "${word.exampleSentence}"</div>` : ''}
+        ${word.synonyms && word.synonyms.length ? `<div class="word-synonyms"><strong>Synonyms:</strong> ${word.synonyms.join(', ')}</div>` : ''}
         <div class="action-buttons" style="margin-top: 1rem;">
-          <button class="btn btn-success" onclick="VocabularyModule.moveToLearned(${wordId})">
+          <button class="btn btn-success" onclick="VocabularyModule.moveToLearned('${safeId}')">
             Move to Learned Words
           </button>
         </div>

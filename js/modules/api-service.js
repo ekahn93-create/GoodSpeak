@@ -277,6 +277,117 @@ const APIService = (function() {
   }
 
   /**
+   * Fetch full word data from Free Dictionary + Datamuse for a single word.
+   * Returns a normalized word object matching the vocabularyDatabase shape,
+   * or null if the word can't be found in the dictionary.
+   * @param {string} word - The word to fetch
+   * @param {string} difficulty - 'beginner' | 'intermediate' | 'advanced'
+   * @param {string} category - Topic category the word came from
+   * @returns {Promise<Object|null>}
+   */
+  async function getWordData(word, difficulty = 'beginner', category = 'general') {
+    const cacheKey = `worddata_${word}`;
+    const cached = cache.definitions.get(cacheKey);
+    if (cached && (Date.now() - cached.timestamp < CACHE_EXPIRY)) {
+      return cached.data;
+    }
+
+    try {
+      const response = await fetch(`${FREE_DICTIONARY_API}/${encodeURIComponent(word)}`);
+      if (!response.ok) return null;
+
+      const data = await response.json();
+      if (!data || !data.length) return null;
+
+      const entry = data[0];
+      const firstMeaning = entry.meanings && entry.meanings[0];
+      const firstDef = firstMeaning && firstMeaning.definitions && firstMeaning.definitions[0];
+      if (!firstDef || !firstDef.definition) return null;
+
+      // Collect synonyms from all meanings/definitions
+      const allSynonyms = [];
+      for (const meaning of (entry.meanings || [])) {
+        allSynonyms.push(...(meaning.synonyms || []));
+        for (const def of (meaning.definitions || [])) {
+          allSynonyms.push(...(def.synonyms || []));
+        }
+      }
+
+      const wordObj = {
+        id: word,           // use word string as ID
+        word: entry.word || word,
+        pronunciation: entry.phonetic || (entry.phonetics && entry.phonetics[0] && entry.phonetics[0].text) || '',
+        definition: firstDef.definition,
+        partOfSpeech: firstMeaning.partOfSpeech || '',
+        exampleSentence: firstDef.example || '',
+        synonyms: [...new Set(allSynonyms)].slice(0, 6),
+        difficulty,
+        category
+      };
+
+      cache.definitions.set(cacheKey, { data: wordObj, timestamp: Date.now() });
+      return wordObj;
+    } catch (err) {
+      return null;
+    }
+  }
+
+  /**
+   * Build a pool of word strings for a given difficulty by querying Datamuse
+   * across all topic seeds for that tier. Filters out short/compound words
+   * and words already in the hardcoded vocabularyDatabase.
+   * @param {string} difficulty - 'beginner' | 'intermediate' | 'advanced'
+   * @returns {Promise<string[]>} Array of word strings
+   */
+  async function buildWordPool(difficulty) {
+    if (typeof wordTopics === 'undefined' || typeof MIN_WORD_LENGTH === 'undefined') {
+      console.warn('wordTopics not loaded');
+      return [];
+    }
+
+    const topics = wordTopics[difficulty] || [];
+    const seen = new Set();
+    const results = [];
+
+    // Collect existing hardcoded words so we don't duplicate them
+    if (typeof vocabularyDatabase !== 'undefined') {
+      const allHardcoded = [
+        ...vocabularyDatabase.beginner,
+        ...vocabularyDatabase.intermediate,
+        ...vocabularyDatabase.advanced
+      ];
+      allHardcoded.forEach(w => seen.add(w.word.toLowerCase()));
+    }
+
+    // Query each topic and collect unique candidate words
+    const fetches = topics.map(topic =>
+      fetch(`${DATAMUSE_API}/words?ml=${encodeURIComponent(topic)}&max=50`)
+        .then(r => r.ok ? r.json() : [])
+        .catch(() => [])
+    );
+
+    const allResults = await Promise.all(fetches);
+
+    for (let i = 0; i < allResults.length; i++) {
+      const topic = topics[i];
+      for (const item of allResults[i]) {
+        const w = item.word;
+        if (
+          w.length >= MIN_WORD_LENGTH &&
+          !w.includes(' ') &&
+          !w.includes('-') &&
+          !seen.has(w.toLowerCase())
+        ) {
+          seen.add(w.toLowerCase());
+          results.push({ word: w, category: topic });
+        }
+      }
+    }
+
+    return results;
+  }
+
+  /**
    * Clear all caches
    */
   function clearCache() {
@@ -311,6 +422,8 @@ const APIService = (function() {
     getSophisticatedSynonyms,
     searchByTopic,
     getSoundAlike,
+    getWordData,
+    buildWordPool,
     clearCache,
     getCacheStats
   };
