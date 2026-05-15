@@ -73,6 +73,20 @@ const VocabularyModule = (function() {
     }
   }
 
+  // Synchronous cache lookup — handles both string IDs and legacy integer IDs
+  function resolveFromCache(id) {
+    // Try direct cache hit (string ID)
+    if (wordCache.has(id)) return wordCache.get(id);
+    // Try legacy integer ID — find by numeric id in cache values
+    if (typeof id === 'number' || (typeof id === 'string' && !isNaN(id))) {
+      const numId = Number(id);
+      for (const word of wordCache.values()) {
+        if (word.id === numId) return word;
+      }
+    }
+    return null;
+  }
+
   // Look up a full word object — from cache first, then API
   async function resolveWord(wordStr, category, diff) {
     if (wordCache.has(wordStr)) return wordCache.get(wordStr);
@@ -663,7 +677,7 @@ const VocabularyModule = (function() {
       return;
     }
 
-    const learnedWordObjects = learnedWords.map(id => wordCache.get(id) || { word: id, id, definition: '' }).filter(w => w);
+    const learnedWordObjects = learnedWords.map(id => resolveFromCache(id)).filter(w => w);
 
     // Display as chips
     const html = learnedWordObjects.map(word => `
@@ -689,7 +703,7 @@ const VocabularyModule = (function() {
       return;
     }
 
-    const stillLearningWordObjects = stillLearningWords.map(id => wordCache.get(id) || { word: id, id, definition: '' }).filter(w => w);
+    const stillLearningWordObjects = stillLearningWords.map(id => resolveFromCache(id)).filter(w => w);
 
     // Display as chips with option to move to learned
     const html = stillLearningWordObjects.map(word => `
