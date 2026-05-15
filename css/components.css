@@ -109,6 +109,10 @@
 .btn-group .btn {
   flex: 1;
   min-width: 120px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
 }
 
 /* ==================== MODAL ==================== */
