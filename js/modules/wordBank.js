@@ -494,7 +494,7 @@ const WordBankModule = (function() {
     ];
 
     const learnedWordObjects = (userData.vocabulary.learned || []).map(id => {
-      return allWords.find(w => w.id === id);
+      return allWords.find(w => w.id === id || w.word === id);
     }).filter(w => w !== undefined);
 
     // Add custom words marked as learned
@@ -554,7 +554,7 @@ const WordBankModule = (function() {
     ];
 
     const stillLearningWordObjects = (userData.vocabulary.stillLearning || []).map(id => {
-      return allWords.find(w => w.id === id);
+      return allWords.find(w => w.id === id || w.word === id);
     }).filter(w => w !== undefined);
 
     // Add custom words marked as stillLearning
@@ -1058,14 +1058,14 @@ const WordBankModule = (function() {
     // Learned db words
     const learnedIds = userData.vocabulary.learned || [];
     learnedIds.forEach(id => {
-      const word = dbWords.find(w => w.id === id);
+      const word = dbWords.find(w => w.id === id || w.word === id);
       if (word) words.push({ ...word, _quizStatus: 'learned' });
     });
 
     // Still learning db words
     const stillLearningIds = userData.vocabulary.stillLearning || [];
     stillLearningIds.forEach(id => {
-      const word = dbWords.find(w => w.id === id);
+      const word = dbWords.find(w => w.id === id || w.word === id);
       if (word) words.push({ ...word, _quizStatus: 'stillLearning' });
     });
 

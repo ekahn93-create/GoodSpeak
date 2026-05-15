@@ -127,6 +127,15 @@ const VocabularyModule = (function() {
     learnedWordsList = document.getElementById('learned-words-list');
     difficultyButtons = document.querySelectorAll('.difficulty-selector .btn');
 
+    // Pre-seed word cache from hardcoded database so learned words resolve after reload
+    if (typeof vocabularyDatabase !== 'undefined') {
+      [
+        ...vocabularyDatabase.beginner,
+        ...vocabularyDatabase.intermediate,
+        ...vocabularyDatabase.advanced
+      ].forEach(w => wordCache.set(w.word, w));
+    }
+
     // Load user data
     userData = StorageManager.load();
 
