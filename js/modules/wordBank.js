@@ -103,6 +103,15 @@ const WordBankModule = (function() {
       StorageManager.save(userData);
     }
 
+    // Initialize savedForLater if it doesn't exist
+    if (!userData.savedForLater) {
+      userData.savedForLater = [];
+      StorageManager.save(userData);
+    }
+
+    // Show badge immediately if there are saved words
+    _updateLearnBadge(userData.savedForLater.length);
+
     // Set up event listeners
     setupEventListeners();
 
@@ -1473,6 +1482,7 @@ const WordBankModule = (function() {
     const clearBtn = document.getElementById('word-bank-search-clear');
     if (clearBtn) clearBtn.style.display = 'none';
 
+    renderSavedForLater();
     displayAppLearnedWords();
     displayStillLearningWords();
     updateCounts();
@@ -1580,6 +1590,142 @@ const WordBankModule = (function() {
     });
   }
 
+  // ── SAVED FOR LATER (QUICK-ADD INBOX) ─────────────────────────────────────
+
+  /**
+   * Save a word to the "Saved for Later" inbox from the quick-add FAB.
+   * Called from the inline FAB script on each page.
+   */
+  function quickSave(word) {
+    if (!word) return;
+    const data = StorageManager.load();
+    if (!data) return;
+
+    if (!data.savedForLater) data.savedForLater = [];
+
+    // Avoid duplicates (case-insensitive)
+    const alreadyExists = data.savedForLater.some(
+      item => item.word.toLowerCase() === word.toLowerCase()
+    );
+    if (alreadyExists) {
+      _showToast('"' + word + '" is already in your inbox.');
+      return;
+    }
+
+    data.savedForLater.push({ word: word, savedAt: new Date().toISOString() });
+    StorageManager.save(data);
+
+    _showToast('"' + word + '" saved for later!');
+    _updateLearnBadge(data.savedForLater.length);
+
+    // If the Word Bank panel is currently visible, re-render inbox immediately
+    const bankPanel = document.getElementById('bank-category');
+    if (bankPanel && bankPanel.classList.contains('active')) {
+      userData = data;
+      renderSavedForLater();
+    }
+  }
+
+  /**
+   * Render the Saved for Later inbox at the top of the Word Bank panel.
+   */
+  function renderSavedForLater() {
+    const section = document.getElementById('saved-for-later-section');
+    const list = document.getElementById('sfl-list');
+    const countEl = document.getElementById('sfl-count');
+    if (!section || !list) return;
+
+    const data = StorageManager.load();
+    const items = (data && data.savedForLater) || [];
+
+    _updateLearnBadge(items.length);
+
+    if (items.length === 0) {
+      section.style.display = 'none';
+      return;
+    }
+
+    section.style.display = '';
+    if (countEl) countEl.textContent = '(' + items.length + ')';
+
+    list.innerHTML = items.map((item, idx) => `
+      <li class="sfl-item">
+        <span class="sfl-word">${item.word}</span>
+        <div class="sfl-actions">
+          <button class="btn btn-sm btn-primary sfl-add-btn" onclick="WordBankModule.promoteToWordBank(${idx})">Add to Word Bank</button>
+          <button class="sfl-dismiss" onclick="WordBankModule.dismissSavedWord(${idx})" aria-label="Dismiss">&times;</button>
+        </div>
+      </li>
+    `).join('');
+  }
+
+  /**
+   * Pre-fill the Add Custom Word form with the saved word, then remove it from inbox.
+   */
+  function promoteToWordBank(index) {
+    const data = StorageManager.load();
+    if (!data || !data.savedForLater) return;
+
+    const item = data.savedForLater[index];
+    if (!item) return;
+
+    // Pre-fill the custom word input
+    const wordInput = document.getElementById('custom-word');
+    if (wordInput) {
+      wordInput.value = item.word;
+      wordInput.focus();
+      // Scroll to the add form
+      const form = document.getElementById('add-custom-word-form');
+      if (form) form.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+
+    // Remove from inbox
+    data.savedForLater.splice(index, 1);
+    StorageManager.save(data);
+    userData = data;
+    renderSavedForLater();
+  }
+
+  /**
+   * Dismiss (delete) a word from the inbox without adding it.
+   */
+  function dismissSavedWord(index) {
+    const data = StorageManager.load();
+    if (!data || !data.savedForLater) return;
+
+    data.savedForLater.splice(index, 1);
+    StorageManager.save(data);
+    userData = data;
+    renderSavedForLater();
+  }
+
+  /**
+   * Update the badge count on the Learn tab in the mobile bottom bar.
+   */
+  function _updateLearnBadge(count) {
+    let badge = document.getElementById('learn-tab-badge');
+    const learnTab = document.querySelector('.mobile-tab[data-view="vocabulary"]');
+    if (!learnTab) return;
+
+    if (count > 0) {
+      if (!badge) {
+        badge = document.createElement('span');
+        badge.id = 'learn-tab-badge';
+        badge.className = 'mobile-tab-badge';
+        learnTab.appendChild(badge);
+      }
+      badge.textContent = count;
+    } else {
+      if (badge) badge.remove();
+    }
+  }
+
+  function _showToast(msg) {
+    if (typeof ToastManager !== 'undefined') {
+      ToastManager.show(msg, 'success');
+    }
+  }
+
   return {
     init: init,
     showWordDetail: showWordDetail,
@@ -1597,7 +1743,11 @@ const WordBankModule = (function() {
     sortSection: sortSection,
     toggleSection: toggleSection,
     searchWords: searchWords,
-    clearSearch: clearSearch
+    clearSearch: clearSearch,
+    quickSave: quickSave,
+    renderSavedForLater: renderSavedForLater,
+    promoteToWordBank: promoteToWordBank,
+    dismissSavedWord: dismissSavedWord
   };
 })();
 

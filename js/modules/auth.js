@@ -145,6 +145,16 @@ const AuthModule = (function () {
       btn.title = 'Sign in to save progress across devices';
     }
 
+    // Sync mobile tab label
+    const mobileLabel = document.getElementById('mobile-auth-label');
+    if (mobileLabel) {
+      mobileLabel.textContent = currentUser ? getDisplayName() : 'Sign In';
+    }
+    const mobileTab = document.getElementById('mobile-auth-tab');
+    if (mobileTab) {
+      mobileTab.classList.toggle('signed-in', !!currentUser);
+    }
+
     _updateWelcomeMessage();
   }
 
@@ -219,7 +229,19 @@ const AuthModule = (function () {
     if (navBtn) {
       navBtn.addEventListener('click', () => {
         if (currentUser) {
-          _showAccountMenu();
+          _showAccountMenu(navBtn);
+        } else {
+          openModal('login');
+        }
+      });
+    }
+
+    // Mobile bottom tab bar auth button
+    const mobileAuthTab = document.getElementById('mobile-auth-tab');
+    if (mobileAuthTab) {
+      mobileAuthTab.addEventListener('click', () => {
+        if (currentUser) {
+          _showAccountMenu(mobileAuthTab);
         } else {
           openModal('login');
         }
@@ -338,7 +360,7 @@ const AuthModule = (function () {
     }
   }
 
-  function _showAccountMenu() {
+  function _showAccountMenu(anchor) {
     // Simple inline dropdown — sign out option
     const existing = document.getElementById('auth-account-menu');
     if (existing) { existing.remove(); return; }
@@ -351,7 +373,7 @@ const AuthModule = (function () {
       <button id="auth-signout-btn" class="auth-signout-btn">Sign Out</button>
     `;
 
-    const btn = document.getElementById('auth-nav-btn');
+    const btn = anchor || document.getElementById('auth-nav-btn');
     btn.parentElement.appendChild(menu);
 
     document.getElementById('auth-signout-btn').addEventListener('click', () => {

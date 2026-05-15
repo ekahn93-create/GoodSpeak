@@ -49,6 +49,7 @@ const StorageManager = (function() {
       },
 
       customWords: [],         // Array of custom words added by the user
+      savedForLater: [],       // Array of {word, savedAt} captured via quick-add
 
       stats: {
         totalSessionTime: 0,   // in seconds
@@ -178,6 +179,7 @@ const StorageManager = (function() {
     merged.storytelling = { ...defaults.storytelling, ...existing.storytelling };
     merged.dailyWord = { ...defaults.dailyWord, ...existing.dailyWord };
     merged.customWords = existing.customWords || defaults.customWords;
+    merged.savedForLater = existing.savedForLater || defaults.savedForLater;
     merged.stats = { ...defaults.stats, ...existing.stats };
 
     // Preserve original firstVisit

@@ -3,6 +3,20 @@
    Mobile-first approach with breakpoints
    ============================================ */
 
+/* ==================== MOBILE BOTTOM TAB BAR ==================== */
+/* Hidden on desktop — shown only on mobile via media query below */
+.mobile-tab-bar {
+  display: none;
+}
+
+/* ==================== SAFE AREA (iPhone notch/home bar) ==================== */
+/* Body padding so content never hides behind system UI */
+@supports (padding-bottom: env(safe-area-inset-bottom)) {
+  body {
+    padding-bottom: env(safe-area-inset-bottom);
+  }
+}
+
 /* ==================== TABLET (max-width: 768px) ==================== */
 @media (max-width: 768px) {
   /* Typography adjustments */
@@ -12,21 +26,26 @@
     --font-size-lg: 17px;
   }
 
-  /* Navigation */
+  /* Navigation — compact single row, hide sub-labels */
   .nav-bar {
-    flex-direction: column;
-    gap: var(--spacing-md);
-    padding: var(--spacing-md);
+    flex-direction: row;
+    gap: var(--spacing-sm);
+    padding: var(--spacing-sm) var(--spacing-md);
+  }
+
+  .nav-sub {
+    display: none;
   }
 
   .nav-menu {
-    width: 100%;
+    width: auto;
     justify-content: center;
-    flex-wrap: wrap;
+    flex-wrap: nowrap;
+    gap: 4px;
   }
 
   .nav-link {
-    padding: var(--spacing-sm);
+    padding: 8px 12px;
     font-size: var(--font-size-sm);
   }
 
@@ -179,6 +198,105 @@
   /* Achievements Grid */
   .achievements-grid {
     grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+  }
+}
+
+/* ==================== MOBILE BOTTOM TAB BAR (max-width: 640px) ==================== */
+@media (max-width: 640px) {
+  /* Hide the top nav entirely — replaced by bottom tab bar */
+  .nav-bar {
+    display: none;
+  }
+
+  /* Show the bottom tab bar */
+  .mobile-tab-bar {
+    display: flex;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    z-index: 1000;
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border-top: 1px solid var(--border-color);
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+    justify-content: space-around;
+    align-items: stretch;
+  }
+
+  .mobile-tab {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 3px;
+    padding: 10px 4px;
+    min-height: 56px; /* 44px tap target + breathing room */
+    color: var(--text-secondary);
+    text-decoration: none;
+    font-size: 11px;
+    font-weight: 500;
+    transition: color var(--transition-fast);
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  .mobile-tab svg {
+    flex-shrink: 0;
+    stroke: currentColor;
+  }
+
+  .mobile-tab.active {
+    color: var(--primary-color);
+  }
+
+  .mobile-tab:active {
+    background: var(--bg-hover);
+  }
+
+  /* Account tab — button reset */
+  .mobile-auth-tab {
+    border: none;
+    background: none;
+    cursor: pointer;
+    font-family: var(--font-family);
+  }
+
+  .mobile-auth-tab.signed-in {
+    color: var(--secondary-color);
+  }
+
+  /* Account menu — open upward when inside the mobile tab bar */
+  #mobile-tab-bar .auth-account-menu {
+    top: auto;
+    bottom: calc(100% + 8px);
+    right: var(--spacing-sm);
+  }
+
+  /* Push page content above the tab bar */
+  #app-container {
+    padding-bottom: calc(64px + env(safe-area-inset-bottom, 0px));
+  }
+
+  /* Keep the quick-add FAB above the tab bar */
+  .quick-add-fab {
+    bottom: calc(72px + env(safe-area-inset-bottom, 0px)) !important;
+  }
+
+  /* Ensure auth nav button stays accessible (hidden with nav, move to profile tab later) */
+  .nav-auth {
+    display: none;
+  }
+
+  /* Minimum 44px tap targets for all interactive elements */
+  .btn {
+    min-height: 44px;
+  }
+
+  .btn-group .btn,
+  .action-buttons .btn {
+    min-height: 44px;
   }
 }
 
@@ -474,6 +592,11 @@
     right: var(--spacing-sm);
   }
 
+  /* Word Bank form: stack 2-col grid to single column */
+  .form-row {
+    grid-template-columns: 1fr;
+  }
+
   /* Cards */
   .card {
     padding: var(--spacing-md);
@@ -525,6 +648,41 @@
 
   .review-achievements-grid {
     grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+/* ==================== INNER TAB STRIPS — HORIZONTAL SCROLL (max-width: 640px) ==================== */
+@media (max-width: 640px) {
+  .vocab-categories,
+  .fluency-categories,
+  .storytelling-categories {
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    justify-content: flex-start;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none; /* Firefox */
+    /* Sticky: no top nav on mobile, so top: 0 */
+    top: 0;
+    padding-left: var(--spacing-sm);
+    padding-right: var(--spacing-sm);
+    /* Fade hint at right edge */
+    mask-image: linear-gradient(to right, black calc(100% - 32px), transparent 100%);
+    -webkit-mask-image: linear-gradient(to right, black calc(100% - 32px), transparent 100%);
+  }
+
+  .vocab-categories::-webkit-scrollbar,
+  .fluency-categories::-webkit-scrollbar,
+  .storytelling-categories::-webkit-scrollbar {
+    display: none;
+  }
+
+  .vocab-category-tab,
+  .category-tab,
+  .storytelling-category-tab {
+    flex-shrink: 0;
+    font-size: var(--font-size-sm);
+    padding: var(--spacing-xs) var(--spacing-sm);
+    min-height: 44px;
   }
 }
 

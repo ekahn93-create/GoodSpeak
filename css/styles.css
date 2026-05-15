@@ -73,6 +73,7 @@ body {
   color: var(--text-primary);
   background-color: var(--bg-main);
   min-height: 100vh;
+  overflow-x: hidden;
 }
 
 h1, h2, h3, h4, h5, h6 {
@@ -4299,6 +4300,274 @@ canvas {
   opacity: 0;
   pointer-events: none;
   transform: translateY(12px);
+}
+
+/* ============================================
+   QUICK-ADD FAB
+   ============================================ */
+.quick-add-fab {
+  position: fixed;
+  right: 24px;
+  bottom: 32px;
+  z-index: 1500;
+  width: 52px;
+  height: 52px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
+  color: #fff;
+  border: none;
+  border-radius: 50%;
+  box-shadow: 0 4px 20px rgba(99, 102, 241, 0.45);
+  cursor: pointer;
+  transition: transform var(--transition-fast), box-shadow var(--transition-fast);
+}
+
+.quick-add-fab:hover {
+  transform: translateY(-2px) scale(1.08);
+  box-shadow: 0 8px 28px rgba(99, 102, 241, 0.55);
+}
+
+.quick-add-fab:active {
+  transform: scale(0.95);
+}
+
+/* ============================================
+   QUICK-ADD BOTTOM SHEET
+   ============================================ */
+.quick-add-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  z-index: 2000;
+  background: rgba(15, 23, 42, 0.4);
+  backdrop-filter: blur(2px);
+  -webkit-backdrop-filter: blur(2px);
+  align-items: flex-end;
+  justify-content: center;
+}
+
+.quick-add-overlay.active {
+  display: flex;
+}
+
+.quick-add-sheet {
+  width: 100%;
+  max-width: 520px;
+  background: var(--bg-card);
+  border-radius: var(--border-radius) var(--border-radius) 0 0;
+  padding: var(--spacing-md) var(--spacing-lg) calc(var(--spacing-lg) + env(safe-area-inset-bottom, 0px));
+  box-shadow: var(--shadow-lg);
+  animation: slideUp 0.22s ease;
+}
+
+@keyframes slideUp {
+  from { transform: translateY(100%); }
+  to   { transform: translateY(0); }
+}
+
+/* On desktop, show as a centered modal instead */
+@media (min-width: 641px) {
+  .quick-add-overlay {
+    align-items: center;
+  }
+
+  .quick-add-sheet {
+    border-radius: var(--border-radius);
+    padding: var(--spacing-lg);
+    margin: var(--spacing-md);
+  }
+}
+
+.quick-add-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: var(--spacing-md);
+}
+
+.quick-add-title {
+  font-size: var(--font-size-lg);
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.quick-add-close {
+  background: none;
+  border: none;
+  font-size: 24px;
+  line-height: 1;
+  color: var(--text-secondary);
+  cursor: pointer;
+  padding: 4px 8px;
+}
+
+.quick-add-body {
+  display: flex;
+  gap: var(--spacing-sm);
+}
+
+.quick-add-input {
+  flex: 1;
+  padding: 12px var(--spacing-md);
+  border: 2px solid var(--border-color);
+  border-radius: var(--border-radius-sm);
+  font-size: var(--font-size-lg);
+  font-family: var(--font-family);
+  color: var(--text-primary);
+  background: var(--bg-main);
+  transition: border-color var(--transition-fast);
+}
+
+.quick-add-input:focus {
+  outline: none;
+  border-color: var(--primary-color);
+}
+
+.quick-add-save-btn {
+  white-space: nowrap;
+  min-height: 48px;
+}
+
+.quick-add-hint {
+  margin-top: var(--spacing-sm);
+  font-size: var(--font-size-sm);
+  color: var(--text-light);
+  margin-bottom: 4px;
+}
+
+.quick-add-goto-bank {
+  display: inline-block;
+  font-size: var(--font-size-sm);
+  font-weight: 600;
+  color: var(--primary-color);
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  font-family: var(--font-family);
+  text-decoration: none;
+  transition: color var(--transition-fast);
+}
+
+.quick-add-goto-bank:hover {
+  color: var(--primary-dark);
+}
+
+/* ============================================
+   SAVED FOR LATER INBOX (Word Bank panel)
+   ============================================ */
+.saved-for-later-section {
+  background: linear-gradient(135deg, #eef2ff, #f0fdf4);
+  border: 1px solid #c7d2fe;
+  border-radius: var(--border-radius);
+  padding: var(--spacing-md);
+  margin-bottom: var(--spacing-lg);
+}
+
+.sfl-header {
+  margin-bottom: var(--spacing-sm);
+}
+
+.sfl-title {
+  font-size: var(--font-size-base);
+  font-weight: 700;
+  color: var(--primary-dark);
+  margin-bottom: 4px;
+}
+
+.sfl-count {
+  font-weight: 400;
+  color: var(--text-secondary);
+}
+
+.sfl-subtitle {
+  font-size: var(--font-size-sm);
+  color: var(--text-secondary);
+  margin-bottom: 0;
+}
+
+.sfl-list {
+  list-style: none;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-xs);
+}
+
+.sfl-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--spacing-sm);
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: var(--border-radius-sm);
+  padding: var(--spacing-xs) var(--spacing-sm);
+}
+
+.sfl-word {
+  font-weight: 600;
+  color: var(--text-primary);
+  font-size: var(--font-size-base);
+  flex: 1;
+}
+
+.sfl-actions {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-xs);
+  flex-shrink: 0;
+}
+
+.btn-sm {
+  padding: 6px 14px;
+  font-size: 13px;
+  min-height: 0;
+}
+
+.sfl-dismiss {
+  background: none;
+  border: none;
+  font-size: 20px;
+  line-height: 1;
+  color: var(--text-light);
+  cursor: pointer;
+  padding: 4px 6px;
+  border-radius: 4px;
+  transition: color var(--transition-fast), background var(--transition-fast);
+}
+
+.sfl-dismiss:hover {
+  color: var(--accent-color);
+  background: #fff1f2;
+}
+
+/* ============================================
+   MOBILE LEARN TAB BADGE
+   ============================================ */
+.mobile-tab-badge {
+  position: absolute;
+  top: 6px;
+  right: calc(50% - 18px);
+  background: var(--accent-color);
+  color: #fff;
+  font-size: 10px;
+  font-weight: 700;
+  min-width: 16px;
+  height: 16px;
+  border-radius: 999px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 4px;
+  pointer-events: none;
+}
+
+/* Make the tab position:relative so the badge can anchor to it */
+.mobile-tab {
+  position: relative;
 }
 
 /* ============================================

@@ -71,7 +71,7 @@ const Router = (function() {
   }
 
   function updateNavLinks(viewName) {
-    document.querySelectorAll('.nav-link').forEach(link => {
+    document.querySelectorAll('.nav-link, .mobile-tab').forEach(link => {
       if (link.getAttribute('data-view') === viewName) {
         link.classList.add('active');
       } else {
