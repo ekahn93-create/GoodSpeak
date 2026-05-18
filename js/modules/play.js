@@ -1,32 +1,40 @@
 // ============================================
 // PLAY MODULE
-// 30-second vocabulary game powered by Supabase words table
+// 30-second synonym/antonym multiple-choice game
 // ============================================
 
 const PlayModule = (function () {
 
+  // ── Constants ─────────────────────────────────────────────────────────────
+  const START_DURATION  = 30;
+  const BONUS_CORRECT   = 5;
+  const POINTS_CORRECT  = 10;
+  const BASE_CHOICES    = 4;
+
   // ── State ─────────────────────────────────────────────────────────────────
-  let supabase = null;
+  let supabase    = null;
   let currentUser = null;
 
   // Game state
-  let gameWords = [];         // words fetched for this session
-  let currentWordIndex = 0;
-  let score = 0;
-  let wordCount = 0;
-  let missedWords = [];       // words the user got wrong this game
-  let timeLeft = 30;          // seconds remaining
-  let gameRunning = false;
-  let rafId = null;
-  let lastTimestamp = null;
-  let startTime = 30;         // initial timer value (may grow with correct answers)
+  let questions      = [];   // array of QuizQuestion objects
+  let currentIdx     = 0;
+  let score          = 0;
+  let correctCount   = 0;
+  let totalAnswered  = 0;
+  let missedWords    = [];   // { wordId, word, definition }
+  let pickedIdx      = null; // index of choice tapped (null = waiting)
+  let timeLeft       = START_DURATION;
+  let maxSeconds     = START_DURATION;
+  let gameRunning    = false;
+  let rafId          = null;
+  let lastTimestamp  = null;
 
   // DOM refs — game tab
   let loginGate, readyScreen, playingScreen, postgameScreen;
-  let startBtn, correctBtn, wrongBtn, playAgainBtn, challengeBtn;
-  let timerBar, timerLabel, scoreEl, wordCountEl;
-  let wordEl, posEl, definitionEl, difficultyDotsEl;
-  let postgameScoreEl, postgameWordsEl, postgameStreakEl;
+  let startBtn, playAgainBtn, challengeBtn;
+  let timerBar, timerLabel, scoreEl, correctEl;
+  let questionTypeEl, questionPromptEl, choiceGrid;
+  let postgameScoreEl, postgameCorrectEl, postgameStreakEl;
   let missedSection, missedList;
 
   // DOM refs — tabs
@@ -40,54 +48,43 @@ const PlayModule = (function () {
   // ── Init ──────────────────────────────────────────────────────────────────
 
   function init() {
-    console.log('PlayModule initializing...');
-
-    // Only run on the play page
     if (!document.getElementById('play-view')) return;
-
     _cacheDom();
     _bindTabs();
     _bindGameButtons();
-
-    // Show ready screen by default — login gate shown only when Start is clicked without a session
-    if (loginGate) loginGate.style.display = 'none';
-    if (readyScreen) readyScreen.style.display = '';
-
-    console.log('PlayModule initialized');
+    if (loginGate)    loginGate.style.display   = 'none';
+    if (readyScreen)  readyScreen.style.display  = '';
   }
 
-  // Lazily resolve supabase client and current user at action time
   function _resolveAuth() {
-    supabase = AuthModule.getClient ? AuthModule.getClient() : null;
-    currentUser = AuthModule.getUser ? AuthModule.getUser() : null;
+    supabase     = AuthModule.getClient ? AuthModule.getClient() : null;
+    currentUser  = AuthModule.getUser   ? AuthModule.getUser()   : null;
   }
 
   function _cacheDom() {
-    loginGate       = document.getElementById('play-login-gate');
-    readyScreen     = document.getElementById('play-ready-screen');
-    playingScreen   = document.getElementById('play-playing-screen');
-    postgameScreen  = document.getElementById('play-postgame-screen');
+    loginGate      = document.getElementById('play-login-gate');
+    readyScreen    = document.getElementById('play-ready-screen');
+    playingScreen  = document.getElementById('play-playing-screen');
+    postgameScreen = document.getElementById('play-postgame-screen');
 
-    startBtn        = document.getElementById('play-start-btn');
-    correctBtn      = document.getElementById('play-correct-btn');
-    wrongBtn        = document.getElementById('play-wrong-btn');
-    playAgainBtn    = document.getElementById('play-again-btn');
-    challengeBtn    = document.getElementById('play-challenge-btn');
+    startBtn       = document.getElementById('play-start-btn');
+    playAgainBtn   = document.getElementById('play-again-btn');
+    challengeBtn   = document.getElementById('play-challenge-btn');
 
-    timerBar        = document.getElementById('play-timer-bar');
-    timerLabel      = document.getElementById('play-timer-label');
-    scoreEl         = document.getElementById('play-score');
-    wordCountEl     = document.getElementById('play-word-count');
-    wordEl          = document.getElementById('play-word');
-    posEl           = document.getElementById('play-pos');
-    definitionEl    = document.getElementById('play-definition');
-    difficultyDotsEl = document.getElementById('play-difficulty-dots');
+    timerBar       = document.getElementById('play-timer-bar');
+    timerLabel     = document.getElementById('play-timer-label');
+    scoreEl        = document.getElementById('play-score');
+    correctEl      = document.getElementById('play-correct-count');
 
-    postgameScoreEl  = document.getElementById('play-postgame-score');
-    postgameWordsEl  = document.getElementById('play-postgame-words');
-    postgameStreakEl = document.getElementById('play-postgame-streak');
-    missedSection    = document.getElementById('play-missed-section');
-    missedList       = document.getElementById('play-missed-list');
+    questionTypeEl   = document.getElementById('play-question-type');
+    questionPromptEl = document.getElementById('play-question-prompt');
+    choiceGrid       = document.getElementById('play-choice-grid');
+
+    postgameScoreEl   = document.getElementById('play-postgame-score');
+    postgameCorrectEl = document.getElementById('play-postgame-correct');
+    postgameStreakEl  = document.getElementById('play-postgame-streak');
+    missedSection     = document.getElementById('play-missed-section');
+    missedList        = document.getElementById('play-missed-list');
 
     tabBtns   = document.querySelectorAll('.play-tab');
     tabPanels = document.querySelectorAll('.play-tab-panel');
@@ -112,7 +109,6 @@ const PlayModule = (function () {
         btn.classList.add('active');
         const panel = document.getElementById('play-tab-' + tab);
         if (panel) panel.style.display = '';
-
         if (tab === 'leaderboard') _loadLeaderboard();
         if (tab === 'my-stats')    _loadMyStats();
       });
@@ -123,11 +119,10 @@ const PlayModule = (function () {
 
   function _showLoginGate() {
     _showScreen(loginGate);
-
-    const gateSigninBtn = document.getElementById('play-signin-btn');
-    if (gateSigninBtn && !gateSigninBtn._bound) {
-      gateSigninBtn._bound = true;
-      gateSigninBtn.addEventListener('click', function () {
+    const btn = document.getElementById('play-signin-btn');
+    if (btn && !btn._bound) {
+      btn._bound = true;
+      btn.addEventListener('click', function () {
         const authBtn = document.getElementById('auth-nav-btn');
         if (authBtn) authBtn.click();
       });
@@ -138,11 +133,8 @@ const PlayModule = (function () {
 
   function _bindGameButtons() {
     if (startBtn)    startBtn.addEventListener('click', _startGame);
-    if (correctBtn)  correctBtn.addEventListener('click', _handleCorrect);
-    if (wrongBtn)    wrongBtn.addEventListener('click', _handleWrong);
     if (playAgainBtn) playAgainBtn.addEventListener('click', _resetToReady);
     if (challengeBtn) challengeBtn.addEventListener('click', _shareChallenge);
-
     document.querySelectorAll('.play-stats-signin-btn').forEach(function (btn) {
       btn.addEventListener('click', function () {
         const authBtn = document.getElementById('auth-nav-btn');
@@ -154,55 +146,57 @@ const PlayModule = (function () {
   async function _startGame() {
     _resolveAuth();
     if (!currentUser) { _showLoginGate(); return; }
-    if (!supabase) { _showToast('Could not connect. Please refresh.', 'error'); return; }
-    if (!supabase) { _showToast('Could not connect. Please refresh.', 'error'); return; }
+    if (!supabase)    { _showToast('Could not connect. Please refresh.', 'error'); return; }
 
-    // Reset state
-    score = 0;
-    wordCount = 0;
-    missedWords = [];
-    currentWordIndex = 0;
-    timeLeft = 30;
-    gameRunning = false;
+    score = 0; correctCount = 0; totalAnswered = 0;
+    missedWords = []; currentIdx = 0;
+    timeLeft = START_DURATION; maxSeconds = START_DURATION;
+    gameRunning = false; pickedIdx = null;
 
     startBtn.disabled = true;
-    startBtn.textContent = 'Loading...';
+    startBtn.textContent = 'Loading…';
 
-    gameWords = await _fetchWords();
+    const words = await _fetchWords();
 
     startBtn.disabled = false;
     startBtn.textContent = 'Start Game';
 
-    if (!gameWords.length) {
-      _showToast('Could not load words. Check your connection.', 'error');
+    if (words.length < 4) {
+      _showToast('Could not load enough words. Check your connection.', 'error');
+      return;
+    }
+
+    questions = _buildQuestions(words);
+
+    if (questions.length === 0) {
+      _showToast('Not enough words to generate questions.', 'error');
       return;
     }
 
     _showScreen(playingScreen);
     _updateScoreDisplay();
-    _showWord();
+    _showQuestion();
     _startTimer();
   }
 
+  // ── Word Fetching ─────────────────────────────────────────────────────────
+
   async function _fetchWords() {
     try {
-      // Get words seen today to exclude them
-      const today = new Date().toISOString().slice(0, 10); // YYYY-MM-DD
+      const today = new Date().toISOString().slice(0, 10);
 
       const { data: seenRows } = await supabase
         .from('daily_played_words')
         .select('word_id')
         .eq('user_id', currentUser.id)
-        .eq('play_date', today);
+        .eq('played_on', today);
 
       const seenIds = (seenRows || []).map(r => r.word_id);
 
-      // Fetch unseen words — up to 50 to have a pool
       let query = supabase
         .from('words')
         .select('id, word, definition, difficulty, synonyms, antonyms')
-        .order('difficulty', { ascending: true })
-        .limit(50);
+        .limit(100);
 
       if (seenIds.length > 0) {
         query = query.not('id', 'in', '(' + seenIds.join(',') + ')');
@@ -210,12 +204,12 @@ const PlayModule = (function () {
 
       const { data: words, error } = await query;
 
-      if (error || !words || !words.length) {
-        // All words seen today — allow replay
+      if (error || !words || words.length < 4) {
+        // All seen today — allow replay
         const { data: allWords } = await supabase
           .from('words')
           .select('id, word, definition, difficulty, synonyms, antonyms')
-          .limit(50);
+          .limit(100);
         return _shuffle(allWords || []);
       }
 
@@ -226,66 +220,164 @@ const PlayModule = (function () {
     }
   }
 
-  function _showWord() {
-    if (currentWordIndex >= gameWords.length) {
-      // Ran out of words — end game
+  // ── Question Building ─────────────────────────────────────────────────────
+  // Mirrors Vocabulary Voyager play.server.ts buildQuestions logic
+
+  function _buildQuestions(pool) {
+    const questions = [];
+
+    for (const w of pool) {
+      const types = [];
+      if (w.synonyms && w.synonyms.length) types.push('synonym');
+      if (w.antonyms && w.antonyms.length) types.push('antonym');
+      if (types.length === 0) continue;
+
+      const type    = types[Math.floor(Math.random() * types.length)];
+      const correct = (type === 'synonym' ? w.synonyms : w.antonyms)[0];
+
+      // Build distractors: use opposite-type words from other words first,
+      // then fall back to other words' names. Mirrors Voyager logic.
+      const others = _shuffle(pool.filter(x => x.id !== w.id));
+      const distractors = [];
+
+      for (const o of others) {
+        if (distractors.length >= 9) break;
+        const candidate = type === 'synonym'
+          ? (o.antonyms && o.antonyms[0])
+          : (o.synonyms && o.synonyms[0]);
+        if (candidate && candidate !== correct && candidate !== w.word && !distractors.includes(candidate)) {
+          distractors.push(candidate);
+        }
+      }
+
+      // Fill remaining slots with word names as distractors
+      for (const o of others) {
+        if (distractors.length >= 9) break;
+        const filler = o.word;
+        if (!distractors.includes(filler) && filler !== correct && filler !== w.word) {
+          distractors.push(filler);
+        }
+      }
+
+      if (distractors.length < 3) continue; // need at least 3 distractors for 4 choices
+
+      questions.push({
+        id:          w.id + '-' + type,
+        wordId:      w.id,
+        word:        w.word,
+        difficulty:  w.difficulty || 1,
+        type:        type,
+        prompt:      type === 'synonym'
+          ? 'Which word is <u><strong>closest in meaning</strong></u> to "' + w.word + '"?'
+          : 'Which word is the <u><strong>opposite</strong></u> of "' + w.word + '"?',
+        correct:     correct,
+        distractors: distractors,
+        definition:  w.definition || ''
+      });
+    }
+
+    return questions;
+  }
+
+  // ── Showing a Question ────────────────────────────────────────────────────
+
+  function _showQuestion() {
+    if (currentIdx >= questions.length) {
       _endGame();
       return;
     }
 
-    const w = gameWords[currentWordIndex];
-    wordEl.textContent = w.word;
-    posEl.textContent = '';
-    definitionEl.textContent = w.definition || '';
-    _renderDifficultyDots(w.difficulty || 1);
-  }
+    const q = questions[currentIdx];
+    pickedIdx = null;
 
-  function _renderDifficultyDots(difficulty) {
-    difficultyDotsEl.innerHTML = '';
-    for (let i = 1; i <= 5; i++) {
-      const dot = document.createElement('span');
-      dot.className = 'play-dot' + (i <= difficulty ? ' play-dot--filled' : '');
-      difficultyDotsEl.appendChild(dot);
+    // How many choices to show: grows by 1 every 10 correct answers, max = distractors+1
+    const choiceCount = Math.min(
+      BASE_CHOICES + Math.floor(correctCount / 10),
+      1 + q.distractors.length
+    );
+
+    // Build shuffled options using a seeded shuffle (matches Voyager approach)
+    const distractors = q.distractors.slice(0, choiceCount - 1);
+    const all = [q.correct].concat(distractors);
+    const options = _seededShuffle(all, q.id);
+    const correctIndex = options.indexOf(q.correct);
+
+    // Update question type label
+    if (questionTypeEl) {
+      questionTypeEl.textContent =
+        (q.type === 'synonym' ? 'SYNONYM' : 'ANTONYM') + ' · ' + choiceCount + ' CHOICES';
+    }
+
+    // Update prompt (uses innerHTML for bold/underline markup)
+    if (questionPromptEl) {
+      questionPromptEl.innerHTML = q.prompt;
+    }
+
+    // Render choice buttons
+    if (choiceGrid) {
+      choiceGrid.innerHTML = '';
+      // 2-col grid for 4 choices, 1-col for 5+
+      choiceGrid.className = 'play-choice-grid' + (choiceCount > 4 ? ' play-choice-grid--wide' : '');
+
+      options.forEach(function (opt, i) {
+        const btn = document.createElement('button');
+        btn.className = 'play-choice-btn';
+        btn.textContent = opt;
+        btn.addEventListener('click', function () {
+          _handleChoice(i, correctIndex);
+        });
+        choiceGrid.appendChild(btn);
+      });
     }
   }
 
-  function _handleCorrect() {
-    if (!gameRunning) return;
-    const w = gameWords[currentWordIndex];
-    const points = (w.difficulty || 1) * 10;
-    score += points;
-    wordCount++;
-    timeLeft = Math.min(timeLeft + 5, 90); // +5s, cap at 90
-    _updateScoreDisplay();
-    _recordDailyPlayed(w.id);
-    currentWordIndex++;
-    _showWord();
-    _flashCard('correct');
-  }
+  // ── Handling a Choice ─────────────────────────────────────────────────────
 
-  function _handleWrong() {
-    if (!gameRunning) return;
-    const w = gameWords[currentWordIndex];
-    missedWords.push(w);
-    _recordDailyPlayed(w.id);
-    _recordIncorrect(w.id);
-    currentWordIndex++;
-    _showWord();
-    _flashCard('wrong');
-  }
+  function _handleChoice(i, correctIndex) {
+    if (pickedIdx !== null || !gameRunning) return;
+    pickedIdx = i;
 
-  function _flashCard(type) {
-    const card = document.querySelector('.play-word-card');
-    if (!card) return;
-    card.classList.remove('flash-correct', 'flash-wrong');
-    void card.offsetWidth; // reflow to restart animation
-    card.classList.add(type === 'correct' ? 'flash-correct' : 'flash-wrong');
+    const q = questions[currentIdx];
+    const isCorrect = i === correctIndex;
+
+    totalAnswered++;
+
+    // Flash the buttons
+    const btns = choiceGrid.querySelectorAll('.play-choice-btn');
+    btns.forEach(function (btn, idx) {
+      btn.disabled = true;
+      if (idx === correctIndex) {
+        btn.classList.add('play-choice-btn--correct');
+      } else if (idx === i && !isCorrect) {
+        btn.classList.add('play-choice-btn--wrong');
+      } else {
+        btn.classList.add('play-choice-btn--dim');
+      }
+    });
+
+    if (isCorrect) {
+      score += POINTS_CORRECT;
+      correctCount++;
+      timeLeft = Math.min(timeLeft + BONUS_CORRECT, 90);
+      _updateScoreDisplay();
+      _recordDailyPlayed(q.wordId);
+    } else {
+      missedWords.push({ wordId: q.wordId, word: q.word, definition: q.definition });
+      _recordDailyPlayed(q.wordId);
+      _recordIncorrect(q.wordId);
+    }
+
+    // Advance after brief delay
+    setTimeout(function () {
+      currentIdx++;
+      _showQuestion();
+    }, 450);
   }
 
   // ── Timer ─────────────────────────────────────────────────────────────────
 
   function _startTimer() {
-    gameRunning = true;
+    gameRunning   = true;
     lastTimestamp = performance.now();
     rafId = requestAnimationFrame(_timerTick);
   }
@@ -309,14 +401,11 @@ const PlayModule = (function () {
   }
 
   function _updateTimerDisplay() {
-    const secs = Math.ceil(timeLeft);
-    if (timerLabel) timerLabel.textContent = secs;
+    if (timerLabel) timerLabel.textContent = Math.max(0, timeLeft).toFixed(1) + 'S';
 
-    // Bar width — treat 30s as "full" but allow it to grow above 100% visually
-    const pct = Math.min((timeLeft / 30) * 100, 100);
+    const pct = Math.min((timeLeft / maxSeconds) * 100, 100);
     if (timerBar) {
       timerBar.style.width = pct + '%';
-      // Color shifts red when under 10s
       if (timeLeft <= 10) {
         timerBar.style.background = 'var(--accent-color)';
       } else if (timeLeft <= 20) {
@@ -328,8 +417,8 @@ const PlayModule = (function () {
   }
 
   function _updateScoreDisplay() {
-    if (scoreEl)    scoreEl.textContent = score;
-    if (wordCountEl) wordCountEl.textContent = wordCount;
+    if (scoreEl)   scoreEl.textContent   = score;
+    if (correctEl) correctEl.textContent = correctCount;
   }
 
   // ── End Game ──────────────────────────────────────────────────────────────
@@ -338,18 +427,16 @@ const PlayModule = (function () {
     gameRunning = false;
     if (rafId) cancelAnimationFrame(rafId);
 
-    // Submit score to Supabase (bump_streak trigger fires automatically)
     let streakCount = null;
     try {
       if (supabase && currentUser) {
         await supabase.from('play_sessions').insert({
-          user_id:    currentUser.id,
-          score:      score,
-          words_seen: wordCount,
-          missed:     missedWords.length
+          user_id:       currentUser.id,
+          score:         score,
+          correct_count: correctCount,
+          total_answered: totalAnswered
         });
 
-        // Fetch updated streak
         const { data: streakRow } = await supabase
           .from('streaks')
           .select('current_streak')
@@ -365,12 +452,13 @@ const PlayModule = (function () {
   }
 
   function _showPostgame(streakCount) {
-    if (postgameScoreEl) postgameScoreEl.textContent = score;
-    if (postgameWordsEl) postgameWordsEl.textContent = wordCount + ' word' + (wordCount !== 1 ? 's' : '');
+    if (postgameScoreEl)   postgameScoreEl.textContent   = score;
+    if (postgameCorrectEl) postgameCorrectEl.textContent =
+      correctCount + ' correct out of ' + totalAnswered + ' answered';
     if (postgameStreakEl) {
       postgameStreakEl.textContent = streakCount !== null
         ? streakCount + ' day streak'
-        : '— streak';
+        : '';
     }
 
     // Missed words list
@@ -383,13 +471,12 @@ const PlayModule = (function () {
         li.innerHTML =
           '<div class="play-missed-word-info">' +
             '<span class="play-missed-word">' + _escHtml(w.word) + '</span>' +
-            '<span class="play-missed-def">' + _escHtml(w.definition || '') + '</span>' +
+            '<span class="play-missed-def">'  + _escHtml(w.definition || '') + '</span>' +
           '</div>' +
           '<button class="btn btn-secondary play-missed-save-btn" data-word="' + _escHtml(w.word) + '">Save to Word Bank</button>';
         missedList.appendChild(li);
       });
 
-      // Bind save buttons
       missedList.querySelectorAll('.play-missed-save-btn').forEach(function (btn) {
         btn.addEventListener('click', function () {
           const word = btn.getAttribute('data-word');
@@ -403,7 +490,7 @@ const PlayModule = (function () {
         });
       });
     } else {
-      missedSection.style.display = 'none';
+      if (missedSection) missedSection.style.display = 'none';
     }
 
     _showScreen(postgameScreen);
@@ -426,10 +513,10 @@ const PlayModule = (function () {
         || currentUser.email;
 
       await supabase.from('challenges').insert({
-        code:         code,
-        challenger_id: currentUser.id,
-        score:        score,
-        display_name: displayName
+        code:              code,
+        challenger_id:     currentUser.id,
+        score:             score,
+        display_name:      displayName
       });
 
       const link = window.location.origin + '/play?challenge=' + code;
@@ -454,7 +541,7 @@ const PlayModule = (function () {
       return;
     }
 
-    leaderboardBody.innerHTML = '<p class="play-loading">Loading...</p>';
+    leaderboardBody.innerHTML = '<p class="play-loading">Loading…</p>';
 
     try {
       const { data, error } = await supabase
@@ -491,13 +578,13 @@ const PlayModule = (function () {
     _resolveAuth();
 
     if (!currentUser || !supabase) {
-      statsLoginGate.style.display = '';
-      statsBody.style.display = 'none';
+      if (statsLoginGate) statsLoginGate.style.display = '';
+      if (statsBody)      statsBody.style.display      = 'none';
       return;
     }
 
-    statsLoginGate.style.display = 'none';
-    statsBody.style.display = '';
+    if (statsLoginGate) statsLoginGate.style.display = 'none';
+    if (statsBody)      statsBody.style.display      = '';
 
     try {
       const [streakRes, sessionsRes] = await Promise.all([
@@ -505,11 +592,11 @@ const PlayModule = (function () {
         supabase.from('play_sessions').select('score').eq('user_id', currentUser.id)
       ]);
 
-      const streak = streakRes.data ? streakRes.data.current_streak : 0;
+      const streak   = streakRes.data ? streakRes.data.current_streak : 0;
       const sessions = sessionsRes.data || [];
-      const games = sessions.length;
-      const best = games ? Math.max(...sessions.map(s => s.score)) : 0;
-      const avg = games ? Math.round(sessions.reduce((a, s) => a + s.score, 0) / games) : 0;
+      const games    = sessions.length;
+      const best     = games ? Math.max(...sessions.map(s => s.score)) : 0;
+      const avg      = games ? Math.round(sessions.reduce((a, s) => a + s.score, 0) / games) : 0;
 
       if (pstatStreak) pstatStreak.textContent = streak;
       if (pstatBest)   pstatBest.textContent   = best;
@@ -529,8 +616,8 @@ const PlayModule = (function () {
       await supabase.from('daily_played_words').upsert({
         user_id:   currentUser.id,
         word_id:   wordId,
-        play_date: today
-      }, { onConflict: 'user_id,word_id,play_date' });
+        played_on: today
+      }, { onConflict: 'user_id,word_id,played_on' });
     } catch (e) { /* non-critical */ }
   }
 
@@ -539,9 +626,8 @@ const PlayModule = (function () {
     try {
       await supabase.from('incorrect_play_words').upsert({
         user_id: currentUser.id,
-        word_id: wordId,
-        count:   1
-      }, { onConflict: 'user_id,word_id', ignoreDuplicates: false });
+        word_id: wordId
+      }, { onConflict: 'user_id,word_id', ignoreDuplicates: true });
     } catch (e) { /* non-critical */ }
   }
 
@@ -565,6 +651,23 @@ const PlayModule = (function () {
     return a;
   }
 
+  // Deterministic shuffle keyed off question id — same question always has
+  // the same option order, preventing answer-position memorisation.
+  function _seededShuffle(arr, seed) {
+    let s = 0;
+    for (let i = 0; i < seed.length; i++) s = (s * 31 + seed.charCodeAt(i)) >>> 0;
+    const rand = function () {
+      s = (s * 1664525 + 1013904223) >>> 0;
+      return s / 0xffffffff;
+    };
+    const a = arr.slice();
+    for (let i = a.length - 1; i > 0; i--) {
+      const j = Math.floor(rand() * (i + 1));
+      [a[i], a[j]] = [a[j], a[i]];
+    }
+    return a;
+  }
+
   function _randomCode(len) {
     const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
     let out = '';
@@ -581,10 +684,8 @@ const PlayModule = (function () {
   }
 
   function _showToast(message, type) {
-    if (typeof showToast === 'function') {
-      showToast(message, type);
-      return;
-    }
+    // showToast is a global defined in app.js; fall back to manual toast if unavailable
+    if (typeof window.showToast === 'function') { window.showToast(message, type); return; }
     const container = document.getElementById('toast-container');
     if (!container) return;
     const toast = document.createElement('div');
@@ -596,8 +697,6 @@ const PlayModule = (function () {
 
   // ── Public API ────────────────────────────────────────────────────────────
 
-  return {
-    init: init
-  };
+  return { init: init };
 
 })();

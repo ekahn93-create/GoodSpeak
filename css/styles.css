@@ -5676,6 +5676,42 @@ canvas {
   padding: 14px 48px;
 }
 
+/* HUD: score + correct count above timer */
+.play-hud {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  margin-bottom: 6px;
+}
+
+.play-hud-label {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  color: var(--text-secondary);
+}
+
+.play-hud-score {
+  font-size: var(--font-size-xxl);
+  font-weight: 700;
+  color: var(--primary-color);
+  margin-left: 6px;
+}
+
+.play-hud-correct {
+  font-size: var(--font-size-xxl);
+  font-weight: 700;
+  color: var(--text-primary);
+  margin-right: 6px;
+}
+
+.play-hud-left,
+.play-hud-right {
+  display: flex;
+  align-items: baseline;
+  gap: 4px;
+}
+
 /* Timer Bar */
 .play-timer-wrap {
   display: flex;
@@ -5767,89 +5803,77 @@ canvas {
   100% { background: var(--bg-card); }
 }
 
-.play-difficulty-dots {
-  display: flex;
-  justify-content: center;
-  gap: 4px;
-  margin-bottom: var(--spacing-xs);
-}
-
-.play-dot {
-  width: 8px;
-  height: 8px;
-  border-radius: 50%;
-  background: var(--border-color);
-}
-
-.play-dot--filled {
-  background: var(--primary-color);
-}
-
-.play-word {
-  font-size: 2.4rem;
+/* Question type label (e.g. "SYNONYM · 4 CHOICES") */
+.play-question-type {
+  font-size: 11px;
   font-weight: 700;
-  color: var(--text-primary);
-  margin-bottom: 6px;
-}
-
-.play-pos {
-  font-size: var(--font-size-sm);
-  color: var(--text-light);
-  font-style: italic;
-  margin-bottom: var(--spacing-xs);
-}
-
-.play-definition {
-  font-size: var(--font-size-base);
+  letter-spacing: 0.1em;
   color: var(--text-secondary);
-  line-height: 1.5;
-  margin-bottom: var(--spacing-md);
-  min-height: 48px;
+  text-transform: uppercase;
+  margin-bottom: var(--spacing-sm);
 }
 
-/* Answer Buttons */
-.play-answer-btns {
+/* Question prompt */
+.play-question-prompt {
+  font-size: 1.5rem;
+  font-weight: 700;
+  line-height: 1.35;
+  color: var(--text-primary);
+  margin-bottom: var(--spacing-md);
+}
+
+/* Choice grid — 2 columns for 4 choices, 1 column for 5+ */
+.play-choice-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: var(--spacing-sm);
 }
 
-.play-btn-wrong,
-.play-btn-correct {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-  padding: 16px;
+.play-choice-grid--wide {
+  grid-template-columns: 1fr;
+}
+
+/* Individual choice button */
+.play-choice-btn {
+  text-align: left;
+  padding: 14px 16px;
+  min-height: 52px;
   font-size: var(--font-size-base);
-  font-weight: 600;
-  border-radius: var(--border-radius);
-  border: 2px solid transparent;
-  cursor: pointer;
   font-family: var(--font-family);
-  transition: all var(--transition-fast);
+  font-weight: 500;
+  color: var(--text-primary);
+  background: var(--bg-hover);
+  border: 2px solid var(--border-color);
+  border-radius: var(--border-radius-sm);
+  cursor: pointer;
+  transition: border-color 0.15s ease, background 0.15s ease;
+  line-height: 1.3;
 }
 
-.play-btn-wrong {
-  background: rgba(244, 63, 94, 0.1);
-  color: var(--accent-color);
-  border-color: rgba(244, 63, 94, 0.25);
+.play-choice-btn:not(:disabled):hover {
+  border-color: var(--primary-color);
+  background: rgba(99, 102, 241, 0.06);
 }
 
-.play-btn-wrong:hover {
-  background: rgba(244, 63, 94, 0.18);
-  border-color: var(--accent-color);
+.play-choice-btn:not(:disabled):active {
+  transform: scale(0.98);
 }
 
-.play-btn-correct {
-  background: rgba(16, 185, 129, 0.1);
-  color: var(--secondary-color);
-  border-color: rgba(16, 185, 129, 0.25);
-}
-
-.play-btn-correct:hover {
-  background: rgba(16, 185, 129, 0.18);
+/* Result states (applied after pick) */
+.play-choice-btn--correct {
   border-color: var(--secondary-color);
+  background: rgba(16, 185, 129, 0.12);
+  color: var(--text-primary);
+}
+
+.play-choice-btn--wrong {
+  border-color: var(--accent-color);
+  background: rgba(244, 63, 94, 0.12);
+  color: var(--text-primary);
+}
+
+.play-choice-btn--dim {
+  opacity: 0.45;
 }
 
 /* Post-game */

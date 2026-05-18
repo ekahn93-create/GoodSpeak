@@ -179,42 +179,31 @@
 
                 <!-- Playing Screen -->
                 <div id="play-playing-screen" class="play-screen" style="display:none;">
+                    <!-- Score + Timer row -->
+                    <div class="play-hud">
+                        <div class="play-hud-left">
+                            <span class="play-hud-label">SCORE</span>
+                            <span id="play-score" class="play-hud-score">0</span>
+                        </div>
+                        <div class="play-hud-right">
+                            <span id="play-correct-count" class="play-hud-correct">0</span>
+                            <span class="play-hud-label">CORRECT</span>
+                        </div>
+                    </div>
+
                     <!-- Timer Bar -->
                     <div class="play-timer-wrap">
                         <div class="play-timer-bar-track">
                             <div id="play-timer-bar" class="play-timer-bar"></div>
                         </div>
-                        <span id="play-timer-label" class="play-timer-label">30</span>
+                        <span id="play-timer-label" class="play-timer-label">30.0S</span>
                     </div>
 
-                    <!-- Score -->
-                    <div class="play-score-row">
-                        <span class="play-score-label">Score</span>
-                        <span id="play-score" class="play-score-value">0</span>
-                        <span class="play-word-count-label">Words</span>
-                        <span id="play-word-count" class="play-word-count-value">0</span>
-                    </div>
-
-                    <!-- Word Card -->
+                    <!-- Question Card -->
                     <div class="play-word-card">
-                        <div class="play-difficulty-dots" id="play-difficulty-dots"></div>
-                        <div id="play-word" class="play-word">—</div>
-                        <div id="play-pos" class="play-pos"></div>
-                    </div>
-
-                    <!-- Definition (to confirm/deny) -->
-                    <div id="play-definition" class="play-definition"></div>
-
-                    <!-- Answer Buttons -->
-                    <div class="play-answer-btns">
-                        <button id="play-wrong-btn" class="btn play-btn-wrong">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
-                            <span>Didn't Know</span>
-                        </button>
-                        <button id="play-correct-btn" class="btn play-btn-correct">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
-                            <span>Got It</span>
-                        </button>
+                        <div id="play-question-type" class="play-question-type">SYNONYM · 4 CHOICES</div>
+                        <h2 id="play-question-prompt" class="play-question-prompt">—</h2>
+                        <div id="play-choice-grid" class="play-choice-grid"></div>
                     </div>
                 </div>
 
@@ -227,9 +216,10 @@
                                 <span id="play-postgame-score" class="play-postgame-score">0</span>
                             </div>
                             <div class="play-postgame-meta">
-                                <span id="play-postgame-words" class="play-postgame-stat">0 words</span>
-                                <span class="play-postgame-divider">·</span>
-                                <span id="play-postgame-streak" class="play-postgame-stat">— streak</span>
+                                <span id="play-postgame-correct" class="play-postgame-stat">0 correct out of 0 answered</span>
+                            </div>
+                            <div class="play-postgame-meta" style="margin-top:4px;">
+                                <span id="play-postgame-streak" class="play-postgame-stat"></span>
                             </div>
                         </div>
 
