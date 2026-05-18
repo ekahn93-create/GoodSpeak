@@ -51,9 +51,13 @@ const VocabularyModule = (function() {
   }
 
   // Background-refill the pool from Datamuse when it runs low
-  async function refillPoolIfNeeded(diff) {
+  async function refillPoolIfNeeded(diff, force) {
     const pool = loadPool(diff);
-    if (pool.length >= (typeof POOL_REFILL_THRESHOLD !== 'undefined' ? POOL_REFILL_THRESHOLD : 20)) return;
+    const learned = new Set(userData ? userData.vocabulary.learned : []);
+    const stillLearning = new Set(userData ? userData.vocabulary.stillLearning : []);
+    const available = pool.filter(p => !learned.has(p.word) && !stillLearning.has(p.word));
+    const threshold = typeof POOL_REFILL_THRESHOLD !== 'undefined' ? POOL_REFILL_THRESHOLD : 20;
+    if (!force && available.length >= threshold) return;
 
     console.log(`Word pool for ${diff} is low (${pool.length}), refilling from Datamuse...`);
     try {
@@ -341,11 +345,19 @@ const VocabularyModule = (function() {
 
     if (available.length === 0) {
       if (wordDisplay) {
-        wordDisplay.innerHTML = '<div class="empty-state"><p>No more words available at this level. Try a different difficulty!</p></div>';
+        wordDisplay.innerHTML = '<div class="empty-state"><p>Fetching new words for you...</p></div>';
       }
-      // Trigger a background refill for next time
-      refillPoolIfNeeded(currentDifficulty);
-      return;
+      await refillPoolIfNeeded(currentDifficulty, true);
+      // Check if refill added new words; if so retry, otherwise show exhausted message
+      const refreshedPool = loadPool(currentDifficulty);
+      const refreshedAvailable = refreshedPool.filter(p => !learned.has(p.word) && !stillLearning.has(p.word));
+      if (refreshedAvailable.length === 0) {
+        if (wordDisplay) {
+          wordDisplay.innerHTML = '<div class="empty-state"><p>No more words available at this level. Try a different difficulty!</p></div>';
+        }
+        return;
+      }
+      return showNewWord();
     }
 
     // Pick a random candidate
