@@ -79,7 +79,7 @@ const App = (function() {
     Modal.init();
 
     // Show onboarding for new users
-    OnboardingModule.init();
+    if (typeof OnboardingModule !== 'undefined') OnboardingModule.init();
 
     // Initialize all feature modules — guard each call since not every module
     // is loaded on every page (multi-page architecture)
