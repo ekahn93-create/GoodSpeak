@@ -53,7 +53,7 @@ const PlayModule = (function () {
     const client = AuthModule.getClient();
     if (client) {
       supabase = client;
-      currentUser = AuthModule.getCurrentUser ? AuthModule.getCurrentUser() : null;
+      currentUser = AuthModule.getUser ? AuthModule.getUser() : null;
     }
 
     _checkLoginGate();
@@ -121,7 +121,7 @@ const PlayModule = (function () {
   // ── Login Gate ────────────────────────────────────────────────────────────
 
   function _checkLoginGate() {
-    currentUser = AuthModule.getCurrentUser ? AuthModule.getCurrentUser() : null;
+    currentUser = AuthModule.getUser ? AuthModule.getUser() : null;
     if (!currentUser) {
       loginGate.style.display = '';
       readyScreen.style.display = 'none';
@@ -159,7 +159,7 @@ const PlayModule = (function () {
   }
 
   async function _startGame() {
-    currentUser = AuthModule.getCurrentUser ? AuthModule.getCurrentUser() : null;
+    currentUser = AuthModule.getUser ? AuthModule.getUser() : null;
     if (!currentUser) { _checkLoginGate(); return; }
     if (!supabase) { supabase = AuthModule.getClient(); }
     if (!supabase) { _showToast('Could not connect. Please refresh.', 'error'); return; }
@@ -493,7 +493,7 @@ const PlayModule = (function () {
   // ── My Stats ──────────────────────────────────────────────────────────────
 
   async function _loadMyStats() {
-    currentUser = AuthModule.getCurrentUser ? AuthModule.getCurrentUser() : null;
+    currentUser = AuthModule.getUser ? AuthModule.getUser() : null;
 
     if (!currentUser || !supabase) {
       statsLoginGate.style.display = '';
