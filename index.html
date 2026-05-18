@@ -202,6 +202,44 @@
                 </div>
             </div>
 
+            <!-- Today's Practice Checklist -->
+            <div class="todays-practice-card" id="todays-practice-card">
+                <div class="tp-header">
+                    <h3 class="tp-title">Today's Practice</h3>
+                    <div class="tp-progress-wrap">
+                        <div class="tp-progress-bar"><div class="tp-progress-fill" id="tp-progress-fill"></div></div>
+                        <span class="tp-progress-label" id="tp-progress-label">0 / 5</span>
+                    </div>
+                </div>
+                <ul class="tp-list" id="tp-list">
+                    <li class="tp-item" data-task="word_of_day">
+                        <span class="tp-check" id="tp-check-word_of_day"></span>
+                        <span class="tp-label">Word of the Day</span>
+                        <a href="/learn#word_of_day" class="tp-go btn btn-sm btn-secondary">Go</a>
+                    </li>
+                    <li class="tp-item" data-task="srs">
+                        <span class="tp-check" id="tp-check-srs"></span>
+                        <span class="tp-label" id="tp-label-srs">SRS Review</span>
+                        <a href="/learn#srs" class="tp-go btn btn-sm btn-secondary">Go</a>
+                    </li>
+                    <li class="tp-item" data-task="precision">
+                        <span class="tp-check" id="tp-check-precision"></span>
+                        <span class="tp-label">Precision Exercise</span>
+                        <a href="/polish#precision" class="tp-go btn btn-sm btn-secondary">Go</a>
+                    </li>
+                    <li class="tp-item" data-task="filler">
+                        <span class="tp-check" id="tp-check-filler"></span>
+                        <span class="tp-label">Filler Word Reducer</span>
+                        <a href="/polish#filler" class="tp-go btn btn-sm btn-secondary">Go</a>
+                    </li>
+                    <li class="tp-item" data-task="speaking">
+                        <span class="tp-check" id="tp-check-speaking"></span>
+                        <span class="tp-label">Speaking Challenge</span>
+                        <a href="/polish#speaking" class="tp-go btn btn-sm btn-secondary">Go</a>
+                    </li>
+                </ul>
+            </div>
+
             <!-- Daily Suggestions -->
             <div class="suggestions-card">
                 <h3 class="suggestions-title">What to do today</h3>

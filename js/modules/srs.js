@@ -234,6 +234,8 @@ const SRSModule = (function() {
   }
 
   function showDone() {
+    if (typeof App !== 'undefined' && App.markTPTaskDone) App.markTPTaskDone('srs');
+
     const pct = sessionStats.reviewed > 0
       ? Math.round((sessionStats.correct / sessionStats.reviewed) * 100)
       : 0;

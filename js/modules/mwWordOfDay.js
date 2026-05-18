@@ -192,6 +192,8 @@ const MWWordOfDayModule = (function() {
     `;
 
     wordContent.innerHTML = html;
+
+    if (typeof App !== 'undefined' && App.markTPTaskDone) App.markTPTaskDone('word_of_day');
   }
 
   /**

@@ -156,28 +156,32 @@ const DailyWordModule = (function() {
         <strong>When to Use Alternatives:</strong> ${todaysWord.whenToUse}
       </div>
 
-      <div class="word-examples">
-        <h4>Examples:</h4>
-        ${todaysWord.examples.map(ex => `
-          <div class="example-comparison">
-            <div class="weak-example">
-              ❌ Weak: ${ex.weak}
+      <button class="dw-accordion-toggle" onclick="this.classList.toggle('open');this.nextElementSibling.classList.toggle('open')">
+        See examples &amp; alternatives <span class="dw-accordion-arrow">&#8964;</span>
+      </button>
+      <div class="dw-accordion-body">
+        <div class="word-examples">
+          <h4>Examples:</h4>
+          ${todaysWord.examples.map(ex => `
+            <div class="example-comparison">
+              <div class="weak-example">❌ Weak: ${ex.weak}</div>
+              <div class="strong-example">✅ Strong: ${ex.strong}</div>
             </div>
-            <div class="strong-example">
-              ✅ Strong: ${ex.strong}
-            </div>
+          `).join('')}
+        </div>
+        <div class="word-synonyms">
+          <strong>Full List of Alternatives:</strong><br>
+          ${todaysWord.synonyms.join(', ')}
+        </div>
+        <div class="dw-common-words">
+          <strong>Other Common Words to Replace:</strong>
+          <div class="weak-words-grid" style="margin-top:var(--spacing-sm);">
+            <div class="weak-word-card"><div class="weak">good</div><div class="arrow">→</div><div class="strong">excellent, remarkable, beneficial</div></div>
+            <div class="weak-word-card"><div class="weak">bad</div><div class="arrow">→</div><div class="strong">detrimental, inadequate, problematic</div></div>
+            <div class="weak-word-card"><div class="weak">very</div><div class="arrow">→</div><div class="strong">exceptionally, remarkably, considerably</div></div>
+            <div class="weak-word-card"><div class="weak">nice</div><div class="arrow">→</div><div class="strong">pleasant, delightful, agreeable</div></div>
           </div>
-        `).join('')}
-      </div>
-
-      <div class="word-synonyms">
-        <strong>Full List of Alternatives:</strong><br>
-        ${todaysWord.synonyms.join(', ')}
-      </div>
-
-      <div class="daily-challenge">
-        <h4>Today's Challenge:</h4>
-        <p>${todaysWord.exercise}</p>
+        </div>
       </div>
     `;
 
@@ -300,6 +304,8 @@ const DailyWordModule = (function() {
    */
   function completeToday() {
     markTodayCompleted();
+
+    if (typeof App !== 'undefined' && App.markTPTaskDone) App.markTPTaskDone('precision');
 
     Modal.alert({
       title: 'Daily Practice Complete!',
@@ -454,6 +460,7 @@ const DailyWordModule = (function() {
   }
 
   function dspShowFeedback(transcript, result) {
+    if (typeof App !== 'undefined' && App.markTPTaskDone) App.markTPTaskDone('speaking');
     const transcriptEl = document.getElementById('dsp-transcript-display');
     const gridEl = document.getElementById('dsp-feedback-grid');
 

@@ -240,7 +240,105 @@
             <!-- ========== FLUENCY BUILDING CATEGORY ========== -->
             <div id="fluency-category" class="fluency-category active">
 
-                <div class="exercise-group">
+                <div class="exercise-group" id="precision-practice-group">
+                    <div class="exercise-group-label">Precision Practice</div>
+                    <p class="exercise-group-subtitle">Sharpen your word choice and speaking delivery — one word at a time</p>
+
+                <!-- Common Word of the Day + Precision Exercise -->
+                <div class="fluency-card">
+                    <div class="fluency-card-header">
+                        <div class="fluency-card-icon"><i data-lucide="zap" style="width:28px;height:28px;stroke:currentColor;"></i></div>
+                        <div>
+                            <h3>Precision Exercise</h3>
+                            <p class="fluency-card-description">Replace a weak, overused word with a stronger one — practice it in context</p>
+                        </div>
+                    </div>
+                    <div class="fluency-card-content">
+                        <!-- Word of the Day -->
+                        <div id="daily-word-display" class="daily-word-card">
+                            <h2>Common Word of the Day</h2>
+                            <div id="daily-word-content">
+                                <!-- Dynamic content will be added here -->
+                            </div>
+                        </div>
+
+                        <!-- Practice Exercise -->
+                        <div id="daily-exercise" class="exercise-section">
+                            <h3>Precision Exercise</h3>
+                            <div id="exercise-content">
+                                <!-- Dynamic exercise will be added here -->
+                            </div>
+
+                        </div>
+
+                    </div>
+                </div>
+
+                <!-- Speaking Challenge -->
+                <div class="fluency-card">
+                    <div class="fluency-card-header">
+                        <div class="fluency-card-icon"><i data-lucide="mic" style="width:28px;height:28px;stroke:currentColor;"></i></div>
+                        <div>
+                            <h3>Speaking Challenge</h3>
+                            <p class="fluency-card-description">Use today's word out loud — record your response and get AI feedback on your delivery</p>
+                        </div>
+                    </div>
+                    <div class="fluency-card-content">
+                        <div id="daily-speaking-section" class="daily-speaking-card">
+                            <!-- Idle state -->
+                            <div id="dsp-idle">
+                                <div class="dsp-prompt" id="dsp-prompt-text"></div>
+                                <div class="dsp-mic-wrap">
+                                    <button class="dsp-mic-btn" id="dsp-mic-btn" title="Start recording">
+                                        <i data-lucide="mic" style="width:28px;height:28px;stroke:currentColor;"></i>
+                                    </button>
+                                    <span class="dsp-mic-label">Tap to speak</span>
+                                </div>
+                                <div id="dsp-no-speech-msg" class="kc-empty-state" style="display:none;">
+                                    <p>Speech recognition is not supported in this browser. Try Chrome or Edge.</p>
+                                </div>
+                            </div>
+
+                            <!-- Recording state -->
+                            <div id="dsp-recording" style="display:none;">
+                                <div class="dsp-prompt" id="dsp-recording-prompt"></div>
+                                <div class="dsp-mic-wrap">
+                                    <button class="dsp-mic-btn dsp-mic-active" id="dsp-stop-btn" title="Stop recording">
+                                        <i data-lucide="square" style="width:28px;height:28px;stroke:currentColor;fill:currentColor;"></i>
+                                    </button>
+                                    <span class="dsp-mic-label dsp-recording-label">Recording... tap to stop</span>
+                                </div>
+                                <div class="dsp-transcript-live" id="dsp-transcript-live"></div>
+                            </div>
+
+                            <!-- Loading state -->
+                            <div id="dsp-loading" style="display:none;">
+                                <div class="twal-loading-wrap">
+                                    <div class="kc-spinner"></div>
+                                    <p>Claude is reviewing your response...</p>
+                                </div>
+                            </div>
+
+                            <!-- Feedback state -->
+                            <div id="dsp-feedback" style="display:none;">
+                                <div class="dsp-transcript-display" id="dsp-transcript-display"></div>
+                                <div class="dsp-feedback-grid" id="dsp-feedback-grid"></div>
+                                <div class="dsp-actions">
+                                    <button class="btn btn-primary" id="dsp-try-again-btn">Try Again</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                </div><!-- /exercise-group: Precision Practice -->
+
+                <button class="section-next-btn" onclick="document.getElementById('fluency-filler-group').scrollIntoView({behavior:'smooth', block:'start'})" aria-label="Next section">
+                    <span class="section-next-label">Reduce filler words and speak with more intention</span>
+                    <i data-lucide="chevron-down" style="width:22px;height:22px;stroke:currentColor;"></i>
+                </button>
+
+                <div class="exercise-group" id="fluency-filler-group">
                     <div class="exercise-group-label">Filler Reduction</div>
                     <p class="exercise-group-subtitle">Eliminate verbal crutches and speak with more intention</p>
 
@@ -782,6 +880,8 @@
     <script src="js/router.js"></script>
     <script src="js/data/vocabularyData.js"></script>
     <script src="js/data/storyPrompts.js"></script>
+    <script src="js/data/dailyWords.js"></script>
+    <script src="js/data/wordOfTheDayList.js"></script>
     <script src="js/components/modal.js"></script>
     <script src="js/components/progressBar.js"></script>
     <script src="js/modules/nudge.js"></script>
@@ -790,6 +890,8 @@
     <script src="js/modules/storytelling.js"></script>
     <script src="js/modules/wordBank.js"></script>
     <script src="js/modules/grammar.js"></script>
+    <script src="js/modules/dailyWord.js"></script>
+    <script src="js/modules/mwWordOfDay.js"></script>
     <script src="js/modules/fluency.js"></script>
     <script src="js/modules/webSpeech.js"></script>
     <script src="js/modules/onboarding.js"></script>
@@ -807,6 +909,52 @@
     <script>
       // Initialize Lucide icons after DOM is ready
       if (typeof lucide !== 'undefined') lucide.createIcons();
+    </script>
+
+    <script>
+      // Deep-link handling from Today's Practice checklist
+      (function() {
+        var hash = window.location.hash.replace('#', '');
+        if (!hash) return;
+
+        function afterInit(fn) {
+          var tries = 0;
+          var interval = setInterval(function() {
+            tries++;
+            if ((typeof App !== 'undefined' && App.isInitialized()) || tries > 40) {
+              clearInterval(interval);
+              fn();
+            }
+          }, 100);
+        }
+
+        afterInit(function() {
+          var scrollTarget = null;
+
+          if (hash === 'precision') {
+            if (typeof FluencyModule !== 'undefined') FluencyModule.switchCategory('fluency');
+            scrollTarget = document.getElementById('precision-practice-group');
+
+          } else if (hash === 'filler') {
+            if (typeof FluencyModule !== 'undefined') FluencyModule.switchCategory('fluency');
+            scrollTarget = document.getElementById('fluency-filler-group');
+
+          } else if (hash === 'speaking') {
+            if (typeof FluencyModule !== 'undefined') FluencyModule.switchCategory('fluency');
+            scrollTarget = document.getElementById('daily-speaking-section');
+          }
+
+          if (scrollTarget) {
+            setTimeout(function() {
+              var navHeight = document.getElementById('main-nav') ? document.getElementById('main-nav').offsetHeight : 64;
+              var top = scrollTarget.getBoundingClientRect().top + window.pageYOffset - navHeight - 12;
+              window.scrollTo({ top: top, behavior: 'smooth' });
+            }, 150);
+          }
+
+          history.replaceState(null, '', window.location.pathname);
+        });
+      })();
     </script>
 
     <!-- Footer Modals -->

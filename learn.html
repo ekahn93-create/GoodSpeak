@@ -168,7 +168,6 @@
             <!-- Category Navigation -->
             <div class="vocab-categories">
                 <button class="vocab-category-tab active" data-vocab-category="builder">Vocabulary Builder</button>
-                <button class="vocab-category-tab" data-vocab-category="daily">Daily Word</button>
                 <button class="vocab-category-tab" data-vocab-category="bank">Word Bank</button>
                 <button class="vocab-category-tab" data-vocab-category="grammar">Grammar & Structure</button>
                 <button class="vocab-category-tab" data-vocab-category="knowledge-check">Knowledge Check</button>
@@ -176,8 +175,25 @@
 
             <!-- ========== VOCABULARY BUILDER CATEGORY ========== -->
             <div id="builder-category" class="vocab-category active">
+
+                <!-- Word of the Day -->
+                <div id="mw-word-section" class="mw-word-section">
+                    <div class="mw-word-header">
+                        <h2>Word of the Day</h2>
+                        <span class="mw-logo">Dictionary</span>
+                    </div>
+                    <div id="mw-word-content" class="mw-word-content">
+                        <div class="loading-spinner">Loading today's word...</div>
+                    </div>
+                </div>
+
+                <button class="section-next-btn" onclick="document.getElementById('vocab-builder-section').scrollIntoView({behavior:'smooth', block:'start'})" aria-label="Next section">
+                    <span class="section-next-label">Explore more words at your level</span>
+                    <i data-lucide="chevron-down" style="width:22px;height:22px;stroke:currentColor;"></i>
+                </button>
+
                 <!-- Difficulty Selector -->
-                <div class="difficulty-selector">
+                <div id="vocab-builder-section" class="difficulty-selector">
                     <label>Select Difficulty:</label>
                     <div class="btn-group">
                         <button class="btn btn-secondary active" data-difficulty="beginner">Beginner</button>
@@ -202,171 +218,8 @@
                 <!-- Nudge: shown after marking a word as learned -->
                 <div id="nudge-vocab-learned" class="nudge-slot"></div>
 
-                <button class="section-next-btn" onclick="document.querySelector('#builder-category .learned-words-section').scrollIntoView({behavior:'smooth', block:'start'})" aria-label="Next section">
-                    <span class="section-next-label">Review words you're still working on</span>
-                    <i data-lucide="chevron-down" style="width:22px;height:22px;stroke:currentColor;"></i>
-                </button>
-
-                <!-- Still Learning Words List -->
-                <div class="learned-words-section">
-                    <h3>Still Learning (<span id="still-learning-count">0</span>)</h3>
-                    <div id="still-learning-words-list" class="words-grid">
-                        <!-- Still learning words will be dynamically added here -->
-                    </div>
-                </div>
-
-                <button class="section-next-btn" onclick="document.querySelectorAll('#builder-category .learned-words-section')[1].scrollIntoView({behavior:'smooth', block:'start'})" aria-label="Next section">
-                    <span class="section-next-label">See all the words you've mastered</span>
-                    <i data-lucide="chevron-down" style="width:22px;height:22px;stroke:currentColor;"></i>
-                </button>
-
-                <!-- Learned Words List -->
-                <div class="learned-words-section">
-                    <h3>Your Learned Words (<span id="learned-count">0</span>)</h3>
-                    <div id="learned-words-list" class="words-grid">
-                        <!-- Learned words will be dynamically added here -->
-                    </div>
-                </div>
-
-                <button class="page-next-btn" onclick="VocabularyModule.switchVocabCategory('daily')" aria-label="Go to Daily Word">
-                    <span class="page-next-label">Next: Daily Word — practice replacing overused words</span>
-                    <i data-lucide="chevron-down" style="width:22px;height:22px;stroke:currentColor;"></i>
-                </button>
-            </div>
-
-            <!-- ========== DAILY WORD CATEGORY ========== -->
-            <div id="daily-category" class="vocab-category">
-                <!-- Word of the Day -->
-                <div id="mw-word-section" class="mw-word-section">
-                    <div class="mw-word-header">
-                        <h2>Word of the Day</h2>
-                        <span class="mw-logo">Dictionary</span>
-                    </div>
-                    <div id="mw-word-content" class="mw-word-content">
-                        <div class="loading-spinner">Loading today's word...</div>
-                    </div>
-                </div>
-
-                <button class="section-next-btn" onclick="document.getElementById('daily-word-display').scrollIntoView({behavior:'smooth', block:'start'})" aria-label="Next section">
-                    <span class="section-next-label">See a weak word to replace today</span>
-                    <i data-lucide="chevron-down" style="width:22px;height:22px;stroke:currentColor;"></i>
-                </button>
-
-                <!-- Word of the Day -->
-                <div id="daily-word-display" class="daily-word-card">
-                    <h2>Common Word of the Day</h2>
-                    <div id="daily-word-content">
-                        <!-- Dynamic content will be added here -->
-                    </div>
-                </div>
-
-                <button class="section-next-btn" onclick="document.getElementById('daily-exercise').scrollIntoView({behavior:'smooth', block:'start'})" aria-label="Next section">
-                    <span class="section-next-label">Practice replacing it in a sentence</span>
-                    <i data-lucide="chevron-down" style="width:22px;height:22px;stroke:currentColor;"></i>
-                </button>
-
-                <!-- Practice Exercise -->
-                <div id="daily-exercise" class="exercise-section">
-                    <h3>Precision Exercise</h3>
-                    <div id="exercise-content">
-                        <!-- Dynamic exercise will be added here -->
-                    </div>
-
-                    <!-- Streak Display -->
-                    <div class="streak-banner">
-                        <div class="streak-icon"><i data-lucide="flame" style="width:28px;height:28px;stroke:currentColor;fill:currentColor;"></i></div>
-                        <div class="streak-info">
-                            <div class="streak-number"><span id="current-streak">0</span> Day Streak</div>
-                            <div class="streak-subtitle">Complete today's exercise to keep your streak alive</div>
-                        </div>
-                    </div>
-                </div>
-
-                <button class="section-next-btn" onclick="document.getElementById('daily-speaking-section').scrollIntoView({behavior:'smooth', block:'start'})" aria-label="Next section">
-                    <span class="section-next-label">Now say it out loud — get AI feedback on your delivery</span>
-                    <i data-lucide="chevron-down" style="width:22px;height:22px;stroke:currentColor;"></i>
-                </button>
-
-                <!-- Daily Speaking Prompt -->
-                <div id="daily-speaking-section" class="daily-speaking-card">
-                    <div class="daily-speaking-header">
-                        <h3>Speaking Challenge</h3>
-                        <p class="subtitle">Use today's word out loud. Record your response and get AI feedback on your delivery.</p>
-                    </div>
-
-                    <!-- Idle state -->
-                    <div id="dsp-idle">
-                        <div class="dsp-prompt" id="dsp-prompt-text"></div>
-                        <div class="dsp-mic-wrap">
-                            <button class="dsp-mic-btn" id="dsp-mic-btn" title="Start recording">
-                                <i data-lucide="mic" style="width:28px;height:28px;stroke:currentColor;"></i>
-                            </button>
-                            <span class="dsp-mic-label">Tap to speak</span>
-                        </div>
-                        <div id="dsp-no-speech-msg" class="kc-empty-state" style="display:none;">
-                            <p>Speech recognition is not supported in this browser. Try Chrome or Edge.</p>
-                        </div>
-                    </div>
-
-                    <!-- Recording state -->
-                    <div id="dsp-recording" style="display:none;">
-                        <div class="dsp-prompt" id="dsp-recording-prompt"></div>
-                        <div class="dsp-mic-wrap">
-                            <button class="dsp-mic-btn dsp-mic-active" id="dsp-stop-btn" title="Stop recording">
-                                <i data-lucide="square" style="width:28px;height:28px;stroke:currentColor;fill:currentColor;"></i>
-                            </button>
-                            <span class="dsp-mic-label dsp-recording-label">Recording... tap to stop</span>
-                        </div>
-                        <div class="dsp-transcript-live" id="dsp-transcript-live"></div>
-                    </div>
-
-                    <!-- Loading state -->
-                    <div id="dsp-loading" style="display:none;">
-                        <div class="twal-loading-wrap">
-                            <div class="kc-spinner"></div>
-                            <p>Claude is reviewing your response...</p>
-                        </div>
-                    </div>
-
-                    <!-- Feedback state -->
-                    <div id="dsp-feedback" style="display:none;">
-                        <div class="dsp-transcript-display" id="dsp-transcript-display"></div>
-                        <div class="dsp-feedback-grid" id="dsp-feedback-grid"></div>
-                        <div class="dsp-actions">
-                            <button class="btn btn-primary" id="dsp-try-again-btn">Try Again</button>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Common Weak Words Reference -->
-                <div class="reference-section">
-                    <h3>Common Words to Replace</h3>
-                    <div class="weak-words-grid">
-                        <div class="weak-word-card">
-                            <div class="weak">good</div>
-                            <div class="arrow">→</div>
-                            <div class="strong">excellent, remarkable, beneficial</div>
-                        </div>
-                        <div class="weak-word-card">
-                            <div class="weak">bad</div>
-                            <div class="arrow">→</div>
-                            <div class="strong">detrimental, inadequate, problematic</div>
-                        </div>
-                        <div class="weak-word-card">
-                            <div class="weak">very</div>
-                            <div class="arrow">→</div>
-                            <div class="strong">exceptionally, remarkably, considerably</div>
-                        </div>
-                        <div class="weak-word-card">
-                            <div class="weak">nice</div>
-                            <div class="arrow">→</div>
-                            <div class="strong">pleasant, delightful, agreeable</div>
-                        </div>
-                    </div>
-                </div>
-
                 <button class="page-next-btn" onclick="VocabularyModule.switchVocabCategory('bank')" aria-label="Go to Word Bank">
-                    <span class="page-next-label">Next: Word Bank — save and manage your personal word list</span>
+                    <span class="page-next-label">See all your words in the Word Bank</span>
                     <i data-lucide="chevron-down" style="width:22px;height:22px;stroke:currentColor;"></i>
                 </button>
             </div>
@@ -1014,6 +867,49 @@
     <script>
       // Initialize Lucide icons after DOM is ready
       if (typeof lucide !== 'undefined') lucide.createIcons();
+    </script>
+
+    <script>
+      // Deep-link handling from Today's Practice checklist
+      (function() {
+        var hash = window.location.hash.replace('#', '');
+        if (!hash) return;
+
+        function afterInit(fn) {
+          // Wait for App to finish initializing modules before switching tabs
+          var tries = 0;
+          var interval = setInterval(function() {
+            tries++;
+            if ((typeof App !== 'undefined' && App.isInitialized()) || tries > 40) {
+              clearInterval(interval);
+              fn();
+            }
+          }, 100);
+        }
+
+        function scrollToEl(el) {
+          if (!el) return;
+          var navHeight = document.getElementById('main-nav') ? document.getElementById('main-nav').offsetHeight : 64;
+          var top = el.getBoundingClientRect().top + window.pageYOffset - navHeight - 12;
+          window.scrollTo({ top: top, behavior: 'smooth' });
+        }
+
+        afterInit(function() {
+          if (hash === 'word_of_day') {
+            if (typeof VocabularyModule !== 'undefined') VocabularyModule.switchVocabCategory('builder');
+            var el = document.getElementById('mw-word-section');
+            if (el) scrollToEl(el);
+
+          } else if (hash === 'srs') {
+            if (typeof VocabularyModule !== 'undefined') VocabularyModule.switchVocabCategory('knowledge-check');
+            var el = document.getElementById('srs-section');
+            if (el) setTimeout(function() { scrollToEl(el); }, 150);
+          }
+
+          // Clear the hash so back-navigation doesn't re-trigger
+          history.replaceState(null, '', window.location.pathname);
+        });
+      })();
     </script>
 
     <!-- Footer Modals -->

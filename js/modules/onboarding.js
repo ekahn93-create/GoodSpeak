@@ -1,62 +1,53 @@
 // ============================================
 // ONBOARDING MODULE
-// First-visit level assessment quiz
+// Word-rating intro: 5 curated words, "Know it" / "New to me"
 // ============================================
 
 const OnboardingModule = (function() {
 
   const STORAGE_KEY = 'onboardingComplete';
 
-  const questions = [
+  // 5 curated words spanning beginner → advanced so users feel the range
+  const starterWords = [
     {
-      id: 1,
-      question: 'How would you describe your current vocabulary?',
-      options: [
-        { text: 'I often struggle to find the right word', score: 1 },
-        { text: 'I know common words but want more range', score: 2 },
-        { text: 'I have a solid vocabulary but want to refine it', score: 3 }
-      ]
+      word: 'articulate',
+      pronunciation: 'ar-TIK-yuh-layt',
+      definition: 'Expressing oneself clearly and effectively in speech',
+      example: 'She is very articulate when explaining complex topics.',
+      difficulty: 'beginner'
     },
     {
-      id: 2,
-      question: 'When speaking, do you use filler words like "um," "uh," or "like"?',
-      options: [
-        { text: 'Yes, quite frequently', score: 1 },
-        { text: 'Sometimes, especially under pressure', score: 2 },
-        { text: 'Rarely — I speak pretty fluidly', score: 3 }
-      ]
+      word: 'convey',
+      pronunciation: 'kuhn-VAY',
+      definition: 'To communicate or make known; to express a thought or feeling',
+      example: 'He struggled to convey his emotions during the conversation.',
+      difficulty: 'beginner'
     },
     {
-      id: 3,
-      question: 'How comfortable are you speaking in front of others?',
-      options: [
-        { text: 'Nervous — I avoid it when I can', score: 1 },
-        { text: 'I can do it but I feel awkward', score: 2 },
-        { text: 'Fairly confident, just want to polish', score: 3 }
-      ]
+      word: 'nuance',
+      pronunciation: 'NOO-ahns',
+      definition: 'A subtle difference in meaning, expression, or tone',
+      example: 'The nuance in her voice made all the difference.',
+      difficulty: 'intermediate'
     },
     {
-      id: 4,
-      question: 'How would you rate your grammar and sentence structure?',
-      options: [
-        { text: 'I make frequent mistakes', score: 1 },
-        { text: 'Decent, but I want to sound more sophisticated', score: 2 },
-        { text: 'Strong — I just want more expressive range', score: 3 }
-      ]
+      word: 'rhetoric',
+      pronunciation: 'RET-er-ik',
+      definition: 'The art of effective or persuasive speaking or writing',
+      example: 'His powerful rhetoric moved the entire audience.',
+      difficulty: 'intermediate'
     },
     {
-      id: 5,
-      question: 'What is your main goal?',
-      options: [
-        { text: 'Build a foundation — I\'m starting from scratch', score: 1 },
-        { text: 'Improve everyday conversations and presentations', score: 2 },
-        { text: 'Master eloquence and advanced expression', score: 3 }
-      ]
+      word: 'eloquent',
+      pronunciation: 'EL-uh-kwent',
+      definition: 'Fluent and persuasive in speaking or writing',
+      example: 'Her eloquent speech left the crowd speechless.',
+      difficulty: 'intermediate'
     }
   ];
 
-  let currentQuestion = 0;
-  let scores = [];
+  let currentIndex = 0;
+  let knownCount = 0;
   let overlay = null;
 
   function isComplete() {
@@ -78,92 +69,115 @@ const OnboardingModule = (function() {
     overlay.innerHTML = `
       <div class="onboarding-modal">
         <div class="onboarding-header">
-          <div class="onboarding-logo"><svg width="56" height="52" viewBox="0 0 220 200" xmlns="http://www.w3.org/2000/svg"><rect x="10" y="10" width="200" height="150" rx="28" ry="28" fill="#4F46E5"/><polygon points="60,155 30,190 100,155" fill="#4F46E5"/><polygon points="130,30 85,100 115,100 90,165 155,85 120,85 148,30" fill="white" opacity="0.95"/></svg></div>
+          <div class="onboarding-logo">
+            <svg width="56" height="52" viewBox="0 0 220 200" xmlns="http://www.w3.org/2000/svg">
+              <rect x="10" y="10" width="200" height="150" rx="28" ry="28" fill="#4F46E5"/>
+              <polygon points="60,155 30,190 100,155" fill="#4F46E5"/>
+              <polygon points="130,30 85,100 115,100 90,165 155,85 120,85 148,30" fill="white" opacity="0.95"/>
+            </svg>
+          </div>
           <h2>Welcome to EZSpeaks</h2>
-          <p>Answer 5 quick questions so we can recommend the best place to start.</p>
+          <p>Let's see where you're starting. Rate 5 words — be honest!</p>
         </div>
         <div id="onboarding-body"></div>
       </div>
     `;
     document.body.appendChild(overlay);
-    renderQuestion(0);
+    renderWord(0);
   }
 
-  function renderQuestion(index) {
-    const q = questions[index];
+  function renderWord(index) {
+    const w = starterWords[index];
     const body = document.getElementById('onboarding-body');
-    const progress = ((index) / questions.length) * 100;
+    const progress = (index / starterWords.length) * 100;
 
     body.innerHTML = `
       <div class="onboarding-progress-bar">
         <div class="onboarding-progress-fill" style="width: ${progress}%"></div>
       </div>
-      <div class="onboarding-step">Question ${index + 1} of ${questions.length}</div>
-      <div class="onboarding-question">${q.question}</div>
-      <div class="onboarding-options">
-        ${q.options.map((opt, i) => `
-          <button class="onboarding-option" data-score="${opt.score}" data-index="${i}">
-            ${opt.text}
-          </button>
-        `).join('')}
+      <div class="onboarding-step">${index + 1} of ${starterWords.length}</div>
+      <div class="onboarding-word-card">
+        <div class="onboarding-word-main">${w.word}</div>
+        <div class="onboarding-word-pronunciation">${w.pronunciation}</div>
+        <div class="onboarding-word-definition">${w.definition}</div>
+        <div class="onboarding-word-example">"${w.example}"</div>
+      </div>
+      <div class="onboarding-rating-btns">
+        <button class="onboarding-rating-btn onboarding-rating-new" data-rating="new">
+          New to me
+        </button>
+        <button class="onboarding-rating-btn onboarding-rating-know" data-rating="know">
+          Know it
+        </button>
       </div>
     `;
 
-    body.querySelectorAll('.onboarding-option').forEach(btn => {
-      btn.addEventListener('click', function() {
-        scores.push(parseInt(this.dataset.score));
-        currentQuestion++;
-        if (currentQuestion < questions.length) {
-          renderQuestion(currentQuestion);
-        } else {
-          showResult();
-        }
-      });
-    });
+    body.querySelector('[data-rating="know"]').addEventListener('click', () => rateWord('know', w));
+    body.querySelector('[data-rating="new"]').addEventListener('click', () => rateWord('new', w));
+  }
+
+  function rateWord(rating, wordObj) {
+    if (rating === 'know') {
+      knownCount++;
+      // Mark as learned in app data so it shows up in their word bank immediately
+      const userData = StorageManager.load();
+      if (userData && !userData.vocabulary.learned.includes(wordObj.word)) {
+        userData.vocabulary.learned.push(wordObj.word);
+        userData.vocabulary.totalWordsLearned = userData.vocabulary.learned.length;
+        StorageManager.save(userData);
+      }
+    } else {
+      // Mark as still learning
+      const userData = StorageManager.load();
+      if (userData && !userData.vocabulary.stillLearning.includes(wordObj.word) && !userData.vocabulary.learned.includes(wordObj.word)) {
+        userData.vocabulary.stillLearning.push(wordObj.word);
+        StorageManager.save(userData);
+      }
+    }
+
+    currentIndex++;
+    if (currentIndex < starterWords.length) {
+      renderWord(currentIndex);
+    } else {
+      showResult();
+    }
   }
 
   function showResult() {
-    const total = scores.reduce((a, b) => a + b, 0);
-    const max = questions.length * 3;
-    const pct = total / max;
+    const total = starterWords.length;
+    let heading, message, level;
 
-    let level, recommendation, startLink, startLabel, color;
-
-    if (pct <= 0.45) {
-      level = 'Beginner';
-      color = '#50C878';
-      recommendation = 'Start with the <strong>Vocabulary Builder</strong> on Beginner difficulty, then move to <strong>Daily Word</strong> to build a habit. The <strong>Tongue Twisters</strong> in Polish are great for building confidence.';
-      startLink = '#vocabulary';
-      startLabel = 'Go to Learn';
-    } else if (pct <= 0.75) {
-      level = 'Intermediate';
-      color = '#4A90E2';
-      recommendation = 'Head to <strong>Polish</strong> to sharpen your fluency and reduce filler words. Try the <strong>Filler Word Reducer</strong> and <strong>Pacing Practice</strong> to smooth out your delivery.';
-      startLink = '#fluency';
-      startLabel = 'Go to Polish';
+    if (knownCount === 0) {
+      level = 'beginner';
+      heading = 'You\'re just getting started — perfect.';
+      message = 'EZSpeaks is built for this. Head to <strong>Vocabulary Builder</strong> to start adding words you own.';
+    } else if (knownCount <= 2) {
+      level = 'beginner';
+      heading = `You know ${knownCount} of ${total} — solid start.`;
+      message = 'You\'ve got a foundation. The <strong>Vocabulary Builder</strong> will help you fill in the gaps fast.';
+    } else if (knownCount <= 4) {
+      level = 'intermediate';
+      heading = `You know ${knownCount} of ${total} — you\'re building well.`;
+      message = 'Nice range. Try the <strong>Daily Word</strong> tab to sharpen the words you use every day.';
     } else {
-      level = 'Advanced';
-      color = '#9B59B6';
-      recommendation = 'Jump into <strong>Practice</strong> for real speaking challenges. Try <strong>Impromptu Speaking</strong>, <strong>Rhetorical Devices</strong>, and the <strong>Web Speech Test</strong> for live analytics.';
-      startLink = '#storytelling';
-      startLabel = 'Go to Practice';
+      level = 'advanced';
+      heading = `You know all ${total} — you\'re ahead of most.`;
+      message = 'Impressive. Head to <strong>Knowledge Check</strong> to put your vocabulary to the test.';
     }
+
+    localStorage.setItem('userLevel', level);
 
     const body = document.getElementById('onboarding-body');
     body.innerHTML = `
       <div class="onboarding-result">
-        <div class="onboarding-level-badge" style="background: ${color};">${level}</div>
-        <h3>Your recommended starting point:</h3>
-        <p class="onboarding-rec">${recommendation}</p>
+        <h3 class="onboarding-result-heading">${heading}</h3>
+        <p class="onboarding-rec">${message}</p>
         <div class="onboarding-actions">
-          <a href="${startLink}" class="btn btn-primary onboarding-start-btn">${startLabel}</a>
+          <a href="/learn" class="btn btn-primary onboarding-start-btn">Start Learning</a>
           <button class="btn btn-secondary" id="onboarding-explore-btn">Explore on My Own</button>
         </div>
       </div>
     `;
-
-    // Save level to localStorage for dashboard
-    localStorage.setItem('userLevel', level.toLowerCase());
 
     document.querySelector('.onboarding-start-btn').addEventListener('click', close);
     document.getElementById('onboarding-explore-btn').addEventListener('click', close);
@@ -180,11 +194,10 @@ const OnboardingModule = (function() {
     }
   }
 
-  // Allow re-triggering from settings if needed
   function reset() {
     localStorage.removeItem(STORAGE_KEY);
-    currentQuestion = 0;
-    scores = [];
+    currentIndex = 0;
+    knownCount = 0;
     showOnboarding();
   }
 

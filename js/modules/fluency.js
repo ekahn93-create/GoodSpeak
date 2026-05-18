@@ -830,6 +830,8 @@ const FluencyModule = (function() {
     document.getElementById('filler-results').style.display = 'block';
     document.getElementById('filler-topic-box').style.display = 'none';
 
+    if (typeof App !== 'undefined' && App.markTPTaskDone) App.markTPTaskDone('filler');
+
     const rate = fillerCount / (fillerTotalDuration / 60);
     let emoji, label, sub, bannerColor;
     if (fillerCount === 0) {

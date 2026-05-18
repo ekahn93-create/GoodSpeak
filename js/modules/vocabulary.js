@@ -184,6 +184,11 @@ const VocabularyModule = (function() {
       switchVocabCategory(savedCategory);
     }
 
+    // Auto-show a word on first load so the user doesn't see an empty state
+    if (currentVocabCategory === 'builder') {
+      showNewWord();
+    }
+
     console.log('VocabularyModule initialized successfully');
   }
 
@@ -376,46 +381,23 @@ const VocabularyModule = (function() {
           ${word.partOfSpeech ? `<span class="badge badge-primary">${word.partOfSpeech}</span>` : ''}
           <span class="badge badge-secondary">${word.difficulty}</span>
         </div>
-        <div class="action-buttons" style="margin-bottom: 1rem;">
-          <button class="btn btn-primary" id="reveal-definition-btn" onclick="VocabularyModule.revealDefinition()">
-            Reveal Definition
-          </button>
+        <div class="word-definition">
+          <strong>Definition:</strong> ${word.definition}
         </div>
-        <div id="word-details" style="display: none;">
-          <div class="word-definition">
-            <strong>Definition:</strong> ${word.definition}
-          </div>
-          ${word.exampleSentence ? `<div class="word-example"><strong>Example:</strong> "${word.exampleSentence}"</div>` : ''}
-          ${word.synonyms && word.synonyms.length > 0 ? `<div class="word-synonyms"><strong>Synonyms:</strong> <span class="synonyms-list">${word.synonyms.join(', ')}</span></div>` : ''}
-          <div class="action-buttons">
-            <button class="btn btn-success" onclick="VocabularyModule.markAsLearned('${safeWord}')" data-tooltip="This word will be added to Learned Words bank">
-              Mark as Learned
-            </button>
-            <button class="btn btn-secondary" onclick="VocabularyModule.markAsStillLearning('${safeWord}')" data-tooltip="This word will be added to Still Learning">
-              Mark as Still Learning
-            </button>
-          </div>
+        ${word.exampleSentence ? `<div class="word-example"><strong>Example:</strong> "${word.exampleSentence}"</div>` : ''}
+        ${word.synonyms && word.synonyms.length > 0 ? `<div class="word-synonyms"><strong>Synonyms:</strong> <span class="synonyms-list">${word.synonyms.join(', ')}</span></div>` : ''}
+        <div class="action-buttons">
+          <button class="btn btn-success" onclick="VocabularyModule.markAsLearned('${safeWord}')" data-tooltip="Add to your learned words">
+            Know it
+          </button>
+          <button class="btn btn-secondary" onclick="VocabularyModule.markAsStillLearning('${safeWord}')" data-tooltip="Add to still learning — you'll revisit this">
+            New to me
+          </button>
         </div>
       </div>
     `;
 
     wordDisplay.innerHTML = html;
-  }
-
-  /**
-   * Reveal the hidden definition, example, and synonyms
-   */
-  function revealDefinition() {
-    const wordDetails = document.getElementById('word-details');
-    const revealBtn = document.getElementById('reveal-definition-btn');
-
-    if (wordDetails) {
-      wordDetails.style.display = 'block';
-    }
-
-    if (revealBtn) {
-      revealBtn.style.display = 'none';
-    }
   }
 
   /**
@@ -888,10 +870,8 @@ const VocabularyModule = (function() {
     // Update button states
     updateDifficultyButtons();
 
-    // Clear current word
-    if (wordDisplay) {
-      wordDisplay.innerHTML = '<div class="empty-state"><p>Click "Show New Word" to start learning</p></div>';
-    }
+    // Auto-show a word for the new difficulty
+    showNewWord();
 
     // Hide practice button
     if (practiceBtn) {
@@ -1365,7 +1345,6 @@ const VocabularyModule = (function() {
   return {
     init: init,
     showNewWord: showNewWord,
-    revealDefinition: revealDefinition,
     markAsLearned: markAsLearned,
     markAsStillLearning: markAsStillLearning,
     startPractice: startPractice,

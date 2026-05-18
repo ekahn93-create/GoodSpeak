@@ -129,6 +129,8 @@ const App = (function() {
     updateDashboardStats();
     // Initialise learning path + checklist
     initLearningPath();
+    // Initialise Today's Practice checklist
+    initTodaysPractice();
   }
 
   // ================================================================
@@ -483,6 +485,99 @@ const App = (function() {
         '<a href="' + s.link + '" class="suggestion-link btn btn-sm btn-primary">' + s.label + '</a>' +
         '</div>';
     }).join('');
+  }
+
+  // ----------------------------------------------------------------
+  // TODAY'S PRACTICE CHECKLIST
+  // ----------------------------------------------------------------
+
+  const TP_STORAGE_KEY = 'todaysPractice';
+  const TP_TASKS = ['word_of_day', 'srs', 'precision', 'filler', 'speaking'];
+
+  function getTodayString() {
+    return new Date().toISOString().split('T')[0];
+  }
+
+  function loadTPState() {
+    try {
+      const raw = localStorage.getItem(TP_STORAGE_KEY);
+      if (!raw) return { date: getTodayString(), completed: [] };
+      const state = JSON.parse(raw);
+      // Reset if it's a new day
+      if (state.date !== getTodayString()) return { date: getTodayString(), completed: [] };
+      return state;
+    } catch(e) { return { date: getTodayString(), completed: [] }; }
+  }
+
+  function saveTPState(state) {
+    localStorage.setItem(TP_STORAGE_KEY, JSON.stringify(state));
+  }
+
+  function initTodaysPractice() {
+    const container = document.getElementById('todays-practice-card');
+    if (!container) return;
+
+    const state = loadTPState();
+    const srsCount = getSRSDueCount();
+
+    // Update SRS label to show due count if any
+    const srsLabel = document.getElementById('tp-label-srs');
+    if (srsLabel) {
+      srsLabel.textContent = srsCount > 0
+        ? 'SRS Review (' + srsCount + ' due)'
+        : 'SRS Review';
+    }
+
+    // Render check state for each task
+    TP_TASKS.forEach(function(task) {
+      const check = document.getElementById('tp-check-' + task);
+      const item = container.querySelector('[data-task="' + task + '"]');
+      if (!check || !item) return;
+      const done = state.completed.includes(task);
+      check.textContent = done ? '✓' : '';
+      check.classList.toggle('tp-check-done', done);
+      item.classList.toggle('tp-item-done', done);
+    });
+
+    updateTPProgress(state);
+
+    // Wire up check clicks — clicking a row marks it done
+    container.querySelectorAll('.tp-item').forEach(function(item) {
+      item.addEventListener('click', function(e) {
+        // Don't intercept the "Go" link
+        if (e.target.classList.contains('tp-go') || e.target.closest('.tp-go')) return;
+        const task = item.dataset.task;
+        const state = loadTPState();
+        if (!state.completed.includes(task)) {
+          state.completed.push(task);
+          saveTPState(state);
+          const check = document.getElementById('tp-check-' + task);
+          if (check) { check.textContent = '✓'; check.classList.add('tp-check-done'); }
+          item.classList.add('tp-item-done');
+          updateTPProgress(state);
+        }
+      });
+    });
+  }
+
+  function updateTPProgress(state) {
+    const done = state.completed.length;
+    const total = TP_TASKS.length;
+    const fill = document.getElementById('tp-progress-fill');
+    const label = document.getElementById('tp-progress-label');
+    const card = document.getElementById('todays-practice-card');
+    if (fill) fill.style.width = Math.round((done / total) * 100) + '%';
+    if (label) label.textContent = done + ' / ' + total;
+    if (card) card.classList.toggle('tp-all-done', done === total);
+  }
+
+  // Called from other pages/modules to mark a task complete programmatically
+  function markTPTaskDone(taskId) {
+    const state = loadTPState();
+    if (!state.completed.includes(taskId)) {
+      state.completed.push(taskId);
+      saveTPState(state);
+    }
   }
 
   function getSRSDueCount() {
@@ -844,7 +939,8 @@ const App = (function() {
   return {
     init: init,
     getUserData: getUserData,
-    isInitialized: getInitialized
+    isInitialized: getInitialized,
+    markTPTaskDone: markTPTaskDone
   };
 })();
 
