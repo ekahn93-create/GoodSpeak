@@ -49,16 +49,17 @@ const PlayModule = (function () {
     _bindTabs();
     _bindGameButtons();
 
-    // Get Supabase client from AuthModule once config is ready
-    const client = AuthModule.getClient();
-    if (client) {
-      supabase = client;
-      currentUser = AuthModule.getUser ? AuthModule.getUser() : null;
-    }
-
-    _checkLoginGate();
+    // Show ready screen by default — login gate shown only when Start is clicked without a session
+    if (loginGate) loginGate.style.display = 'none';
+    if (readyScreen) readyScreen.style.display = '';
 
     console.log('PlayModule initialized');
+  }
+
+  // Lazily resolve supabase client and current user at action time
+  function _resolveAuth() {
+    supabase = AuthModule.getClient ? AuthModule.getClient() : null;
+    currentUser = AuthModule.getUser ? AuthModule.getUser() : null;
   }
 
   function _cacheDom() {
@@ -120,32 +121,17 @@ const PlayModule = (function () {
 
   // ── Login Gate ────────────────────────────────────────────────────────────
 
-  function _checkLoginGate() {
-    currentUser = AuthModule.getUser ? AuthModule.getUser() : null;
-    if (!currentUser) {
-      loginGate.style.display = '';
-      readyScreen.style.display = 'none';
-    } else {
-      loginGate.style.display = 'none';
-      readyScreen.style.display = '';
-    }
+  function _showLoginGate() {
+    _showScreen(loginGate);
 
-    // Sign-in button inside gate
     const gateSigninBtn = document.getElementById('play-signin-btn');
-    if (gateSigninBtn) {
+    if (gateSigninBtn && !gateSigninBtn._bound) {
+      gateSigninBtn._bound = true;
       gateSigninBtn.addEventListener('click', function () {
         const authBtn = document.getElementById('auth-nav-btn');
         if (authBtn) authBtn.click();
       });
     }
-
-    // Stats tab sign-in button
-    document.querySelectorAll('.play-stats-signin-btn').forEach(function (btn) {
-      btn.addEventListener('click', function () {
-        const authBtn = document.getElementById('auth-nav-btn');
-        if (authBtn) authBtn.click();
-      });
-    });
   }
 
   // ── Game Flow ─────────────────────────────────────────────────────────────
@@ -156,12 +142,19 @@ const PlayModule = (function () {
     if (wrongBtn)    wrongBtn.addEventListener('click', _handleWrong);
     if (playAgainBtn) playAgainBtn.addEventListener('click', _resetToReady);
     if (challengeBtn) challengeBtn.addEventListener('click', _shareChallenge);
+
+    document.querySelectorAll('.play-stats-signin-btn').forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        const authBtn = document.getElementById('auth-nav-btn');
+        if (authBtn) authBtn.click();
+      });
+    });
   }
 
   async function _startGame() {
-    currentUser = AuthModule.getUser ? AuthModule.getUser() : null;
-    if (!currentUser) { _checkLoginGate(); return; }
-    if (!supabase) { supabase = AuthModule.getClient(); }
+    _resolveAuth();
+    if (!currentUser) { _showLoginGate(); return; }
+    if (!supabase) { _showToast('Could not connect. Please refresh.', 'error'); return; }
     if (!supabase) { _showToast('Could not connect. Please refresh.', 'error'); return; }
 
     // Reset state
@@ -423,6 +416,7 @@ const PlayModule = (function () {
   // ── Challenge ─────────────────────────────────────────────────────────────
 
   async function _shareChallenge() {
+    _resolveAuth();
     if (!supabase || !currentUser) return;
 
     try {
@@ -454,6 +448,7 @@ const PlayModule = (function () {
   // ── Leaderboard ───────────────────────────────────────────────────────────
 
   async function _loadLeaderboard() {
+    _resolveAuth();
     if (!supabase) {
       leaderboardBody.innerHTML = '<p class="play-empty">Sign in to see the leaderboard.</p>';
       return;
@@ -493,7 +488,7 @@ const PlayModule = (function () {
   // ── My Stats ──────────────────────────────────────────────────────────────
 
   async function _loadMyStats() {
-    currentUser = AuthModule.getUser ? AuthModule.getUser() : null;
+    _resolveAuth();
 
     if (!currentUser || !supabase) {
       statsLoginGate.style.display = '';
