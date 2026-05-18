@@ -1596,7 +1596,7 @@ const WordBankModule = (function() {
    * Save a word to the "Saved for Later" inbox from the quick-add FAB.
    * Called from the inline FAB script on each page.
    */
-  function quickSave(word) {
+  function quickSave(word, definition) {
     if (!word) return;
     const data = StorageManager.load();
     if (!data) return;
@@ -1612,7 +1612,7 @@ const WordBankModule = (function() {
       return;
     }
 
-    data.savedForLater.push({ word: word, savedAt: new Date().toISOString() });
+    data.savedForLater.push({ word: word, definition: definition || '', savedAt: new Date().toISOString() });
     StorageManager.save(data);
 
     _showToast('"' + word + '" saved for later!');
@@ -1648,42 +1648,96 @@ const WordBankModule = (function() {
     section.style.display = '';
     if (countEl) countEl.textContent = '(' + items.length + ')';
 
-    list.innerHTML = items.map((item, idx) => `
-      <li class="sfl-item">
-        <span class="sfl-word">${item.word}</span>
-        <div class="sfl-actions">
-          <button class="btn btn-sm btn-primary sfl-add-btn" onclick="WordBankModule.promoteToWordBank(${idx})">Add to Word Bank</button>
-          <button class="sfl-dismiss" onclick="WordBankModule.dismissSavedWord(${idx})" aria-label="Dismiss">&times;</button>
-        </div>
-      </li>
-    `).join('');
+    list.innerHTML = items.map((item, idx) => {
+      const hasDef = item.definition && item.definition.trim();
+      return `
+        <li class="sfl-item" id="sfl-item-${idx}">
+          <div class="sfl-row">
+            <button class="sfl-toggle" onclick="WordBankModule.toggleSflAccordion(${idx})" aria-expanded="false" aria-label="Toggle definition">
+              <span class="sfl-word">${item.word}</span>
+              ${hasDef ? '<svg class="sfl-chevron" xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>' : ''}
+            </button>
+            <div class="sfl-actions">
+              <button class="btn btn-sm btn-secondary sfl-status-btn" onclick="WordBankModule.promoteToWordBank(${idx}, 'stillLearning')">Still Learning</button>
+              <button class="btn btn-sm btn-primary sfl-status-btn" onclick="WordBankModule.promoteToWordBank(${idx}, 'learned')">Learned</button>
+              <button class="sfl-dismiss" onclick="WordBankModule.dismissSavedWord(${idx})" aria-label="Dismiss">&times;</button>
+            </div>
+          </div>
+          ${hasDef ? `<div class="sfl-definition" id="sfl-def-${idx}" hidden>${item.definition}</div>` : ''}
+        </li>
+      `;
+    }).join('');
   }
 
   /**
-   * Pre-fill the Add Custom Word form with the saved word, then remove it from inbox.
+   * Directly add a saved word to the word bank with the given status,
+   * without touching the Add Custom Word form.
+   * @param {number} index - index in savedForLater array
+   * @param {'learned'|'stillLearning'} status
    */
-  function promoteToWordBank(index) {
+  function promoteToWordBank(index, status) {
     const data = StorageManager.load();
     if (!data || !data.savedForLater) return;
 
     const item = data.savedForLater[index];
     if (!item) return;
 
-    // Pre-fill the custom word input
-    const wordInput = document.getElementById('custom-word');
-    if (wordInput) {
-      wordInput.value = item.word;
-      wordInput.focus();
-      // Scroll to the add form
-      const form = document.getElementById('add-custom-word-form');
-      if (form) form.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    if (!data.customWords) data.customWords = [];
+
+    // Avoid duplicate custom words (case-insensitive)
+    const alreadyCustom = data.customWords.some(
+      w => w.word.toLowerCase() === item.word.toLowerCase()
+    );
+    if (!alreadyCustom) {
+      const customWord = {
+        id: Date.now(),
+        word: item.word,
+        pronunciation: '',
+        partOfSpeech: 'other',
+        definition: item.definition || '',
+        exampleSentence: '',
+        synonyms: [],
+        isCustom: true,
+        status: status,
+        addedDate: new Date().toISOString()
+      };
+      data.customWords.push(customWord);
+
+      // Fire background enrichment (non-blocking)
+      enrichCustomWord(customWord.id);
     }
 
     // Remove from inbox
     data.savedForLater.splice(index, 1);
     StorageManager.save(data);
     userData = data;
+
+    const label = status === 'learned' ? 'Learned Words' : 'Still Learning';
+    _showToast('"' + item.word + '" moved to ' + label + '!');
+
     renderSavedForLater();
+
+    // Refresh whichever list was affected
+    if (status === 'learned') {
+      displayAppLearnedWords();
+    } else {
+      displayStillLearningWords();
+    }
+    updateCounts();
+  }
+
+  /**
+   * Toggle accordion expansion for a saved-for-later item.
+   */
+  function toggleSflAccordion(index) {
+    const defEl    = document.getElementById('sfl-def-' + index);
+    const toggleEl = document.querySelector('#sfl-item-' + index + ' .sfl-toggle');
+    if (!defEl) return;
+    const isOpen = !defEl.hidden;
+    defEl.hidden = isOpen;
+    if (toggleEl) toggleEl.setAttribute('aria-expanded', String(!isOpen));
+    const chevron = toggleEl && toggleEl.querySelector('.sfl-chevron');
+    if (chevron) chevron.style.transform = isOpen ? '' : 'rotate(180deg)';
   }
 
   /**
@@ -1747,7 +1801,8 @@ const WordBankModule = (function() {
     quickSave: quickSave,
     renderSavedForLater: renderSavedForLater,
     promoteToWordBank: promoteToWordBank,
-    dismissSavedWord: dismissSavedWord
+    dismissSavedWord: dismissSavedWord,
+    toggleSflAccordion: toggleSflAccordion
   };
 })();
 

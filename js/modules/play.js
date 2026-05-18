@@ -473,15 +473,16 @@ const PlayModule = (function () {
             '<span class="play-missed-word">' + _escHtml(w.word) + '</span>' +
             '<span class="play-missed-def">'  + _escHtml(w.definition || '') + '</span>' +
           '</div>' +
-          '<button class="btn btn-secondary play-missed-save-btn" data-word="' + _escHtml(w.word) + '">Save to Word Bank</button>';
+          '<button class="btn btn-secondary play-missed-save-btn" data-word="' + _escHtml(w.word) + '" data-def="' + _escHtml(w.definition) + '">Save for Later</button>';
         missedList.appendChild(li);
       });
 
       missedList.querySelectorAll('.play-missed-save-btn').forEach(function (btn) {
         btn.addEventListener('click', function () {
           const word = btn.getAttribute('data-word');
+          const def  = btn.getAttribute('data-def');
           if (typeof WordBankModule !== 'undefined' && WordBankModule.quickSave) {
-            WordBankModule.quickSave(word);
+            WordBankModule.quickSave(word, def);
             btn.textContent = 'Saved!';
             btn.disabled = true;
           } else {
