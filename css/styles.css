@@ -6036,6 +6036,13 @@ canvas {
   font-size: 13px;
 }
 
+.play-goto-bank-btn {
+  display: block;
+  text-align: center;
+  margin-top: var(--spacing-sm);
+  text-decoration: none;
+}
+
 /* Leaderboard */
 .play-panel-card {
   background: var(--bg-card);
