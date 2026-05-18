@@ -4798,6 +4798,15 @@ canvas {
   transition: transform 0.2s ease;
 }
 
+/* No-definition hint for FAB-saved words */
+.sfl-no-def {
+  font-size: var(--font-size-sm);
+  color: var(--text-secondary);
+  font-style: italic;
+  padding: 0 var(--spacing-sm) var(--spacing-sm);
+  border-top: 1px solid var(--border-color);
+}
+
 /* Expanded definition */
 .sfl-definition {
   font-size: var(--font-size-sm);

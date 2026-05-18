@@ -1663,7 +1663,10 @@ const WordBankModule = (function() {
               <button class="sfl-dismiss" onclick="WordBankModule.dismissSavedWord(${idx})" aria-label="Dismiss">&times;</button>
             </div>
           </div>
-          ${hasDef ? `<div class="sfl-definition" id="sfl-def-${idx}" hidden>${item.definition}</div>` : ''}
+          ${hasDef
+            ? `<div class="sfl-definition" id="sfl-def-${idx}" hidden>${item.definition}</div>`
+            : `<div class="sfl-no-def">Look up this word in the <strong>Look Up a Custom Word</strong> section below.</div>`
+          }
         </li>
       `;
     }).join('');
