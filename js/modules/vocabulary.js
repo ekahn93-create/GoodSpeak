@@ -119,9 +119,13 @@ const VocabularyModule = (function() {
   let wordDisplay = null;
   let showWordBtn = null;
   let practiceBtn = null;
+  let modeToggle = null;
+  let definitionModeBtn = null;
+  let practiceModeBtn = null;
   let learnedCountElement = null;
   let learnedWordsList = null;
   let difficultyButtons = null;
+  let currentMode = 'definition';
 
   /**
    * Initialize the vocabulary module
@@ -137,6 +141,9 @@ const VocabularyModule = (function() {
     wordDisplay = document.getElementById('word-display');
     showWordBtn = document.getElementById('show-new-word-btn');
     practiceBtn = document.getElementById('practice-vocab-btn');
+    modeToggle = document.getElementById('vocab-mode-toggle');
+    definitionModeBtn = document.getElementById('definition-mode-btn');
+    practiceModeBtn = document.getElementById('practice-mode-btn');
     learnedCountElement = document.getElementById('learned-count');
     learnedWordsList = document.getElementById('learned-words-list');
     difficultyButtons = document.querySelectorAll('.difficulty-selector .btn');
@@ -354,13 +361,13 @@ const VocabularyModule = (function() {
     }
 
     currentWord = wordObj;
-    displayWord(currentWord);
-
-    if (practiceBtn) {
-      practiceBtn.style.display = 'inline-block';
+    if (currentMode === 'practice') {
+      isExerciseMode = true;
+      generateMultipleChoiceExercise(currentWord);
+    } else {
+      isExerciseMode = false;
+      displayWord(currentWord);
     }
-
-    isExerciseMode = false;
 
     // Kick off background refill if pool is getting low
     refillPoolIfNeeded(currentDifficulty);
@@ -376,6 +383,15 @@ const VocabularyModule = (function() {
     const safeWord = word.word.replace(/'/g, "\\'");
     const html = `
       <div class="word-card">
+        <div class="word-card-mode-toggle">
+          <div class="word-card-mode-toggle-buttons">
+            <div class="word-card-mode-toggle-buttons-row">
+              <button class="word-mode-btn${currentMode === 'definition' ? ' active' : ''}" onclick="VocabularyModule.setMode('definition')">Definition Mode</button>
+              <button class="word-mode-btn${currentMode === 'practice' ? ' active' : ''}" onclick="VocabularyModule.setMode('practice')">Practice Mode</button>
+            </div>
+            <span class="word-mode-hint">${currentMode === 'definition' ? 'Full definition, example &amp; synonyms' : 'Guess the definition from 4 choices'}</span>
+          </div>
+        </div>
         <div class="word-main">
           ${word.word}
           <button class="tts-btn" onclick="VocabularyModule.speakWord('${safeWord}')" title="Hear pronunciation" aria-label="Hear pronunciation">
@@ -394,10 +410,10 @@ const VocabularyModule = (function() {
         ${word.synonyms && word.synonyms.length > 0 ? `<div class="word-synonyms"><strong>Synonyms:</strong> <span class="synonyms-list">${word.synonyms.join(', ')}</span></div>` : ''}
         <div class="action-buttons">
           <button class="btn btn-success" onclick="VocabularyModule.markAsLearned('${safeWord}')" data-tooltip="Add to your learned words">
-            Know it
+            Mark as Learned
           </button>
           <button class="btn btn-secondary" onclick="VocabularyModule.markAsStillLearning('${safeWord}')" data-tooltip="Add to still learning — you'll revisit this">
-            New to me
+            Still Learning
           </button>
         </div>
       </div>
@@ -522,6 +538,20 @@ const VocabularyModule = (function() {
   }
 
   /**
+   * Set the display mode (definition or practice)
+   * @param {string} mode - 'definition' or 'practice'
+   */
+  function setMode(mode) {
+    currentMode = mode;
+    if (mode === 'definition') {
+      isExerciseMode = false;
+      if (currentWord) displayWord(currentWord);
+    } else {
+      startPractice();
+    }
+  }
+
+  /**
    * Generate a multiple choice exercise
    * @param {Object} word - The word to create an exercise for
    */
@@ -558,6 +588,15 @@ const VocabularyModule = (function() {
     // Display exercise
     const html = `
       <div class="word-card">
+        <div class="word-card-mode-toggle">
+          <div class="word-card-mode-toggle-buttons">
+            <div class="word-card-mode-toggle-buttons-row">
+              <button class="word-mode-btn" onclick="VocabularyModule.setMode('definition')">Definition Mode</button>
+              <button class="word-mode-btn active" onclick="VocabularyModule.setMode('practice')">Practice Mode</button>
+            </div>
+            <span class="word-mode-hint">Guess the definition from 4 choices</span>
+          </div>
+        </div>
         <h3>Practice Exercise</h3>
         <div class="exercise-question">
           What is the definition of <strong>"${word.word}"</strong>?
@@ -879,10 +918,7 @@ const VocabularyModule = (function() {
     // Auto-show a word for the new difficulty
     showNewWord();
 
-    // Hide practice button
-    if (practiceBtn) {
-      practiceBtn.style.display = 'none';
-    }
+    currentMode = 'definition';
 
     showToast(`Switched to ${difficulty} level`, 'success');
   }
@@ -1354,6 +1390,7 @@ const VocabularyModule = (function() {
     markAsLearned: markAsLearned,
     markAsStillLearning: markAsStillLearning,
     startPractice: startPractice,
+    setMode: setMode,
     showLearnedWord: showLearnedWord,
     showStillLearningWord: showStillLearningWord,
     moveToLearned: moveToLearned,

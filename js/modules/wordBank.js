@@ -265,10 +265,9 @@ const WordBankModule = (function() {
         ]);
 
         if (wordData) {
-          // Populate pronunciation and synonyms from primary lookup
-          if (wordData.phonetic) {
-            document.getElementById('custom-pronunciation').value = convertIPAToReadable(wordData.phonetic);
-          }
+          // Populate pronunciation — always set (clears stale value if new word has none)
+          document.getElementById('custom-pronunciation').value = wordData.phonetic
+            ? convertIPAToReadable(wordData.phonetic) : '';
           if (wordData.synonyms && wordData.synonyms.length > 0) {
             document.getElementById('custom-synonyms').value = wordData.synonyms.slice(0, 5).join(', ');
           }
@@ -336,8 +335,9 @@ const WordBankModule = (function() {
     `).join('');
 
     lookupStatus.innerHTML = `
-      <div style="color: #4A90E2; margin-bottom: 8px; font-size: var(--font-size-sm); font-weight: 500;">✓ Multiple definitions found — select one:</div>
+      <div style="color: #4A90E2; margin-bottom: 6px; font-size: var(--font-size-sm); font-weight: 500;">✓ Multiple definitions found — select one:</div>
       <div id="def-picker-list" class="def-picker-list">${items}</div>
+      <div style="margin-top: 8px; font-size: 0.72rem; color: var(--text-secondary); font-style: italic;">Don't see the right definition? You can fill it in manually below.</div>
     `;
   }
 
@@ -425,8 +425,10 @@ const WordBankModule = (function() {
       const label = status === 'learned' ? 'Learned Words' : 'Still Learning';
       showToast(`Word added to ${label}!`, 'success');
 
-      // Clear form
+      // Clear form and lookup status
       addWordForm.reset();
+      if (lookupStatus) lookupStatus.innerHTML = '';
+      pickerDefs = [];
 
       // Refresh display
       if (status === 'learned') {
@@ -1566,6 +1568,17 @@ const WordBankModule = (function() {
     }
   }
 
+  function toggleAddSection() {
+    const body = document.getElementById('word-bank-add-body');
+    const toggle = document.getElementById('word-bank-add-toggle');
+    const chevron = toggle && toggle.querySelector('.word-bank-add-chevron');
+    if (!body) return;
+    const isOpen = body.style.display !== 'none';
+    body.style.display = isOpen ? 'none' : 'block';
+    if (toggle) toggle.setAttribute('aria-expanded', String(!isOpen));
+    if (chevron) chevron.style.transform = isOpen ? '' : 'rotate(180deg)';
+  }
+
   function toggleSection(gridId, btnId) {
     const grid = document.getElementById(gridId);
     const btn = document.getElementById(btnId);
@@ -1799,6 +1812,7 @@ const WordBankModule = (function() {
     refresh: refresh,
     sortSection: sortSection,
     toggleSection: toggleSection,
+    toggleAddSection: toggleAddSection,
     searchWords: searchWords,
     clearSearch: clearSearch,
     quickSave: quickSave,

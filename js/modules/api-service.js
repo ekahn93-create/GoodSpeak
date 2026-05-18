@@ -153,12 +153,20 @@ const APIService = (function() {
         }
         const uniqueSynonyms = [...new Set(allSynonyms)];
 
+        // Find first available example across all meanings/definitions
+        let example = '';
+        outer: for (const meaning of (wordData.meanings || [])) {
+          for (const def of (meaning.definitions || [])) {
+            if (def.example) { example = def.example; break outer; }
+          }
+        }
+
         return {
           word: wordData.word,
-          phonetic: wordData.phonetic || wordData.phonetics?.[0]?.text || '',
+          phonetic: wordData.phonetic || wordData.phonetics?.find(p => p.text)?.text || '',
           partOfSpeech: firstMeaning?.partOfSpeech || 'unknown',
           definition: firstDefinition?.definition || 'No definition available',
-          example: firstDefinition?.example || '',
+          example,
           synonyms: uniqueSynonyms,
           antonyms: firstDefinition?.antonyms || firstMeaning?.antonyms || []
         };
@@ -251,23 +259,31 @@ const APIService = (function() {
       }
 
       const data = await response.json();
+      const seenPos = new Set();
       const results = [];
 
       if (data && data.length > 0) {
         for (const entry of data) {
           for (const meaning of (entry.meanings || [])) {
-            for (const def of (meaning.definitions || [])) {
-                  const synonyms = [
-                ...(meaning.synonyms || []),
-                ...(def.synonyms || [])
-              ];
-              results.push({
-                partOfSpeech: meaning.partOfSpeech || '',
-                definition: def.definition || '',
-                example: def.example || '',
-                synonyms: [...new Set(synonyms)]
-              });
-            }
+            const pos = meaning.partOfSpeech || '';
+            if (seenPos.has(pos)) continue;
+            seenPos.add(pos);
+
+            // Find the best definition — prefer one that has an example
+            const defs = meaning.definitions || [];
+            const best = defs.find(d => d.example) || defs[0];
+            if (!best || !best.definition) continue;
+
+            const synonyms = [
+              ...(meaning.synonyms || []),
+              ...(best.synonyms || [])
+            ];
+            results.push({
+              partOfSpeech: pos,
+              definition: best.definition,
+              example: best.example || '',
+              synonyms: [...new Set(synonyms)]
+            });
           }
         }
       }
@@ -313,13 +329,21 @@ const APIService = (function() {
         }
       }
 
+      // Find first available example across all meanings/definitions
+      let exampleSentence = '';
+      outerLoop: for (const meaning of (entry.meanings || [])) {
+        for (const def of (meaning.definitions || [])) {
+          if (def.example) { exampleSentence = def.example; break outerLoop; }
+        }
+      }
+
       const wordObj = {
-        id: word,           // use word string as ID
+        id: word,
         word: entry.word || word,
-        pronunciation: entry.phonetic || (entry.phonetics && entry.phonetics[0] && entry.phonetics[0].text) || '',
+        pronunciation: entry.phonetic || entry.phonetics?.find(p => p.text)?.text || '',
         definition: firstDef.definition,
         partOfSpeech: firstMeaning.partOfSpeech || '',
-        exampleSentence: firstDef.example || '',
+        exampleSentence,
         synonyms: [...new Set(allSynonyms)].slice(0, 6),
         difficulty,
         category

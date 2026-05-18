@@ -217,7 +217,6 @@
                 <!-- Action Buttons -->
                 <div class="action-buttons">
                     <button id="show-new-word-btn" class="btn btn-primary" data-tooltip="Current word will remain in pool and can come up again">Show New Word</button>
-                    <button id="practice-vocab-btn" class="btn btn-secondary" style="display: none;">Practice Exercise</button>
                 </div>
 
                 <!-- Nudge: shown after marking a word as learned -->
@@ -243,11 +242,17 @@
 
                 <!-- Add Custom Word Section -->
                 <div class="word-bank-add-section">
-                    <h2>Look Up a Custom Word</h2>
-                    <p class="subtitle">Add words you've learned outside of this app</p>
+                    <button type="button" class="word-bank-add-toggle" id="word-bank-add-toggle" onclick="WordBankModule.toggleAddSection()" aria-expanded="false">
+                        <span>
+                            <span class="word-bank-add-toggle-title">Look Up a Custom Word</span>
+                            <span class="word-bank-add-toggle-sub">Add words you've learned outside of this app</span>
+                        </span>
+                        <i data-lucide="chevron-down" class="word-bank-add-chevron" style="width:20px;height:20px;stroke:currentColor;transition:transform 0.2s;"></i>
+                    </button>
 
+                    <div id="word-bank-add-body" style="display:none;">
                     <form id="add-custom-word-form" class="custom-word-form">
-                        <div class="form-row">
+                        <div class="form-row form-row--no-bottom">
                             <div class="form-group">
                                 <label for="custom-word">Word *</label>
                                 <div style="display: flex; gap: 8px; flex-wrap: wrap;">
@@ -262,6 +267,7 @@
                                 <input type="text" id="custom-pronunciation" placeholder="e.g., eks-KWIZ-it">
                             </div>
                         </div>
+
                         <div id="lookup-status" class="lookup-status"></div>
 
                         <div class="form-row">
@@ -298,6 +304,7 @@
                             <button type="button" id="add-word-learned-btn" class="btn btn-primary">Add to Learned</button>
                         </div>
                     </form>
+                    </div><!-- /word-bank-add-body -->
                 </div>
 
                 <!-- Word Bank Search -->
