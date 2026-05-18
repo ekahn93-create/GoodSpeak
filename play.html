@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Play the 30-second vocabulary game and challenge your friends.">
+    <title>EZSpeaks - Play</title>
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+    <!-- Stylesheets -->
+    <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="css/components.css">
+    <link rel="stylesheet" href="css/responsive.css">
+
+    <!-- Icons -->
+    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+</head>
+<body data-page="play">
+    <!-- Navigation Bar -->
+    <nav id="main-nav" class="nav-bar">
+        <div class="nav-brand">
+            <svg width="36" height="32" viewBox="0 0 220 200" xmlns="http://www.w3.org/2000/svg" style="display:inline-block;vertical-align:middle;flex-shrink:0;">
+                <rect x="10" y="10" width="200" height="150" rx="28" ry="28" fill="#4F46E5"/>
+                <polygon points="60,155 30,190 100,155" fill="#4F46E5"/>
+                <polygon points="130,30 85,100 115,100 90,165 155,85 120,85 148,30" fill="white" opacity="0.95"/>
+            </svg>
+            <span class="brand-text">EZSpeaks</span>
+        </div>
+        <ul class="nav-menu">
+            <li><a href="/" class="nav-link" data-view="home"><span class="nav-label">Home</span><span class="nav-sub">Dashboard</span></a></li>
+            <li><a href="/learn" class="nav-link" data-view="vocabulary"><span class="nav-label">Learn</span><span class="nav-sub">Words &amp; Grammar</span></a></li>
+            <li><a href="/polish" class="nav-link" data-view="fluency"><span class="nav-label">Polish</span><span class="nav-sub">Pronunciation &amp; Fluency</span></a></li>
+            <li><a href="/practice" class="nav-link" data-view="storytelling"><span class="nav-label">Practice</span><span class="nav-sub">Storytelling &amp; Challenges</span></a></li>
+            <li><a href="/play" class="nav-link" data-view="play"><span class="nav-label">Play</span><span class="nav-sub">30-Second Game</span></a></li>
+            <li><a href="/review" class="nav-link" data-view="progress"><span class="nav-label">Review</span><span class="nav-sub">Progress &amp; Stats</span></a></li>
+        </ul>
+        <div class="nav-auth">
+            <button id="auth-nav-btn" class="auth-nav-btn" title="Sign in to save progress across devices">
+                <span class="auth-nav-icon">&#9786;</span>
+                <span id="auth-nav-label">Sign In</span>
+            </button>
+        </div>
+    </nav>
+
+    <!-- Auth Modal -->
+    <div id="auth-modal" class="auth-modal-overlay" role="dialog" aria-modal="true" aria-labelledby="auth-modal-title">
+        <div class="auth-modal">
+            <button id="auth-modal-close" class="auth-modal-close" aria-label="Close">&times;</button>
+            <h2 id="auth-modal-title">Sign In</h2>
+            <p class="auth-modal-subtitle">Save your progress and access it from any device.</p>
+            <div class="auth-form">
+                <div id="auth-signup-fields" class="auth-signup-fields" style="display:none;">
+                    <div class="auth-name-row">
+                        <div class="auth-name-col">
+                            <label for="auth-first-name">First Name <span class="auth-required">*</span></label>
+                            <input type="text" id="auth-first-name" placeholder="First name" autocomplete="given-name" />
+                        </div>
+                        <div class="auth-name-col">
+                            <label for="auth-last-name">Last Name <span class="auth-required">*</span></label>
+                            <input type="text" id="auth-last-name" placeholder="Last name" autocomplete="family-name" />
+                        </div>
+                    </div>
+                    <label for="auth-nickname">Nickname <span class="auth-optional">(optional)</span></label>
+                    <p class="auth-field-hint">What should we call you?</p>
+                    <input type="text" id="auth-nickname" placeholder="e.g. Ace, Coach, Jazz..." autocomplete="nickname" />
+                    <label for="auth-goal">My main goal <span class="auth-required">*</span></label>
+                    <select id="auth-goal">
+                        <option value="" disabled selected>Select a goal...</option>
+                        <option value="public_speaking">Public speaking</option>
+                        <option value="job_interviews">Job interviews</option>
+                        <option value="everyday_conversation">Everyday conversation</option>
+                        <option value="professional_presence">Professional presence</option>
+                        <option value="general">General improvement</option>
+                    </select>
+                </div>
+                <label for="auth-email">Email</label>
+                <input type="email" id="auth-email" placeholder="you@example.com" autocomplete="email" />
+                <label for="auth-password">Password</label>
+                <div class="auth-password-wrapper">
+                    <input type="password" id="auth-password" placeholder="Password" autocomplete="current-password" />
+                    <button type="button" id="auth-password-toggle" class="auth-password-toggle" aria-label="Show password">
+                        <svg id="auth-eye-icon" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                            <circle cx="12" cy="12" r="3"/>
+                        </svg>
+                    </button>
+                </div>
+                <p id="auth-error" class="auth-error"></p>
+                <button id="auth-submit-btn" class="btn btn-primary auth-submit-btn" data-mode="login">Sign In</button>
+            </div>
+            <p class="auth-switch">
+                <span id="auth-switch-text">Don't have an account?</span>
+                <a href="#" id="auth-switch-link">Sign up</a>
+            </p>
+        </div>
+    </div>
+
+    <!-- Mobile Bottom Tab Bar -->
+    <nav id="mobile-tab-bar" class="mobile-tab-bar" aria-label="Main navigation">
+        <a href="/" class="mobile-tab" data-view="home">
+            <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+            <span>Home</span>
+        </a>
+        <a href="/learn" class="mobile-tab" data-view="vocabulary">
+            <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
+            <span>Learn</span>
+        </a>
+        <a href="/polish" class="mobile-tab" data-view="fluency">
+            <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/><line x1="8" y1="23" x2="16" y2="23"/></svg>
+            <span>Polish</span>
+        </a>
+        <a href="/practice" class="mobile-tab" data-view="storytelling">
+            <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+            <span>Practice</span>
+        </a>
+        <a href="/play" class="mobile-tab" data-view="play">
+            <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polygon points="10 8 16 12 10 16 10 8"/></svg>
+            <span>Play</span>
+        </a>
+        <a href="/review" class="mobile-tab" data-view="progress">
+            <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+            <span>Review</span>
+        </a>
+        <button id="mobile-auth-tab" class="mobile-tab mobile-auth-tab">
+            <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+            <span id="mobile-auth-label">Sign In</span>
+        </button>
+    </nav>
+
+    <!-- Main Content -->
+    <main id="app-container">
+        <section id="play-view" class="view active">
+
+            <!-- Page Header + Sub-tabs -->
+            <div class="play-header">
+                <h1 class="play-title">Play</h1>
+                <div class="play-tabs">
+                    <button class="play-tab active" data-tab="game">Game</button>
+                    <button class="play-tab" data-tab="leaderboard">Leaderboard</button>
+                    <button class="play-tab" data-tab="my-stats">My Stats</button>
+                </div>
+            </div>
+
+            <!-- ===== GAME TAB ===== -->
+            <div id="play-tab-game" class="play-tab-panel active">
+
+                <!-- Login Gate -->
+                <div id="play-login-gate" class="play-login-gate" style="display:none;">
+                    <div class="play-login-gate-inner">
+                        <div class="play-gate-icon">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polygon points="10 8 16 12 10 16 10 8"/></svg>
+                        </div>
+                        <h2>Sign in to Play</h2>
+                        <p>Your scores and streak are saved to your account. Sign in to start playing.</p>
+                        <button class="btn btn-primary" id="play-signin-btn">Sign In</button>
+                    </div>
+                </div>
+
+                <!-- Ready Screen -->
+                <div id="play-ready-screen" class="play-screen">
+                    <div class="play-ready-card">
+                        <div class="play-ready-icon">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="56" height="56" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polygon points="10 8 16 12 10 16 10 8"/></svg>
+                        </div>
+                        <h2 class="play-ready-title">30-Second Game</h2>
+                        <p class="play-ready-desc">Define as many words as you can before time runs out.</p>
+                        <ul class="play-rules">
+                            <li><strong>Correct</strong> — +5 seconds &amp; points scale by difficulty</li>
+                            <li><strong>Wrong</strong> — no penalty, word recorded for review</li>
+                            <li>New words each session — no repeats today</li>
+                        </ul>
+                        <button id="play-start-btn" class="btn btn-primary play-start-btn">Start Game</button>
+                    </div>
+                </div>
+
+                <!-- Playing Screen -->
+                <div id="play-playing-screen" class="play-screen" style="display:none;">
+                    <!-- Timer Bar -->
+                    <div class="play-timer-wrap">
+                        <div class="play-timer-bar-track">
+                            <div id="play-timer-bar" class="play-timer-bar"></div>
+                        </div>
+                        <span id="play-timer-label" class="play-timer-label">30</span>
+                    </div>
+
+                    <!-- Score -->
+                    <div class="play-score-row">
+                        <span class="play-score-label">Score</span>
+                        <span id="play-score" class="play-score-value">0</span>
+                        <span class="play-word-count-label">Words</span>
+                        <span id="play-word-count" class="play-word-count-value">0</span>
+                    </div>
+
+                    <!-- Word Card -->
+                    <div class="play-word-card">
+                        <div class="play-difficulty-dots" id="play-difficulty-dots"></div>
+                        <div id="play-word" class="play-word">—</div>
+                        <div id="play-pos" class="play-pos"></div>
+                    </div>
+
+                    <!-- Definition (to confirm/deny) -->
+                    <div id="play-definition" class="play-definition"></div>
+
+                    <!-- Answer Buttons -->
+                    <div class="play-answer-btns">
+                        <button id="play-wrong-btn" class="btn play-btn-wrong">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+                            <span>Didn't Know</span>
+                        </button>
+                        <button id="play-correct-btn" class="btn play-btn-correct">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+                            <span>Got It</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Post-game Screen -->
+                <div id="play-postgame-screen" class="play-screen" style="display:none;">
+                    <div class="play-postgame-card">
+                        <div class="play-postgame-result">
+                            <div class="play-postgame-score-wrap">
+                                <span class="play-postgame-score-label">Score</span>
+                                <span id="play-postgame-score" class="play-postgame-score">0</span>
+                            </div>
+                            <div class="play-postgame-meta">
+                                <span id="play-postgame-words" class="play-postgame-stat">0 words</span>
+                                <span class="play-postgame-divider">·</span>
+                                <span id="play-postgame-streak" class="play-postgame-stat">— streak</span>
+                            </div>
+                        </div>
+
+                        <div class="play-postgame-actions">
+                            <button id="play-again-btn" class="btn btn-primary">Play Again</button>
+                            <button id="play-challenge-btn" class="btn btn-secondary">Challenge a Friend</button>
+                        </div>
+
+                        <!-- Missed Words -->
+                        <div id="play-missed-section" class="play-missed-section" style="display:none;">
+                            <h3 class="play-missed-title">Missed Words</h3>
+                            <p class="play-missed-hint">Save any of these to your Word Bank to study them.</p>
+                            <ul id="play-missed-list" class="play-missed-list"></ul>
+                        </div>
+                    </div>
+                </div>
+
+            </div><!-- /game tab -->
+
+            <!-- ===== LEADERBOARD TAB ===== -->
+            <div id="play-tab-leaderboard" class="play-tab-panel" style="display:none;">
+                <div class="play-panel-card">
+                    <h2 class="play-panel-title">Leaderboard</h2>
+                    <p class="play-panel-sub">Average of each player's last 5 games</p>
+                    <div id="play-leaderboard-body">
+                        <p class="play-loading">Loading...</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ===== MY STATS TAB ===== -->
+            <div id="play-tab-my-stats" class="play-tab-panel" style="display:none;">
+                <div class="play-panel-card">
+                    <h2 class="play-panel-title">My Stats</h2>
+                    <div id="play-stats-login-gate" class="play-stats-login-gate" style="display:none;">
+                        <p>Sign in to see your stats.</p>
+                        <button class="btn btn-primary play-stats-signin-btn">Sign In</button>
+                    </div>
+                    <div id="play-stats-body" style="display:none;">
+                        <div class="play-stats-grid">
+                            <div class="play-stat-tile">
+                                <span class="play-stat-tile-value" id="pstat-streak">—</span>
+                                <span class="play-stat-tile-label">Day Streak</span>
+                            </div>
+                            <div class="play-stat-tile">
+                                <span class="play-stat-tile-value" id="pstat-best">—</span>
+                                <span class="play-stat-tile-label">Best Score</span>
+                            </div>
+                            <div class="play-stat-tile">
+                                <span class="play-stat-tile-value" id="pstat-games">—</span>
+                                <span class="play-stat-tile-label">Games Played</span>
+                            </div>
+                            <div class="play-stat-tile">
+                                <span class="play-stat-tile-value" id="pstat-avg">—</span>
+                                <span class="play-stat-tile-label">Avg Score</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </section>
+    </main>
+
+    <!-- Toast Notifications Container -->
+    <div id="toast-container" class="toast-container"></div>
+
+    <!-- Modal Overlay -->
+    <div id="modal-overlay" class="modal-overlay">
+        <div class="modal-content">
+            <button class="modal-close">&times;</button>
+            <div id="modal-body"></div>
+        </div>
+    </div>
+
+    <!-- Footer Modals -->
+    <div id="footer-modal-overlay" class="footer-modal-overlay" role="dialog" aria-modal="true" hidden>
+        <div class="footer-modal">
+            <button class="footer-modal-close" id="footer-modal-close" aria-label="Close">&times;</button>
+            <h2 id="footer-modal-title"></h2>
+            <div id="footer-modal-body"></div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="site-footer">
+        <div class="footer-inner">
+            <div class="footer-brand">
+                <svg width="20" height="18" viewBox="0 0 220 200" xmlns="http://www.w3.org/2000/svg" style="display:inline-block;vertical-align:middle;flex-shrink:0;">
+                    <rect x="10" y="10" width="200" height="150" rx="28" ry="28" fill="#4F46E5"/>
+                    <polygon points="60,155 30,190 100,155" fill="#4F46E5"/>
+                    <polygon points="130,30 85,100 115,100 90,165 155,85 120,85 148,30" fill="white" opacity="0.95"/>
+                </svg>
+                <span class="footer-brand-name">EZSpeaks</span>
+                <span class="footer-tagline">Speak more eloquently, every day.</span>
+            </div>
+            <div class="footer-links">
+                <button class="footer-link" data-footer-modal="about">About</button>
+                <button class="footer-link" data-footer-modal="privacy">Privacy</button>
+                <button class="footer-link" data-footer-modal="terms">Terms</button>
+                <a href="mailto:admin@ezspeaks.com?subject=EZSpeaks Feedback" class="footer-link footer-link--feedback">Feedback</a>
+            </div>
+            <p class="footer-copy">&copy; <span id="footer-year"></span> EZSpeaks. All rights reserved. &nbsp;v1.0</p>
+        </div>
+    </footer>
+
+    <!-- JavaScript -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+    <script src="js/config.js"></script>
+    <script src="js/storage.js"></script>
+    <script src="js/router.js"></script>
+    <script src="js/components/modal.js"></script>
+    <script src="js/modules/auth.js"></script>
+    <script src="js/modules/sync.js"></script>
+    <script src="js/modules/wordBank.js"></script>
+    <script src="js/modules/play.js"></script>
+    <script src="js/app.js"></script>
+
+    <script>
+        document.getElementById('footer-year').textContent = new Date().getFullYear();
+        if (typeof lucide !== 'undefined') lucide.createIcons();
+    </script>
+</body>
+</html>

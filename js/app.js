@@ -95,6 +95,7 @@ const App = (function() {
     if (typeof RecordingsModule     !== 'undefined') RecordingsModule.init();
     if (typeof ShadowingModule      !== 'undefined') ShadowingModule.init();
     if (typeof ProgressChartsModule !== 'undefined') ProgressChartsModule.init();
+    if (typeof PlayModule           !== 'undefined') PlayModule.init();
 
     // Initialize dashboard
     initializeDashboard();

@@ -14,6 +14,7 @@ const Router = (function() {
     'vocabulary':  '/learn',
     'fluency':     '/polish',
     'storytelling':'/practice',
+    'play':        '/play',
     'progress':    '/review'
   };
 

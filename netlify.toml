@@ -22,6 +22,11 @@
   to = "/review.html"
   status = 200
 
+[[redirects]]
+  from = "/play"
+  to = "/play.html"
+  status = 200
+
 [build.environment]
   NODE_VERSION = "20"
 

@@ -187,6 +187,9 @@ const VocabularyModule = (function() {
     // Auto-show a word on first load so the user doesn't see an empty state
     if (currentVocabCategory === 'builder') {
       showNewWord();
+      if (typeof MWWordOfDayModule !== 'undefined') {
+        MWWordOfDayModule.refresh();
+      }
     }
 
     console.log('VocabularyModule initialized successfully');
@@ -273,6 +276,9 @@ const VocabularyModule = (function() {
       case 'builder':
         // Already initialized, just refresh display
         displayLearnedWords();
+        if (typeof MWWordOfDayModule !== 'undefined') {
+          MWWordOfDayModule.refresh();
+        }
         break;
       case 'daily':
         if (typeof DailyWordModule !== 'undefined') {
