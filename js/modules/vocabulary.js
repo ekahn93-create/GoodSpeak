@@ -251,6 +251,7 @@ const VocabularyModule = (function() {
    * Switch between vocabulary categories
    */
   function switchVocabCategory(category) {
+    window.scrollTo(0, 0);
     currentVocabCategory = category;
 
     // Save to localStorage
@@ -1026,6 +1027,7 @@ const VocabularyModule = (function() {
   }
 
   function switchKCTab(tab) {
+    window.scrollTo(0, 0);
     currentKCTab = tab;
     document.querySelectorAll('.kc-subtab').forEach(t => {
       t.classList.toggle('active', t.dataset.kcTab === tab);

@@ -97,6 +97,7 @@ const StorytellingModule = (function() {
    * Switch between storytelling categories
    */
   function switchStoryCategory(category) {
+    window.scrollTo(0, 0);
     currentStoryCategory = category;
 
     // Save to localStorage
