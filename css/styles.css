@@ -957,11 +957,48 @@ ul, ol {
   color: white;
 }
 
-.tp-label {
+.tp-label-group {
   flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.tp-label {
   font-size: var(--font-size-base);
   color: var(--text-primary);
+  line-height: 1.3;
 }
+
+.tp-sublabel {
+  font-size: 0.72rem;
+  color: var(--tp-pill-color, var(--text-muted));
+  line-height: 1.2;
+  font-weight: 500;
+}
+
+.tp-pill {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.65rem;
+  font-weight: 600;
+  letter-spacing: 0.03em;
+  line-height: normal;
+  padding: 3px 8px;
+  border-radius: 99px;
+  color: #fff;
+  flex-shrink: 0;
+  align-self: center;
+  white-space: nowrap;
+}
+
+.tp-pill--vocab      { background: #6366F1; }
+.tp-pill--fluency    { background: #3B82F6; }
+.tp-pill--story      { background: #22C55E; }
+.tp-pill--recall     { background: #F97316; }
+.tp-pill--challenge  { background: #EC4899; }
 
 .tp-go {
   flex-shrink: 0;
@@ -1012,12 +1049,53 @@ ul, ol {
   text-align: center;
 }
 
-.suggestion-text {
+.suggestion-body {
   flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  min-width: 0;
+}
+
+.suggestion-top {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-xs, 6px);
+  flex-wrap: wrap;
+}
+
+.suggestion-text {
   font-size: var(--font-size-sm);
   color: var(--text-primary);
   line-height: 1.4;
 }
+
+.suggestion-dest {
+  font-size: 0.68rem;
+  color: var(--text-muted);
+  line-height: 1.2;
+}
+
+.suggestion-pill {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.65rem;
+  font-weight: 600;
+  letter-spacing: 0.03em;
+  line-height: normal;
+  padding: 3px 8px;
+  border-radius: 99px;
+  color: #fff;
+  flex-shrink: 0;
+  white-space: nowrap;
+}
+
+.suggestion-pill--vocab      { background: #6366F1; }
+.suggestion-pill--fluency    { background: #3B82F6; }
+.suggestion-pill--story      { background: #22C55E; }
+.suggestion-pill--recall     { background: #F97316; }
+.suggestion-pill--challenge  { background: #EC4899; }
 
 .suggestion-link {
   white-space: nowrap;
@@ -1810,6 +1888,14 @@ ul, ol {
   flex-wrap: wrap;
 }
 
+.srs-btn-sub {
+  display: block;
+  font-size: 11px;
+  font-weight: 400;
+  opacity: 0.85;
+  margin-top: 2px;
+}
+
 .srs-btn-hard {
   background: var(--accent-color);
   color: white;
@@ -1818,6 +1904,7 @@ ul, ol {
   border-radius: var(--border-radius-sm);
   cursor: pointer;
   font-weight: 600;
+  line-height: 1.2;
 }
 .srs-btn-ok {
   background: #f39c12;
@@ -1827,6 +1914,7 @@ ul, ol {
   border-radius: var(--border-radius-sm);
   cursor: pointer;
   font-weight: 600;
+  line-height: 1.2;
 }
 .srs-btn-good {
   background: var(--secondary-color);
@@ -1836,6 +1924,7 @@ ul, ol {
   border-radius: var(--border-radius-sm);
   cursor: pointer;
   font-weight: 600;
+  line-height: 1.2;
 }
 .srs-btn-easy {
   background: var(--primary-color);
@@ -1845,6 +1934,7 @@ ul, ol {
   border-radius: var(--border-radius-sm);
   cursor: pointer;
   font-weight: 600;
+  line-height: 1.2;
 }
 
 .srs-done-msg {
