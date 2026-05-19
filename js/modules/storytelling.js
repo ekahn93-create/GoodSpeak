@@ -678,6 +678,16 @@ case 'recordings':
       });
     }
 
+    const regenerateBtn = document.getElementById('conversation-regenerate-btn');
+    if (regenerateBtn) {
+      regenerateBtn.addEventListener('click', () => {
+        const customVal = conversationCustomInput ? conversationCustomInput.value.trim() : '';
+        const activeSituation = document.querySelector('.situation-btn.active');
+        const situation = customVal || (activeSituation ? activeSituation.dataset.situation : '');
+        if (situation) loadConversationStarters(situation, true);
+      });
+    }
+
     // Impromptu Speaking voice feedback panel
     if (document.getElementById('impromptu-speak-controls')) {
       WebSpeechModule.create('impromptu', () => document.getElementById('impromptu-prompt')?.textContent || '').init();
@@ -1023,7 +1033,7 @@ case 'recordings':
   const CONV_CACHE_KEY = 'conv_starters_cache';
   const CONV_CACHE_MAX = 30;
 
-  async function loadConversationStarters(situation) {
+  async function loadConversationStarters(situation, bypassCache = false) {
     const displayEl = document.getElementById('conversation-display');
     const listEl = document.getElementById('conversation-starters-list');
     const btn = document.getElementById('new-conversation-starters-btn');
@@ -1032,7 +1042,7 @@ case 'recordings':
     // Check cache
     let cache = {};
     try { cache = JSON.parse(localStorage.getItem(CONV_CACHE_KEY)) || {}; } catch {}
-    if (cache[situation]) {
+    if (!bypassCache && cache[situation]) {
       renderStarters(listEl, displayEl, cache[situation]);
       return;
     }
@@ -1052,9 +1062,10 @@ case 'recordings':
       const data = await res.json();
       const starters = Array.isArray(data.starters) ? data.starters : [];
 
-      // Save to cache
+      // Save to cache (remove old entry for this situation first if regenerating)
       let freshCache = {};
       try { freshCache = JSON.parse(localStorage.getItem(CONV_CACHE_KEY)) || {}; } catch {}
+      if (bypassCache) delete freshCache[situation];
       const keys = Object.keys(freshCache);
       if (keys.length >= CONV_CACHE_MAX) delete freshCache[keys[0]];
       freshCache[situation] = starters;
