@@ -142,19 +142,12 @@ const ShadowingModule = (function() {
       .replace(/\//g, ', ')
       .replace(/~/g, '');
 
-    window.speechSynthesis.cancel();
-    const u = new SpeechSynthesisUtterance(plainText);
-    u.rate = 0.78; // Slightly slower for modeling
-    u.pitch = 1.05;
-
-    u.onend = () => {
+    TTSHelper.speak(plainText, 0.78, 1.1, () => {
       const ttsBtn = document.getElementById('shadowing-tts-btn');
       const ttsStopBtn = document.getElementById('shadowing-tts-stop-btn');
       if (ttsBtn) ttsBtn.style.display = '';
       if (ttsStopBtn) ttsStopBtn.style.display = 'none';
-    };
-
-    window.speechSynthesis.speak(u);
+    });
     document.getElementById('shadowing-tts-btn').style.display = 'none';
     document.getElementById('shadowing-tts-stop-btn').style.display = '';
   }

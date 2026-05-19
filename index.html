@@ -36,7 +36,7 @@
             <li><a href="/polish" class="nav-link" data-view="fluency"><span class="nav-label">Polish</span><span class="nav-sub">Pronunciation &amp; Fluency</span></a></li>
             <li><a href="/practice" class="nav-link" data-view="storytelling"><span class="nav-label">Practice</span><span class="nav-sub">Storytelling &amp; Challenges</span></a></li>
             <li><a href="/play" class="nav-link" data-view="play"><span class="nav-label">Play</span><span class="nav-sub">30-Second Game</span></a></li>
-            <li><a href="/review" class="nav-link" data-view="progress"><span class="nav-label">Review</span><span class="nav-sub">Progress &amp; Stats</span></a></li>
+            <li><a href="/review" class="nav-link" data-view="progress"><span class="nav-label">Stats</span><span class="nav-sub">Progress &amp; Streaks</span></a></li>
         </ul>
         <div class="nav-auth">
             <button id="auth-nav-btn" class="auth-nav-btn" title="Sign in to save progress across devices">
@@ -123,7 +123,7 @@
         </a>
         <a href="/review" class="mobile-tab" data-view="progress">
             <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
-            <span>Review</span>
+            <span>Stats</span>
         </a>
         <button id="mobile-auth-tab" class="mobile-tab mobile-auth-tab">
             <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
@@ -200,7 +200,7 @@
                 <div class="lp-step" id="lp-step-review">
                     <div class="lp-step-number">4</div>
                     <div class="lp-step-body">
-                        <div class="lp-step-label">Review</div>
+                        <div class="lp-step-label">Stats</div>
                         <div class="lp-step-stat" id="lp-stat-review">0 day streak</div>
                     </div>
                     <a href="/review" class="lp-step-btn btn btn-sm btn-primary">Go</a>
@@ -217,29 +217,49 @@
                     </div>
                 </div>
                 <ul class="tp-list" id="tp-list">
-                    <li class="tp-item" data-task="word_of_day">
+                    <li class="tp-item" data-task="word_of_day" style="--tp-pill-color:#6366F1">
                         <span class="tp-check" id="tp-check-word_of_day"></span>
-                        <span class="tp-label">Word of the Day</span>
+                        <span class="tp-pill tp-pill--vocab">Vocabulary</span>
+                        <span class="tp-label-group">
+                            <span class="tp-label">Word of the Day</span>
+                            <span class="tp-sublabel">Learn &rsaquo; Daily Word</span>
+                        </span>
                         <a href="/learn#word_of_day" class="tp-go btn btn-sm btn-secondary">Go</a>
                     </li>
-                    <li class="tp-item" data-task="srs">
+                    <li class="tp-item" data-task="srs" style="--tp-pill-color:#F97316">
                         <span class="tp-check" id="tp-check-srs"></span>
-                        <span class="tp-label" id="tp-label-srs">SRS Review</span>
+                        <span class="tp-pill tp-pill--recall">Recall</span>
+                        <span class="tp-label-group">
+                            <span class="tp-label" id="tp-label-srs">Vocab Review</span>
+                            <span class="tp-sublabel">Learn &rsaquo; Knowledge Check</span>
+                        </span>
                         <a href="/learn#srs" class="tp-go btn btn-sm btn-secondary">Go</a>
                     </li>
-                    <li class="tp-item" data-task="precision">
+                    <li class="tp-item" data-task="precision" style="--tp-pill-color:#3B82F6">
                         <span class="tp-check" id="tp-check-precision"></span>
-                        <span class="tp-label">Precision Exercise</span>
+                        <span class="tp-pill tp-pill--fluency">Fluency</span>
+                        <span class="tp-label-group">
+                            <span class="tp-label">Precision Exercise</span>
+                            <span class="tp-sublabel">Polish &rsaquo; Precision Drills</span>
+                        </span>
                         <a href="/polish#precision" class="tp-go btn btn-sm btn-secondary">Go</a>
                     </li>
-                    <li class="tp-item" data-task="filler">
+                    <li class="tp-item" data-task="filler" style="--tp-pill-color:#3B82F6">
                         <span class="tp-check" id="tp-check-filler"></span>
-                        <span class="tp-label">Filler Word Reducer</span>
+                        <span class="tp-pill tp-pill--fluency">Fluency</span>
+                        <span class="tp-label-group">
+                            <span class="tp-label">Filler Word Reducer</span>
+                            <span class="tp-sublabel">Polish &rsaquo; Filler Words</span>
+                        </span>
                         <a href="/polish#filler" class="tp-go btn btn-sm btn-secondary">Go</a>
                     </li>
-                    <li class="tp-item" data-task="speaking">
+                    <li class="tp-item" data-task="speaking" style="--tp-pill-color:#22C55E">
                         <span class="tp-check" id="tp-check-speaking"></span>
-                        <span class="tp-label">Speaking Challenge</span>
+                        <span class="tp-pill tp-pill--story">Storytelling</span>
+                        <span class="tp-label-group">
+                            <span class="tp-label">Speaking Challenge</span>
+                            <span class="tp-sublabel">Polish &rsaquo; Speaking Challenges</span>
+                        </span>
                         <a href="/polish#speaking" class="tp-go btn btn-sm btn-secondary">Go</a>
                     </li>
                 </ul>
@@ -289,7 +309,7 @@
                 </a>
                 <a href="/review" class="stat-tile">
                     <span class="stat-tile-icon"><i data-lucide="bar-chart-2" style="width:22px;height:22px;stroke:currentColor;"></i></span>
-                    <span class="stat-tile-label">Review</span>
+                    <span class="stat-tile-label">Stats</span>
                     <span class="stat-tile-value"><span id="daily-streak-count">0</span> day streak</span>
                 </a>
             </div>

@@ -422,11 +422,13 @@ const App = (function() {
     // Priority 1 — urgent: SRS reviews due
     if (srsData > 0) {
       suggestions.push({
-        icon: '🔁',
         text: srsData + ' word' + (srsData === 1 ? '' : 's') + ' due for review — keep them fresh',
         link: '/learn',
         tab: 'knowledge-check',
-        label: 'Start Review'
+        label: 'Start Review',
+        category: 'Recall',
+        categoryClass: 'recall',
+        dest: 'Learn \u203a Knowledge Check'
       });
     }
 
@@ -438,51 +440,61 @@ const App = (function() {
     const activeYesterday = activeDates.includes(yesterday);
     if (!doneToday && streak > 0 && activeYesterday) {
       suggestions.push({
-        icon: '🔥',
         text: 'Your ' + streak + '-day streak is at risk — do something today',
         link: '/',
         tab: null,
-        label: 'Do Today\'s Drill'
+        label: 'Do Today\'s Drill',
+        category: 'Recall',
+        categoryClass: 'recall',
+        dest: 'Home \u203a Today\'s Practice'
       });
     }
 
     // Priority 3 — tier-specific nudges
     if (tier.name === 'Beginner') {
       if (words < 5) {
-        suggestions.push({ icon: '📚', text: 'Start with your first words — even one a day adds up', link: '/learn', tab: 'builder', label: 'Learn a Word' });
+        suggestions.push({ text: 'Start with your first words — even one a day adds up', link: '/learn', tab: 'builder', label: 'Learn a Word', category: 'Vocabulary', categoryClass: 'vocab', dest: 'Learn \u203a Vocabulary Builder' });
       }
       if (!fluencyVisited) {
-        suggestions.push({ icon: '🎤', text: 'Try a pronunciation drill to build confidence out loud', link: '/polish', tab: null, label: 'Go to Polish' });
+        suggestions.push({ text: 'Try a pronunciation drill to build confidence out loud', link: '/polish', tab: null, label: 'Go to Polish', category: 'Fluency', categoryClass: 'fluency', dest: 'Polish \u203a Precision Drills' });
       }
       if (words >= 3 && stories === 0) {
-        suggestions.push({ icon: '📖', text: 'You have some words — try putting them into a story', link: '/practice', tab: 'storytelling', label: 'Try a Prompt' });
+        suggestions.push({ text: 'You have some words — try putting them into a story', link: '/practice', tab: 'storytelling', label: 'Try a Prompt', category: 'Storytelling', categoryClass: 'story', dest: 'Practice \u203a Story Prompts' });
       }
     } else if (tier.name === 'Building') {
       if (words < 20) {
-        suggestions.push({ icon: '📚', text: 'Keep building — you need ' + (20 - words) + ' more words to reach Intermediate', link: '/learn', tab: 'builder', label: 'Learn Words' });
+        suggestions.push({ text: 'Keep building — you need ' + (20 - words) + ' more words to reach Intermediate', link: '/learn', tab: 'builder', label: 'Learn Words', category: 'Vocabulary', categoryClass: 'vocab', dest: 'Learn \u203a Vocabulary Builder' });
       }
       if (stories < 5) {
-        suggestions.push({ icon: '📖', text: 'Practice makes permanent — ' + (5 - stories) + ' more stories to reach Intermediate', link: '/practice', tab: 'storytelling', label: 'Tell a Story' });
+        suggestions.push({ text: 'Practice makes permanent — ' + (5 - stories) + ' more stories to reach Intermediate', link: '/practice', tab: 'storytelling', label: 'Tell a Story', category: 'Storytelling', categoryClass: 'story', dest: 'Practice \u203a Story Prompts' });
       }
-      suggestions.push({ icon: '🎯', text: 'Challenge yourself with a quiz on your word bank', link: '/learn', tab: 'knowledge-check', label: 'Take a Quiz' });
+      suggestions.push({ text: 'Challenge yourself with a quiz on your word bank', link: '/learn', tab: 'knowledge-check', label: 'Take a Quiz', category: 'Vocabulary', categoryClass: 'vocab', dest: 'Learn \u203a Knowledge Check' });
     } else if (tier.name === 'Intermediate') {
-      suggestions.push({ icon: '🗣️', text: 'Try Impromptu Speaking — 60 seconds, no preparation', link: '/practice', tab: 'practical', label: 'Speak Now' });
+      suggestions.push({ text: 'Try Impromptu Speaking — 60 seconds, no preparation', link: '/practice', tab: 'practical', label: 'Speak Now', category: 'Storytelling', categoryClass: 'story', dest: 'Practice \u203a Impromptu Speaking' });
       if (words < 50) {
-        suggestions.push({ icon: '📚', text: (50 - words) + ' more words to reach Advanced', link: '/learn', tab: 'builder', label: 'Learn Words' });
+        suggestions.push({ text: (50 - words) + ' more words to reach Advanced', link: '/learn', tab: 'builder', label: 'Learn Words', category: 'Vocabulary', categoryClass: 'vocab', dest: 'Learn \u203a Vocabulary Builder' });
       }
-      suggestions.push({ icon: '👥', text: 'Try shadowing to refine your delivery and rhythm', link: '/polish', tab: null, label: 'Go to Shadowing' });
+      suggestions.push({ text: 'Try shadowing to refine your delivery and rhythm', link: '/polish', tab: null, label: 'Go to Shadowing', category: 'Fluency', categoryClass: 'fluency', dest: 'Polish \u203a Shadowing' });
     } else if (tier.name === 'Advanced') {
-      suggestions.push({ icon: '🏆', text: 'Advanced tier — focus on consistency and nuance', link: '/practice', tab: 'storytelling', label: 'New Story' });
-      suggestions.push({ icon: '🔁', text: 'Keep your SRS reviews up to maintain long-term retention', link: '/learn', tab: 'knowledge-check', label: 'Review Words' });
-      suggestions.push({ icon: '🎙️', text: 'Read Aloud mode builds pace and clarity — try it today', link: '/polish', tab: null, label: 'Read Aloud' });
+      suggestions.push({ text: 'Advanced tier — focus on consistency and nuance', link: '/practice', tab: 'storytelling', label: 'New Story', category: 'Storytelling', categoryClass: 'story', dest: 'Practice \u203a Story Prompts' });
+      suggestions.push({ text: 'Keep your SRS reviews up to maintain long-term retention', link: '/learn', tab: 'knowledge-check', label: 'Review Words', category: 'Recall', categoryClass: 'recall', dest: 'Learn \u203a Knowledge Check' });
+      suggestions.push({ text: 'Read Aloud mode builds pace and clarity — try it today', link: '/polish', tab: null, label: 'Read Aloud', category: 'Fluency', categoryClass: 'fluency', dest: 'Polish \u203a Read Aloud' });
     }
 
     // Cap at 3 suggestions
     const shown = suggestions.slice(0, 3);
 
+    const pillColors = { vocab: '#6366F1', fluency: '#3B82F6', story: '#22C55E', recall: '#F97316', challenge: '#EC4899' };
     container.innerHTML = shown.map(function(s) {
+      var destColor = pillColors[s.categoryClass] || 'var(--text-muted)';
       return '<div class="suggestion-item">' +
-        '<span class="suggestion-text">' + s.text + '</span>' +
+        '<div class="suggestion-body">' +
+          '<div class="suggestion-top">' +
+            '<span class="suggestion-pill suggestion-pill--' + s.categoryClass + '">' + s.category + '</span>' +
+            '<span class="suggestion-text">' + s.text + '</span>' +
+          '</div>' +
+          '<span class="suggestion-dest" style="color:' + destColor + ';font-weight:500">' + s.dest + '</span>' +
+        '</div>' +
         '<a href="' + s.link + '" class="suggestion-link btn btn-sm btn-primary">' + s.label + '</a>' +
         '</div>';
     }).join('');
@@ -525,8 +537,8 @@ const App = (function() {
     const srsLabel = document.getElementById('tp-label-srs');
     if (srsLabel) {
       srsLabel.textContent = srsCount > 0
-        ? 'SRS Review (' + srsCount + ' due)'
-        : 'SRS Review';
+        ? 'Vocab Review (' + srsCount + ' due)'
+        : 'Vocab Review';
     }
 
     // Render check state for each task

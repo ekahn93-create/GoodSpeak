@@ -982,12 +982,7 @@ const VocabularyModule = (function() {
    * @param {string} word - The word to speak
    */
   function speakWord(word) {
-    if (!window.speechSynthesis) return;
-    window.speechSynthesis.cancel();
-    const utterance = new SpeechSynthesisUtterance(word);
-    utterance.rate = 0.85;
-    utterance.pitch = 1;
-    window.speechSynthesis.speak(utterance);
+    TTSHelper.speak(word, 0.88, 1.1);
   }
 
   /**

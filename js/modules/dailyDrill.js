@@ -288,11 +288,7 @@ const DailyDrillModule = (function() {
   }
 
   function speakWord(word) {
-    if (!window.speechSynthesis) return;
-    window.speechSynthesis.cancel();
-    const u = new SpeechSynthesisUtterance(word);
-    u.rate = 0.85;
-    window.speechSynthesis.speak(u);
+    TTSHelper.speak(word, 0.88, 1.1);
   }
 
   function refresh() {

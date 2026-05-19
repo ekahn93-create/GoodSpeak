@@ -422,3 +422,70 @@ const StorageManager = (function() {
 
 // Log that StorageManager is loaded
 console.log('StorageManager module loaded successfully');
+
+// ============================================
+// TTS HELPER
+// Picks the best available voice for natural-sounding speech
+// ============================================
+const TTSHelper = (function() {
+  // Preferred voice names in priority order (neural/premium voices first)
+  const PREFERRED_VOICES = [
+    'Samantha',           // macOS/iOS neural — best quality
+    'Google US English',  // Chrome neural
+    'Microsoft Aria Online (Natural) - English (United States)',
+    'Microsoft Jenny Online (Natural) - English (United States)',
+    'Microsoft Guy Online (Natural) - English (United States)',
+    'Karen',              // macOS Australian — also neural quality
+    'Moira',              // macOS Irish
+    'Rishi',              // macOS Indian English
+  ];
+
+  let _cachedVoice = null;
+  let _voicesLoaded = false;
+
+  function getBestVoice() {
+    if (_cachedVoice) return _cachedVoice;
+    const voices = window.speechSynthesis.getVoices();
+    if (!voices.length) return null;
+
+    for (const name of PREFERRED_VOICES) {
+      const match = voices.find(v => v.name === name);
+      if (match) { _cachedVoice = match; return match; }
+    }
+    // Fallback: first en-US voice, then first en voice
+    const enUS = voices.find(v => v.lang === 'en-US');
+    if (enUS) { _cachedVoice = enUS; return enUS; }
+    const en = voices.find(v => v.lang.startsWith('en'));
+    if (en) { _cachedVoice = en; return en; }
+    return null;
+  }
+
+  function speak(text, rate, pitch, onend) {
+    if (!window.speechSynthesis) return;
+    window.speechSynthesis.cancel();
+
+    function _doSpeak() {
+      const u = new SpeechSynthesisUtterance(text);
+      const voice = getBestVoice();
+      if (voice) u.voice = voice;
+      u.rate  = rate  !== undefined ? rate  : 0.9;
+      u.pitch = pitch !== undefined ? pitch : 1.1;
+      if (onend) u.onend = onend;
+      window.speechSynthesis.speak(u);
+    }
+
+    // Voices may not be populated yet on first call — wait for them
+    if (_voicesLoaded || window.speechSynthesis.getVoices().length > 0) {
+      _voicesLoaded = true;
+      _doSpeak();
+    } else {
+      window.speechSynthesis.onvoiceschanged = function() {
+        _voicesLoaded = true;
+        window.speechSynthesis.onvoiceschanged = null;
+        _doSpeak();
+      };
+    }
+  }
+
+  return { speak };
+})();

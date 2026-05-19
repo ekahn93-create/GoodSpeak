@@ -269,11 +269,8 @@ const SRSModule = (function() {
   }
 
   function speakCurrent() {
-    if (!currentWord || !window.speechSynthesis) return;
-    window.speechSynthesis.cancel();
-    const u = new SpeechSynthesisUtterance(currentWord.word);
-    u.rate = 0.85;
-    window.speechSynthesis.speak(u);
+    if (!currentWord) return;
+    TTSHelper.speak(currentWord.word, 0.88, 1.1);
   }
 
   function refresh() {
