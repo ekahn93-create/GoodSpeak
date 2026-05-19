@@ -36,7 +36,7 @@
             <li><a href="/polish" class="nav-link" data-view="fluency"><span class="nav-label">Polish</span><span class="nav-sub">Pronunciation &amp; Fluency</span></a></li>
             <li><a href="/practice" class="nav-link" data-view="storytelling"><span class="nav-label">Practice</span><span class="nav-sub">Storytelling &amp; Challenges</span></a></li>
             <li><a href="/play" class="nav-link" data-view="play"><span class="nav-label">Play</span><span class="nav-sub">30-Second Game</span></a></li>
-            <li><a href="/review" class="nav-link" data-view="progress"><span class="nav-label">Review</span><span class="nav-sub">Progress &amp; Stats</span></a></li>
+            <li><a href="/review" class="nav-link" data-view="progress"><span class="nav-label">Stats</span><span class="nav-sub">Progress &amp; Streaks</span></a></li>
         </ul>
         <div class="nav-auth">
             <button id="auth-nav-btn" class="auth-nav-btn" title="Sign in to save progress across devices">
@@ -124,7 +124,7 @@
         </a>
         <a href="/review" class="mobile-tab" data-view="progress">
             <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
-            <span>Review</span>
+            <span>Stats</span>
         </a>
         <button id="mobile-auth-tab" class="mobile-tab mobile-auth-tab">
             <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
@@ -411,17 +411,20 @@
                 </div>
                 <div class="fluency-card-content">
                     <div class="situation-selector">
-                        <button class="situation-btn active" data-situation="networking">Networking</button>
-                        <button class="situation-btn" data-situation="casual">Casual</button>
-                        <button class="situation-btn" data-situation="professional">Professional</button>
+                        <button class="situation-btn active" data-situation="networking event">Networking</button>
+                        <button class="situation-btn" data-situation="casual small talk">Casual</button>
+                        <button class="situation-btn" data-situation="professional work meeting">Professional</button>
+                        <button class="situation-btn" data-situation="first date">First Date</button>
+                        <button class="situation-btn" data-situation="job interview">Job Interview</button>
+                        <button class="situation-btn" data-situation="meeting your partner's family">Partner's Family</button>
+                        <button class="situation-btn" data-situation="reconnecting with an old friend">Old Friend</button>
                     </div>
-                    <div id="conversation-display" class="exercise-display">
-                        <div id="conversation-starters-list">
-                            <!-- Conversation starters will be displayed here -->
-                        </div>
+                    <div style="display: flex; gap: var(--spacing-sm); margin-top: var(--spacing-md);">
+                        <input type="text" id="conversation-custom-input" placeholder="Or type your own situation…" style="flex: 1; padding: var(--spacing-sm) var(--spacing-md); font-size: var(--font-size-sm); border: 1px solid var(--border-color); border-radius: var(--border-radius-sm); font-family: inherit; background: var(--bg-card); color: var(--text-primary);">
+                        <button class="btn btn-primary" id="new-conversation-starters-btn">Generate</button>
                     </div>
-                    <div class="exercise-controls">
-                        <button class="btn btn-secondary" id="new-conversation-starters-btn">Refresh</button>
+                    <div id="conversation-display" class="exercise-display" style="display: none;">
+                        <div id="conversation-starters-list"></div>
                     </div>
                 </div>
             </div>
@@ -436,31 +439,31 @@
                     </div>
                 </div>
                 <div class="fluency-card-content">
-                    <div style="margin-bottom: var(--spacing-lg);">
+                    <div style="margin-bottom: var(--spacing-md);">
                         <div class="btn-group">
                             <button class="btn btn-secondary active" id="pitch-mode-speak">Speak</button>
                             <button class="btn btn-secondary" id="pitch-mode-type">Type</button>
                         </div>
                     </div>
 
-                    <div class="time-selector">
+                    <div class="time-selector" style="margin-bottom: var(--spacing-md);">
                         <button class="ws-inst-time-btn active" data-time="30">30 Seconds</button>
                         <button class="ws-inst-time-btn" data-time="60">1 Minute</button>
                         <button class="ws-inst-time-btn" data-time="120">2 Minutes</button>
                     </div>
 
-                    <div id="pitch-builder-display" class="exercise-display">
+                    <div id="pitch-builder-display" style="margin-bottom: var(--spacing-md);">
                         <div id="pitch-template">
-                            <div class="info-box">
-                                <h4>30-Second Pitch Structure:</h4>
-                                <ol style="margin: var(--spacing-sm) 0; padding-left: var(--spacing-lg);">
+                            <div class="info-box" style="padding: var(--spacing-sm) var(--spacing-md);">
+                                <h4 style="margin-bottom: var(--spacing-xs);">30-Second Pitch Structure:</h4>
+                                <ol style="margin: 0; padding-left: var(--spacing-lg);">
                                     <li>Who you are (name, role)</li>
                                     <li>What you do (value proposition)</li>
                                     <li>Why it matters (benefit/impact)</li>
                                     <li>Call to action (next step)</li>
                                 </ol>
                             </div>
-                            <p style="font-style: italic; color: var(--text-secondary); margin-top: var(--spacing-md);">
+                            <p style="font-style: italic; color: var(--text-secondary); margin: var(--spacing-sm) 0 0;">
                                 "Hi, I'm [Name], a [Role] at [Company/Industry]. I help [Target Audience] [Solve Problem/Achieve Goal] by [Your Solution/Approach]. This matters because [Impact/Benefit]. I'd love to [Next Step - connect, discuss, share more]."
                             </p>
                         </div>

@@ -14,6 +14,7 @@ const StorytellingModule = (function() {
   let currentStoryCategory = 'storytelling';
   let userData = null;
   let storyWebSpeechInstance = null;
+  let practicalListenersInitialized = false;
 
   // DOM elements - Category tabs
   let storyCategoryTabs = null;
@@ -605,6 +606,9 @@ case 'recordings':
    * Set up event listeners for practical skills
    */
   function setupPracticalListeners() {
+    if (practicalListenersInitialized) return;
+    practicalListenersInitialized = true;
+
     // Impromptu Speaking - New Topic buttons
     const newImpromptuBtn = document.getElementById('new-impromptu-btn');
     const newImpromptuTypeBtnEl = document.getElementById('new-impromptu-type-btn');
@@ -642,12 +646,14 @@ case 'recordings':
     // Conversation Starters
     const situationButtons = document.querySelectorAll('.situation-btn');
     const newConversationStartersBtn = document.getElementById('new-conversation-starters-btn');
+    const conversationCustomInput = document.getElementById('conversation-custom-input');
 
     if (situationButtons) {
       situationButtons.forEach(btn => {
         btn.addEventListener('click', function() {
           situationButtons.forEach(b => b.classList.remove('active'));
           this.classList.add('active');
+          if (conversationCustomInput) conversationCustomInput.value = '';
           loadConversationStarters(this.dataset.situation);
         });
       });
@@ -655,10 +661,20 @@ case 'recordings':
 
     if (newConversationStartersBtn) {
       newConversationStartersBtn.addEventListener('click', () => {
-        const activeSituation = document.querySelector('.situation-btn.active');
-        if (activeSituation) {
-          loadConversationStarters(activeSituation.dataset.situation);
+        const customVal = conversationCustomInput ? conversationCustomInput.value.trim() : '';
+        if (customVal) {
+          situationButtons.forEach(b => b.classList.remove('active'));
+          loadConversationStarters(customVal);
+        } else {
+          const activeSituation = document.querySelector('.situation-btn.active');
+          if (activeSituation) loadConversationStarters(activeSituation.dataset.situation);
         }
+      });
+    }
+
+    if (conversationCustomInput) {
+      conversationCustomInput.addEventListener('keydown', function(e) {
+        if (e.key === 'Enter') newConversationStartersBtn && newConversationStartersBtn.click();
       });
     }
 
@@ -675,7 +691,6 @@ case 'recordings':
     // Load initial content
     loadImpromptuTopic();
     loadTopicFramework('pee');
-    loadConversationStarters('networking');
   }
 
   /**
@@ -923,26 +938,62 @@ case 'recordings':
       pee: {
         title: "Point-Evidence-Explanation",
         structure: [
-          { label: "Point", desc: "Make your main argument or claim", example: "\"Renewable energy is essential for our future\"" },
-          { label: "Evidence", desc: "Provide facts, data, or examples", example: "\"Solar power costs have dropped 90% in the past decade\"" },
-          { label: "Explanation", desc: "Explain why this matters", example: "\"This makes clean energy accessible and economically viable\"" }
+          { label: "Point", desc: "Make your main argument or claim" },
+          { label: "Evidence", desc: "Provide facts, data, or examples" },
+          { label: "Explanation", desc: "Explain why this matters" }
+        ],
+        topics: [
+          "Social media does more harm than good.",
+          "Remote work is better than office work.",
+          "Reading books is more valuable than watching TV.",
+          "Cities are better places to live than rural areas.",
+          "Learning a second language should be required in schools.",
+          "Technology has made us less connected as people.",
+          "Failure is more valuable than success.",
+          "Exercise is the most important habit you can develop.",
+          "Travel is the best form of education.",
+          "Kindness is more important than intelligence."
         ]
       },
       ps: {
         title: "Problem-Solution",
         structure: [
-          { label: "Problem", desc: "Identify and describe the issue", example: "\"Many people struggle with public speaking anxiety\"" },
-          { label: "Impact", desc: "Explain why this matters", example: "\"This limits career opportunities and personal growth\"" },
-          { label: "Solution", desc: "Present your proposed solution", example: "\"Regular practice and preparation can build confidence\"" }
+          { label: "Problem", desc: "Identify and describe the issue" },
+          { label: "Impact", desc: "Explain why this matters" },
+          { label: "Solution", desc: "Present your proposed solution" }
+        ],
+        topics: [
+          "People don't get enough sleep.",
+          "Many adults feel lonely despite being constantly connected.",
+          "Most people find it hard to stay focused at work.",
+          "Misinformation spreads faster than accurate news.",
+          "Many people struggle to manage their finances.",
+          "Screen time among children is increasing rapidly.",
+          "Workers experience burnout more than ever before.",
+          "People have trouble maintaining healthy eating habits.",
+          "Public speaking anxiety affects most adults.",
+          "Many students lose motivation mid-semester."
         ]
       },
       star: {
-        title: "STAR Method (Situation-Task-Action-Result)",
+        title: "STAR Method",
         structure: [
-          { label: "Situation", desc: "Set the context", example: "\"During my internship, our team faced a tight deadline\"" },
-          { label: "Task", desc: "Describe your responsibility", example: "\"I was asked to coordinate team communications\"" },
-          { label: "Action", desc: "Explain what you did", example: "\"I created a shared doc and daily check-ins\"" },
-          { label: "Result", desc: "Share the outcome", example: "\"We delivered on time with improved collaboration\"" }
+          { label: "Situation", desc: "Set the context" },
+          { label: "Task", desc: "Describe your responsibility" },
+          { label: "Action", desc: "Explain what you did" },
+          { label: "Result", desc: "Share the outcome" }
+        ],
+        topics: [
+          "A time you had to meet a tight deadline.",
+          "A moment you had to adapt to unexpected change.",
+          "A time you resolved a conflict with someone.",
+          "A situation where you had to learn something quickly.",
+          "A time you took initiative without being asked.",
+          "A moment you made a mistake and had to fix it.",
+          "A time you helped someone else succeed.",
+          "A situation where you had to make a tough decision.",
+          "A time you had to persuade someone to see your point.",
+          "A moment you felt most proud of your work."
         ]
       }
     };
@@ -951,12 +1002,15 @@ case 'recordings':
     const displayElement = document.getElementById('framework-structure');
 
     if (displayElement && frameworkData) {
+      const topic = frameworkData.topics[Math.floor(Math.random() * frameworkData.topics.length)];
       displayElement.innerHTML = `
-        <h4 style="color: var(--primary-color); margin-bottom: var(--spacing-lg);">${frameworkData.title}</h4>
+        <h4 style="color: var(--primary-color); margin-bottom: var(--spacing-sm);">${frameworkData.title}</h4>
+        <div style="margin-bottom: var(--spacing-md); padding: var(--spacing-sm) var(--spacing-md); background: var(--bg-secondary); border-radius: var(--border-radius-sm); font-style: italic;">
+          Topic: <strong>${topic}</strong>
+        </div>
         ${frameworkData.structure.map((step, index) => `
-          <div style="margin-bottom: var(--spacing-lg); padding: var(--spacing-md); background: var(--bg-card); border-radius: var(--border-radius-sm); border-left: 4px solid var(--primary-color);">
-            <strong>${index + 1}. ${step.label}:</strong> ${step.desc}
-            <p style="font-style: italic; color: var(--text-secondary); margin: var(--spacing-xs) 0 0 0;">Example: ${step.example}</p>
+          <div style="margin-bottom: var(--spacing-sm); padding: var(--spacing-sm) var(--spacing-md); background: var(--bg-card); border-radius: var(--border-radius-sm); border-left: 4px solid var(--primary-color);">
+            <strong>${index + 1}. ${step.label}:</strong> <span style="color: var(--text-secondary);">${step.desc}</span>
           </div>
         `).join('')}
       `;
@@ -966,48 +1020,65 @@ case 'recordings':
   /**
    * Load conversation starters
    */
-  function loadConversationStarters(situation) {
-    const starters = {
-      networking: [
-        "What brings you to this event today?",
-        "I'd love to hear more about what you do.",
-        "Have you attended events like this before?",
-        "What projects are you working on currently?",
-        "How did you get started in your field?",
-        "What's the most exciting part of your work?"
-      ],
-      casual: [
-        "How has your week been going?",
-        "Have you seen any good movies lately?",
-        "What do you like to do in your free time?",
-        "Any plans for the weekend?",
-        "Have you tried any new restaurants recently?",
-        "What's been the highlight of your day?"
-      ],
-      professional: [
-        "Could you tell me more about your role here?",
-        "What challenges is your team currently facing?",
-        "How do you see the industry evolving?",
-        "What skills do you think are most valuable in this field?",
-        "What advice would you give someone entering this profession?",
-        "What aspects of your work do you find most rewarding?"
-      ]
-    };
+  const CONV_CACHE_KEY = 'conv_starters_cache';
+  const CONV_CACHE_MAX = 30;
 
-    const situationStarters = starters[situation];
-    const displayElement = document.getElementById('conversation-starters-list');
+  async function loadConversationStarters(situation) {
+    const displayEl = document.getElementById('conversation-display');
+    const listEl = document.getElementById('conversation-starters-list');
+    const btn = document.getElementById('new-conversation-starters-btn');
+    if (!listEl || !displayEl) return;
 
-    if (displayElement && situationStarters) {
-      displayElement.innerHTML = `
-        <div style="display: grid; gap: var(--spacing-md);">
-          ${situationStarters.map((starter, index) => `
-            <div style="padding: var(--spacing-md); background: var(--bg-card); border-radius: var(--border-radius-sm); border-left: 3px solid var(--secondary-color);">
-              <strong style="color: var(--text-secondary);">#${index + 1}</strong> "${starter}"
-            </div>
-          `).join('')}
-        </div>
-      `;
+    // Check cache
+    let cache = {};
+    try { cache = JSON.parse(localStorage.getItem(CONV_CACHE_KEY)) || {}; } catch {}
+    if (cache[situation]) {
+      renderStarters(listEl, displayEl, cache[situation]);
+      return;
     }
+
+    // Loading state
+    displayEl.style.display = 'block';
+    listEl.innerHTML = '<p style="color: var(--text-secondary); font-size: var(--font-size-sm);">Generating starters…</p>';
+    if (btn) { btn.disabled = true; btn.textContent = 'Generating…'; }
+
+    try {
+      const res = await fetch('/.netlify/functions/claude-proxy', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ task: 'conversation_starters', payload: { situation } })
+      });
+      if (!res.ok) throw new Error('Server error ' + res.status);
+      const data = await res.json();
+      const starters = Array.isArray(data.starters) ? data.starters : [];
+
+      // Save to cache
+      let freshCache = {};
+      try { freshCache = JSON.parse(localStorage.getItem(CONV_CACHE_KEY)) || {}; } catch {}
+      const keys = Object.keys(freshCache);
+      if (keys.length >= CONV_CACHE_MAX) delete freshCache[keys[0]];
+      freshCache[situation] = starters;
+      try { localStorage.setItem(CONV_CACHE_KEY, JSON.stringify(freshCache)); } catch {}
+
+      renderStarters(listEl, displayEl, starters);
+    } catch {
+      listEl.innerHTML = '<p style="color: var(--accent-color); font-size: var(--font-size-sm);">Could not generate starters. Are you on the live site?</p>';
+    } finally {
+      if (btn) { btn.disabled = false; btn.textContent = 'Generate'; }
+    }
+  }
+
+  function renderStarters(listEl, displayEl, starters) {
+    displayEl.style.display = 'block';
+    listEl.innerHTML = `
+      <div style="display: grid; gap: var(--spacing-sm);">
+        ${starters.map((s, i) => `
+          <div style="padding: var(--spacing-sm) var(--spacing-md); background: var(--bg-card); border-radius: var(--border-radius-sm); border-left: 3px solid var(--secondary-color); font-size: var(--font-size-sm);">
+            <strong style="color: var(--text-secondary);">${i + 1}.</strong> "${s}"
+          </div>
+        `).join('')}
+      </div>
+    `;
   }
 
   // ========== Interactive Challenges Implementation ==========

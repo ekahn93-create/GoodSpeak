@@ -217,6 +217,19 @@ Respond ONLY with valid JSON in this exact format, no other text:
   "tip": "One specific, actionable improvement tip."
 }`;
 
+  } else if (task === 'conversation_starters') {
+    const { situation } = payload;
+    prompt = `You are a communication coach helping someone practice conversation skills.
+
+Generate exactly 4 natural, varied conversation starters for this situation: "${situation}"
+
+The starters should feel genuine and easy to actually say out loud — not stiff or overly formal. Mix different types (questions, observations, compliments, shared experience references) where appropriate for the situation.
+
+Respond ONLY with valid JSON in this exact format, no other text:
+{
+  "starters": ["...", "...", "...", "..."]
+}`;
+
   } else if (task === 'description_challenge') {
     prompt = `You are generating a challenge for a speaking exercise app.
 
