@@ -499,8 +499,10 @@ const WordBankModule = (function() {
       return allWords.find(w => w.id === id || w.word === id);
     }).filter(w => w !== undefined);
 
-    // Add custom words marked as learned
-    const customLearned = (userData.customWords || []).filter(w => w.status === 'learned');
+    // Add custom words marked as learned (skip any whose word already came from the database)
+    const customLearned = (userData.customWords || []).filter(w =>
+      w.status === 'learned' && !learnedWordObjects.find(x => x.word.toLowerCase() === w.word.toLowerCase())
+    );
 
     const combined = [...learnedWordObjects, ...customLearned];
 
@@ -563,8 +565,10 @@ const WordBankModule = (function() {
       return allWords.find(w => w.id === id || w.word === id);
     }).filter(w => w !== undefined);
 
-    // Add custom words marked as stillLearning
-    const customStillLearning = (userData.customWords || []).filter(w => w.status === 'stillLearning');
+    // Add custom words marked as stillLearning (skip any whose word already came from the database)
+    const customStillLearning = (userData.customWords || []).filter(w =>
+      w.status === 'stillLearning' && !stillLearningWordObjects.find(x => x.word.toLowerCase() === w.word.toLowerCase())
+    );
 
     const combined = [...stillLearningWordObjects, ...customStillLearning];
 
