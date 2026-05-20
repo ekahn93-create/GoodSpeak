@@ -16,6 +16,7 @@ const StorytellingModule = (function() {
   let storyWebSpeechInstance = null;
   let practicalListenersInitialized = false;
   let currentVocabWord = null;
+  let impromptuWS = null;
 
   // DOM elements - Category tabs
   let storyCategoryTabs = null;
@@ -618,6 +619,9 @@ case 'recordings':
     const newImpromptuBtn = document.getElementById('new-impromptu-btn');
 
     function switchImpromptuInputMode(mode) {
+      // Reset any active session before switching modes
+      if (impromptuWS) impromptuWS.stopAndReset();
+
       impromptuIsVocabMode = (mode === 'vocab');
       freeModeBtn.classList.toggle('active', !impromptuIsVocabMode);
       vocabModeBtn.classList.toggle('active', impromptuIsVocabMode);
@@ -707,7 +711,6 @@ case 'recordings':
     }
 
     // Impromptu Speaking voice feedback panel
-    let impromptuWS = null;
     if (document.getElementById('impromptu-speak-controls')) {
       impromptuWS = WebSpeechModule.create('impromptu', () => {
         if (impromptuIsVocabMode) return document.getElementById('impromptu-vocab-prompt')?.textContent || '';
