@@ -63,10 +63,12 @@ class DeepgramSTT {
         model: 'nova-2',
         language: 'en-US',
         smart_format: 'true',
-        filler_words: 'true',       // detects um, uh, etc.
+        filler_words: 'true',
         punctuate: 'true',
         interim_results: this.interimResults ? 'true' : 'false',
-        endpointing: '300'          // ms of silence before finalising
+        endpointing: '300',
+        encoding: 'linear16',
+        sample_rate: '16000'
       });
 
       const wsUrl = `wss://api.deepgram.com/v1/listen?${params}`;
@@ -119,24 +121,43 @@ class DeepgramSTT {
   _startStreaming() {
     if (!this._mediaStream || !this._ws) return;
 
-    // Use AudioContext + ScriptProcessor to send raw PCM to Deepgram as linear16
-    this._audioContext = new (window.AudioContext || window.webkitAudioContext)({ sampleRate: 16000 });
+    // Use the browser's native sample rate — tell Deepgram via URL params
+    this._audioContext = new (window.AudioContext || window.webkitAudioContext)();
+    const nativeSampleRate = this._audioContext.sampleRate;
+    console.log('[DeepgramSTT] native sample rate:', nativeSampleRate);
+
+    // Update the sample_rate param to match actual rate
+    // (We already sent the URL — Deepgram will use what we told it.
+    //  So we downsample to 16000 before sending.)
     const source = this._audioContext.createMediaStreamSource(this._mediaStream);
 
-    // bufferSize 4096 gives ~256ms chunks at 16kHz
+    // bufferSize 4096, 1 input channel, 1 output channel
     this._processor = this._audioContext.createScriptProcessor(4096, 1, 1);
     this._processor.onaudioprocess = (e) => {
       if (!this._ws || this._ws.readyState !== WebSocket.OPEN) return;
       const float32 = e.inputBuffer.getChannelData(0);
-      const int16 = this._float32ToInt16(float32);
+      // Downsample from native rate to 16000 if needed
+      const downsampled = this._downsample(float32, nativeSampleRate, 16000);
+      const int16 = this._float32ToInt16(downsampled);
       this._ws.send(int16.buffer);
     };
 
     source.connect(this._processor);
     this._processor.connect(this._audioContext.destination);
+
+    // Send a keepalive every 8s so Deepgram doesn't close the connection during silence
+    this._keepaliveInterval = setInterval(() => {
+      if (this._ws && this._ws.readyState === WebSocket.OPEN) {
+        this._ws.send(JSON.stringify({ type: 'KeepAlive' }));
+      }
+    }, 8000);
   }
 
   _stopStreaming() {
+    if (this._keepaliveInterval) {
+      clearInterval(this._keepaliveInterval);
+      this._keepaliveInterval = null;
+    }
     if (this._processor) {
       try { this._processor.disconnect(); } catch(e) {}
       this._processor = null;
@@ -191,6 +212,17 @@ class DeepgramSTT {
 
     const event = { resultIndex: 0, results };
     if (this.onresult) this.onresult(event);
+  }
+
+  _downsample(buffer, fromRate, toRate) {
+    if (fromRate === toRate) return buffer;
+    const ratio = fromRate / toRate;
+    const newLength = Math.round(buffer.length / ratio);
+    const result = new Float32Array(newLength);
+    for (let i = 0; i < newLength; i++) {
+      result[i] = buffer[Math.round(i * ratio)];
+    }
+    return result;
   }
 
   _float32ToInt16(float32) {
