@@ -472,7 +472,8 @@
           try {
             var data = (typeof StorageManager !== 'undefined') ? StorageManager.load() : null;
             if (data) {
-              var words = (data.vocabulary && data.vocabulary.learned) ? data.vocabulary.learned.length : 0;
+              var customLearned = (data.customWords || []).filter(function(w) { return w.status === 'learned'; }).length;
+              var words = ((data.vocabulary && data.vocabulary.learned) ? data.vocabulary.learned.length : 0) + customLearned;
               var streak = (data.stats && data.stats.practiceStreak) || (data.dailyWord && data.dailyWord.currentStreak) || 0;
               document.getElementById('footer-words-learned').textContent = words;
               document.getElementById('footer-streak').textContent = streak;
@@ -482,6 +483,9 @@
         // Run on load and whenever views change (reuses existing router event)
         updateFooterStats();
         window.addEventListener('hashchange', updateFooterStats);
+        window.addEventListener('storage', updateFooterStats);
+        document.addEventListener('appDataSaved', updateFooterStats);
+        document.addEventListener('visibilitychange', function() { if (!document.hidden) updateFooterStats(); });
 
         // Modal content
         var modals = {

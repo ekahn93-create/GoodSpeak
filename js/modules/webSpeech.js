@@ -487,15 +487,14 @@ const WebSpeechModule = (function() {
       if (initialized) return;
       initialized = true;
 
-      const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-      if (!SpeechRecognition) {
+      if (!DeepgramSTT.isSupported()) {
         const msg = el('unsupported-msg');
         const startBtn = el('start-btn');
         if (msg) msg.style.display = 'block';
         if (startBtn) startBtn.disabled = true;
         // still allow type mode
       } else {
-        recognition = new SpeechRecognition();
+        recognition = new DeepgramSTT();
         recognition.continuous = true;
         recognition.interimResults = true;
         recognition.lang = 'en-US';
@@ -975,8 +974,7 @@ const WebSpeechModule = (function() {
     if (wsInitialized) return;
     wsInitialized = true;
 
-    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-    if (!SpeechRecognition) {
+    if (!DeepgramSTT.isSupported()) {
       const msg      = document.getElementById('ws-unsupported-msg');
       const startBtn = document.getElementById('ws-impromptu-start-btn');
       if (msg)      msg.style.display = 'block';
@@ -984,7 +982,7 @@ const WebSpeechModule = (function() {
       return;
     }
 
-    wsRecognition = new SpeechRecognition();
+    wsRecognition = new DeepgramSTT();
     wsRecognition.continuous = true;
     wsRecognition.interimResults = true;
     wsRecognition.lang = 'en-US';

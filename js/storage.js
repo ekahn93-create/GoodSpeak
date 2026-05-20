@@ -50,6 +50,7 @@ const StorageManager = (function() {
 
       customWords: [],         // Array of custom words added by the user
       savedForLater: [],       // Array of {word, savedAt} captured via quick-add
+      spokenWords: {},         // Map of word (string) → spoken count (int)
 
       stats: {
         totalSessionTime: 0,   // in seconds
@@ -88,6 +89,7 @@ const StorageManager = (function() {
       // Convert to JSON and save
       const jsonData = JSON.stringify(data);
       localStorage.setItem(STORAGE_KEY, jsonData);
+      document.dispatchEvent(new CustomEvent('appDataSaved'));
 
       return true;
     } catch (error) {
@@ -180,6 +182,7 @@ const StorageManager = (function() {
     merged.dailyWord = { ...defaults.dailyWord, ...existing.dailyWord };
     merged.customWords = existing.customWords || defaults.customWords;
     merged.savedForLater = existing.savedForLater || defaults.savedForLater;
+    merged.spokenWords = existing.spokenWords || defaults.spokenWords;
     merged.stats = { ...defaults.stats, ...existing.stats };
 
     // Preserve original firstVisit
@@ -367,6 +370,40 @@ const StorageManager = (function() {
     }
   }
 
+  /**
+   * Increment the spoken count for a word.
+   * @param {string} word - The word that was spoken
+   * @returns {number} New spoken count for this word
+   */
+  function markWordSpoken(word) {
+    try {
+      const data = load();
+      if (!data) return 0;
+      if (!data.spokenWords) data.spokenWords = {};
+      data.spokenWords[word] = (data.spokenWords[word] || 0) + 1;
+      save(data);
+      return data.spokenWords[word];
+    } catch (e) {
+      console.error('Error in markWordSpoken:', e);
+      return 0;
+    }
+  }
+
+  /**
+   * Get spoken count for a word.
+   * @param {string} word
+   * @returns {number}
+   */
+  function getWordSpokenCount(word) {
+    try {
+      const data = load();
+      if (!data || !data.spokenWords) return 0;
+      return data.spokenWords[word] || 0;
+    } catch (e) {
+      return 0;
+    }
+  }
+
   function getWordsLearnedToday() {
     try {
       const data = load();
@@ -416,6 +453,8 @@ const StorageManager = (function() {
     markActiveToday: markActiveToday,
     incrementWordsLearnedToday: incrementWordsLearnedToday,
     getWordsLearnedToday: getWordsLearnedToday,
+    markWordSpoken: markWordSpoken,
+    getWordSpokenCount: getWordSpokenCount,
     getDefaultProgress: getDefaultProgress
   };
 })();
@@ -425,66 +464,66 @@ console.log('StorageManager module loaded successfully');
 
 // ============================================
 // TTS HELPER
-// Picks the best available voice for natural-sounding speech
+// Uses Deepgram Aura (neural TTS) via Netlify proxy.
+// Falls back to Web Speech API if proxy is unavailable.
+// API signature is unchanged: TTSHelper.speak(text, rate, pitch, onend)
+// Note: rate and pitch params are accepted for API compatibility
+// but are not forwarded to Deepgram (Deepgram uses its own prosody).
 // ============================================
 const TTSHelper = (function() {
-  // Preferred voice names in priority order (neural/premium voices first)
-  const PREFERRED_VOICES = [
-    'Samantha',           // macOS/iOS neural — best quality
-    'Google US English',  // Chrome neural
-    'Microsoft Aria Online (Natural) - English (United States)',
-    'Microsoft Jenny Online (Natural) - English (United States)',
-    'Microsoft Guy Online (Natural) - English (United States)',
-    'Karen',              // macOS Australian — also neural quality
-    'Moira',              // macOS Irish
-    'Rishi',              // macOS Indian English
-  ];
+  let _currentAudio = null;
 
-  let _cachedVoice = null;
-  let _voicesLoaded = false;
-
-  function getBestVoice() {
-    if (_cachedVoice) return _cachedVoice;
-    const voices = window.speechSynthesis.getVoices();
-    if (!voices.length) return null;
-
-    for (const name of PREFERRED_VOICES) {
-      const match = voices.find(v => v.name === name);
-      if (match) { _cachedVoice = match; return match; }
+  async function speak(text, _rate, _pitch, onend) {
+    // Stop any currently playing audio
+    if (_currentAudio) {
+      _currentAudio.pause();
+      _currentAudio = null;
     }
-    // Fallback: first en-US voice, then first en voice
-    const enUS = voices.find(v => v.lang === 'en-US');
-    if (enUS) { _cachedVoice = enUS; return enUS; }
-    const en = voices.find(v => v.lang.startsWith('en'));
-    if (en) { _cachedVoice = en; return en; }
-    return null;
+
+    try {
+      const response = await fetch('/.netlify/functions/deepgram-tts', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ text })
+      });
+
+      if (!response.ok) throw new Error(`TTS proxy returned ${response.status}`);
+
+      const { audio } = await response.json();
+
+      // Decode base64 to a Blob and play it
+      const binary = atob(audio);
+      const bytes = new Uint8Array(binary.length);
+      for (let i = 0; i < binary.length; i++) bytes[i] = binary.charCodeAt(i);
+      const blob = new Blob([bytes], { type: 'audio/mpeg' });
+      const url = URL.createObjectURL(blob);
+
+      const audioEl = new Audio(url);
+      _currentAudio = audioEl;
+      audioEl.onended = () => {
+        URL.revokeObjectURL(url);
+        _currentAudio = null;
+        if (onend) onend();
+      };
+      audioEl.onerror = () => {
+        URL.revokeObjectURL(url);
+        _currentAudio = null;
+      };
+      audioEl.play();
+    } catch (err) {
+      console.warn('Deepgram TTS failed, falling back to Web Speech API:', err);
+      _webSpeechFallback(text, onend);
+    }
   }
 
-  function speak(text, rate, pitch, onend) {
+  function _webSpeechFallback(text, onend) {
     if (!window.speechSynthesis) return;
     window.speechSynthesis.cancel();
-
-    function _doSpeak() {
-      const u = new SpeechSynthesisUtterance(text);
-      const voice = getBestVoice();
-      if (voice) u.voice = voice;
-      u.rate  = rate  !== undefined ? rate  : 0.9;
-      u.pitch = pitch !== undefined ? pitch : 1.1;
-      if (onend) u.onend = onend;
-      window.speechSynthesis.speak(u);
-    }
-
-    // Voices may not be populated yet on first call — wait for them
-    if (_voicesLoaded || window.speechSynthesis.getVoices().length > 0) {
-      _voicesLoaded = true;
-      _doSpeak();
-    } else {
-      window.speechSynthesis.onvoiceschanged = function() {
-        _voicesLoaded = true;
-        window.speechSynthesis.onvoiceschanged = null;
-        _doSpeak();
-      };
-    }
+    const u = new SpeechSynthesisUtterance(text);
+    u.rate = 0.9;
+    u.pitch = 1.1;
+    if (onend) u.onend = onend;
+    window.speechSynthesis.speak(u);
   }
 
   return { speak };

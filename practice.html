@@ -143,10 +143,10 @@
 
             <!-- Category Navigation -->
             <div class="storytelling-categories">
-                <button class="storytelling-category-tab active" data-story-category="storytelling">Story-Telling</button>
+                <button class="storytelling-category-tab active" data-story-category="storytelling">Storytelling</button>
                 <button class="storytelling-category-tab" data-story-category="practical">Practical Skills</button>
                 <button class="storytelling-category-tab" data-story-category="challenges">Interactive Challenges</button>
-                <button class="storytelling-category-tab" data-story-category="listening">Listening & Comprehension</button>
+                <button class="storytelling-category-tab" data-story-category="listening">Reading & Comprehension</button>
 <button class="storytelling-category-tab" data-story-category="recordings">My Recordings</button>
             </div>
 
@@ -293,10 +293,15 @@
                     </div>
                 </div>
                 <div class="fluency-card-content">
-                    <div style="margin-bottom: var(--spacing-lg);">
-                        <div class="btn-group">
-                            <button class="btn btn-secondary active" id="impromptu-mode-speak">Speak</button>
-                            <button class="btn btn-secondary" id="impromptu-mode-type">Type</button>
+                    <!-- Primary mode: Free vs Vocab -->
+                    <div style="margin-bottom: var(--spacing-md); display: flex; gap: var(--spacing-sm);">
+                        <div style="flex: 1; display: flex; flex-direction: column; align-items: center; gap: var(--spacing-xs);">
+                            <button class="btn btn-secondary active" id="impromptu-input-free" style="width: 100%;">Free</button>
+                            <p style="font-size: var(--font-size-sm); color: var(--text-secondary); margin: 0; text-align: center;">Any topic, random prompt</p>
+                        </div>
+                        <div style="flex: 1; display: flex; flex-direction: column; align-items: center; gap: var(--spacing-xs);">
+                            <button class="btn btn-secondary" id="impromptu-input-vocab" style="width: 100%;">Vocab</button>
+                            <p style="font-size: var(--font-size-sm); color: var(--text-secondary); margin: 0; text-align: center;">Use a word from your Word Bank</p>
                         </div>
                     </div>
 
@@ -306,8 +311,36 @@
                         <button class="ws-inst-time-btn" data-time="120">2 Minutes</button>
                     </div>
 
+                    <!-- Free mode display -->
                     <div id="impromptu-display" class="exercise-display">
                         <p class="exercise-text" id="impromptu-prompt">Click "New Topic" to start</p>
+                    </div>
+
+                    <!-- Vocab mode display -->
+                    <div id="impromptu-vocab-display" class="exercise-display" style="display: none;">
+                        <div id="impromptu-vocab-empty" style="color: var(--text-secondary); font-style: italic;">
+                            Add words to your Word Bank in Learn to use Vocab Mode.
+                        </div>
+                        <div id="impromptu-vocab-content" style="display: none;">
+                            <div style="margin-bottom: var(--spacing-md);">
+                                <span style="font-size: var(--font-size-sm); color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.05em;">Your word</span>
+                                <div style="display: flex; align-items: center; gap: var(--spacing-sm); margin-top: var(--spacing-xs);">
+                                    <span id="impromptu-vocab-word" style="font-size: 1.5rem; font-weight: 700; color: var(--primary-color);"></span>
+                                    <span id="impromptu-vocab-pos" style="font-size: var(--font-size-sm); color: var(--text-secondary); font-style: italic;"></span>
+                                </div>
+                                <div id="impromptu-vocab-def-row" style="margin-top: var(--spacing-xs);">
+                                    <span id="impromptu-vocab-def" style="font-size: var(--font-size-base); color: var(--text-primary);"></span>
+                                </div>
+                            </div>
+                            <div style="margin-bottom: var(--spacing-md);">
+                                <span style="font-size: var(--font-size-sm); color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.05em;">Prompt</span>
+                                <p id="impromptu-vocab-prompt" style="margin-top: var(--spacing-xs); font-size: var(--font-size-base); color: var(--text-primary);"></p>
+                            </div>
+                            <div id="impromptu-vocab-related-row" style="display: none;">
+                                <span style="font-size: var(--font-size-sm); color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.05em;">Related words</span>
+                                <div id="impromptu-vocab-related" style="display: flex; gap: var(--spacing-xs); flex-wrap: wrap; margin-top: var(--spacing-xs);"></div>
+                            </div>
+                        </div>
                     </div>
 
                     <div id="impromptu-speak-controls">
@@ -336,29 +369,42 @@
                         </div>
                     </div>
 
-                    <div id="impromptu-type-controls" style="display: none;">
-                        <div class="exercise-controls">
-                            <button class="btn btn-primary" id="impromptu-type-start-btn">Start Timer</button>
-                            <button class="btn btn-secondary" id="impromptu-type-stop-btn" style="display: none;">Stop</button>
-                            <button class="btn btn-secondary" id="impromptu-type-reset-btn" style="display: none;">Reset</button>
-                            <button class="btn btn-secondary" id="new-impromptu-type-btn">New Topic</button>
-                        </div>
-                        <div class="timer-display">
-                            <div class="timer-number" id="impromptu-type-timer-seconds">0:30</div>
-                            <div class="timer-label">remaining</div>
-                        </div>
-                        <div style="margin-top: var(--spacing-lg);">
-                            <textarea id="impromptu-type-textarea" rows="8" placeholder="Type your response here..." style="width: 100%; padding: var(--spacing-md); font-size: var(--font-size-base); border: 1px solid var(--border-color); border-radius: var(--border-radius-sm); resize: vertical; font-family: inherit; line-height: 1.6;"></textarea>
-                        </div>
-                        <div class="exercise-controls" style="margin-top: var(--spacing-sm);">
-                            <button class="btn btn-primary" id="impromptu-type-submit-btn">Get Feedback</button>
-                            <button class="btn btn-secondary" id="impromptu-type-clear-btn">Clear</button>
-                        </div>
-                    </div>
-
-                    <div id="impromptu-feedback-section" style="display: none; margin-top: var(--spacing-xl);">
+<div id="impromptu-feedback-section" style="display: none; margin-top: var(--spacing-xl);">
                         <h4 style="margin-bottom: var(--spacing-md); font-size: var(--font-size-lg);">Feedback</h4>
                         <div id="impromptu-feedback-grid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: var(--spacing-md);"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Conversation Starters -->
+            <div class="fluency-card">
+                <div class="fluency-card-header">
+                    <div class="fluency-card-icon"><i data-lucide="message-circle" style="width:28px;height:28px;stroke:currentColor;"></i></div>
+                    <div>
+                        <h3>Conversation Starters</h3>
+                        <p class="fluency-card-description">Practice opening lines and small talk</p>
+                    </div>
+                </div>
+                <div class="fluency-card-content">
+                    <p style="font-size: var(--font-size-base); color: var(--text-primary); margin-bottom: var(--spacing-md);">Pick a situation or type your own, then hit <strong>Generate</strong> to get 4 AI-crafted opening lines to practice out loud.</p>
+                    <div class="situation-selector">
+                        <button class="situation-btn" data-situation="networking event">Networking</button>
+                        <button class="situation-btn" data-situation="casual small talk">Casual</button>
+                        <button class="situation-btn" data-situation="professional work meeting">Professional</button>
+                        <button class="situation-btn" data-situation="first date">First Date</button>
+                        <button class="situation-btn" data-situation="job interview">Job Interview</button>
+                        <button class="situation-btn" data-situation="meeting your partner's family">Partner's Family</button>
+                        <button class="situation-btn" data-situation="reconnecting with an old friend">Old Friend</button>
+                    </div>
+                    <div style="display: flex; gap: var(--spacing-sm); margin-top: var(--spacing-md);">
+                        <input type="text" id="conversation-custom-input" placeholder="Or type your own situation…" style="flex: 1; padding: var(--spacing-sm) var(--spacing-md); font-size: var(--font-size-sm); border: 1px solid var(--border-color); border-radius: var(--border-radius-sm); font-family: inherit; background: var(--bg-card); color: var(--text-primary);">
+                        <button class="btn btn-primary" id="new-conversation-starters-btn">Generate</button>
+                    </div>
+                    <div id="conversation-display" class="exercise-display" style="display: none;">
+                        <div id="conversation-starters-list"></div>
+                        <div style="margin-top: var(--spacing-md); text-align: center;">
+                            <button class="btn btn-secondary" id="conversation-regenerate-btn" style="font-size: var(--font-size-sm);">Regenerate</button>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -396,39 +442,6 @@
                     </div>
                     <div class="exercise-controls">
                         <button class="btn btn-secondary" id="new-topic-builder-btn">New Topic</button>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Conversation Starters -->
-            <div class="fluency-card">
-                <div class="fluency-card-header">
-                    <div class="fluency-card-icon"><i data-lucide="message-circle" style="width:28px;height:28px;stroke:currentColor;"></i></div>
-                    <div>
-                        <h3>Conversation Starters</h3>
-                        <p class="fluency-card-description">Practice opening lines and small talk</p>
-                    </div>
-                </div>
-                <div class="fluency-card-content">
-                    <p style="font-size: var(--font-size-base); color: var(--text-primary); margin-bottom: var(--spacing-md);">Pick a situation or type your own, then hit <strong>Generate</strong> to get 4 AI-crafted opening lines to practice out loud.</p>
-                    <div class="situation-selector">
-                        <button class="situation-btn" data-situation="networking event">Networking</button>
-                        <button class="situation-btn" data-situation="casual small talk">Casual</button>
-                        <button class="situation-btn" data-situation="professional work meeting">Professional</button>
-                        <button class="situation-btn" data-situation="first date">First Date</button>
-                        <button class="situation-btn" data-situation="job interview">Job Interview</button>
-                        <button class="situation-btn" data-situation="meeting your partner's family">Partner's Family</button>
-                        <button class="situation-btn" data-situation="reconnecting with an old friend">Old Friend</button>
-                    </div>
-                    <div style="display: flex; gap: var(--spacing-sm); margin-top: var(--spacing-md);">
-                        <input type="text" id="conversation-custom-input" placeholder="Or type your own situation…" style="flex: 1; padding: var(--spacing-sm) var(--spacing-md); font-size: var(--font-size-sm); border: 1px solid var(--border-color); border-radius: var(--border-radius-sm); font-family: inherit; background: var(--bg-card); color: var(--text-primary);">
-                        <button class="btn btn-primary" id="new-conversation-starters-btn">Generate</button>
-                    </div>
-                    <div id="conversation-display" class="exercise-display" style="display: none;">
-                        <div id="conversation-starters-list"></div>
-                        <div style="margin-top: var(--spacing-md); text-align: center;">
-                            <button class="btn btn-secondary" id="conversation-regenerate-btn" style="font-size: var(--font-size-sm);">Regenerate</button>
-                        </div>
                     </div>
                 </div>
             </div>
@@ -533,40 +546,6 @@
 
         <!-- ========== INTERACTIVE CHALLENGES CATEGORY ========== -->
         <div id="challenges-category" class="storytelling-category">
-
-            <div class="exercise-group">
-                <div class="exercise-group-label">Daily</div>
-                <p class="exercise-group-subtitle">A fresh prompt every day to keep your speaking sharp</p>
-
-            <!-- Daily Speaking Prompt -->
-            <div class="fluency-card">
-                <div class="fluency-card-header">
-                    <div class="fluency-card-icon"><i data-lucide="calendar" style="width:28px;height:28px;stroke:currentColor;"></i></div>
-                    <div>
-                        <h3>Daily Speaking Prompt</h3>
-                        <p class="fluency-card-description">New topic each day with suggested vocabulary</p>
-                    </div>
-                </div>
-                <div class="fluency-card-content">
-                    <div id="daily-prompt-display" class="exercise-display">
-                        <h4 id="daily-prompt-topic" style="color: var(--primary-color); margin-bottom: var(--spacing-md);"></h4>
-                        <p id="daily-prompt-description" style="margin-bottom: var(--spacing-lg);"></p>
-                        <div id="daily-prompt-vocab">
-                            <strong>Suggested vocabulary:</strong>
-                            <div id="vocab-tags" style="display: flex; gap: var(--spacing-sm); flex-wrap: wrap; margin-top: var(--spacing-sm);">
-                                <!-- Vocabulary tags will be displayed here -->
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            </div><!-- /exercise-group: Daily -->
-
-            <button class="section-next-btn" onclick="document.getElementById('challenges-timed-group').scrollIntoView({behavior:'smooth', block:'start'})" aria-label="Next section">
-                <span class="section-next-label">Push your limits with timed speaking challenges</span>
-                <i data-lucide="chevron-down" style="width:22px;height:22px;stroke:currentColor;"></i>
-            </button>
 
             <div class="exercise-group" id="challenges-timed-group">
                 <div class="exercise-group-label">Timed Challenges</div>
@@ -764,8 +743,8 @@
             </div>
             </div><!-- /exercise-group: Timed Challenges -->
 
-            <button class="page-next-btn" onclick="StorytellingModule.switchStoryCategory('listening')" aria-label="Go to Listening">
-                <span class="page-next-label">Next: Listening &amp; Comprehension — summarize and paraphrase what you hear</span>
+            <button class="page-next-btn" onclick="StorytellingModule.switchStoryCategory('listening')" aria-label="Go to Reading & Comprehension">
+                <span class="page-next-label">Next: Reading &amp; Comprehension — summarize and paraphrase what you read</span>
                 <i data-lucide="chevron-down" style="width:22px;height:22px;stroke:currentColor;"></i>
             </button>
         </div>
@@ -1018,6 +997,7 @@
     <script src="js/router.js"></script>
     <script src="js/data/vocabularyData.js"></script>
     <script src="js/data/storyPrompts.js"></script>
+    <script src="js/data/speakingPrompts.js"></script>
     <script src="js/components/modal.js"></script>
     <script src="js/components/progressBar.js"></script>
     <script src="js/modules/nudge.js"></script>
@@ -1026,6 +1006,7 @@
     <script src="js/modules/storytelling.js"></script>
     <script src="js/modules/wordBank.js"></script>
     <script src="js/modules/grammar.js"></script>
+    <script src="js/modules/deepgramSTT.js"></script>
     <script src="js/modules/fluency.js"></script>
     <script src="js/modules/webSpeech.js"></script>
     <script src="js/modules/onboarding.js"></script>
@@ -1099,7 +1080,8 @@
           try {
             var data = (typeof StorageManager !== 'undefined') ? StorageManager.load() : null;
             if (data) {
-              var words = (data.vocabulary && data.vocabulary.learned) ? data.vocabulary.learned.length : 0;
+              var customLearned = (data.customWords || []).filter(function(w) { return w.status === 'learned'; }).length;
+              var words = ((data.vocabulary && data.vocabulary.learned) ? data.vocabulary.learned.length : 0) + customLearned;
               var streak = (data.stats && data.stats.practiceStreak) || (data.dailyWord && data.dailyWord.currentStreak) || 0;
               document.getElementById('footer-words-learned').textContent = words;
               document.getElementById('footer-streak').textContent = streak;
@@ -1109,6 +1091,9 @@
         // Run on load and whenever views change (reuses existing router event)
         updateFooterStats();
         window.addEventListener('hashchange', updateFooterStats);
+        window.addEventListener('storage', updateFooterStats);
+        document.addEventListener('appDataSaved', updateFooterStats);
+        document.addEventListener('visibilitychange', function() { if (!document.hidden) updateFooterStats(); });
 
         // Modal content
         var modals = {

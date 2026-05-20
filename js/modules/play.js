@@ -86,7 +86,7 @@ const PlayModule = (function () {
     missedSection     = document.getElementById('play-missed-section');
     missedList        = document.getElementById('play-missed-list');
 
-    tabBtns   = document.querySelectorAll('.play-tab');
+    tabBtns   = document.querySelectorAll('.vocab-category-tab');
     tabPanels = document.querySelectorAll('.play-tab-panel');
 
     leaderboardBody = document.getElementById('play-leaderboard-body');

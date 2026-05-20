@@ -29,7 +29,7 @@ const ReadAloudModule = (function() {
 
     if (!startBtn) return;
 
-    if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) {
+    if (!DeepgramSTT.isSupported()) {
       document.getElementById('readaloud-unsupported-msg').style.display = 'block';
       startBtn.disabled = true;
     }
@@ -100,10 +100,9 @@ const ReadAloudModule = (function() {
   }
 
   function setupRecognition() {
-    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-    if (!SpeechRecognition) return;
+    if (!DeepgramSTT.isSupported()) return;
 
-    recognition = new SpeechRecognition();
+    recognition = new DeepgramSTT();
     recognition.continuous = true;
     recognition.interimResults = true;
     recognition.lang = 'en-US';
@@ -132,7 +131,7 @@ const ReadAloudModule = (function() {
     };
 
     recognition.onend = function() {
-      if (isRecording) recognition.start(); // keep going
+      if (isRecording) recognition.start();
     };
 
     isRecording = true;

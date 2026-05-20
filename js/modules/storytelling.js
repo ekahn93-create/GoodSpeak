@@ -15,6 +15,7 @@ const StorytellingModule = (function() {
   let userData = null;
   let storyWebSpeechInstance = null;
   let practicalListenersInitialized = false;
+  let currentVocabWord = null;
 
   // DOM elements - Category tabs
   let storyCategoryTabs = null;
@@ -150,8 +151,6 @@ case 'recordings':
    * Initialize interactive challenges
    */
   function initializeChallenges() {
-    // Initialize daily prompt
-    loadDailySpeakingPrompt();
     // Add event listeners for challenges
     setupChallengesListeners();
   }
@@ -609,15 +608,34 @@ case 'recordings':
     if (practicalListenersInitialized) return;
     practicalListenersInitialized = true;
 
-    // Impromptu Speaking - New Topic buttons
-    const newImpromptuBtn = document.getElementById('new-impromptu-btn');
-    const newImpromptuTypeBtnEl = document.getElementById('new-impromptu-type-btn');
+    // Impromptu Speaking — Free / Vocab mode toggle
+    let impromptuIsVocabMode = false;
 
-    if (newImpromptuBtn) {
-      newImpromptuBtn.addEventListener('click', loadImpromptuTopic);
+    const freeModeBtn = document.getElementById('impromptu-input-free');
+    const vocabModeBtn = document.getElementById('impromptu-input-vocab');
+    const freeDisplay = document.getElementById('impromptu-display');
+    const vocabDisplay = document.getElementById('impromptu-vocab-display');
+    const newImpromptuBtn = document.getElementById('new-impromptu-btn');
+
+    function switchImpromptuInputMode(mode) {
+      impromptuIsVocabMode = (mode === 'vocab');
+      freeModeBtn.classList.toggle('active', !impromptuIsVocabMode);
+      vocabModeBtn.classList.toggle('active', impromptuIsVocabMode);
+      freeDisplay.style.display = impromptuIsVocabMode ? 'none' : '';
+      vocabDisplay.style.display = impromptuIsVocabMode ? '' : 'none';
+      if (newImpromptuBtn) newImpromptuBtn.textContent = impromptuIsVocabMode ? 'New Word' : 'New Topic';
+      if (impromptuIsVocabMode) loadVocabWord();
     }
-    if (newImpromptuTypeBtnEl) {
-      newImpromptuTypeBtnEl.addEventListener('click', loadImpromptuTopic);
+
+    if (freeModeBtn) freeModeBtn.addEventListener('click', () => switchImpromptuInputMode('free'));
+    if (vocabModeBtn) vocabModeBtn.addEventListener('click', () => switchImpromptuInputMode('vocab'));
+
+    // Impromptu Speaking - New Topic / New Word button
+    if (newImpromptuBtn) {
+      newImpromptuBtn.addEventListener('click', () => {
+        if (impromptuIsVocabMode) loadVocabWord();
+        else loadImpromptuTopic();
+      });
     }
 
     // Topic Builder
@@ -690,7 +708,21 @@ case 'recordings':
 
     // Impromptu Speaking voice feedback panel
     if (document.getElementById('impromptu-speak-controls')) {
-      WebSpeechModule.create('impromptu', () => document.getElementById('impromptu-prompt')?.textContent || '').init();
+      const impromptuWS = WebSpeechModule.create('impromptu', () => {
+        if (impromptuIsVocabMode) return document.getElementById('impromptu-vocab-prompt')?.textContent || '';
+        return document.getElementById('impromptu-prompt')?.textContent || '';
+      });
+      impromptuWS.init();
+
+      // Hook stop button to mark word spoken in Vocab mode
+      const stopBtn = document.getElementById('impromptu-stop-btn');
+      if (stopBtn) {
+        stopBtn.addEventListener('click', () => {
+          if (impromptuIsVocabMode && currentVocabWord) {
+            StorageManager.markWordSpoken(currentVocabWord);
+          }
+        }, true); // capture phase so it fires before WebSpeech's own handler
+      }
     }
 
     // Elevator Pitch voice feedback panel
@@ -794,34 +826,6 @@ case 'recordings':
     // Load initial content
     loadDescriptionChallenge();
     loadEnduranceTopic();
-  }
-
-  /**
-   * Load daily speaking prompt
-   */
-  function loadDailySpeakingPrompt() {
-    const dailyPrompts = [
-      { topic: "Personal Growth", description: "Describe a recent challenge you overcame and what you learned from it.", vocab: ["resilience", "perspective", "achievement", "obstacle", "determination"] },
-      { topic: "Technology Impact", description: "How has technology changed the way we communicate?", vocab: ["digital", "connectivity", "evolution", "innovation", "transformation"] },
-      { topic: "Work-Life Balance", description: "What strategies help maintain a healthy balance between work and personal life?", vocab: ["boundaries", "prioritize", "wellness", "productivity", "fulfillment"] },
-      { topic: "Environmental Awareness", description: "What small actions can individuals take to help the environment?", vocab: ["sustainable", "conservation", "impact", "responsibility", "initiative"] },
-      { topic: "Learning & Education", description: "What's the most valuable skill you've learned, and how do you continue learning?", vocab: ["curiosity", "mastery", "development", "knowledge", "growth"] }
-    ];
-
-    const dayOfYear = Math.floor((Date.now() - new Date(new Date().getFullYear(), 0, 0)) / 1000 / 60 / 60 / 24);
-    const todaysPrompt = dailyPrompts[dayOfYear % dailyPrompts.length];
-
-    const topicElement = document.getElementById('daily-prompt-topic');
-    const descElement = document.getElementById('daily-prompt-description');
-    const vocabTags = document.getElementById('vocab-tags');
-
-    if (topicElement) topicElement.textContent = todaysPrompt.topic;
-    if (descElement) descElement.textContent = todaysPrompt.description;
-    if (vocabTags) {
-      vocabTags.innerHTML = todaysPrompt.vocab.map(word =>
-        `<span class="filler-tag">${word}</span>`
-      ).join('');
-    }
   }
 
   /**
@@ -939,6 +943,105 @@ case 'recordings':
     }
   }
 
+
+  /**
+   * Load a random Word Bank word and a matching prompt for Vocab mode.
+   * Writes to currentVocabWord (closure var in setupPracticalListeners).
+   * Falls back gracefully if Word Bank is empty or speakingPrompts not loaded.
+   */
+  function loadVocabWord() {
+    const emptyEl = document.getElementById('impromptu-vocab-empty');
+    const contentEl = document.getElementById('impromptu-vocab-content');
+    const wordEl = document.getElementById('impromptu-vocab-word');
+    const posEl = document.getElementById('impromptu-vocab-pos');
+    const defEl = document.getElementById('impromptu-vocab-def');
+    const promptEl = document.getElementById('impromptu-vocab-prompt');
+    const relatedRow = document.getElementById('impromptu-vocab-related-row');
+    const relatedEl = document.getElementById('impromptu-vocab-related');
+
+    // Get words from Word Bank
+    const words = (typeof WordBankModule !== 'undefined' && WordBankModule.getAllWordBankWords)
+      ? WordBankModule.getAllWordBankWords()
+      : [];
+
+    if (!words.length) {
+      if (emptyEl) emptyEl.style.display = '';
+      if (contentEl) contentEl.style.display = 'none';
+      return;
+    }
+
+    if (emptyEl) emptyEl.style.display = 'none';
+    if (contentEl) contentEl.style.display = '';
+
+    // Pick a random word
+    const word = words[Math.floor(Math.random() * words.length)];
+    currentVocabWord = word.word;
+
+    // Display word + definition
+    if (wordEl) wordEl.textContent = word.word;
+    if (posEl) posEl.textContent = word.partOfSpeech || '';
+    if (defEl) defEl.textContent = word.definition || '';
+
+    // Find a matching prompt by theme
+    let prompt = null;
+    if (typeof speakingPrompts !== 'undefined' && speakingPrompts.length) {
+      // Build a keyword list from the word itself + related fields
+      const wordLower = word.word.toLowerCase();
+      const keywords = [wordLower];
+      if (word.category) keywords.push(word.category.toLowerCase());
+
+      // Try to find a prompt whose themes overlap with keywords
+      const matches = speakingPrompts.filter(p =>
+        p.themes.some(t => keywords.some(k => t.includes(k) || k.includes(t)))
+      );
+      const pool = matches.length ? matches : speakingPrompts;
+      prompt = pool[Math.floor(Math.random() * pool.length)];
+    }
+
+    if (promptEl) {
+      promptEl.textContent = prompt
+        ? prompt.text
+        : `Use the word "${word.word}" naturally in a short talk on any topic you choose.`;
+    }
+
+    // Show related words from the prompt themes as vocab scaffolding
+    if (prompt && relatedEl && relatedRow) {
+      const related = prompt.themes.filter(t => t !== word.word.toLowerCase()).slice(0, 5);
+      relatedEl.innerHTML = related.map(t =>
+        `<span class="filler-tag" style="cursor:pointer;" onclick="StorytellingModule.showRelatedDef(this, '${t}')">${t}</span>`
+      ).join('');
+      relatedRow.style.display = related.length ? '' : 'none';
+    }
+  }
+
+  /**
+   * Show inline definition for a related vocab tag.
+   * Fetches from Free Dictionary API via APIService.
+   */
+  function showRelatedDef(el, word) {
+    // Toggle off if already showing
+    const existing = el.nextElementSibling;
+    if (existing && existing.classList.contains('vocab-inline-def')) {
+      existing.remove();
+      return;
+    }
+
+    const defSpan = document.createElement('span');
+    defSpan.className = 'vocab-inline-def';
+    defSpan.style.cssText = 'display:inline-block; font-size:var(--font-size-sm); color:var(--text-secondary); background:var(--bg-card); border:1px solid var(--border-color); border-radius:4px; padding:2px 8px; margin-left:4px;';
+    defSpan.textContent = 'Loading…';
+    el.insertAdjacentElement('afterend', defSpan);
+
+    if (typeof APIService !== 'undefined') {
+      APIService.getWordDefinition(word).then(data => {
+        defSpan.textContent = data && data.definition ? data.definition : 'No definition found.';
+      }).catch(() => {
+        defSpan.textContent = 'Could not load definition.';
+      });
+    } else {
+      defSpan.textContent = 'Dictionary unavailable.';
+    }
+  }
 
   /**
    * Load topic framework
@@ -1135,9 +1238,8 @@ case 'recordings':
       if (el) el.textContent = formatDescriptionTime(descriptionSecondsElapsed);
     }, 1000);
 
-    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-    if (SpeechRecognition) {
-      descriptionRecognition = new SpeechRecognition();
+    if (DeepgramSTT.isSupported()) {
+      descriptionRecognition = new DeepgramSTT();
       descriptionRecognition.continuous = true;
       descriptionRecognition.interimResults = true;
       descriptionRecognition.lang = 'en-US';
@@ -1537,7 +1639,8 @@ case 'recordings':
     startPractice: startPractice,
     refresh: refresh,
     getProgress: getProgress,
-    switchStoryCategory: switchStoryCategory
+    switchStoryCategory: switchStoryCategory,
+    showRelatedDef: showRelatedDef
   };
 })();
 

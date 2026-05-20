@@ -518,19 +518,23 @@ const WordBankModule = (function() {
     }
 
     // Display as detailed cards
-    const html = combined.map(word => `
+    const spokenWords = (userData && userData.spokenWords) ? userData.spokenWords : {};
+    const html = combined.map(word => {
+      const spokenCount = spokenWords[word.word] || 0;
+      return `
       <div class="word-bank-card word-bank-card--learned" onclick="WordBankModule.showWordDetail(${word.id}, ${word.isCustom ? 'true' : 'false'})">
         <div class="word-bank-card-header">
           <div class="word-bank-word">${word.word}</div>
-          <div>
+          <div style="display:flex;gap:4px;align-items:center;flex-wrap:wrap;">
             ${word.partOfSpeech ? `<span class="badge badge-primary">${word.partOfSpeech}</span>` : ''}
             ${word.isCustom ? '<span class="badge badge-custom">Custom</span>' : ''}
+            ${spokenCount > 0 ? `<span class="badge" style="background:var(--secondary-color);color:#fff;" title="Spoken in practice">Spoken ${spokenCount}x</span>` : ''}
           </div>
         </div>
         ${word.pronunciation ? `<div class="word-bank-pronunciation">${word.pronunciation}</div>` : ''}
         <div class="word-bank-definition">${truncateText(word.definition, 80)}</div>
-      </div>
-    `).join('');
+      </div>`;
+    }).join('');
 
     appLearnedWordsContainer.innerHTML = html;
   }
@@ -578,19 +582,23 @@ const WordBankModule = (function() {
     }
 
     // Display as detailed cards
-    const html = combined.map(word => `
+    const spokenWords = (userData && userData.spokenWords) ? userData.spokenWords : {};
+    const html = combined.map(word => {
+      const spokenCount = spokenWords[word.word] || 0;
+      return `
       <div class="word-bank-card word-bank-card--still-learning" onclick="${word.isCustom ? `WordBankModule.showCustomWordDetail(${word.id})` : `WordBankModule.showStillLearningWordDetail(${word.id})`}">
         <div class="word-bank-card-header">
           <div class="word-bank-word">${word.word}</div>
-          <div>
+          <div style="display:flex;gap:4px;align-items:center;flex-wrap:wrap;">
             ${word.partOfSpeech ? `<span class="badge badge-primary">${word.partOfSpeech}</span>` : ''}
             ${word.isCustom ? '<span class="badge badge-custom">Custom</span>' : ''}
+            ${spokenCount > 0 ? `<span class="badge" style="background:var(--secondary-color);color:#fff;" title="Spoken in practice">Spoken ${spokenCount}x</span>` : ''}
           </div>
         </div>
         ${word.pronunciation ? `<div class="word-bank-pronunciation">${word.pronunciation}</div>` : ''}
         ${word.definition ? `<div class="word-bank-definition">${truncateText(word.definition, 80)}</div>` : ''}
-      </div>
-    `).join('');
+      </div>`;
+    }).join('');
 
     stillLearningWordsContainer.innerHTML = html;
   }
@@ -993,6 +1001,36 @@ const WordBankModule = (function() {
       const stillLearningCount = (userData.vocabulary.stillLearning || []).length;
       stillLearningCountElement.textContent = stillLearningCount + customStillLearningCount;
     }
+
+    // Update spoken practice badges
+    const spokenWords = (userData && userData.spokenWords) ? userData.spokenWords : {};
+    const allWordBankWords = getAllWordBankWords();
+
+    const learnedSpoken = allWordBankWords.filter(w =>
+      (userData.vocabulary.learned || []).includes(w.id) ||
+      (userData.vocabulary.learned || []).includes(w.word) ||
+      ((userData.customWords || []).find(c => c.word === w.word && c.status === 'learned'))
+    ).filter(w => (spokenWords[w.word] || 0) > 0).length;
+
+    const stillSpoken = allWordBankWords.filter(w =>
+      (userData.vocabulary.stillLearning || []).includes(w.id) ||
+      (userData.vocabulary.stillLearning || []).includes(w.word) ||
+      ((userData.customWords || []).find(c => c.word === w.word && c.status === 'stillLearning'))
+    ).filter(w => (spokenWords[w.word] || 0) > 0).length;
+
+    const learnedBadge = document.getElementById('learned-spoken-badge');
+    const learnedSpokenCount = document.getElementById('learned-spoken-count');
+    if (learnedBadge && learnedSpokenCount) {
+      learnedSpokenCount.textContent = learnedSpoken;
+      learnedBadge.style.display = learnedSpoken > 0 ? '' : 'none';
+    }
+
+    const stillBadge = document.getElementById('still-learning-spoken-badge');
+    const stillSpokenCount = document.getElementById('still-learning-spoken-count');
+    if (stillBadge && stillSpokenCount) {
+      stillSpokenCount.textContent = stillSpoken;
+      stillBadge.style.display = stillSpoken > 0 ? '' : 'none';
+    }
   }
 
   /**
@@ -1028,6 +1066,40 @@ const WordBankModule = (function() {
         toast.remove();
       }, 300);
     }, 3000);
+  }
+
+  /**
+   * Get all Word Bank words (learned + stillLearning + custom) for external use.
+   * Returns lightweight objects: { word, definition, partOfSpeech, themes }
+   * @returns {Array}
+   */
+  function getAllWordBankWords() {
+    if (!userData) return [];
+    const words = [];
+
+    if (typeof vocabularyDatabase !== 'undefined' && vocabularyDatabase.beginner) {
+      const dbWords = [
+        ...vocabularyDatabase.beginner,
+        ...vocabularyDatabase.intermediate,
+        ...vocabularyDatabase.advanced
+      ];
+      const allIds = [
+        ...(userData.vocabulary.learned || []),
+        ...(userData.vocabulary.stillLearning || [])
+      ];
+      allIds.forEach(id => {
+        const w = dbWords.find(w => w.id === id || w.word === id);
+        if (w && !words.find(x => x.word === w.word)) words.push(w);
+      });
+    }
+
+    (userData.customWords || []).forEach(w => {
+      if ((w.status === 'learned' || w.status === 'stillLearning') && !words.find(x => x.word === w.word)) {
+        words.push(w);
+      }
+    });
+
+    return words;
   }
 
   /**
@@ -1819,7 +1891,8 @@ const WordBankModule = (function() {
     renderSavedForLater: renderSavedForLater,
     promoteToWordBank: promoteToWordBank,
     dismissSavedWord: dismissSavedWord,
-    toggleSflAccordion: toggleSflAccordion
+    toggleSflAccordion: toggleSflAccordion,
+    getAllWordBankWords: getAllWordBankWords
   };
 })();
 

@@ -197,8 +197,10 @@
                     <i data-lucide="chevron-down" style="width:22px;height:22px;stroke:currentColor;"></i>
                 </button>
 
-                <!-- Difficulty Selector -->
+                <!-- Vocabulary Cards -->
                 <div id="vocab-builder-section" class="difficulty-selector">
+                    <h2 style="margin-bottom: var(--spacing-sm);">Vocabulary Cards</h2>
+                    <p class="subtitle" style="margin-bottom: var(--spacing-md);">Explore curated words at your level and mark them as learned</p>
                     <label>Select Difficulty:</label>
                     <div class="btn-group">
                         <button class="btn btn-secondary active" data-difficulty="beginner">Beginner</button>
@@ -321,6 +323,7 @@
                             <h2>Still Learning (<span id="still-learning-words-count">0</span>)</h2>
                             <button class="word-bank-toggle-btn" id="still-learning-toggle" onclick="WordBankModule.toggleSection('still-learning-words', 'still-learning-toggle')" aria-label="Collapse Still Learning">&#8963;</button>
                         </div>
+                        <div id="still-learning-spoken-badge" style="display:none; font-size:var(--font-size-sm); color:var(--text-secondary); margin-top:var(--spacing-xs);"><span id="still-learning-spoken-count">0</span> word(s) practiced speaking</div>
                         <div class="word-bank-sort">
                             <label for="still-learning-sort">Sort by:</label>
                             <select id="still-learning-sort" class="sort-dropdown" onchange="WordBankModule.sortSection('stillLearning', this.value)">
@@ -341,6 +344,7 @@
                             <h2>Words Learned (<span id="app-words-count">0</span>)</h2>
                             <button class="word-bank-toggle-btn" id="app-learned-toggle" onclick="WordBankModule.toggleSection('app-learned-words', 'app-learned-toggle')" aria-label="Collapse Words Learned">&#8963;</button>
                         </div>
+                        <div id="learned-spoken-badge" style="display:none; font-size:var(--font-size-sm); color:var(--text-secondary); margin-top:var(--spacing-xs);"><span id="learned-spoken-count">0</span> word(s) practiced speaking</div>
                         <div class="word-bank-sort">
                             <label for="app-learned-sort">Sort by:</label>
                             <select id="app-learned-sort" class="sort-dropdown" onchange="WordBankModule.sortSection('appLearned', this.value)">
@@ -360,13 +364,125 @@
                 </button>
             </div>
 
+            <!-- ========== GRAMMAR & STRUCTURE CATEGORY ========== -->
+            <div id="grammar-category" class="vocab-category">
+                <!-- Sentence Structure -->
+                <div class="exercise-group">
+                    <div class="exercise-group-label">Sentence Structure</div>
+                    <p class="exercise-group-subtitle">Master different sentence types and improve clarity</p>
+
+                    <div class="grammar-exercise-card">
+                        <h3>Simple to Complex</h3>
+                        <p class="instruction">Transform simple sentences into more sophisticated structures</p>
+                        <div id="sentence-transform-display" class="exercise-display">
+                            <p id="simple-sentence" class="exercise-text"></p>
+                        </div>
+                        <div class="exercise-controls">
+                            <button class="btn btn-primary" id="new-sentence-transform-btn">New Exercise</button>
+                            <button class="btn btn-secondary" id="show-sentence-hint-btn">Show Hint</button>
+                        </div>
+                        <div id="sentence-hint" class="hint-text hidden"></div>
+                    </div>
+
+                    <div class="grammar-exercise-card">
+                        <h3>Sentence Construction</h3>
+                        <p class="instruction">Combine short sentences using conjunctions and transitions</p>
+                        <div id="combining-display" class="exercise-display">
+                            <div id="sentences-to-combine"></div>
+                        </div>
+                        <div class="exercise-controls">
+                            <button class="btn btn-primary" id="new-combining-btn">New Exercise</button>
+                            <button class="btn btn-secondary" id="show-combining-hint-btn">Show Hint</button>
+                        </div>
+                        <div id="combining-hint" class="hint-text hidden"></div>
+                    </div>
+                </div><!-- /exercise-group: Sentence Structure -->
+
+                <button class="section-next-btn" onclick="document.getElementById('grammar-mistakes-group').scrollIntoView({behavior:'smooth', block:'start'})" aria-label="Next section">
+                    <span class="section-next-label">Practice spotting common grammar mistakes</span>
+                    <i data-lucide="chevron-down" style="width:22px;height:22px;stroke:currentColor;"></i>
+                </button>
+
+                <!-- Common Grammar Mistakes -->
+                <div class="exercise-group" id="grammar-mistakes-group">
+                    <div class="exercise-group-label">Common Grammar Mistakes</div>
+                    <p class="exercise-group-subtitle">Identify and correct frequent errors</p>
+
+                    <div class="grammar-exercise-card">
+                        <h3>Error Correction</h3>
+                        <p class="instruction">Spot the grammatical error and think about the correction</p>
+                        <div id="error-sentence-display" class="exercise-display">
+                            <p id="error-sentence" class="exercise-text"></p>
+                        </div>
+                        <div class="exercise-controls">
+                            <button class="btn btn-primary" id="show-correction-btn">Show Correction</button>
+                            <button class="btn btn-secondary" id="new-error-btn">New Exercise</button>
+                        </div>
+                        <div id="correction-display" class="correction-display" style="display: none;"></div>
+                    </div>
+                </div><!-- /exercise-group: Common Grammar Mistakes -->
+
+                <button class="section-next-btn" onclick="document.getElementById('grammar-agreement-group').scrollIntoView({behavior:'smooth', block:'start'})" aria-label="Next section">
+                    <span class="section-next-label">Work on subject-verb agreement</span>
+                    <i data-lucide="chevron-down" style="width:22px;height:22px;stroke:currentColor;"></i>
+                </button>
+
+                <!-- Subject-Verb Agreement -->
+                <div class="exercise-group" id="grammar-agreement-group">
+                    <div class="exercise-group-label">Subject-Verb Agreement</div>
+                    <p class="exercise-group-subtitle">Practice proper agreement in various contexts</p>
+
+                    <div class="grammar-exercise-card">
+                        <h3>Agreement Practice</h3>
+                        <p class="instruction">Choose the correct verb form</p>
+                        <div id="agreement-display" class="exercise-display">
+                            <p id="agreement-sentence" class="exercise-text"></p>
+                            <div id="agreement-options" class="agreement-options"></div>
+                        </div>
+                        <div class="exercise-controls">
+                            <button class="btn btn-primary" id="new-agreement-btn">New Exercise</button>
+                        </div>
+                    </div>
+                </div><!-- /exercise-group: Subject-Verb Agreement -->
+
+                <button class="section-next-btn" onclick="document.getElementById('grammar-voice-group').scrollIntoView({behavior:'smooth', block:'start'})" aria-label="Next section">
+                    <span class="section-next-label">Practice active vs. passive voice</span>
+                    <i data-lucide="chevron-down" style="width:22px;height:22px;stroke:currentColor;"></i>
+                </button>
+
+                <!-- Active vs Passive Voice -->
+                <div class="exercise-group" id="grammar-voice-group">
+                    <div class="exercise-group-label">Active vs. Passive Voice</div>
+                    <p class="exercise-group-subtitle">Transform between voice types for better communication</p>
+
+                    <div class="grammar-exercise-card">
+                        <h3>Voice Transformation</h3>
+                        <p class="instruction">Convert between active and passive voice</p>
+                        <div id="voice-display" class="exercise-display">
+                            <p id="voice-sentence" class="exercise-text"></p>
+                            <p id="voice-type" class="voice-type-label"></p>
+                        </div>
+                        <div class="exercise-controls">
+                            <button class="btn btn-primary" id="new-voice-btn">New Exercise</button>
+                            <button class="btn btn-secondary" id="show-voice-hint-btn">Show Hint</button>
+                        </div>
+                        <div id="voice-hint" class="hint-text hidden"></div>
+                    </div>
+                </div><!-- /exercise-group: Active vs. Passive Voice -->
+
+                <button class="page-next-btn" onclick="VocabularyModule.switchVocabCategory('knowledge-check')" aria-label="Go to Knowledge Check">
+                    <span class="page-next-label">Next: Knowledge Check — test what you've learned</span>
+                    <i data-lucide="chevron-down" style="width:22px;height:22px;stroke:currentColor;"></i>
+                </button>
+            </div>
+
             <!-- ========== KNOWLEDGE CHECK CATEGORY ========== -->
             <div id="knowledge-check-category" class="vocab-category">
 
                 <!-- Knowledge Check Sub-Tabs -->
                 <div class="kc-subtabs">
                     <button class="kc-subtab active" data-kc-tab="vocab">Quiz</button>
-                    <button class="kc-subtab" data-kc-tab="grammar">Play</button>
+                    <button class="kc-subtab" data-kc-tab="grammar">Choose</button>
                 </div>
 
                 <!-- ---- VOCAB SUB-PANEL ---- -->
@@ -673,162 +789,6 @@
 
             </div><!-- end #knowledge-check-category -->
 
-            <!-- ========== GRAMMAR & STRUCTURE CATEGORY ========== -->
-            <div id="grammar-category" class="vocab-category">
-                <!-- Sentence Structure -->
-                <div class="exercise-group">
-                    <div class="exercise-group-label">Sentence Structure</div>
-                    <p class="exercise-group-subtitle">Master different sentence types and improve clarity</p>
-
-                    <div class="grammar-exercise-card">
-                        <h3>Simple to Complex</h3>
-                        <p class="instruction">Transform simple sentences into more sophisticated structures</p>
-                        <div id="sentence-transform-display" class="exercise-display">
-                            <p id="simple-sentence" class="exercise-text"></p>
-                        </div>
-                        <div class="exercise-controls">
-                            <button class="btn btn-primary" id="new-sentence-transform-btn">New Exercise</button>
-                            <button class="btn btn-secondary" id="show-sentence-hint-btn">Show Hint</button>
-                        </div>
-                        <div id="sentence-hint" class="hint-text hidden"></div>
-                    </div>
-
-                    <div class="grammar-exercise-card">
-                        <h3>Sentence Combining</h3>
-                        <p class="instruction">Combine short sentences using conjunctions and transitions</p>
-                        <div id="combining-display" class="exercise-display">
-                            <div id="sentences-to-combine"></div>
-                        </div>
-                        <div class="exercise-controls">
-                            <button class="btn btn-primary" id="new-combining-btn">New Exercise</button>
-                            <button class="btn btn-secondary" id="show-combining-hint-btn">Show Hint</button>
-                        </div>
-                        <div id="combining-hint" class="hint-text hidden"></div>
-                    </div>
-                </div><!-- /exercise-group: Sentence Structure -->
-
-                <button class="section-next-btn" onclick="document.getElementById('grammar-mistakes-group').scrollIntoView({behavior:'smooth', block:'start'})" aria-label="Next section">
-                    <span class="section-next-label">Practice spotting common grammar mistakes</span>
-                    <i data-lucide="chevron-down" style="width:22px;height:22px;stroke:currentColor;"></i>
-                </button>
-
-                <!-- Common Grammar Mistakes -->
-                <div class="exercise-group" id="grammar-mistakes-group">
-                    <div class="exercise-group-label">Common Grammar Mistakes</div>
-                    <p class="exercise-group-subtitle">Identify and correct frequent errors</p>
-
-                    <div class="grammar-exercise-card">
-                        <h3>Error Correction</h3>
-                        <p class="instruction">Spot the grammatical error and think about the correction</p>
-                        <div id="error-sentence-display" class="exercise-display">
-                            <p id="error-sentence" class="exercise-text"></p>
-                        </div>
-                        <div class="exercise-controls">
-                            <button class="btn btn-primary" id="show-correction-btn">Show Correction</button>
-                            <button class="btn btn-secondary" id="new-error-btn">New Exercise</button>
-                        </div>
-                        <div id="correction-display" class="correction-display" style="display: none;"></div>
-                    </div>
-                </div><!-- /exercise-group: Common Grammar Mistakes -->
-
-                <button class="section-next-btn" onclick="document.getElementById('grammar-agreement-group').scrollIntoView({behavior:'smooth', block:'start'})" aria-label="Next section">
-                    <span class="section-next-label">Work on subject-verb agreement</span>
-                    <i data-lucide="chevron-down" style="width:22px;height:22px;stroke:currentColor;"></i>
-                </button>
-
-                <!-- Subject-Verb Agreement -->
-                <div class="exercise-group" id="grammar-agreement-group">
-                    <div class="exercise-group-label">Subject-Verb Agreement</div>
-                    <p class="exercise-group-subtitle">Practice proper agreement in various contexts</p>
-
-                    <div class="grammar-exercise-card">
-                        <h3>Agreement Practice</h3>
-                        <p class="instruction">Choose the correct verb form</p>
-                        <div id="agreement-display" class="exercise-display">
-                            <p id="agreement-sentence" class="exercise-text"></p>
-                            <div id="agreement-options" class="agreement-options"></div>
-                        </div>
-                        <div class="exercise-controls">
-                            <button class="btn btn-primary" id="new-agreement-btn">New Exercise</button>
-                        </div>
-                    </div>
-                </div><!-- /exercise-group: Subject-Verb Agreement -->
-
-                <button class="section-next-btn" onclick="document.getElementById('grammar-punctuation-group').scrollIntoView({behavior:'smooth', block:'start'})" aria-label="Next section">
-                    <span class="section-next-label">Review punctuation rules</span>
-                    <i data-lucide="chevron-down" style="width:22px;height:22px;stroke:currentColor;"></i>
-                </button>
-
-                <!-- Punctuation Practice -->
-                <div class="exercise-group" id="grammar-punctuation-group">
-                    <div class="exercise-group-label">Punctuation Mastery</div>
-                    <p class="exercise-group-subtitle">Learn proper punctuation usage</p>
-
-                    <div class="grammar-exercise-card">
-                        <h3>Punctuation Rules</h3>
-                        <p class="instruction">Review and practice punctuation marks</p>
-                        <div class="punctuation-rules">
-                            <div class="punctuation-card">
-                                <div class="punctuation-mark">;</div>
-                                <div class="punctuation-name">Semicolon</div>
-                                <div class="punctuation-use">Links two independent clauses that are closely related</div>
-                                <div class="punctuation-example">"I love reading; it expands my mind."</div>
-                            </div>
-                            <div class="punctuation-card">
-                                <div class="punctuation-mark">:</div>
-                                <div class="punctuation-name">Colon</div>
-                                <div class="punctuation-use">Introduces a list, explanation, or quotation</div>
-                                <div class="punctuation-example">"She has three hobbies: reading, writing, and painting."</div>
-                            </div>
-                            <div class="punctuation-card">
-                                <div class="punctuation-mark">—</div>
-                                <div class="punctuation-name">Em Dash</div>
-                                <div class="punctuation-use">Emphasizes or sets apart information</div>
-                                <div class="punctuation-example">"The solution—simple yet elegant—solved the problem."</div>
-                            </div>
-                            <div class="punctuation-card">
-                                <div class="punctuation-mark">,</div>
-                                <div class="punctuation-name">Oxford Comma</div>
-                                <div class="punctuation-use">Final comma in a list before "and" or "or"</div>
-                                <div class="punctuation-example">"I bought apples, oranges, and bananas."</div>
-                            </div>
-                        </div>
-                    </div>
-                </div><!-- /exercise-group: Punctuation Mastery -->
-
-                <button class="section-next-btn" onclick="document.getElementById('grammar-voice-group').scrollIntoView({behavior:'smooth', block:'start'})" aria-label="Next section">
-                    <span class="section-next-label">Practice active vs. passive voice</span>
-                    <i data-lucide="chevron-down" style="width:22px;height:22px;stroke:currentColor;"></i>
-                </button>
-
-                <!-- Active vs Passive Voice -->
-                <div class="exercise-group" id="grammar-voice-group">
-                    <div class="exercise-group-label">Active vs. Passive Voice</div>
-                    <p class="exercise-group-subtitle">Transform between voice types for better communication</p>
-
-                    <div class="grammar-exercise-card">
-                        <h3>Voice Transformation</h3>
-                        <p class="instruction">Convert between active and passive voice</p>
-                        <div id="voice-display" class="exercise-display">
-                            <p id="voice-sentence" class="exercise-text"></p>
-                            <p id="voice-type" class="voice-type-label"></p>
-                        </div>
-                        <div class="exercise-controls">
-                            <button class="btn btn-primary" id="new-voice-btn">New Exercise</button>
-                            <button class="btn btn-secondary" id="show-voice-hint-btn">Show Hint</button>
-                        </div>
-                        <div id="voice-hint" class="hint-text hidden"></div>
-                    </div>
-                </div><!-- /exercise-group: Active vs. Passive Voice -->
-
-                <button class="page-next-btn" onclick="VocabularyModule.switchVocabCategory('knowledge-check')" aria-label="Go to Knowledge Check">
-                    <span class="page-next-label">Next: Knowledge Check — test what you've learned</span>
-                    <i data-lucide="chevron-down" style="width:22px;height:22px;stroke:currentColor;"></i>
-                </button>
-            </div>
-
-        </section>
-
         </section>
 
     </main>
@@ -864,6 +824,7 @@
     <script src="js/modules/mwWordOfDay.js"></script>
     <script src="js/modules/wordBank.js"></script>
     <script src="js/modules/grammar.js"></script>
+    <script src="js/modules/deepgramSTT.js"></script>
     <script src="js/modules/fluency.js"></script>
     <script src="js/modules/webSpeech.js"></script>
     <script src="js/modules/onboarding.js"></script>
@@ -979,16 +940,20 @@
           try {
             var data = (typeof StorageManager !== 'undefined') ? StorageManager.load() : null;
             if (data) {
-              var words = (data.vocabulary && data.vocabulary.learned) ? data.vocabulary.learned.length : 0;
+              var customLearned = (data.customWords || []).filter(function(w) { return w.status === 'learned'; }).length;
+              var words = ((data.vocabulary && data.vocabulary.learned) ? data.vocabulary.learned.length : 0) + customLearned;
               var streak = (data.stats && data.stats.practiceStreak) || (data.dailyWord && data.dailyWord.currentStreak) || 0;
               document.getElementById('footer-words-learned').textContent = words;
               document.getElementById('footer-streak').textContent = streak;
             }
           } catch(e) {}
         }
-        // Run on load and whenever views change (reuses existing router event)
+        // Run on load, view changes, and whenever localStorage is written
         updateFooterStats();
         window.addEventListener('hashchange', updateFooterStats);
+        window.addEventListener('storage', updateFooterStats);
+        document.addEventListener('appDataSaved', updateFooterStats);
+        document.addEventListener('visibilitychange', function() { if (!document.hidden) updateFooterStats(); });
 
         // Modal content
         var modals = {

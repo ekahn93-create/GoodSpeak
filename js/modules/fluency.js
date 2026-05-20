@@ -939,9 +939,8 @@ const FluencyModule = (function() {
     }, 1000);
 
     // Speech recognition
-    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-    if (SpeechRecognition) {
-      fillerRecognition = new SpeechRecognition();
+    if (DeepgramSTT.isSupported()) {
+      fillerRecognition = new DeepgramSTT();
       fillerRecognition.continuous = true;
       fillerRecognition.interimResults = true;
       fillerRecognition.lang = 'en-US';
@@ -1035,9 +1034,8 @@ const FluencyModule = (function() {
     }, 100);
 
     // Speech recognition to count spoken words
-    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-    if (SpeechRecognition) {
-      pacingRecognition = new SpeechRecognition();
+    if (DeepgramSTT.isSupported()) {
+      pacingRecognition = new DeepgramSTT();
       pacingRecognition.continuous = true;
       pacingRecognition.interimResults = true;
       pacingRecognition.lang = 'en-US';
