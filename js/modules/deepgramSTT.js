@@ -49,9 +49,11 @@ class DeepgramSTT {
 
     try {
       // 1. Get a short-lived Deepgram key from our proxy
+      console.log('[DeepgramSTT] fetching token...');
       const tokenRes = await fetch('/.netlify/functions/deepgram-token', { method: 'POST' });
       if (!tokenRes.ok) throw new Error('Failed to get Deepgram token');
       const { key } = await tokenRes.json();
+      console.log('[DeepgramSTT] token received, opening WebSocket...');
 
       // 2. Get microphone access
       this._mediaStream = await navigator.mediaDevices.getUserMedia({ audio: true, video: false });
@@ -72,19 +74,22 @@ class DeepgramSTT {
       this._ws.binaryType = 'arraybuffer';
 
       this._ws.onopen = () => {
+        console.log('[DeepgramSTT] WebSocket open, starting stream');
         this._startStreaming();
       };
 
       this._ws.onmessage = (msg) => {
+        console.log('[DeepgramSTT] message:', msg.data);
         this._handleMessage(msg);
       };
 
       this._ws.onerror = (err) => {
-        console.error('Deepgram WebSocket error:', err);
+        console.error('[DeepgramSTT] WebSocket error:', err);
         if (this.onerror) this.onerror({ error: 'network' });
       };
 
-      this._ws.onclose = () => {
+      this._ws.onclose = (evt) => {
+        console.log('[DeepgramSTT] WebSocket closed:', evt.code, evt.reason);
         this._stopStreaming();
         if (this._running && this.onend) this.onend();
       };
