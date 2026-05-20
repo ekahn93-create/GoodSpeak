@@ -737,9 +737,7 @@ case 'recordings':
           const detected   = impromptuWS.wasVocabWordDetected();
 
           if (!transcript || !detected) {
-            _showVocabResult(currentVocabWord, false, null,
-              detected ? null : `"${currentVocabWord}" wasn't detected in your speech — try again!`
-            );
+            _showVocabResult(currentVocabWord, false, `"${currentVocabWord}" wasn't detected — try using it in a sentence.`, null);
             return;
           }
 
@@ -1001,40 +999,46 @@ case 'recordings':
 
 
   /**
-   * Show the vocab usage result banner below the impromptu vocab display.
+   * Show the vocab usage result banner above the impromptu vocab content.
    * correct: true = saved, false = not saved, null = pending
    */
   function _showVocabResult(word, correct, feedback, overrideMsg) {
-    const contentEl = document.getElementById('impromptu-vocab-content');
-    if (!contentEl) return;
+    const vocabDisplay = document.getElementById('impromptu-vocab-display');
+    if (!vocabDisplay) return;
 
     let el = document.getElementById('impromptu-vocab-result');
     if (!el) {
       el = document.createElement('div');
       el.id = 'impromptu-vocab-result';
-      el.style.cssText = 'margin-top: var(--spacing-sm); padding: 8px 12px; border-radius: var(--border-radius-sm); font-size: var(--font-size-sm); font-weight: 500;';
-      contentEl.appendChild(el);
+      el.style.cssText = 'margin-bottom: var(--spacing-sm); padding: 10px 14px; border-radius: var(--border-radius-sm); border-left: 3px solid;';
+      vocabDisplay.insertBefore(el, vocabDisplay.firstChild);
     }
 
     if (overrideMsg) {
       el.style.background = 'var(--bg-secondary)';
-      el.style.color = 'var(--text-secondary)';
-      el.textContent = overrideMsg;
+      el.style.borderColor = 'var(--text-secondary)';
+      el.innerHTML = `<span style="font-size:var(--font-size-sm);color:var(--text-secondary);">${overrideMsg}</span>`;
       return;
     }
 
     if (correct === true) {
-      el.style.background = '#d4edda';
-      el.style.color = '#155724';
-      el.textContent = feedback
-        ? `Saved to Word Bank! ${feedback}`
-        : `"${word}" used correctly — saved to Word Bank!`;
-    } else {
-      el.style.background = '#fff3cd';
-      el.style.color = '#856404';
-      el.textContent = feedback
-        ? feedback
-        : `"${word}" wasn't used correctly — keep practicing!`;
+      el.style.background = '#f0faf4';
+      el.style.borderColor = '#2d9e5f';
+      el.innerHTML = `
+        <div style="display:flex;align-items:center;gap:6px;margin-bottom:3px;">
+          <span style="font-size:1rem;">✓</span>
+          <span style="font-size:var(--font-size-sm);font-weight:700;color:#1a7a45;">Saved to Word Bank</span>
+        </div>
+        ${feedback ? `<div style="font-size:var(--font-size-sm);color:#2d7a50;line-height:1.4;">${feedback}</div>` : ''}`;
+    } else if (correct === false) {
+      el.style.background = '#fff8ec';
+      el.style.borderColor = '#e0a020';
+      el.innerHTML = `
+        <div style="display:flex;align-items:center;gap:6px;margin-bottom:3px;">
+          <span style="font-size:1rem;">✗</span>
+          <span style="font-size:var(--font-size-sm);font-weight:700;color:#a06000;">Not saved</span>
+        </div>
+        ${feedback ? `<div style="font-size:var(--font-size-sm);color:#8a5500;line-height:1.4;">${feedback}</div>` : `<div style="font-size:var(--font-size-sm);color:#8a5500;">"${word}" wasn't detected — try using it in a sentence.</div>`}`;
     }
   }
 
