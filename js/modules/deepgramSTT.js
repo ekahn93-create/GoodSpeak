@@ -169,13 +169,6 @@ class DeepgramSTT {
 
     if (!transcript) return;
 
-    // Build a SpeechRecognitionEvent-compatible object
-    const resultIndex = this._resultIndex;
-    const results = Object.assign([], {
-      [0]: Object.assign([{ transcript, confidence: alt.confidence || 1 }], { isFinal }),
-      length: 1
-    });
-
     if (isFinal) {
       this._resultIndex++;
       this._interimBuffer = '';
@@ -183,7 +176,15 @@ class DeepgramSTT {
       this._interimBuffer = transcript;
     }
 
-    const event = { resultIndex, results };
+    // Build a SpeechRecognitionEvent-compatible object.
+    // results[i] is an array-like with isFinal, and results[i][0].transcript
+    const resultItem = [{ transcript, confidence: alt.confidence || 1 }];
+    resultItem.isFinal = isFinal;
+
+    const results = [resultItem];
+    results.length = 1;
+
+    const event = { resultIndex: 0, results };
     if (this.onresult) this.onresult(event);
   }
 
@@ -204,7 +205,7 @@ DeepgramSTT.isSupported = function() {
     navigator.mediaDevices &&
     navigator.mediaDevices.getUserMedia &&
     window.WebSocket &&
-    window.AudioContext || window.webkitAudioContext
+    (window.AudioContext || window.webkitAudioContext)
   );
 };
 
