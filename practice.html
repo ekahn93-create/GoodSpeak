@@ -176,7 +176,7 @@
                 </div>
 
                 <!-- Input mode toggle -->
-                <div style="margin-bottom: var(--spacing-lg);">
+                <div style="margin-bottom: var(--spacing-md);">
                     <div class="btn-group">
                         <button class="btn btn-secondary active" id="story-mode-speak">Speak</button>
                         <button class="btn btn-secondary" id="story-mode-type">Type</button>
@@ -223,7 +223,7 @@
                         <div class="timer-number" id="story-timer-seconds">5:00</div>
                         <div class="timer-label">remaining</div>
                     </div>
-                    <div id="story-transcript-section" style="margin-top: var(--spacing-lg); display: none;">
+                    <div id="story-transcript-section" style="margin-top: var(--spacing-sm); display: none;">
                         <h4 style="margin-bottom: var(--spacing-sm);">Live Transcript</h4>
                         <div style="background: var(--bg-card); border: 1px solid var(--border-color); border-radius: var(--border-radius-sm); padding: var(--spacing-md); min-height: 80px; font-size: var(--font-size-base); line-height: 1.6;">
                             <span id="story-transcript-final"></span><span id="story-transcript-interim" style="color: var(--text-secondary); font-style: italic;"></span>
@@ -248,8 +248,8 @@
                         <div class="timer-number" id="story-type-timer-seconds">5:00</div>
                         <div class="timer-label">remaining</div>
                     </div>
-                    <div style="margin-top: var(--spacing-lg);">
-                        <textarea id="story-type-textarea" rows="8" placeholder="Type your story here..." style="width: 100%; padding: var(--spacing-md); font-size: var(--font-size-base); border: 1px solid var(--border-color); border-radius: var(--border-radius-sm); resize: vertical; font-family: inherit; line-height: 1.6;"></textarea>
+                    <div style="margin-top: var(--spacing-sm);">
+                        <textarea id="story-type-textarea" rows="5" placeholder="Type your story here..." style="width: 100%; padding: var(--spacing-md); font-size: var(--font-size-base); border: 1px solid var(--border-color); border-radius: var(--border-radius-sm); resize: vertical; font-family: inherit; line-height: 1.6;"></textarea>
                     </div>
                     <div class="exercise-controls" style="margin-top: var(--spacing-sm);">
                         <button class="btn btn-primary" id="story-type-submit-btn">Get Feedback</button>
@@ -258,13 +258,13 @@
                 </div>
 
                 <!-- Feedback panel -->
-                <div id="story-feedback-section" style="display: none; margin-top: var(--spacing-xl);">
-                    <h4 style="margin-bottom: var(--spacing-md); font-size: var(--font-size-lg);">Feedback</h4>
-                    <div id="story-feedback-grid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: var(--spacing-md);"></div>
+                <div id="story-feedback-section" style="display: none; margin-top: var(--spacing-md);">
+                    <h4 style="margin-bottom: var(--spacing-sm); font-size: var(--font-size-lg);">Speech Feedback</h4>
+                    <div id="story-feedback-grid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: var(--spacing-sm);"></div>
                 </div>
 
                 <!-- Mark as Complete -->
-                <div style="margin-top: var(--spacing-xl); padding-top: var(--spacing-lg); border-top: 1px solid var(--border-color); text-align: center;">
+                <div style="margin-top: var(--spacing-md); padding-top: var(--spacing-md); border-top: 1px solid var(--border-color); text-align: center;">
                     <button id="mark-story-complete-btn" class="btn btn-success">Mark as Complete</button>
                     <p style="margin-top: var(--spacing-sm); font-size: var(--font-size-sm); color: var(--text-secondary);">Done with this prompt? Mark it complete to track your progress.</p>
                 </div>
@@ -369,9 +369,9 @@
                         </div>
                     </div>
 
-<div id="impromptu-feedback-section" style="display: none; margin-top: var(--spacing-xl);">
-                        <h4 style="margin-bottom: var(--spacing-md); font-size: var(--font-size-lg);">Feedback</h4>
-                        <div id="impromptu-feedback-grid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: var(--spacing-md);"></div>
+<div id="impromptu-feedback-section" style="display: none; margin-top: var(--spacing-md);">
+                        <h4 style="margin-bottom: var(--spacing-sm); font-size: var(--font-size-lg);">Speech Feedback</h4>
+                        <div id="impromptu-feedback-grid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: var(--spacing-sm);"></div>
                     </div>
                 </div>
             </div>
@@ -497,7 +497,7 @@
                             <div class="timer-label">remaining</div>
                         </div>
                         <div id="pitch-status" style="margin-top: var(--spacing-md); font-size: var(--font-size-sm); color: var(--text-secondary); text-align: center;"></div>
-                        <div id="pitch-transcript-section" style="margin-top: var(--spacing-lg); display: none;">
+                        <div id="pitch-transcript-section" style="margin-top: var(--spacing-sm); display: none;">
                             <h4 style="margin-bottom: var(--spacing-sm);">Live Transcript</h4>
                             <div style="background: var(--bg-card); border: 1px solid var(--border-color); border-radius: var(--border-radius-sm); padding: var(--spacing-md); min-height: 80px; font-size: var(--font-size-base); line-height: 1.6;">
                                 <span id="pitch-transcript-final"></span><span id="pitch-transcript-interim" style="color: var(--text-secondary); font-style: italic;"></span>
@@ -521,8 +521,8 @@
                             <div class="timer-number" id="pitch-type-timer-seconds">0:30</div>
                             <div class="timer-label">remaining</div>
                         </div>
-                        <div style="margin-top: var(--spacing-lg);">
-                            <textarea id="pitch-type-textarea" rows="8" placeholder="Type your elevator pitch here..." style="width: 100%; padding: var(--spacing-md); font-size: var(--font-size-base); border: 1px solid var(--border-color); border-radius: var(--border-radius-sm); resize: vertical; font-family: inherit; line-height: 1.6;"></textarea>
+                        <div style="margin-top: var(--spacing-sm);">
+                            <textarea id="pitch-type-textarea" rows="5" placeholder="Type your elevator pitch here..." style="width: 100%; padding: var(--spacing-md); font-size: var(--font-size-base); border: 1px solid var(--border-color); border-radius: var(--border-radius-sm); resize: vertical; font-family: inherit; line-height: 1.6;"></textarea>
                         </div>
                         <div class="exercise-controls" style="margin-top: var(--spacing-sm);">
                             <button class="btn btn-primary" id="pitch-type-submit-btn">Get Feedback</button>
@@ -530,9 +530,9 @@
                         </div>
                     </div>
 
-                    <div id="pitch-feedback-section" style="display: none; margin-top: var(--spacing-xl);">
-                        <h4 style="margin-bottom: var(--spacing-md); font-size: var(--font-size-lg);">Feedback</h4>
-                        <div id="pitch-feedback-grid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: var(--spacing-md);"></div>
+                    <div id="pitch-feedback-section" style="display: none; margin-top: var(--spacing-md);">
+                        <h4 style="margin-bottom: var(--spacing-sm); font-size: var(--font-size-lg);">Speech Feedback</h4>
+                        <div id="pitch-feedback-grid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: var(--spacing-sm);"></div>
                     </div>
                 </div>
             </div>
@@ -620,20 +620,20 @@
 
                     <!-- Timer (always visible once challenge loaded) -->
                     <div id="description-timer-section" style="display:none;">
-                        <div class="timer-display" style="margin-bottom: var(--spacing-lg);">
+                        <div class="timer-display" style="margin-bottom: var(--spacing-md);">
                             <div class="timer-number" id="description-elapsed">0:00</div>
                             <div class="timer-label">elapsed</div>
                         </div>
 
                         <!-- Live stats (shown while running) -->
-                        <div id="description-active" style="display:none; margin-bottom: var(--spacing-lg);">
-                            <div style="display:flex; justify-content:center; gap: var(--spacing-xl); margin-bottom: var(--spacing-md);">
+                        <div id="description-active" style="display:none; margin-bottom: var(--spacing-md);">
+                            <div style="display:flex; justify-content:center; gap: var(--spacing-xl); margin-bottom: var(--spacing-sm);">
                                 <div style="text-align:center;">
-                                    <div id="description-live-count" style="font-size: 2.5rem; font-weight: 700; color: var(--accent-color);">0</div>
+                                    <div id="description-live-count" style="font-size: 2rem; font-weight: 700; color: var(--accent-color);">0</div>
                                     <div style="font-size: var(--font-size-sm); color: var(--text-secondary);">forbidden used</div>
                                 </div>
                                 <div style="text-align:center;">
-                                    <div id="description-last-detected" style="font-size: 2.5rem; font-weight: 700; color: var(--text-secondary);">—</div>
+                                    <div id="description-last-detected" style="font-size: 2rem; font-weight: 700; color: var(--text-secondary);">—</div>
                                     <div style="font-size: var(--font-size-sm); color: var(--text-secondary);">last caught</div>
                                 </div>
                             </div>
@@ -643,9 +643,9 @@
 
                     <!-- Results screen -->
                     <div id="description-results" style="display:none;">
-                        <div id="description-score-banner" style="text-align:center; padding: var(--spacing-xl); border-radius: var(--border-radius-sm); margin-bottom: var(--spacing-lg);"></div>
-                        <div id="description-breakdown" style="margin-bottom: var(--spacing-lg);"></div>
-                        <div id="description-tip-box" class="info-box" style="margin-bottom: var(--spacing-lg);"></div>
+                        <div id="description-score-banner" style="text-align:center; padding: var(--spacing-md); border-radius: var(--border-radius-sm); margin-bottom: var(--spacing-md);"></div>
+                        <div id="description-breakdown" style="margin-bottom: var(--spacing-md);"></div>
+                        <div id="description-tip-box" class="info-box" style="margin-bottom: var(--spacing-md);"></div>
                         <div class="exercise-controls">
                             <button class="btn btn-primary" id="description-try-again-btn">Try Again</button>
                             <button class="btn btn-secondary" id="new-description-btn">New Challenge</button>
@@ -671,7 +671,7 @@
                     </div>
                 </div>
                 <div class="fluency-card-content">
-                    <div style="margin-bottom: var(--spacing-lg);">
+                    <div style="margin-bottom: var(--spacing-md);">
                         <div class="btn-group">
                             <button class="btn btn-secondary active" id="endurance-mode-speak">Speak</button>
                             <button class="btn btn-secondary" id="endurance-mode-type">Type</button>
@@ -701,7 +701,7 @@
                             <div class="timer-label">remaining</div>
                         </div>
                         <div id="endurance-status" style="margin-top: var(--spacing-md); font-size: var(--font-size-sm); color: var(--text-secondary); text-align: center;"></div>
-                        <div id="endurance-transcript-section" style="margin-top: var(--spacing-lg); display: none;">
+                        <div id="endurance-transcript-section" style="margin-top: var(--spacing-sm); display: none;">
                             <h4 style="margin-bottom: var(--spacing-sm);">Live Transcript</h4>
                             <div style="background: var(--bg-card); border: 1px solid var(--border-color); border-radius: var(--border-radius-sm); padding: var(--spacing-md); min-height: 80px; font-size: var(--font-size-base); line-height: 1.6;">
                                 <span id="endurance-transcript-final"></span><span id="endurance-transcript-interim" style="color: var(--text-secondary); font-style: italic;"></span>
@@ -726,8 +726,8 @@
                             <div class="timer-number" id="endurance-type-timer-seconds">1:00</div>
                             <div class="timer-label">remaining</div>
                         </div>
-                        <div style="margin-top: var(--spacing-lg);">
-                            <textarea id="endurance-type-textarea" rows="8" placeholder="Type your response here..." style="width: 100%; padding: var(--spacing-md); font-size: var(--font-size-base); border: 1px solid var(--border-color); border-radius: var(--border-radius-sm); resize: vertical; font-family: inherit; line-height: 1.6;"></textarea>
+                        <div style="margin-top: var(--spacing-sm);">
+                            <textarea id="endurance-type-textarea" rows="5" placeholder="Type your response here..." style="width: 100%; padding: var(--spacing-md); font-size: var(--font-size-base); border: 1px solid var(--border-color); border-radius: var(--border-radius-sm); resize: vertical; font-family: inherit; line-height: 1.6;"></textarea>
                         </div>
                         <div class="exercise-controls" style="margin-top: var(--spacing-sm);">
                             <button class="btn btn-primary" id="endurance-type-submit-btn">Get Feedback</button>
@@ -735,9 +735,9 @@
                         </div>
                     </div>
 
-                    <div id="endurance-feedback-section" style="display: none; margin-top: var(--spacing-xl);">
-                        <h4 style="margin-bottom: var(--spacing-md); font-size: var(--font-size-lg);">Feedback</h4>
-                        <div id="endurance-feedback-grid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: var(--spacing-md);"></div>
+                    <div id="endurance-feedback-section" style="display: none; margin-top: var(--spacing-md);">
+                        <h4 style="margin-bottom: var(--spacing-sm); font-size: var(--font-size-lg);">Speech Feedback</h4>
+                        <div id="endurance-feedback-grid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: var(--spacing-sm);"></div>
                     </div>
                 </div>
             </div>
@@ -794,7 +794,7 @@
                             <div class="timer-label">remaining</div>
                         </div>
                         <div id="summarization-status" style="margin-top: var(--spacing-md); font-size: var(--font-size-sm); color: var(--text-secondary); text-align: center;"></div>
-                        <div id="summarization-transcript-section" style="margin-top: var(--spacing-lg); display: none;">
+                        <div id="summarization-transcript-section" style="margin-top: var(--spacing-sm); display: none;">
                             <h4 style="margin-bottom: var(--spacing-sm);">Live Transcript</h4>
                             <div style="background: var(--bg-card); border: 1px solid var(--border-color); border-radius: var(--border-radius-sm); padding: var(--spacing-md); min-height: 80px; font-size: var(--font-size-base); line-height: 1.6;">
                                 <span id="summarization-transcript-final"></span><span id="summarization-transcript-interim" style="color: var(--text-secondary); font-style: italic;"></span>
@@ -819,8 +819,8 @@
                             <div class="timer-number" id="summarization-type-timer-seconds">0:30</div>
                             <div class="timer-label">remaining</div>
                         </div>
-                        <div style="margin-top: var(--spacing-lg);">
-                            <textarea id="summarization-type-textarea" rows="8" placeholder="Type your summary here..." style="width: 100%; padding: var(--spacing-md); font-size: var(--font-size-base); border: 1px solid var(--border-color); border-radius: var(--border-radius-sm); resize: vertical; font-family: inherit; line-height: 1.6;"></textarea>
+                        <div style="margin-top: var(--spacing-sm);">
+                            <textarea id="summarization-type-textarea" rows="5" placeholder="Type your summary here..." style="width: 100%; padding: var(--spacing-md); font-size: var(--font-size-base); border: 1px solid var(--border-color); border-radius: var(--border-radius-sm); resize: vertical; font-family: inherit; line-height: 1.6;"></textarea>
                         </div>
                         <div class="exercise-controls" style="margin-top: var(--spacing-sm);">
                             <button class="btn btn-primary" id="summarization-type-submit-btn">Get Feedback</button>
@@ -828,9 +828,9 @@
                         </div>
                     </div>
 
-                    <div id="summarization-feedback-section" style="display: none; margin-top: var(--spacing-xl);">
-                        <h4 style="margin-bottom: var(--spacing-md); font-size: var(--font-size-lg);">Feedback</h4>
-                        <div id="summarization-feedback-grid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: var(--spacing-md);"></div>
+                    <div id="summarization-feedback-section" style="display: none; margin-top: var(--spacing-md);">
+                        <h4 style="margin-bottom: var(--spacing-sm); font-size: var(--font-size-lg);">Speech Feedback</h4>
+                        <div id="summarization-feedback-grid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: var(--spacing-sm);"></div>
                     </div>
                 </div>
             </div>
@@ -882,7 +882,7 @@
                             <div class="timer-label">remaining</div>
                         </div>
                         <div id="paraphrasing-status" style="margin-top: var(--spacing-md); font-size: var(--font-size-sm); color: var(--text-secondary); text-align: center;"></div>
-                        <div id="paraphrasing-transcript-section" style="margin-top: var(--spacing-lg); display: none;">
+                        <div id="paraphrasing-transcript-section" style="margin-top: var(--spacing-sm); display: none;">
                             <h4 style="margin-bottom: var(--spacing-sm);">Live Transcript</h4>
                             <div style="background: var(--bg-card); border: 1px solid var(--border-color); border-radius: var(--border-radius-sm); padding: var(--spacing-md); min-height: 80px; font-size: var(--font-size-base); line-height: 1.6;">
                                 <span id="paraphrasing-transcript-final"></span><span id="paraphrasing-transcript-interim" style="color: var(--text-secondary); font-style: italic;"></span>
@@ -907,8 +907,8 @@
                             <div class="timer-number" id="paraphrasing-type-timer-seconds">0:30</div>
                             <div class="timer-label">remaining</div>
                         </div>
-                        <div style="margin-top: var(--spacing-lg);">
-                            <textarea id="paraphrasing-type-textarea" rows="8" placeholder="Type all three paraphrases here..." style="width: 100%; padding: var(--spacing-md); font-size: var(--font-size-base); border: 1px solid var(--border-color); border-radius: var(--border-radius-sm); resize: vertical; font-family: inherit; line-height: 1.6;"></textarea>
+                        <div style="margin-top: var(--spacing-sm);">
+                            <textarea id="paraphrasing-type-textarea" rows="5" placeholder="Type all three paraphrases here..." style="width: 100%; padding: var(--spacing-md); font-size: var(--font-size-base); border: 1px solid var(--border-color); border-radius: var(--border-radius-sm); resize: vertical; font-family: inherit; line-height: 1.6;"></textarea>
                         </div>
                         <div class="exercise-controls" style="margin-top: var(--spacing-sm);">
                             <button class="btn btn-primary" id="paraphrasing-type-submit-btn">Get Feedback</button>
@@ -916,9 +916,9 @@
                         </div>
                     </div>
 
-                    <div id="paraphrasing-feedback-section" style="display: none; margin-top: var(--spacing-xl);">
-                        <h4 style="margin-bottom: var(--spacing-md); font-size: var(--font-size-lg);">Feedback</h4>
-                        <div id="paraphrasing-feedback-grid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: var(--spacing-md);"></div>
+                    <div id="paraphrasing-feedback-section" style="display: none; margin-top: var(--spacing-md);">
+                        <h4 style="margin-bottom: var(--spacing-sm); font-size: var(--font-size-lg);">Speech Feedback</h4>
+                        <div id="paraphrasing-feedback-grid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: var(--spacing-sm);"></div>
                     </div>
                 </div>
             </div>
@@ -964,8 +964,8 @@
                         </div>
 
                         <!-- Recordings List -->
-                        <div id="rec-list-panel" style="margin-top: var(--spacing-xl);">
-                            <h4 style="margin-bottom: var(--spacing-md);">Saved Recordings</h4>
+                        <div id="rec-list-panel" style="margin-top: var(--spacing-md);">
+                            <h4 style="margin-bottom: var(--spacing-sm);">Saved Recordings</h4>
                             <div id="rec-list">
                                 <p style="color: var(--text-secondary);">No recordings yet. Hit record to start!</p>
                             </div>

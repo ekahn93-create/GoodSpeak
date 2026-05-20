@@ -3993,10 +3993,10 @@ canvas {
 /* Timer Display */
 .timer-display {
   text-align: center;
-  padding: var(--spacing-xl);
+  padding: var(--spacing-md) var(--spacing-xl);
   background: var(--bg-hover);
   border-radius: var(--border-radius);
-  margin-top: var(--spacing-lg);
+  margin-top: var(--spacing-sm);
 }
 
 .timer-number {
@@ -4127,7 +4127,7 @@ canvas {
   background: var(--bg-card);
   border-radius: var(--border-radius);
   box-shadow: var(--shadow-sm);
-  margin-bottom: var(--spacing-lg);
+  margin-bottom: var(--spacing-md);
   overflow: hidden;
   transition: all var(--transition-fast);
 }
@@ -4140,7 +4140,7 @@ canvas {
   display: flex;
   align-items: center;
   gap: var(--spacing-md);
-  padding: var(--spacing-lg);
+  padding: 14px var(--spacing-md);
   border-bottom: 1px solid var(--border-color);
 }
 
@@ -4164,7 +4164,7 @@ canvas {
 
 /* Shared exercise group label — Grammar, Polish, Practice */
 .exercise-group {
-  margin-bottom: var(--spacing-xl);
+  margin-bottom: var(--spacing-lg);
 }
 
 .exercise-group-label {
@@ -4188,16 +4188,16 @@ canvas {
 }
 
 .fluency-card-content {
-  padding: var(--spacing-lg);
+  padding: var(--spacing-md);
 }
 
 /* Exercise Display Areas */
 .exercise-display {
   background: var(--bg-hover);
   border-radius: var(--border-radius-sm);
-  padding: var(--spacing-lg);
-  margin: var(--spacing-md) 0;
-  min-height: 150px;
+  padding: var(--spacing-md);
+  margin: var(--spacing-sm) 0;
+  min-height: 100px;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -4345,12 +4345,12 @@ canvas {
 .info-box {
   background: var(--bg-hover);
   border-radius: var(--border-radius-sm);
-  padding: var(--spacing-lg);
-  margin-bottom: var(--spacing-lg);
+  padding: var(--spacing-md);
+  margin-bottom: var(--spacing-md);
 }
 
 .info-box h4 {
-  margin: 0 0 var(--spacing-md) 0;
+  margin: 0 0 var(--spacing-sm) 0;
   color: var(--text-primary);
   font-size: var(--font-size-lg);
 }

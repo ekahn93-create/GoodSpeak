@@ -379,13 +379,13 @@
                         </div>
 
                         <!-- Topic box (shown during active exercise) -->
-                        <div id="filler-topic-box" style="display:none; background: var(--bg-hover); border-radius: var(--border-radius-sm); padding: var(--spacing-lg); margin-bottom: var(--spacing-lg);">
+                        <div id="filler-topic-box" style="display:none; background: var(--bg-hover); border-radius: var(--border-radius-sm); padding: var(--spacing-md); margin-bottom: var(--spacing-md);">
                             <div style="font-size: var(--font-size-sm); color: var(--text-secondary); margin-bottom: var(--spacing-xs); text-transform: uppercase; letter-spacing: 1px;">Your Topic</div>
                             <div id="filler-topic-text" style="font-size: var(--font-size-xl); font-weight: 600; color: var(--text-primary);"></div>
                         </div>
 
                         <!-- Timer display (always visible) -->
-                        <div class="timer-display" style="margin-bottom: var(--spacing-lg);">
+                        <div class="timer-display" style="margin-bottom: var(--spacing-md);">
                             <div class="timer-number" id="filler-countdown">0:30</div>
                             <div class="timer-label">remaining</div>
                         </div>
@@ -405,18 +405,18 @@
 
                         <!-- Active exercise screen -->
                         <div id="filler-active" style="display:none;">
-                            <div style="display: flex; justify-content: center; gap: var(--spacing-xl); margin-bottom: var(--spacing-lg);">
+                            <div style="display: flex; justify-content: center; gap: var(--spacing-xl); margin-bottom: var(--spacing-md);">
                                 <div style="text-align:center;">
-                                    <div id="filler-live-count" style="font-size: 2.5rem; font-weight: 700; color: var(--accent-color);">0</div>
+                                    <div id="filler-live-count" style="font-size: 2rem; font-weight: 700; color: var(--accent-color);">0</div>
                                     <div style="font-size: var(--font-size-sm); color: var(--text-secondary);">fillers detected</div>
                                 </div>
                                 <div style="text-align:center;">
-                                    <div id="filler-last-detected" style="font-size: 2.5rem; font-weight: 700; color: var(--text-secondary);">—</div>
+                                    <div id="filler-last-detected" style="font-size: 2rem; font-weight: 700; color: var(--text-secondary);">—</div>
                                     <div style="font-size: var(--font-size-sm); color: var(--text-secondary);">last filler</div>
                                 </div>
                             </div>
 
-                            <div id="filler-mic-status" style="font-size: var(--font-size-sm); color: var(--text-secondary); margin-bottom: var(--spacing-lg); text-align:center;">Listening...</div>
+                            <div id="filler-mic-status" style="font-size: var(--font-size-sm); color: var(--text-secondary); margin-bottom: var(--spacing-md); text-align:center;">Listening...</div>
                             <div class="exercise-controls">
                                 <button class="btn btn-danger" id="filler-stop-btn">Stop Early</button>
                             </div>
@@ -424,15 +424,15 @@
 
                         <!-- Results screen -->
                         <div id="filler-results" style="display:none;">
-                            <div id="filler-score-banner" style="text-align:center; padding: var(--spacing-xl); border-radius: var(--border-radius-sm); margin-bottom: var(--spacing-lg);">
-                                <div id="filler-score-emoji" style="font-size: 3rem; margin-bottom: var(--spacing-sm);"></div>
+                            <div id="filler-score-banner" style="text-align:center; padding: var(--spacing-md); border-radius: var(--border-radius-sm); margin-bottom: var(--spacing-md);">
+                                <div id="filler-score-emoji" style="font-size: 2rem; margin-bottom: var(--spacing-xs);"></div>
                                 <div id="filler-score-label" style="font-size: var(--font-size-xl); font-weight: 700; margin-bottom: var(--spacing-xs);"></div>
                                 <div id="filler-score-sub" style="font-size: var(--font-size-md); color: var(--text-secondary);"></div>
                             </div>
 
-                            <div id="filler-breakdown" style="margin-bottom: var(--spacing-lg);"></div>
+                            <div id="filler-breakdown" style="margin-bottom: var(--spacing-md);"></div>
 
-                            <div id="filler-tip-box" class="info-box" style="margin-bottom: var(--spacing-lg);"></div>
+                            <div id="filler-tip-box" class="info-box" style="margin-bottom: var(--spacing-md);"></div>
 
                             <div class="exercise-controls">
                                 <button class="btn btn-primary" id="filler-try-again-btn">Try Again</button>
@@ -475,14 +475,14 @@
                         </div>
 
                         <!-- Timer display (shown while running) -->
-                        <div id="pacing-timer-display" style="display:none; text-align:center; margin-bottom: var(--spacing-lg);">
+                        <div id="pacing-timer-display" style="display:none; text-align:center; margin-bottom: var(--spacing-md);">
                             <div style="display:flex; justify-content:center; gap: var(--spacing-xl); margin-bottom: var(--spacing-sm);">
                                 <div>
-                                    <div id="pacing-elapsed" style="font-size: 3rem; font-weight: 700; color: var(--primary-color); line-height: 1;">0.0s</div>
+                                    <div id="pacing-elapsed" style="font-size: 2rem; font-weight: 700; color: var(--primary-color); line-height: 1;">0.0s</div>
                                     <div style="font-size: var(--font-size-sm); color: var(--text-secondary);">elapsed</div>
                                 </div>
                                 <div>
-                                    <div id="pacing-live-words" style="font-size: 3rem; font-weight: 700; color: var(--accent-color); line-height: 1;">0</div>
+                                    <div id="pacing-live-words" style="font-size: 2rem; font-weight: 700; color: var(--accent-color); line-height: 1;">0</div>
                                     <div style="font-size: var(--font-size-sm); color: var(--text-secondary);">words heard</div>
                                 </div>
                             </div>
@@ -490,9 +490,9 @@
                         </div>
 
                         <!-- Results (shown after done) -->
-                        <div id="pacing-results" style="display:none; margin-bottom: var(--spacing-lg);">
-                            <div id="pacing-result-banner" style="text-align:center; padding: var(--spacing-lg); border-radius: var(--border-radius-sm); margin-bottom: var(--spacing-md);">
-                                <div id="pacing-result-wpm" style="font-size: 2.5rem; font-weight: 700;"></div>
+                        <div id="pacing-results" style="display:none; margin-bottom: var(--spacing-md);">
+                            <div id="pacing-result-banner" style="text-align:center; padding: var(--spacing-md); border-radius: var(--border-radius-sm); margin-bottom: var(--spacing-md);">
+                                <div id="pacing-result-wpm" style="font-size: 2rem; font-weight: 700;"></div>
                                 <div id="pacing-result-label" style="font-size: var(--font-size-md); font-weight: 600; margin-top: var(--spacing-xs);"></div>
                                 <div id="pacing-result-sub" style="font-size: var(--font-size-sm); color: var(--text-secondary); margin-top: var(--spacing-xs);"></div>
                             </div>
@@ -793,9 +793,9 @@
 
                         <!-- Results Screen -->
                         <div id="readaloud-results" style="display:none;">
-                            <h4 style="margin-bottom: var(--spacing-md);">Session Results</h4>
-                            <div id="readaloud-results-grid" style="display:grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: var(--spacing-md); margin-bottom: var(--spacing-lg);"></div>
-                            <div id="readaloud-filler-breakdown" style="margin-bottom: var(--spacing-lg);"></div>
+                            <h4 style="margin-bottom: var(--spacing-sm);">Session Results</h4>
+                            <div id="readaloud-results-grid" style="display:grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: var(--spacing-sm); margin-bottom: var(--spacing-md);"></div>
+                            <div id="readaloud-filler-breakdown" style="margin-bottom: var(--spacing-md);"></div>
                             <div class="exercise-controls">
                                 <button class="btn btn-primary" id="readaloud-retry-btn">Try Again</button>
                                 <button class="btn btn-secondary" id="readaloud-new-btn">New Text</button>
@@ -845,7 +845,7 @@
                             <div class="shadowing-script" id="shadowing-script">
                                 <!-- Marked-up passage rendered here -->
                             </div>
-                            <div style="margin-top: var(--spacing-lg); color: var(--text-secondary); font-size: var(--font-size-sm);">
+                            <div style="margin-top: var(--spacing-sm); color: var(--text-secondary); font-size: var(--font-size-sm);">
                                 <strong>How to shadow:</strong> Listen (use TTS button), then read aloud simultaneously trying to match the natural rhythm and emphasis shown above.
                             </div>
                             <div class="exercise-controls" style="margin-top: var(--spacing-md);">

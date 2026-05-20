@@ -229,13 +229,13 @@ const WebSpeechModule = (function() {
       const isVocab = m.title === 'Vocabulary Strength';
       const drilldown = isVocab ? buildWeakDrilldown(weakBreakdown) : '';
       return `
-        <div style="background: var(--bg-card); border: 1px solid var(--border-color); border-radius: var(--border-radius-sm); padding: var(--spacing-md);">
-          <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: var(--spacing-sm);">
+        <div style="background: var(--bg-card); border: 1px solid var(--border-color); border-radius: var(--border-radius-sm); padding: 10px 14px;">
+          <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 4px;">
             <span style="font-weight: 600; font-size: var(--font-size-base);">${m.title}</span>
             ${gradeIcon(m.rating.color)}
           </div>
-          <div style="font-size: var(--font-size-xl); font-weight: 700; color: var(--text-primary); margin-bottom: 4px;">${m.value}</div>
-          <div style="font-size: var(--font-size-sm); font-weight: 600; color: ${m.rating.color}; margin-bottom: 4px;">${m.rating.label}</div>
+          <div style="font-size: var(--font-size-lg, 20px); font-weight: 700; color: var(--text-primary); margin-bottom: 2px;">${m.value}</div>
+          <div style="font-size: var(--font-size-sm); font-weight: 600; color: ${m.rating.color}; margin-bottom: 2px;">${m.rating.label}</div>
           <div style="font-size: var(--font-size-sm); color: var(--text-secondary);">${m.detail}</div>
           ${drilldown}
         </div>`;
