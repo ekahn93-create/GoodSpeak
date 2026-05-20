@@ -718,6 +718,16 @@ case 'recordings':
       });
       impromptuWS.init();
 
+      // Clear vocab result banner when starting or resetting a session
+      function _clearVocabResult() {
+        const el = document.getElementById('impromptu-vocab-result');
+        if (el) el.remove();
+      }
+      const startBtn = document.getElementById('impromptu-start-btn');
+      const resetBtn = document.getElementById('impromptu-reset-btn');
+      if (startBtn) startBtn.addEventListener('click', _clearVocabResult);
+      if (resetBtn) resetBtn.addEventListener('click', _clearVocabResult);
+
       // Hook stop button: in Vocab mode, verify word usage with Claude then auto-save
       const stopBtn = document.getElementById('impromptu-stop-btn');
       if (stopBtn) {
