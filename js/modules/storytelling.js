@@ -1003,15 +1003,15 @@ case 'recordings':
    * correct: true = saved, false = not saved, null = pending
    */
   function _showVocabResult(word, correct, feedback, overrideMsg) {
-    const vocabDisplay = document.getElementById('impromptu-vocab-display');
-    if (!vocabDisplay) return;
+    const transcriptSection = document.getElementById('impromptu-transcript-section');
+    if (!transcriptSection) return;
 
     let el = document.getElementById('impromptu-vocab-result');
     if (!el) {
       el = document.createElement('div');
       el.id = 'impromptu-vocab-result';
       el.style.cssText = 'margin-bottom: var(--spacing-sm); padding: 10px 14px; border-radius: var(--border-radius-sm); border-left: 3px solid;';
-      vocabDisplay.insertBefore(el, vocabDisplay.firstChild);
+      transcriptSection.parentNode.insertBefore(el, transcriptSection);
     }
 
     if (overrideMsg) {
@@ -1027,7 +1027,7 @@ case 'recordings':
       el.innerHTML = `
         <div style="display:flex;align-items:center;gap:6px;margin-bottom:3px;">
           <span style="font-size:1rem;">✓</span>
-          <span style="font-size:var(--font-size-sm);font-weight:700;color:#1a7a45;">Saved to Word Bank</span>
+          <span style="font-size:var(--font-size-sm);font-weight:700;color:#1a7a45;">Nice Job — Saved to Word Bank</span>
         </div>
         ${feedback ? `<div style="font-size:var(--font-size-sm);color:#2d7a50;line-height:1.4;">${feedback}</div>` : ''}`;
     } else if (correct === false) {
@@ -1036,7 +1036,7 @@ case 'recordings':
       el.innerHTML = `
         <div style="display:flex;align-items:center;gap:6px;margin-bottom:3px;">
           <span style="font-size:1rem;">✗</span>
-          <span style="font-size:var(--font-size-sm);font-weight:700;color:#a06000;">Not saved</span>
+          <span style="font-size:var(--font-size-sm);font-weight:700;color:#a06000;">Incorrect — Try Again</span>
         </div>
         ${feedback ? `<div style="font-size:var(--font-size-sm);color:#8a5500;line-height:1.4;">${feedback}</div>` : `<div style="font-size:var(--font-size-sm);color:#8a5500;">"${word}" wasn't detected — try using it in a sentence.</div>`}`;
     }

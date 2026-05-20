@@ -4006,6 +4006,16 @@ canvas {
   margin-bottom: var(--spacing-xs);
 }
 
+/* Compact timer for Impromptu Speaking */
+#impromptu-speak-controls .timer-display {
+  padding: var(--spacing-sm) var(--spacing-md);
+  margin-top: var(--spacing-sm);
+}
+#impromptu-speak-controls .timer-number {
+  font-size: 2rem;
+  margin-bottom: 0;
+}
+
 .timer-label {
   font-size: var(--font-size-base);
   color: var(--text-secondary);
