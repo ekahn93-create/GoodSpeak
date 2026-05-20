@@ -707,20 +707,63 @@ case 'recordings':
     }
 
     // Impromptu Speaking voice feedback panel
+    let impromptuWS = null;
     if (document.getElementById('impromptu-speak-controls')) {
-      const impromptuWS = WebSpeechModule.create('impromptu', () => {
+      impromptuWS = WebSpeechModule.create('impromptu', () => {
         if (impromptuIsVocabMode) return document.getElementById('impromptu-vocab-prompt')?.textContent || '';
         return document.getElementById('impromptu-prompt')?.textContent || '';
       });
       impromptuWS.init();
 
-      // Hook stop button to mark word spoken in Vocab mode
+      // Hook stop button: in Vocab mode, verify word usage with Claude then auto-save
       const stopBtn = document.getElementById('impromptu-stop-btn');
       if (stopBtn) {
         stopBtn.addEventListener('click', () => {
-          if (impromptuIsVocabMode && currentVocabWord) {
-            StorageManager.markWordSpoken(currentVocabWord);
+          if (!impromptuIsVocabMode || !currentVocabWord) return;
+          const transcript = impromptuWS.getTranscript().trim();
+          const detected   = impromptuWS.wasVocabWordDetected();
+
+          if (!transcript || !detected) {
+            _showVocabResult(currentVocabWord, false, null,
+              detected ? null : `"${currentVocabWord}" wasn't detected in your speech — try again!`
+            );
+            return;
           }
+
+          // Get word metadata for Claude
+          const allWords = (typeof WordBankModule !== 'undefined' && WordBankModule.getAllWordBankWords)
+            ? WordBankModule.getAllWordBankWords() : [];
+          const wordObj = allWords.find(w => w.word === currentVocabWord) || {};
+
+          _showVocabResult(currentVocabWord, null, null, 'Verifying usage...');
+
+          fetch('/.netlify/functions/claude-proxy', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              task: 'verify_vocab_usage',
+              payload: {
+                word: currentVocabWord,
+                definition: wordObj.definition || '',
+                partOfSpeech: wordObj.partOfSpeech || '',
+                transcript
+              }
+            })
+          })
+          .then(r => r.json())
+          .then(data => {
+            if (data.used_correctly) {
+              StorageManager.markWordSpoken(currentVocabWord);
+              _showVocabResult(currentVocabWord, true, data.feedback, null);
+            } else {
+              _showVocabResult(currentVocabWord, false, data.feedback, null);
+            }
+          })
+          .catch(() => {
+            // On network error fall back to detected = good enough
+            StorageManager.markWordSpoken(currentVocabWord);
+            _showVocabResult(currentVocabWord, true, null, null);
+          });
         }, true); // capture phase so it fires before WebSpeech's own handler
       }
     }
@@ -945,6 +988,44 @@ case 'recordings':
 
 
   /**
+   * Show the vocab usage result banner below the impromptu vocab display.
+   * correct: true = saved, false = not saved, null = pending
+   */
+  function _showVocabResult(word, correct, feedback, overrideMsg) {
+    const contentEl = document.getElementById('impromptu-vocab-content');
+    if (!contentEl) return;
+
+    let el = document.getElementById('impromptu-vocab-result');
+    if (!el) {
+      el = document.createElement('div');
+      el.id = 'impromptu-vocab-result';
+      el.style.cssText = 'margin-top: var(--spacing-sm); padding: 8px 12px; border-radius: var(--border-radius-sm); font-size: var(--font-size-sm); font-weight: 500;';
+      contentEl.appendChild(el);
+    }
+
+    if (overrideMsg) {
+      el.style.background = 'var(--bg-secondary)';
+      el.style.color = 'var(--text-secondary)';
+      el.textContent = overrideMsg;
+      return;
+    }
+
+    if (correct === true) {
+      el.style.background = '#d4edda';
+      el.style.color = '#155724';
+      el.textContent = feedback
+        ? `Saved to Word Bank! ${feedback}`
+        : `"${word}" used correctly — saved to Word Bank!`;
+    } else {
+      el.style.background = '#fff3cd';
+      el.style.color = '#856404';
+      el.textContent = feedback
+        ? feedback
+        : `"${word}" wasn't used correctly — keep practicing!`;
+    }
+  }
+
+  /**
    * Load a random Word Bank word and a matching prompt for Vocab mode.
    * Writes to currentVocabWord (closure var in setupPracticalListeners).
    * Falls back gracefully if Word Bank is empty or speakingPrompts not loaded.
@@ -976,6 +1057,13 @@ case 'recordings':
     // Pick a random word
     const word = words[Math.floor(Math.random() * words.length)];
     currentVocabWord = word.word;
+
+    // Tell the WebSpeech instance which word to listen for
+    if (impromptuWS) impromptuWS.setVocabWord(word.word);
+
+    // Clear any previous vocab result banner
+    const prevResult = document.getElementById('impromptu-vocab-result');
+    if (prevResult) prevResult.remove();
 
     // Display word + definition
     if (wordEl) wordEl.textContent = word.word;

@@ -480,8 +480,63 @@ const WebSpeechModule = (function() {
     let initialized      = false;
     let cardScope        = document;
 
+    // Vocab word tracking
+    let _vocabWord         = null;  // set externally via instance.setVocabWord()
+    let _vocabWordDetected = false;
+    let _vocabFlashTimeout = null;
+
     // Helper — look up an element by prefixed ID
     function el(id) { return document.getElementById(prefix + '-' + id); }
+
+    function _checkForVocabWord(text) {
+      if (!_vocabWord || _vocabWordDetected) return;
+      // Match the word or common inflected forms (e.g. eloquent → eloquently)
+      const base = _vocabWord.toLowerCase().replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+      const pattern = new RegExp('\\b' + base, 'i');
+      if (pattern.test(text)) {
+        _vocabWordDetected = true;
+        _showVocabFlash();
+      }
+    }
+
+    function _showVocabFlash() {
+      const container = el('speak-controls') || el('transcript-final')?.parentElement;
+      if (!container) return;
+
+      // Remove any existing flash
+      const existing = container.querySelector('.vocab-detected-flash');
+      if (existing) existing.remove();
+      if (_vocabFlashTimeout) clearTimeout(_vocabFlashTimeout);
+
+      const flash = document.createElement('div');
+      flash.className = 'vocab-detected-flash';
+      flash.textContent = `"${_vocabWord}" detected`;
+      flash.style.cssText = [
+        'position: absolute',
+        'top: 8px',
+        'right: 8px',
+        'background: var(--primary-color)',
+        'color: white',
+        'padding: 4px 12px',
+        'border-radius: 999px',
+        'font-size: var(--font-size-sm)',
+        'font-weight: 600',
+        'opacity: 1',
+        'transition: opacity 0.5s',
+        'z-index: 10',
+        'pointer-events: none'
+      ].join(';');
+
+      // Container needs position:relative for absolute child
+      const prevPosition = container.style.position;
+      if (!prevPosition || prevPosition === 'static') container.style.position = 'relative';
+
+      container.appendChild(flash);
+
+      // Fade out after 3s, remove after 3.5s
+      _vocabFlashTimeout = setTimeout(() => { flash.style.opacity = '0'; }, 3000);
+      setTimeout(() => { flash.remove(); }, 3500);
+    }
 
     function init() {
       if (initialized) return;
@@ -504,7 +559,11 @@ const WebSpeechModule = (function() {
           for (let i = event.resultIndex; i < event.results.length; i++) {
             const t = event.results[i][0].transcript.trim();
             if (event.results[i].isFinal) {
-              if (t) { finalTranscript += t + ' '; pauseChunks.push(t); }
+              if (t) {
+                finalTranscript += t + ' ';
+                pauseChunks.push(t);
+                _checkForVocabWord(t);
+              }
             } else {
               interim += t;
             }
@@ -948,7 +1007,14 @@ const WebSpeechModule = (function() {
       updateTypeTimerDisplay();
     }
 
-    return { init, stopAndReset, setDuration };
+    function setVocabWord(word) {
+      _vocabWord = word;
+      _vocabWordDetected = false;
+    }
+    function wasVocabWordDetected() { return _vocabWordDetected; }
+    function getTranscript() { return finalTranscript; }
+
+    return { init, stopAndReset, setDuration, setVocabWord, wasVocabWordDetected, getTranscript };
   }
 
   // ═══════════════════════════════════════════════════════════════════════════

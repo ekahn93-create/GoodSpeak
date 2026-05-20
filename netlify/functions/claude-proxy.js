@@ -243,6 +243,27 @@ Respond ONLY with valid JSON in this exact format, no other text:
   "forbidden": ["word1", "word2", "word3", "word4", "word5"]
 }`;
 
+  } else if (task === 'verify_vocab_usage') {
+    const { word, definition, partOfSpeech, transcript } = payload;
+    prompt = `You are a vocabulary coach verifying whether a student used a target word correctly in an impromptu speech.
+
+Target word: "${word}"
+Part of speech: ${partOfSpeech || 'unknown'}
+Definition: ${definition || 'not provided'}
+
+Student's speech (transcribed):
+"""
+${transcript}
+"""
+
+Determine whether the student used the word "${word}" correctly — meaning it appeared in the transcript and was used in a way that matches its definition and part of speech. Minor grammatical variations (e.g. "eloquently" for "eloquent") count as correct.
+
+Respond ONLY with valid JSON in this exact format, no other text:
+{
+  "used_correctly": true or false,
+  "feedback": "One encouraging sentence explaining the result."
+}`;
+
   } else {
     return { statusCode: 400, body: JSON.stringify({ error: 'Unknown task.' }) };
   }
