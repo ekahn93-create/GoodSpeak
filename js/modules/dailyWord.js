@@ -194,6 +194,13 @@ const DailyWordModule = (function() {
   function displayExercise() {
     if (!exerciseContent || !todaysWord) return;
 
+    // If already completed today, show done state instead of the exercise
+    const today = StorageManager.getTodayString();
+    if (userData.dailyWord.lastCompletedDate === today) {
+      exerciseContent.innerHTML = '<p style="margin-top:var(--spacing-md); color: var(--secondary-color); font-weight: 600;">Practice complete for today!</p>';
+      return;
+    }
+
     // Generate a random exercise from today's word examples
     const example = todaysWord.examples[Math.floor(Math.random() * todaysWord.examples.length)];
 
@@ -306,6 +313,18 @@ const DailyWordModule = (function() {
     markTodayCompleted();
 
     if (typeof App !== 'undefined' && App.markTPTaskDone) App.markTPTaskDone('precision');
+
+    // Track Polish session count
+    var _pdata = StorageManager.load();
+    _pdata.stats.polishSessionsCompleted = (_pdata.stats.polishSessionsCompleted || 0) + 1;
+    StorageManager.save(_pdata);
+
+    // Replace the button with a done state so it can't be clicked again
+    const completeBtn = document.querySelector('#daily-exercise .btn[onclick*="completeToday"]');
+    if (completeBtn) {
+      const wrapper = completeBtn.closest('div');
+      if (wrapper) wrapper.innerHTML = '<p style="color: var(--secondary-color); font-weight: 600;">Practice complete for today!</p>';
+    }
 
     Modal.alert({
       title: 'Daily Practice Complete!',

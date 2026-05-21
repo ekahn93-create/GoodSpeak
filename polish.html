@@ -141,6 +141,37 @@
                 <p>Refine your pronunciation, pacing, and fluency before speaking</p>
             </div>
 
+            <!-- Arc strip -->
+            <div class="page-arc-strip">
+                <div class="pas-step pas-step-done">
+                    <span class="pas-step-number">1</span>
+                    <span>Learn</span>
+                </div>
+                <span class="pas-arrow">&#8594;</span>
+                <div class="pas-step pas-step-current">
+                    <span class="pas-step-number">2</span>
+                    <span>Polish</span>
+                </div>
+                <span class="pas-arrow">&#8594;</span>
+                <div class="pas-step">
+                    <span class="pas-step-number">3</span>
+                    <span>Practice</span>
+                </div>
+                <span class="pas-arrow">&#8594;</span>
+                <div class="pas-step">
+                    <span class="pas-step-number">4</span>
+                    <span>Play</span>
+                </div>
+            </div>
+
+            <!-- Page context banner -->
+            <div class="page-context-banner" id="pcb-polish">
+                <button class="pcb-close" id="pcb-polish-close" aria-label="Dismiss">&times;</button>
+                <div class="pcb-what">What is Polish?</div>
+                <p class="pcb-desc">Train your ear and mouth — read passages aloud, reduce filler words, build pronunciation habits, and refine how you sound before speaking in real situations.</p>
+                <p class="pcb-why" id="pcb-polish-why"><strong>Why now:</strong> You've learned words in Learn — Polish is where you start sounding like you know them. Drill here before moving to Practice.</p>
+            </div>
+
             <!-- Category Navigation -->
             <div class="fluency-categories">
                 <button class="category-tab active" data-category="fluency">Fluency Building</button>
@@ -532,6 +563,12 @@
                                 rows="5">
                             </textarea>
                         </div>
+                        <div id="fluency-combining-result" style="display: none; margin-bottom: var(--spacing-md);">
+                            <div id="fluency-combining-result-inner" style="padding: var(--spacing-md); border-radius: var(--border-radius-sm); border-left: 4px solid #ccc;">
+                                <p id="fluency-combining-result-label" style="font-weight: 600; margin: 0 0 4px;"></p>
+                                <p id="fluency-combining-result-sub" style="margin: 0; font-size: var(--font-size-sm);"></p>
+                            </div>
+                        </div>
                         <div id="fluency-combining-hint-section" style="display: none; margin-bottom: var(--spacing-md);">
                             <div style="background: var(--bg-card); padding: var(--spacing-md); border-radius: var(--border-radius-sm); border-left: 4px solid var(--secondary-color);">
                                 <p style="font-weight: 600; color: var(--text-secondary); margin-bottom: var(--spacing-xs);">Hint:</p>
@@ -547,7 +584,8 @@
                         <div class="exercise-controls">
                             <button class="btn btn-secondary" id="show-fluency-combining-hint-btn">Show Hint</button>
                             <button class="btn btn-secondary" id="show-fluency-combining-example-btn">Show Example</button>
-                            <button class="btn btn-primary" id="new-fluency-combining-exercise-btn">New Exercise</button>
+                            <button class="btn btn-primary" id="check-fluency-combining-btn">Check Answer</button>
+                            <button class="btn btn-secondary" id="new-fluency-combining-exercise-btn">New Exercise</button>
                         </div>
                     </div>
                 </div>
@@ -917,6 +955,35 @@
     <script>
       // Initialize Lucide icons after DOM is ready
       if (typeof lucide !== 'undefined') lucide.createIcons();
+    </script>
+
+    <!-- Page context banner: dismiss logic + dynamic stat -->
+    <script>
+      (function() {
+        var DISMISS_KEY = 'pcbDismissed_polish';
+        var banner = document.getElementById('pcb-polish');
+        if (localStorage.getItem(DISMISS_KEY) === '1') {
+          banner.classList.add('pcb-hidden');
+        } else {
+          // Inject dynamic word count into "Why now"
+          try {
+            var raw = localStorage.getItem('articulationAppData');
+            if (raw) {
+              var data = JSON.parse(raw);
+              var customLearned = (data.customWords || []).filter(function(w) { return w.status === 'learned'; }).length;
+              var wordCount = ((data.vocabulary && data.vocabulary.learned) ? data.vocabulary.learned.length : 0) + customLearned;
+              if (wordCount > 0) {
+                var why = document.getElementById('pcb-polish-why');
+                why.innerHTML = '<strong>Why now:</strong> You\'ve learned <strong>' + wordCount + ' word' + (wordCount !== 1 ? 's' : '') + '</strong> in Learn — Polish is where you start sounding like you know them. Drill here before moving to Practice.';
+              }
+            }
+          } catch(e) {}
+        }
+        document.getElementById('pcb-polish-close').addEventListener('click', function() {
+          banner.classList.add('pcb-hidden');
+          localStorage.setItem(DISMISS_KEY, '1');
+        });
+      })();
     </script>
 
     <script>

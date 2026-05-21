@@ -63,7 +63,8 @@ const StorageManager = (function() {
         wordsLearnedToday: 0,  // Words learned on wordsLearnedDate
         wordsLearnedDate: null,
         speechSessions: [],    // Array of {date, wpm, fillers, ts} — cloud-synced
-        vocabHistory: []       // Array of {date, count, ts} — cloud-synced
+        vocabHistory: [],      // Array of {date, count, ts} — cloud-synced
+        polishSessionsCompleted: 0
       }
     };
   }
@@ -196,6 +197,7 @@ const StorageManager = (function() {
     if (merged.stats.wordsLearnedDate === undefined) merged.stats.wordsLearnedDate = null;
     if (!merged.stats.speechSessions) merged.stats.speechSessions = [];
     if (!merged.stats.vocabHistory) merged.stats.vocabHistory = [];
+    if (merged.stats.polishSessionsCompleted === undefined) merged.stats.polishSessionsCompleted = 0;
 
     return merged;
   }

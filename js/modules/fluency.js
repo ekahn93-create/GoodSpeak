@@ -58,6 +58,7 @@ const FluencyModule = (function() {
   let showFluencyCombiningHintBtn = null;
   let showFluencyCombiningExampleBtn = null;
   let newFluencyCombiningExerciseBtn = null;
+  let checkFluencyCombiningBtn = null;
   let combiningAnswerInput = null;
   let currentCombiningExercise = null;
 
@@ -438,6 +439,7 @@ const FluencyModule = (function() {
     showFluencyCombiningHintBtn = document.getElementById('show-fluency-combining-hint-btn');
     showFluencyCombiningExampleBtn = document.getElementById('show-fluency-combining-example-btn');
     newFluencyCombiningExerciseBtn = document.getElementById('new-fluency-combining-exercise-btn');
+    checkFluencyCombiningBtn = document.getElementById('check-fluency-combining-btn');
     combiningAnswerInput = document.getElementById('combining-answer-input');
 
     // Eloquence & Expression
@@ -543,6 +545,10 @@ const FluencyModule = (function() {
 
     if (showFluencyCombiningHintBtn) {
       showFluencyCombiningHintBtn.addEventListener('click', showCombiningHint);
+    }
+
+    if (checkFluencyCombiningBtn) {
+      checkFluencyCombiningBtn.addEventListener('click', checkCombiningAnswer);
     }
 
     if (showFluencyCombiningExampleBtn) {
@@ -795,21 +801,19 @@ const FluencyModule = (function() {
   }
 
   function detectFillers(transcript) {
-    const lower = transcript.toLowerCase().trim();
-    console.log('[FillerDetect] chunk:', JSON.stringify(lower));
+    // Strip punctuation so "um," or "like." still match
+    const lower = transcript.toLowerCase().replace(/[.,!?;:]/g, ' ').trim();
     const sorted = [...FILLER_WORDS_LIST].sort((a, b) => b.split(' ').length - a.split(' ').length);
     let found = [];
     sorted.forEach(filler => {
       const pattern = '(?:^|\\s)' + filler.replace(/\s+/g, '\\s+') + '(?:\\s|$)';
       const regex = new RegExp(pattern, 'gi');
       const matches = lower.match(regex);
-      console.log('[FillerDetect] testing "' + filler + '":', matches);
       if (matches) {
         matches.forEach(() => found.push(filler));
         fillerBreakdown[filler] = (fillerBreakdown[filler] || 0) + matches.length;
       }
     });
-    console.log('[FillerDetect] found:', found);
     return found;
   }
 
@@ -833,15 +837,16 @@ const FluencyModule = (function() {
 
     if (typeof App !== 'undefined' && App.markTPTaskDone) App.markTPTaskDone('filler');
 
-    const rate = fillerCount / (fillerTotalDuration / 60);
+    const elapsedSeconds = fillerTotalDuration - fillerSecondsLeft;
+    const rate = fillerCount / (elapsedSeconds / 60);
     let emoji, label, sub, bannerColor;
     if (fillerCount === 0) {
       emoji = ''; label = 'Perfect — Zero Fillers!';
-      sub = `You spoke for ${fillerTotalDuration} seconds with no filler words detected.`;
+      sub = `You spoke for ${elapsedSeconds} seconds with no filler words detected.`;
       bannerColor = '#d4edda';
     } else if (rate < 3) {
       emoji = ''; label = `Very Clean — ${fillerCount} filler${fillerCount > 1 ? 's' : ''}`;
-      sub = `Only ${fillerCount} filler${fillerCount > 1 ? 's' : ''} in ${fillerTotalDuration} seconds. That's excellent.`;
+      sub = `Only ${fillerCount} filler${fillerCount > 1 ? 's' : ''} in ${elapsedSeconds} seconds. That's excellent.`;
       bannerColor = '#d4edda';
     } else if (rate < 6) {
       emoji = ''; label = `Good — ${fillerCount} fillers detected`;
@@ -877,12 +882,17 @@ const FluencyModule = (function() {
     }
 
     document.getElementById('filler-tip-box').innerHTML =
-      `<strong>Tip:</strong> ${getFillerTip(fillerCount, fillerTotalDuration)}`;
+      `<strong>Tip:</strong> ${getFillerTip(fillerCount, elapsedSeconds)}`;
 
     // Log to progress charts (cloud-synced); no WPM for filler-only exercise
     if (typeof ProgressChartsModule !== 'undefined') {
       ProgressChartsModule.logSpeechSession(0, fillerCount);
     }
+
+    // Track Polish session count
+    var _pdata = StorageManager.load();
+    _pdata.stats.polishSessionsCompleted = (_pdata.stats.polishSessionsCompleted || 0) + 1;
+    StorageManager.save(_pdata);
 
     // Nudge toward Practice after completing a fluency session
     if (typeof NudgeModule !== 'undefined') {
@@ -984,9 +994,9 @@ const FluencyModule = (function() {
       };
 
       fillerRecognition.onend = function() {
-        // Restart if timer is still running
-        if (fillerTimer && fillerSecondsLeft > 0) {
-          try { fillerRecognition.start(); } catch(e) {}
+        // Restart if timer is still running and exercise hasn't been stopped
+        if (fillerTimer && fillerSecondsLeft > 0 && fillerRecognition) {
+          fillerRecognition.start().catch(() => {});
         }
       };
 
@@ -1147,6 +1157,11 @@ const FluencyModule = (function() {
     document.getElementById('pacing-result-label').textContent = label;
     document.getElementById('pacing-result-sub').textContent = sub;
     document.getElementById('pacing-results').style.display = 'block';
+
+    // Track Polish session count
+    var _pdata = StorageManager.load();
+    _pdata.stats.polishSessionsCompleted = (_pdata.stats.polishSessionsCompleted || 0) + 1;
+    StorageManager.save(_pdata);
   }
 
   /**
@@ -1187,7 +1202,9 @@ const FluencyModule = (function() {
       combiningAnswerInput.value = '';
     }
 
-    // Hide hint and example sections
+    // Hide result, hint, and example sections
+    const combiningResult = document.getElementById('fluency-combining-result');
+    if (combiningResult) combiningResult.style.display = 'none';
     if (fluencyCombiningHintSection) fluencyCombiningHintSection.style.display = 'none';
     if (fluencyCombiningExampleSection) fluencyCombiningExampleSection.style.display = 'none';
 
@@ -1238,6 +1255,75 @@ const FluencyModule = (function() {
       fluencyCombiningExampleSection.style.display = 'none';
       if (showFluencyCombiningExampleBtn) showFluencyCombiningExampleBtn.textContent = 'Show Example';
     }
+  }
+
+  /**
+   * Check the user's combined sentence answer
+   */
+  function checkCombiningAnswer() {
+    if (!currentCombiningExercise || !combiningAnswerInput) return;
+
+    const answer = combiningAnswerInput.value.trim();
+    const resultEl = document.getElementById('fluency-combining-result');
+    const innerEl = document.getElementById('fluency-combining-result-inner');
+    const labelEl = document.getElementById('fluency-combining-result-label');
+    const subEl = document.getElementById('fluency-combining-result-sub');
+
+    if (!resultEl || !innerEl || !labelEl || !subEl) return;
+
+    if (!answer) {
+      innerEl.style.borderLeftColor = '#e74c3c';
+      innerEl.style.background = '#fdf2f2';
+      labelEl.style.color = '#c0392b';
+      labelEl.textContent = 'Nothing to check';
+      subEl.style.color = '#c0392b';
+      subEl.textContent = 'Type your combined sentence in the box above first.';
+      resultEl.style.display = 'block';
+      return;
+    }
+
+    const answerLower = answer.toLowerCase();
+
+    // Count sentences in the answer (split on . ! ?)
+    const answerSentenceCount = answer.split(/[.!?]+/).filter(s => s.trim().length > 0).length;
+    const originalCount = currentCombiningExercise.sentences.length;
+
+    // Extract meaningful words (4+ chars) from source sentences, check they appear in answer
+    const sourceWords = currentCombiningExercise.sentences
+      .join(' ')
+      .toLowerCase()
+      .match(/\b\w{4,}\b/g) || [];
+    const uniqueSourceWords = [...new Set(sourceWords)];
+    const coveredCount = uniqueSourceWords.filter(w => answerLower.includes(w)).length;
+    const coverageRatio = uniqueSourceWords.length > 0 ? coveredCount / uniqueSourceWords.length : 1;
+
+    const isCombined = answerSentenceCount < originalCount;
+    const hasGoodCoverage = coverageRatio >= 0.5;
+
+    if (isCombined && hasGoodCoverage) {
+      innerEl.style.borderLeftColor = '#27ae60';
+      innerEl.style.background = '#f0faf4';
+      labelEl.style.color = '#1e8449';
+      labelEl.textContent = 'Well done!';
+      subEl.style.color = '#1e8449';
+      subEl.textContent = 'You successfully combined the sentences. Click "Show Example" to compare with a model answer.';
+    } else if (!isCombined) {
+      innerEl.style.borderLeftColor = '#e67e22';
+      innerEl.style.background = '#fef9f0';
+      labelEl.style.color = '#ca6f1e';
+      labelEl.textContent = 'Keep combining';
+      subEl.style.color = '#ca6f1e';
+      subEl.textContent = `Try to merge all ${originalCount} ideas into a single sentence using conjunctions or transitions.`;
+    } else {
+      innerEl.style.borderLeftColor = '#e67e22';
+      innerEl.style.background = '#fef9f0';
+      labelEl.style.color = '#ca6f1e';
+      labelEl.textContent = 'Missing some ideas';
+      subEl.style.color = '#ca6f1e';
+      subEl.textContent = 'Make sure your sentence captures all the key ideas from the original sentences.';
+    }
+
+    resultEl.style.display = 'block';
   }
 
   // ========== Eloquence & Expression Functions ==========

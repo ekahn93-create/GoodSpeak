@@ -3040,6 +3040,135 @@ canvas {
   }
 }
 
+/* ==================== PAGE ARC STRIP (inner pages) ==================== */
+.page-arc-strip {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0;
+  margin-bottom: var(--spacing-lg);
+  background: var(--surface-color);
+  border: 1px solid var(--border-color);
+  border-radius: var(--border-radius);
+  padding: 10px 16px;
+  flex-wrap: wrap;
+  row-gap: 6px;
+}
+
+.pas-step {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 10px;
+  border-radius: 20px;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text-secondary);
+  transition: background 0.15s;
+}
+
+.pas-step-number {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: var(--border-color);
+  color: var(--text-secondary);
+  font-size: 11px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.pas-step-current {
+  background: #ede9fe;
+  color: var(--primary-color);
+}
+
+.pas-step-current .pas-step-number {
+  background: var(--primary-color);
+  color: #fff;
+}
+
+.pas-step-done {
+  color: var(--text-secondary);
+}
+
+.pas-step-done .pas-step-number {
+  background: var(--secondary-color);
+  color: #fff;
+}
+
+.pas-arrow {
+  color: var(--border-color);
+  font-size: 14px;
+  padding: 0 2px;
+  flex-shrink: 0;
+}
+
+/* ==================== PAGE CONTEXT BANNER ==================== */
+.page-context-banner {
+  background: linear-gradient(135deg, #f5f3ff 0%, #ede9fe 100%);
+  border: 1px solid #c4b5fd;
+  border-left: 4px solid var(--primary-color);
+  border-radius: var(--border-radius);
+  padding: var(--spacing-md) var(--spacing-lg);
+  margin-bottom: var(--spacing-lg);
+  position: relative;
+  animation: nudgeSlideDown 0.3s ease;
+}
+
+.pcb-close {
+  position: absolute;
+  top: 10px;
+  right: 12px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 1.1rem;
+  color: var(--text-secondary);
+  line-height: 1;
+  padding: 0;
+}
+
+.pcb-close:hover {
+  color: var(--text-primary);
+}
+
+.pcb-what {
+  font-size: var(--font-size-sm);
+  font-weight: 600;
+  color: var(--primary-color);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-bottom: 4px;
+}
+
+.pcb-desc {
+  font-size: var(--font-size-sm);
+  color: var(--text-primary);
+  margin-bottom: 8px;
+  line-height: 1.5;
+}
+
+.pcb-why {
+  font-size: var(--font-size-sm);
+  color: var(--text-secondary);
+  line-height: 1.5;
+  border-top: 1px solid #c4b5fd;
+  padding-top: 8px;
+  margin-top: 2px;
+}
+
+.pcb-why strong {
+  color: var(--primary-color);
+}
+
+.page-context-banner.pcb-hidden {
+  display: none;
+}
+
 /* ==================== MERRIAM-WEBSTER WORD OF THE DAY ==================== */
 .mw-word-section {
   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);

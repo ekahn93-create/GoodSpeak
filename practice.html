@@ -141,6 +141,37 @@
                 <p>Put your skills to use with storytelling, challenges, and real speaking exercises</p>
             </div>
 
+            <!-- Arc strip -->
+            <div class="page-arc-strip">
+                <div class="pas-step pas-step-done">
+                    <span class="pas-step-number">1</span>
+                    <span>Learn</span>
+                </div>
+                <span class="pas-arrow">&#8594;</span>
+                <div class="pas-step pas-step-done">
+                    <span class="pas-step-number">2</span>
+                    <span>Polish</span>
+                </div>
+                <span class="pas-arrow">&#8594;</span>
+                <div class="pas-step pas-step-current">
+                    <span class="pas-step-number">3</span>
+                    <span>Practice</span>
+                </div>
+                <span class="pas-arrow">&#8594;</span>
+                <div class="pas-step">
+                    <span class="pas-step-number">4</span>
+                    <span>Play</span>
+                </div>
+            </div>
+
+            <!-- Page context banner -->
+            <div class="page-context-banner" id="pcb-practice">
+                <button class="pcb-close" id="pcb-practice-close" aria-label="Dismiss">&times;</button>
+                <div class="pcb-what">What is Practice?</div>
+                <p class="pcb-desc">Deploy everything in real speaking scenarios — storytelling prompts, impromptu speaking, interactive challenges, and listening comprehension. This is where it all comes together.</p>
+                <p class="pcb-why" id="pcb-practice-why"><strong>Why now:</strong> You've built your foundation in Learn and polished how you sound. Practice is where repetition becomes fluency — speak freely, make mistakes, and grow.</p>
+            </div>
+
             <!-- Category Navigation -->
             <div class="storytelling-categories">
                 <button class="storytelling-category-tab active" data-story-category="storytelling">Storytelling</button>
@@ -1026,6 +1057,54 @@
     <script>
       // Initialize Lucide icons after DOM is ready
       if (typeof lucide !== 'undefined') lucide.createIcons();
+    </script>
+
+    <!-- Page context banner: dismiss logic + dynamic stat -->
+    <script>
+      (function() {
+        var DISMISS_KEY = 'pcbDismissed_practice';
+        var banner = document.getElementById('pcb-practice');
+        if (localStorage.getItem(DISMISS_KEY) === '1') {
+          banner.classList.add('pcb-hidden');
+        } else {
+          // Inject dynamic Polish session count into "Why now"
+          try {
+            var raw = localStorage.getItem('articulationAppData');
+            if (raw) {
+              var data = JSON.parse(raw);
+              var polishCount = (data.stats && data.stats.polishSessionsCompleted) || 0;
+              var why = document.getElementById('pcb-practice-why');
+              if (polishCount > 0) {
+                why.innerHTML = '<strong>Why now:</strong> You\'ve completed <strong>' + polishCount + ' Polish session' + (polishCount !== 1 ? 's' : '') + '</strong>. Practice is where you put that training to use — speak freely, make mistakes, and grow.';
+              } else {
+                why.innerHTML = '<strong>Why now:</strong> Polish trains how you sound. Practice is where you use that voice for real — try a Storytelling prompt or Impromptu session.';
+              }
+            }
+          } catch(e) {}
+        }
+        // Re-show banner if Polish count has grown since last dismiss
+        try {
+          var _raw = localStorage.getItem('articulationAppData');
+          if (_raw) {
+            var _d = JSON.parse(_raw);
+            var _count = (_d.stats && _d.stats.polishSessionsCompleted) || 0;
+            var _dismissedAt = parseInt(localStorage.getItem('pcbDismissedAt_practice') || '0', 10);
+            if (_count > _dismissedAt) {
+              banner.classList.remove('pcb-hidden');
+              localStorage.removeItem(DISMISS_KEY);
+            }
+          }
+        } catch(e) {}
+        document.getElementById('pcb-practice-close').addEventListener('click', function() {
+          banner.classList.add('pcb-hidden');
+          localStorage.setItem(DISMISS_KEY, '1');
+          try {
+            var _r = localStorage.getItem('articulationAppData');
+            var _c = _r ? (JSON.parse(_r).stats.polishSessionsCompleted || 0) : 0;
+            localStorage.setItem('pcbDismissedAt_practice', String(_c));
+          } catch(e) {}
+        });
+      })();
     </script>
 
     <!-- Footer Modals -->

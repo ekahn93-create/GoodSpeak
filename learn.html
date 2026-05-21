@@ -170,6 +170,37 @@
                 <p>Build your vocabulary, master grammar, and sharpen your word choice</p>
             </div>
 
+            <!-- Arc strip -->
+            <div class="page-arc-strip">
+                <div class="pas-step pas-step-current">
+                    <span class="pas-step-number">1</span>
+                    <span>Learn</span>
+                </div>
+                <span class="pas-arrow">&#8594;</span>
+                <div class="pas-step">
+                    <span class="pas-step-number">2</span>
+                    <span>Polish</span>
+                </div>
+                <span class="pas-arrow">&#8594;</span>
+                <div class="pas-step">
+                    <span class="pas-step-number">3</span>
+                    <span>Practice</span>
+                </div>
+                <span class="pas-arrow">&#8594;</span>
+                <div class="pas-step">
+                    <span class="pas-step-number">4</span>
+                    <span>Play</span>
+                </div>
+            </div>
+
+            <!-- Page context banner -->
+            <div class="page-context-banner" id="pcb-learn">
+                <button class="pcb-close" id="pcb-learn-close" aria-label="Dismiss">&times;</button>
+                <div class="pcb-what">What is Learn?</div>
+                <p class="pcb-desc">Build your vocabulary and grammar foundation through spaced repetition, word studies, and knowledge checks. The words you learn here fuel every other part of the app.</p>
+                <p class="pcb-why"><strong>Why start here:</strong> Every Polish drill and Practice prompt gets sharper when you know more words. Learn is the foundation — start here, then move to Polish to train how you sound saying them.</p>
+            </div>
+
             <!-- Category Navigation -->
             <div class="vocab-categories">
                 <button class="vocab-category-tab active" data-vocab-category="builder">Vocabulary Builder</button>
@@ -841,6 +872,21 @@
     <script>
       // Initialize Lucide icons after DOM is ready
       if (typeof lucide !== 'undefined') lucide.createIcons();
+    </script>
+
+    <!-- Page context banner: dismiss logic -->
+    <script>
+      (function() {
+        var DISMISS_KEY = 'pcbDismissed_learn';
+        var banner = document.getElementById('pcb-learn');
+        if (localStorage.getItem(DISMISS_KEY) === '1') {
+          banner.classList.add('pcb-hidden');
+        }
+        document.getElementById('pcb-learn-close').addEventListener('click', function() {
+          banner.classList.add('pcb-hidden');
+          localStorage.setItem(DISMISS_KEY, '1');
+        });
+      })();
     </script>
 
     <script>

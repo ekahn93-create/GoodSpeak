@@ -233,6 +233,11 @@ const ReadAloudModule = (function() {
       ProgressChartsModule.logSpeechSession(wpm, fillerCount);
     }
 
+    // Track Polish session count
+    var _pdata = StorageManager.load();
+    _pdata.stats.polishSessionsCompleted = (_pdata.stats.polishSessionsCompleted || 0) + 1;
+    StorageManager.save(_pdata);
+
     // Nudge toward Practice after a Read Aloud session
     if (typeof NudgeModule !== 'undefined') {
       NudgeModule.show(
