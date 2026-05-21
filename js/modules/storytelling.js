@@ -529,6 +529,17 @@ case 'recordings':
         markCompleteBtn.classList.remove('btn-success');
       }
 
+      // Nudge toward Learn to save new words encountered during the story
+      if (typeof NudgeModule !== 'undefined') {
+        NudgeModule.show(
+          'nudge-story-done',
+          'Used a new word? Save it to your Word Bank to make it stick.',
+          'Go to Word Bank',
+          'vocabulary',
+          'bank'
+        );
+      }
+
       // Show congratulations modal
       setTimeout(() => {
         Modal.alert({
@@ -776,6 +787,21 @@ case 'recordings':
             _showVocabResult(currentVocabWord, true, null, null);
           });
         }, true); // capture phase so it fires before WebSpeech's own handler
+      }
+
+      // Nudge toward Stats after any impromptu session stop
+      if (stopBtn && typeof NudgeModule !== 'undefined') {
+        stopBtn.addEventListener('click', () => {
+          setTimeout(() => {
+            NudgeModule.show(
+              'nudge-impromptu-done',
+              'Want to see how your speaking is improving? Check your metrics in Stats.',
+              'Go to Stats',
+              'progress',
+              null
+            );
+          }, 800); // slight delay so vocab result banner renders first
+        });
       }
     }
 

@@ -240,6 +240,7 @@ const App = (function() {
       { id: 'lp-step-learn',    done: words    >= stepDoneAt.learn    },
       { id: 'lp-step-polish',   done: fluencyVisited                  },
       { id: 'lp-step-practice', done: stories  >= stepDoneAt.practice },
+      { id: 'lp-step-play',     done: false                           },
       { id: 'lp-step-review',   done: days     >= stepDoneAt.days     }
     ];
     let foundCurrent = false;

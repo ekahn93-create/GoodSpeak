@@ -449,6 +449,27 @@ const PlayModule = (function () {
     }
 
     _showPostgame(streakCount);
+
+    // Nudge toward Learn if they missed words, otherwise toward Stats
+    if (typeof NudgeModule !== 'undefined') {
+      if (missedWords.length > 0) {
+        NudgeModule.show(
+          'nudge-play-done',
+          'You missed ' + missedWords.length + ' word' + (missedWords.length > 1 ? 's' : '') + ' — add them to your Word Bank to study them.',
+          'Go to Word Bank',
+          'vocabulary',
+          'bank'
+        );
+      } else {
+        NudgeModule.show(
+          'nudge-play-done',
+          'Clean game! See how your progress is trending in Stats.',
+          'Go to Stats',
+          'progress',
+          null
+        );
+      }
+    }
   }
 
   function _showPostgame(streakCount) {

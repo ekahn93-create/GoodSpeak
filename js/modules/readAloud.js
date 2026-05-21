@@ -233,6 +233,17 @@ const ReadAloudModule = (function() {
       ProgressChartsModule.logSpeechSession(wpm, fillerCount);
     }
 
+    // Nudge toward Practice after a Read Aloud session
+    if (typeof NudgeModule !== 'undefined') {
+      NudgeModule.show(
+        'nudge-readaloud-done',
+        'Nice session. Try retelling that passage in your own words — head to Storytelling.',
+        'Go to Practice',
+        'storytelling',
+        'storytelling'
+      );
+    }
+
     renderReadAloudAIButton(currentText, finalTranscript);
 
     document.getElementById('readaloud-results').style.display = '';

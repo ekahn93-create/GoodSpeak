@@ -883,6 +883,17 @@ const FluencyModule = (function() {
     if (typeof ProgressChartsModule !== 'undefined') {
       ProgressChartsModule.logSpeechSession(0, fillerCount);
     }
+
+    // Nudge toward Practice after completing a fluency session
+    if (typeof NudgeModule !== 'undefined') {
+      NudgeModule.show(
+        'nudge-filler-done',
+        'Great work. Now put it all together — try a Storytelling prompt.',
+        'Go to Practice',
+        'storytelling',
+        'storytelling'
+      );
+    }
   }
 
   function stopFillerExercise(finished) {

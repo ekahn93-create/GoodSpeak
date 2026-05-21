@@ -5,7 +5,7 @@
 
 const NudgeModule = (function() {
 
-  const AUTO_DISMISS_MS = 12000;
+  const AUTO_DISMISS_MS = 5000;
 
   /**
    * Show a nudge banner in a container element.
