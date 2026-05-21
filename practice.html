@@ -167,9 +167,12 @@
             <!-- Page context banner -->
             <div class="page-context-banner" id="pcb-practice">
                 <button class="pcb-close" id="pcb-practice-close" aria-label="Dismiss">&times;</button>
-                <div class="pcb-what">What is Practice?</div>
-                <p class="pcb-desc">Deploy everything in real speaking scenarios — storytelling prompts, impromptu speaking, interactive challenges, and listening comprehension. This is where it all comes together.</p>
-                <p class="pcb-why" id="pcb-practice-why"><strong>Why now:</strong> You've built your foundation in Learn and polished how you sound. Practice is where repetition becomes fluency — speak freely, make mistakes, and grow.</p>
+                <button class="pcb-toggle" id="pcb-practice-what-toggle" aria-expanded="false">What is Practice? <i class="pcb-toggle-icon">▼</i></button>
+                <p class="pcb-desc" id="pcb-practice-desc">Deploy everything in real speaking scenarios — storytelling prompts, impromptu speaking, interactive challenges, and listening comprehension. This is where it all comes together.</p>
+                <div class="pcb-why-label">
+                    <button class="pcb-toggle" id="pcb-practice-why-toggle" aria-expanded="false">Why now? <i class="pcb-toggle-icon">▼</i></button>
+                </div>
+                <p class="pcb-why" id="pcb-practice-why">You've built your foundation in Learn and polished how you sound. Practice is where repetition becomes fluency — speak freely, make mistakes, and grow.</p>
             </div>
 
             <!-- Category Navigation -->
@@ -1059,7 +1062,7 @@
       if (typeof lucide !== 'undefined') lucide.createIcons();
     </script>
 
-    <!-- Page context banner: dismiss logic + dynamic stat -->
+    <!-- Page context banner: dismiss logic + dynamic stat + accordion -->
     <script>
       (function() {
         var DISMISS_KEY = 'pcbDismissed_practice';
@@ -1075,9 +1078,9 @@
               var polishCount = (data.stats && data.stats.polishSessionsCompleted) || 0;
               var why = document.getElementById('pcb-practice-why');
               if (polishCount > 0) {
-                why.innerHTML = '<strong>Why now:</strong> You\'ve completed <strong>' + polishCount + ' Polish session' + (polishCount !== 1 ? 's' : '') + '</strong>. Practice is where you put that training to use — speak freely, make mistakes, and grow.';
+                why.innerHTML = 'You\'ve completed <strong>' + polishCount + ' Polish session' + (polishCount !== 1 ? 's' : '') + '</strong>. Practice is where you put that training to use — speak freely, make mistakes, and grow.';
               } else {
-                why.innerHTML = '<strong>Why now:</strong> Polish trains how you sound. Practice is where you use that voice for real — try a Storytelling prompt or Impromptu session.';
+                why.innerHTML = 'Polish trains how you sound. Practice is where you use that voice for real — try a Storytelling prompt or Impromptu session.';
               }
             }
           } catch(e) {}
@@ -1103,6 +1106,19 @@
             var _c = _r ? (JSON.parse(_r).stats.polishSessionsCompleted || 0) : 0;
             localStorage.setItem('pcbDismissedAt_practice', String(_c));
           } catch(e) {}
+        });
+        // Accordion toggles
+        document.getElementById('pcb-practice-what-toggle').addEventListener('click', function() {
+          var desc = document.getElementById('pcb-practice-desc');
+          var open = desc.classList.toggle('pcb-open');
+          this.classList.toggle('pcb-open', open);
+          this.setAttribute('aria-expanded', open);
+        });
+        document.getElementById('pcb-practice-why-toggle').addEventListener('click', function() {
+          var why = document.getElementById('pcb-practice-why');
+          var open = why.classList.toggle('pcb-open');
+          this.classList.toggle('pcb-open', open);
+          this.setAttribute('aria-expanded', open);
         });
       })();
     </script>

@@ -167,9 +167,12 @@
             <!-- Page context banner -->
             <div class="page-context-banner" id="pcb-polish">
                 <button class="pcb-close" id="pcb-polish-close" aria-label="Dismiss">&times;</button>
-                <div class="pcb-what">What is Polish?</div>
-                <p class="pcb-desc">Train your ear and mouth — read passages aloud, reduce filler words, build pronunciation habits, and refine how you sound before speaking in real situations.</p>
-                <p class="pcb-why" id="pcb-polish-why"><strong>Why now:</strong> You've learned words in Learn — Polish is where you start sounding like you know them. Drill here before moving to Practice.</p>
+                <button class="pcb-toggle" id="pcb-polish-what-toggle" aria-expanded="false">What is Polish? <i class="pcb-toggle-icon">▼</i></button>
+                <p class="pcb-desc" id="pcb-polish-desc">Train your ear and mouth — read passages aloud, reduce filler words, build pronunciation habits, and refine how you sound before speaking in real situations.</p>
+                <div class="pcb-why-label">
+                    <button class="pcb-toggle" id="pcb-polish-why-toggle" aria-expanded="false">Why now? <i class="pcb-toggle-icon">▼</i></button>
+                </div>
+                <p class="pcb-why" id="pcb-polish-why">You've learned words in Learn — Polish is where you start sounding like you know them. Drill here before moving to Practice.</p>
             </div>
 
             <!-- Category Navigation -->
@@ -409,8 +412,8 @@
                             <p class="tip-text">When you feel the urge to fill silence, pause instead. A confident pause sounds far better than "um."</p>
                         </div>
 
-                        <!-- Topic box (shown during active exercise) -->
-                        <div id="filler-topic-box" style="display:none; background: var(--bg-hover); border-radius: var(--border-radius-sm); padding: var(--spacing-md); margin-bottom: var(--spacing-md);">
+                        <!-- Topic box (always visible) -->
+                        <div id="filler-topic-box" style="background: var(--bg-hover); border-radius: var(--border-radius-sm); padding: var(--spacing-md); margin-bottom: var(--spacing-md);">
                             <div style="font-size: var(--font-size-sm); color: var(--text-secondary); margin-bottom: var(--spacing-xs); text-transform: uppercase; letter-spacing: 1px;">Your Topic</div>
                             <div id="filler-topic-text" style="font-size: var(--font-size-xl); font-weight: 600; color: var(--text-primary);"></div>
                         </div>
@@ -431,6 +434,7 @@
 
                             <div class="exercise-controls">
                                 <button class="btn btn-primary" id="filler-start-btn">Start Exercise</button>
+                                <button class="btn btn-secondary filler-new-topic-btn">New Topic</button>
                             </div>
                         </div>
 
@@ -467,7 +471,7 @@
 
                             <div class="exercise-controls">
                                 <button class="btn btn-primary" id="filler-try-again-btn">Try Again</button>
-                                <button class="btn btn-secondary" id="filler-new-topic-btn">New Topic</button>
+                                <button class="btn btn-secondary filler-new-topic-btn">New Topic</button>
                             </div>
                             <div id="nudge-filler-done" class="nudge-slot"></div>
                         </div>
@@ -957,7 +961,7 @@
       if (typeof lucide !== 'undefined') lucide.createIcons();
     </script>
 
-    <!-- Page context banner: dismiss logic + dynamic stat -->
+    <!-- Page context banner: dismiss logic + dynamic stat + accordion -->
     <script>
       (function() {
         var DISMISS_KEY = 'pcbDismissed_polish';
@@ -973,8 +977,7 @@
               var customLearned = (data.customWords || []).filter(function(w) { return w.status === 'learned'; }).length;
               var wordCount = ((data.vocabulary && data.vocabulary.learned) ? data.vocabulary.learned.length : 0) + customLearned;
               if (wordCount > 0) {
-                var why = document.getElementById('pcb-polish-why');
-                why.innerHTML = '<strong>Why now:</strong> You\'ve learned <strong>' + wordCount + ' word' + (wordCount !== 1 ? 's' : '') + '</strong> in Learn — Polish is where you start sounding like you know them. Drill here before moving to Practice.';
+                document.getElementById('pcb-polish-why').innerHTML = 'You\'ve learned <strong>' + wordCount + ' word' + (wordCount !== 1 ? 's' : '') + '</strong> in Learn — Polish is where you start sounding like you know them. Drill here before moving to Practice.';
               }
             }
           } catch(e) {}
@@ -982,6 +985,19 @@
         document.getElementById('pcb-polish-close').addEventListener('click', function() {
           banner.classList.add('pcb-hidden');
           localStorage.setItem(DISMISS_KEY, '1');
+        });
+        // Accordion toggles
+        document.getElementById('pcb-polish-what-toggle').addEventListener('click', function() {
+          var desc = document.getElementById('pcb-polish-desc');
+          var open = desc.classList.toggle('pcb-open');
+          this.classList.toggle('pcb-open', open);
+          this.setAttribute('aria-expanded', open);
+        });
+        document.getElementById('pcb-polish-why-toggle').addEventListener('click', function() {
+          var why = document.getElementById('pcb-polish-why');
+          var open = why.classList.toggle('pcb-open');
+          this.classList.toggle('pcb-open', open);
+          this.setAttribute('aria-expanded', open);
         });
       })();
     </script>

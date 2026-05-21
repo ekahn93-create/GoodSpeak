@@ -196,9 +196,12 @@
             <!-- Page context banner -->
             <div class="page-context-banner" id="pcb-learn">
                 <button class="pcb-close" id="pcb-learn-close" aria-label="Dismiss">&times;</button>
-                <div class="pcb-what">What is Learn?</div>
-                <p class="pcb-desc">Build your vocabulary and grammar foundation through spaced repetition, word studies, and knowledge checks. The words you learn here fuel every other part of the app.</p>
-                <p class="pcb-why"><strong>Why start here:</strong> Every Polish drill and Practice prompt gets sharper when you know more words. Learn is the foundation — start here, then move to Polish to train how you sound saying them.</p>
+                <button class="pcb-toggle" id="pcb-learn-what-toggle" aria-expanded="false">What is Learn? <i class="pcb-toggle-icon">▼</i></button>
+                <p class="pcb-desc" id="pcb-learn-desc">Build your vocabulary and grammar foundation through spaced repetition, word studies, and knowledge checks. The words you learn here fuel every other part of the app.</p>
+                <div class="pcb-why-label">
+                    <button class="pcb-toggle" id="pcb-learn-why-toggle" aria-expanded="false">Why start here? <i class="pcb-toggle-icon">▼</i></button>
+                </div>
+                <p class="pcb-why" id="pcb-learn-why">Every Polish drill and Practice prompt gets sharper when you know more words. Learn is the foundation — start here, then move to Polish to train how you sound saying them.</p>
             </div>
 
             <!-- Category Navigation -->
@@ -874,7 +877,7 @@
       if (typeof lucide !== 'undefined') lucide.createIcons();
     </script>
 
-    <!-- Page context banner: dismiss logic -->
+    <!-- Page context banner: dismiss + accordion logic -->
     <script>
       (function() {
         var DISMISS_KEY = 'pcbDismissed_learn';
@@ -885,6 +888,19 @@
         document.getElementById('pcb-learn-close').addEventListener('click', function() {
           banner.classList.add('pcb-hidden');
           localStorage.setItem(DISMISS_KEY, '1');
+        });
+        // Accordion toggles
+        document.getElementById('pcb-learn-what-toggle').addEventListener('click', function() {
+          var desc = document.getElementById('pcb-learn-desc');
+          var open = desc.classList.toggle('pcb-open');
+          this.classList.toggle('pcb-open', open);
+          this.setAttribute('aria-expanded', open);
+        });
+        document.getElementById('pcb-learn-why-toggle').addEventListener('click', function() {
+          var why = document.getElementById('pcb-learn-why');
+          var open = why.classList.toggle('pcb-open');
+          this.classList.toggle('pcb-open', open);
+          this.setAttribute('aria-expanded', open);
         });
       })();
     </script>

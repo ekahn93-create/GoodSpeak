@@ -513,13 +513,12 @@ const FluencyModule = (function() {
 
     const fillerTryAgainBtn = document.getElementById('filler-try-again-btn');
     if (fillerTryAgainBtn) {
-      fillerTryAgainBtn.addEventListener('click', () => startFillerExercise(true));
+      fillerTryAgainBtn.addEventListener('click', () => resetFillerExercise(true));
     }
 
-    const fillerNewTopicBtn = document.getElementById('filler-new-topic-btn');
-    if (fillerNewTopicBtn) {
-      fillerNewTopicBtn.addEventListener('click', () => startFillerExercise(false));
-    }
+    document.querySelectorAll('.filler-new-topic-btn').forEach(btn => {
+      btn.addEventListener('click', () => resetFillerExercise(false));
+    });
 
     if (newPacingPassageBtn) {
       newPacingPassageBtn.addEventListener('click', showNewPacingPassage);
@@ -598,6 +597,11 @@ const FluencyModule = (function() {
     showNewPacingPassage();
     showNewTransitionExercise();
     showNewCombiningExercise();
+
+    // Seed initial filler topic so the box isn't blank on load
+    fillerCurrentTopic = fillerTopics[Math.floor(Math.random() * fillerTopics.length)];
+    const fillerTopicEl = document.getElementById('filler-topic-text');
+    if (fillerTopicEl) fillerTopicEl.textContent = fillerCurrentTopic;
 
     // Load initial eloquence content
     showNewSynonym();
@@ -821,7 +825,6 @@ const FluencyModule = (function() {
     document.getElementById('filler-setup').style.display = 'block';
     document.getElementById('filler-active').style.display = 'none';
     document.getElementById('filler-results').style.display = 'none';
-    document.getElementById('filler-topic-box').style.display = 'none';
     // Reset timer display to selected duration
     const activeBtn = document.querySelector('#filler-duration-group .ws-inst-time-btn.active');
     const secs = activeBtn ? parseInt(activeBtn.dataset.seconds, 10) : 30;
@@ -829,11 +832,30 @@ const FluencyModule = (function() {
     if (countEl) countEl.textContent = formatFillerTime(secs);
   }
 
+  function resetFillerExercise(sameTopic) {
+    // Stop any running exercise first
+    if (fillerTimer) { clearInterval(fillerTimer); fillerTimer = null; }
+    if (fillerRecognition) {
+      try { fillerRecognition.stop(); } catch(e) {}
+      fillerRecognition = null;
+    }
+    // Pick topic
+    if (!sameTopic || !fillerCurrentTopic) {
+      let topic;
+      do {
+        topic = fillerTopics[Math.floor(Math.random() * fillerTopics.length)];
+      } while (topic === fillerCurrentTopic && fillerTopics.length > 1);
+      fillerCurrentTopic = topic;
+    }
+    const topicEl = document.getElementById('filler-topic-text');
+    if (topicEl) topicEl.textContent = fillerCurrentTopic;
+    showFillerSetup();
+  }
+
   function showFillerResults() {
     document.getElementById('filler-setup').style.display = 'none';
     document.getElementById('filler-active').style.display = 'none';
     document.getElementById('filler-results').style.display = 'block';
-    document.getElementById('filler-topic-box').style.display = 'none';
 
     if (typeof App !== 'undefined' && App.markTPTaskDone) App.markTPTaskDone('filler');
 
@@ -919,18 +941,7 @@ const FluencyModule = (function() {
     }
   }
 
-  function startFillerExercise(sameTopic) {
-    // Pick a topic (avoid repeating last one unless sameTopic is true)
-    let topic;
-    if (sameTopic && fillerCurrentTopic) {
-      topic = fillerCurrentTopic;
-    } else {
-      do {
-        topic = fillerTopics[Math.floor(Math.random() * fillerTopics.length)];
-      } while (topic === fillerCurrentTopic && fillerTopics.length > 1);
-      fillerCurrentTopic = topic;
-    }
-
+  function startFillerExercise() {
     // Get selected duration
     const activeBtn = document.querySelector('#filler-duration-group .ws-inst-time-btn.active');
     fillerTotalDuration = activeBtn ? parseInt(activeBtn.dataset.seconds, 10) : 30;
@@ -942,9 +953,6 @@ const FluencyModule = (function() {
     document.getElementById('filler-setup').style.display = 'none';
     document.getElementById('filler-active').style.display = 'block';
     document.getElementById('filler-results').style.display = 'none';
-    document.getElementById('filler-topic-box').style.display = 'block';
-
-    document.getElementById('filler-topic-text').textContent = topic;
     document.getElementById('filler-countdown').textContent = formatFillerTime(fillerSecondsLeft);
     document.getElementById('filler-live-count').textContent = '0';
     document.getElementById('filler-last-detected').textContent = '—';

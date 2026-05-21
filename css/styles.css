@@ -3136,6 +3136,37 @@ canvas {
   color: var(--text-primary);
 }
 
+.pcb-toggle {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: var(--font-size-sm);
+  font-weight: 600;
+  color: var(--primary-color);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  margin-bottom: 4px;
+}
+
+.pcb-toggle:hover {
+  opacity: 0.8;
+}
+
+.pcb-toggle-icon {
+  display: inline-block;
+  transition: transform 0.2s ease;
+  font-style: normal;
+  font-size: 0.65em;
+}
+
+.pcb-toggle.pcb-open .pcb-toggle-icon {
+  transform: rotate(180deg);
+}
+
 .pcb-what {
   font-size: var(--font-size-sm);
   font-weight: 600;
@@ -3150,15 +3181,35 @@ canvas {
   color: var(--text-primary);
   margin-bottom: 8px;
   line-height: 1.5;
+  display: none;
+}
+
+.pcb-desc.pcb-open {
+  display: block;
+}
+
+.pcb-why-label {
+  font-size: var(--font-size-sm);
+  font-weight: 600;
+  color: var(--primary-color);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  border-top: 1px solid #c4b5fd;
+  padding-top: 8px;
+  margin-top: 6px;
 }
 
 .pcb-why {
   font-size: var(--font-size-sm);
   color: var(--text-secondary);
   line-height: 1.5;
-  border-top: 1px solid #c4b5fd;
-  padding-top: 8px;
-  margin-top: 2px;
+  margin-top: 4px;
+  margin-bottom: 0;
+  display: none;
+}
+
+.pcb-why.pcb-open {
+  display: block;
 }
 
 .pcb-why strong {
