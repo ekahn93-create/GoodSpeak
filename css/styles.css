@@ -1692,6 +1692,8 @@ ul, ol {
 
 .activity-list {
   list-style: none;
+  max-height: 360px;
+  overflow-y: auto;
 }
 
 .activity-item {
@@ -2855,6 +2857,8 @@ canvas {
   display: flex;
   flex-direction: column;
   gap: 14px;
+  max-height: 360px;
+  overflow-y: auto;
 }
 .deploy-scorecard-row {
   display: flex;
@@ -2908,6 +2912,7 @@ canvas {
   grid-template-columns: 1fr 1fr 1fr;
   gap: var(--spacing-lg);
   margin-bottom: var(--spacing-lg);
+  align-items: start;
 }
 
 .review-panel {

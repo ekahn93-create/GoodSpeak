@@ -612,11 +612,7 @@ case 'recordings':
         Modal.alert({
           title: 'Story Completed!',
           message: `Excellent work! You've completed "${currentPrompt.title}". Keep practicing to improve your storytelling skills.`,
-          type: 'success',
-          onClose: function() {
-            showPromptsView();
-            displayPrompts(currentTheme);
-          }
+          type: 'success'
         });
       }, 500);
     } else {
@@ -1123,33 +1119,53 @@ case 'recordings':
       return;
     }
 
-    // Build one row per word
-    const rows = results.map(r => {
-      if (r.correct) {
-        return `<div style="margin-bottom:6px;">
-          <div style="display:flex;align-items:center;gap:6px;">
-            <span style="font-size:0.9rem;">✓</span>
-            <span style="font-size:var(--font-size-sm);font-weight:700;color:#1a7a45;">${r.word} — used correctly</span>
-          </div>
-          ${r.feedback ? `<div style="font-size:var(--font-size-sm);color:#2d7a50;line-height:1.4;margin-left:18px;">${r.feedback}</div>` : ''}
-        </div>`;
-      } else {
-        return `<div style="margin-bottom:6px;">
-          <div style="display:flex;align-items:center;gap:6px;">
-            <span style="font-size:0.9rem;">✗</span>
-            <span style="font-size:var(--font-size-sm);font-weight:700;color:#a06000;">${r.word} — try again</span>
-          </div>
-          ${r.feedback ? `<div style="font-size:var(--font-size-sm);color:#8a5500;line-height:1.4;margin-left:18px;">${r.feedback}</div>` : ''}
-        </div>`;
-      }
+    const isMobile = window.innerWidth < 768;
+    const startExpanded = !isMobile;
+    const detailsId = 'story-vocab-details-' + Date.now();
+
+    // Summary rows (always visible)
+    const summaryRows = results.map(r => {
+      const icon = r.correct ? '✓' : '✗';
+      const color = r.correct ? '#1a7a45' : '#a06000';
+      const label = r.correct ? 'used correctly' : 'try again';
+      return `<div style="display:flex;align-items:center;justify-content:space-between;padding:6px 2px;border-bottom:1px solid var(--border-color);">
+        <span style="font-size:var(--font-size-sm);font-weight:600;color:var(--text-primary);">${r.word}</span>
+        <div style="display:flex;align-items:center;gap:6px;">
+          <span style="font-size:var(--font-size-sm);font-weight:600;color:${color};">${label}</span>
+          <span style="font-size:0.9rem;color:${color};">${icon}</span>
+        </div>
+      </div>`;
     }).join('');
+
+    // Detail rows (collapsible)
+    const detailRows = results.map(r => {
+      if (!r.feedback) return '';
+      const color = r.correct ? '#2d7a50' : '#8a5500';
+      return `<div style="padding:6px 2px 8px;border-bottom:1px solid var(--border-color);">
+        <span style="font-size:var(--font-size-sm);font-weight:700;color:var(--text-primary);">${r.word}:</span>
+        <span style="font-size:var(--font-size-sm);color:${color};line-height:1.4;"> ${r.feedback}</span>
+      </div>`;
+    }).filter(Boolean).join('');
 
     const anyCorrect = results.some(r => r.correct);
     el.style.background = anyCorrect ? '#f0faf4' : '#fff8ec';
     el.style.borderColor = anyCorrect ? '#2d9e5f' : '#e0a020';
     el.innerHTML = `
-      <div style="font-size:var(--font-size-sm);font-weight:700;margin-bottom:8px;color:var(--text-primary);">Deploy Word Feedback</div>
-      ${rows}`;
+      <div style="font-size:var(--font-size-sm);font-weight:700;margin-bottom:6px;color:var(--text-primary);">Deploy Word Feedback</div>
+      <div style="margin-bottom:${detailRows ? 'var(--spacing-sm)' : '0'};">${summaryRows}</div>
+      ${detailRows ? `
+        <button id="${detailsId}-btn"
+          onclick="(function(btn){
+            var panel = document.getElementById('${detailsId}');
+            var open = panel.style.display !== 'none';
+            panel.style.display = open ? 'none' : 'block';
+            btn.textContent = open ? '▸ Show feedback' : '▾ Hide feedback';
+          })(this)"
+          style="background:none;border:none;color:var(--primary-color);cursor:pointer;font-size:var(--font-size-sm);font-weight:600;padding:0;margin-top:4px;">
+          ${startExpanded ? '▾ Hide feedback' : '▸ Show feedback'}
+        </button>
+        <div id="${detailsId}" style="display:${startExpanded ? 'block' : 'none'};margin-top:4px;">${detailRows}</div>
+      ` : ''}`;
   }
 
   /**

@@ -225,7 +225,22 @@ const WebSpeechModule = (function() {
   }
 
   function renderMetricCards(grid, metrics, weakBreakdown) {
-    grid.innerHTML = metrics.map(m => {
+    const isMobile = window.innerWidth < 768;
+    const detailsId = 'ws-metric-details-' + Date.now();
+    const startExpanded = !isMobile;
+
+    // Summary row per metric (always visible)
+    const summaryRows = metrics.map(m => `
+      <div style="display:flex; align-items:center; justify-content:space-between; padding: 7px 2px; border-bottom: 1px solid var(--border-color);">
+        <span style="font-size:var(--font-size-sm); font-weight:600; color:var(--text-primary);">${m.title}</span>
+        <div style="display:flex; align-items:center; gap:8px;">
+          <span style="font-size:var(--font-size-sm); font-weight:600; color:${m.rating.color};">${m.rating.label}</span>
+          ${gradeIcon(m.rating.color)}
+        </div>
+      </div>`).join('');
+
+    // Full detail cards (collapsible)
+    const detailCards = metrics.map(m => {
       const isVocab = m.title === 'Vocabulary Strength';
       const drilldown = isVocab ? buildWeakDrilldown(weakBreakdown) : '';
       return `
@@ -240,6 +255,26 @@ const WebSpeechModule = (function() {
           ${drilldown}
         </div>`;
     }).join('');
+
+    grid.innerHTML = `
+      <div style="margin-bottom: var(--spacing-sm);">
+        ${summaryRows}
+      </div>
+      <button id="${detailsId}-btn"
+        onclick="(function(btn){
+          var panel = document.getElementById('${detailsId}');
+          var open = panel.style.display !== 'none';
+          panel.style.display = open ? 'none' : 'block';
+          btn.textContent = open ? '▸ Show details' : '▾ Hide details';
+        })(this)"
+        style="background:none; border:none; color:var(--primary-color); cursor:pointer; font-size:var(--font-size-sm); font-weight:600; padding:0; margin-bottom: var(--spacing-sm);">
+        ${startExpanded ? '▾ Hide details' : '▸ Show details'}
+      </button>
+      <div id="${detailsId}" style="display:${startExpanded ? 'block' : 'none'};">
+        <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: var(--spacing-sm);">
+          ${detailCards}
+        </div>
+      </div>`;
   }
 
   // ── Core feedback builder (shared by all instances) ──────────────────────

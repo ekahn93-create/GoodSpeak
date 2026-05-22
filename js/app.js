@@ -709,13 +709,13 @@ const App = (function() {
       // vocabularyDatabase is keyed by difficulty level
       const words = (vocabularyDatabase[diff] || []);
       const total = words.length;
-      const done  = words.filter(w => learned.includes(w.id)).length;
+      const done  = words.filter(w => learned.includes(w.word) || learned.includes(w.word.toLowerCase())).length;
       const pct   = total > 0 ? Math.round((done / total) * 100) : 0;
       const color = colors[diff] || '#818cf8';
       html += `
         <div class="review-vocab-bar-item">
           <div class="review-vocab-bar-row">
-            <span class="review-vocab-bar-label">${diff}</span>
+            <span class="review-vocab-bar-label">${diff.charAt(0).toUpperCase() + diff.slice(1)}</span>
             <span class="review-vocab-bar-count" style="color:${color}">${done} / ${total}</span>
           </div>
           <div class="review-vocab-bar-bg">
@@ -724,6 +724,22 @@ const App = (function() {
         </div>
       `;
     });
+
+    // Custom words
+    const customLearned = (userData.customWords || []).filter(w => w.status === 'learned').length;
+    if (customLearned > 0) {
+      html += `
+        <div class="review-vocab-bar-item">
+          <div class="review-vocab-bar-row">
+            <span class="review-vocab-bar-label">Custom</span>
+            <span class="review-vocab-bar-count" style="color:#e8610a">${customLearned} word${customLearned !== 1 ? 's' : ''}</span>
+          </div>
+          <div class="review-vocab-bar-bg">
+            <div class="review-vocab-bar-fill" style="width:100%; background:#e8610a; opacity:0.6"></div>
+          </div>
+        </div>
+      `;
+    }
 
     progressBarsContainer.innerHTML = html || '<p class="text-secondary">No vocabulary data yet.</p>';
   }
