@@ -474,6 +474,9 @@ case 'recordings':
     }
 
     currentPrompt = null;
+
+    // Re-check tray visibility now that the prompts grid is back
+    document.dispatchEvent(new CustomEvent('storyViewChanged'));
   }
 
   /**

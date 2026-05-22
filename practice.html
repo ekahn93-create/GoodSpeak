@@ -1416,6 +1416,7 @@
         window.addEventListener('scroll', checkSectionsVisible, { passive: true });
         document.addEventListener('sessionWordsChanged', renderTray);
         document.addEventListener('sessionWordsChanged', checkSectionsVisible);
+        document.addEventListener('storyViewChanged', checkSectionsVisible);
 
         // Re-check when category tabs change
         document.querySelectorAll('.storytelling-category-tab').forEach(function(tab) {
