@@ -542,6 +542,29 @@
     grid-template-columns: 1fr;
   }
 
+  /* Exercise controls: full-width buttons when wrapping */
+  .exercise-controls .btn {
+    flex: 1 1 auto;
+    min-width: 0;
+  }
+
+  /* Time/framework/situation selector buttons: fill row evenly */
+  .time-selector .time-btn,
+  .time-selector .ws-inst-time-btn,
+  .time-selector .association-time-btn,
+  .framework-selector .framework-btn,
+  .situation-selector .situation-btn,
+  .duration-selector .duration-btn {
+    flex: 1 1 auto;
+    padding: var(--spacing-sm) var(--spacing-sm);
+    font-size: var(--font-size-sm);
+  }
+
+  /* Fluency card header: allow text to wrap on very small screens */
+  .fluency-card-header {
+    flex-wrap: wrap;
+  }
+
   /* Cards */
   .card {
     padding: var(--spacing-md);
@@ -596,6 +619,14 @@
   }
 }
 
+/* ==================== SESSION TRAY — above mobile tab bar (max-width: 640px) ==================== */
+@media (max-width: 640px) {
+  .session-tray {
+    bottom: calc(64px + env(safe-area-inset-bottom, 0px) + 8px);
+    right: 12px;
+  }
+}
+
 /* ==================== INNER TAB STRIPS — HORIZONTAL SCROLL (max-width: 640px) ==================== */
 @media (max-width: 640px) {
   .vocab-categories,
@@ -628,6 +659,15 @@
     font-size: var(--font-size-sm);
     padding: var(--spacing-xs) var(--spacing-sm);
     min-height: 44px;
+  }
+}
+
+/* ==================== LEARN BRIDGE BANNER — narrow screens ==================== */
+@media (max-width: 380px) {
+  /* Hide the "Practice in Polish →" CTA and separator to keep pill from overflowing */
+  .lbb-cta,
+  .lbb-sep {
+    display: none;
   }
 }
 

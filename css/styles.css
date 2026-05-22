@@ -4405,6 +4405,7 @@ canvas {
   gap: var(--spacing-md);
   justify-content: center;
   margin-top: var(--spacing-md);
+  flex-wrap: wrap;
 }
 
 /* Difficulty Selector */
