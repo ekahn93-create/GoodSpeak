@@ -348,6 +348,9 @@ case 'recordings':
       storyWebSpeechInstance.setDuration(timeInfo.seconds);
     }
 
+    // Render deploy checklist from session words
+    _renderDeployChecklist();
+
     // Update "Mark as Complete" button state
     const markCompleteBtn = document.getElementById('mark-story-complete-btn');
     if (markCompleteBtn) {
@@ -1762,6 +1765,83 @@ case 'recordings':
    */
   function getProgress() {
     return userData ? userData.storytelling : null;
+  }
+
+  // ── Deploy Checklist ────────────────────────────────────────────────────
+  let _deployCheckedWords = new Set();
+  let _deployObserver = null;
+
+  function _renderDeployChecklist() {
+    if (typeof SessionWords === 'undefined') return;
+
+    // Auto-populate from full vocab if no session words yet
+    if (SessionWords.get().length === 0) {
+      SessionWords.shuffle();
+    }
+
+    const words = SessionWords.get();
+    const panel = document.getElementById('deploy-checklist');
+    const list  = document.getElementById('deploy-checklist-list');
+    const shuffleBtn = document.getElementById('deploy-shuffle-btn');
+
+    if (!panel || !list) return;
+
+    _deployCheckedWords = new Set();
+
+    if (words.length === 0) {
+      panel.style.display = 'none';
+      return;
+    }
+
+    list.innerHTML = words.map(w =>
+      `<li class="deploy-checklist-item" data-word="${w.toLowerCase()}">
+         <span class="deploy-check-icon">&#9675;</span>
+         <span class="deploy-word-text">${w}</span>
+       </li>`
+    ).join('');
+
+    panel.style.display = 'block';
+
+    if (shuffleBtn) {
+      shuffleBtn.onclick = function() {
+        if (typeof SessionWords !== 'undefined') {
+          SessionWords.shuffle();
+          _renderDeployChecklist();
+        }
+      };
+    }
+
+    // Watch transcript for word detection
+    _startTranscriptWatcher(words);
+  }
+
+  function _startTranscriptWatcher(words) {
+    // Disconnect any previous observer
+    if (_deployObserver) {
+      _deployObserver.disconnect();
+      _deployObserver = null;
+    }
+
+    const finalEl = document.getElementById('story-transcript-final');
+    if (!finalEl || words.length === 0) return;
+
+    const lowerWords = words.map(w => w.toLowerCase());
+
+    _deployObserver = new MutationObserver(function() {
+      const text = (finalEl.textContent || '').toLowerCase();
+      lowerWords.forEach(function(w) {
+        if (!_deployCheckedWords.has(w) && text.includes(w)) {
+          _deployCheckedWords.add(w);
+          const item = document.querySelector(`.deploy-checklist-item[data-word="${w}"]`);
+          if (item) {
+            item.classList.add('deploy-checked');
+            item.querySelector('.deploy-check-icon').innerHTML = '&#10003;';
+          }
+        }
+      });
+    });
+
+    _deployObserver.observe(finalEl, { childList: true, characterData: true, subtree: true });
   }
 
   // Public API

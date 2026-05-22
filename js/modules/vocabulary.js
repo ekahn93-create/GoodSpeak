@@ -467,6 +467,12 @@ const VocabularyModule = (function() {
       StorageManager.incrementWordsLearnedToday();
       showToast('Word added to your vocabulary!', 'success');
 
+      // Track in session words for cross-page bridge
+      if (typeof SessionWords !== 'undefined') {
+        SessionWords.add(wordId);
+        _showBridgeBanner();
+      }
+
       // Nudge toward Knowledge Check after learning words
       if (typeof NudgeModule !== 'undefined') {
         const learnedCount = userData.vocabulary.learned.length;
@@ -523,6 +529,12 @@ const VocabularyModule = (function() {
     // Save to storage
     if (StorageManager.save(userData)) {
       showToast('Word added to Still Learning!', 'success');
+
+      // Track in session words for cross-page bridge
+      if (typeof SessionWords !== 'undefined') {
+        SessionWords.add(wordId);
+        _showBridgeBanner();
+      }
 
       // Update display
       displayStillLearningWords();
@@ -1392,6 +1404,43 @@ const VocabularyModule = (function() {
     if (feedback) feedback.style.display = state === 'feedback' ? 'block' : 'none';
   }
 
+  // ── Bridge Banner (Learn → Polish) ───────────────────────────────────────
+  function _showBridgeBanner() {
+    const words = typeof SessionWords !== 'undefined' ? SessionWords.get() : [];
+    if (words.length === 0) return;
+
+    let banner = document.getElementById('learn-bridge-banner');
+    if (!banner) return;
+
+    const count = words.length;
+    const wordChips = words.map(w => `<span class="lbb-word-chip">${w}</span>`).join('');
+    banner.innerHTML = `
+      <div class="lbb-pill-row">
+        <span class="lbb-count" id="lbb-count-btn">${count} word${count !== 1 ? 's' : ''} ready ▾</span>
+        <span class="lbb-sep"></span>
+        <a class="lbb-cta" href="/polish">Practice in Polish &rarr;</a>
+        <span class="lbb-sep"></span>
+        <button class="lbb-shuffle" onclick="SessionWords.shuffle(); VocabularyModule._refreshBridgeBanner();" title="New words">&#8635;</button>
+        <button class="lbb-close" aria-label="Dismiss">&times;</button>
+      </div>
+      <div class="lbb-words-panel" id="lbb-words-panel">${wordChips}</div>
+    `;
+    banner.classList.add('lbb-visible');
+
+    banner.querySelector('#lbb-count-btn').onclick = function() {
+      const expanded = banner.classList.toggle('lbb-expanded');
+      this.textContent = count + ' word' + (count !== 1 ? 's' : '') + ' ready ' + (expanded ? '▴' : '▾');
+    };
+
+    banner.querySelector('.lbb-close').onclick = function() {
+      banner.classList.remove('lbb-visible', 'lbb-expanded');
+    };
+  }
+
+  function _refreshBridgeBanner() {
+    _showBridgeBanner();
+  }
+
   // Public API
   return {
     init: init,
@@ -1411,7 +1460,8 @@ const VocabularyModule = (function() {
     speakWord: speakWord,
     initTWAL: initTWAL,
     initUIS: initUIS,
-    switchKCTab: switchKCTab
+    switchKCTab: switchKCTab,
+    _refreshBridgeBanner: _refreshBridgeBanner
   };
 })();
 

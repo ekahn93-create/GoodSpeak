@@ -257,6 +257,15 @@
                         <div class="timer-number" id="story-timer-seconds">5:00</div>
                         <div class="timer-label">remaining</div>
                     </div>
+                    <!-- Deploy checklist (shown when session words exist) -->
+                    <div id="deploy-checklist" class="deploy-checklist" style="display:none;">
+                        <div class="deploy-checklist-header">
+                            <span class="deploy-checklist-title">Deploy Your Words</span>
+                            <button class="deploy-checklist-shuffle" id="deploy-shuffle-btn" title="Pick different words">&#8635;</button>
+                        </div>
+                        <ul id="deploy-checklist-list" class="deploy-checklist-list"></ul>
+                        <p class="deploy-checklist-hint">Checked off as you say them.</p>
+                    </div>
                     <div id="story-transcript-section" style="margin-top: var(--spacing-sm); display: none;">
                         <h4 style="margin-bottom: var(--spacing-sm);">Live Transcript</h4>
                         <div style="background: var(--bg-card); border: 1px solid var(--border-color); border-radius: var(--border-radius-sm); padding: var(--spacing-md); min-height: 80px; font-size: var(--font-size-base); line-height: 1.6;">
@@ -1037,6 +1046,7 @@
     <script src="js/components/modal.js"></script>
     <script src="js/components/progressBar.js"></script>
     <script src="js/modules/nudge.js"></script>
+    <script src="js/modules/sessionWords.js"></script>
     <script src="js/modules/api-service.js"></script>
     <script src="js/modules/vocabulary.js"></script>
     <script src="js/modules/storytelling.js"></script>
@@ -1263,7 +1273,93 @@
         });
       })();
     </script>
-</body>
-</html>
+
+    <!-- Session Tray (Impromptu Speaking reference) -->
+    <div id="session-tray" class="session-tray" aria-live="polite">
+      <div id="session-tray-panel" class="st-panel">
+        <div class="st-panel-header">
+          <span class="st-panel-title">Today's Words</span>
+          <button class="st-panel-shuffle" id="st-shuffle-btn" title="New words">&#8635;</button>
+        </div>
+        <div id="st-word-list" class="st-word-list"></div>
+      </div>
+      <button class="st-pill" id="st-pill-btn" aria-expanded="false">
+        <span class="st-badge" id="st-badge">0</span>
+        Deploy Words
+      </button>
+    </div>
+
+    <script>
+      (function() {
+        var tray = document.getElementById('session-tray');
+        var panel = document.getElementById('session-tray-panel');
+        var pillBtn = document.getElementById('st-pill-btn');
+        var badge = document.getElementById('st-badge');
+        var wordList = document.getElementById('st-word-list');
+        var shuffleBtn = document.getElementById('st-shuffle-btn');
+        var isOpen = false;
+
+        function renderTray() {
+          if (typeof SessionWords === 'undefined') return;
+          var words = SessionWords.get();
+          if (words.length === 0) {
+            tray.classList.remove('st-visible');
+            return;
+          }
+          badge.textContent = words.length;
+          wordList.innerHTML = words.map(function(w) {
+            return '<span class="st-word-chip">' + w + '</span>';
+          }).join('');
+        }
+
+        function showTray() {
+          if (typeof SessionWords === 'undefined') return;
+          var words = SessionWords.get();
+          if (words.length === 0) return;
+          renderTray();
+          tray.classList.add('st-visible');
+        }
+
+        function hideTray() {
+          tray.classList.remove('st-visible');
+          panel.classList.remove('st-open');
+          pillBtn.classList.remove('st-open');
+          pillBtn.setAttribute('aria-expanded', 'false');
+          isOpen = false;
+        }
+
+        pillBtn.addEventListener('click', function() {
+          isOpen = !isOpen;
+          panel.classList.toggle('st-open', isOpen);
+          pillBtn.classList.toggle('st-open', isOpen);
+          pillBtn.setAttribute('aria-expanded', String(isOpen));
+        });
+
+        shuffleBtn.addEventListener('click', function() {
+          if (typeof SessionWords !== 'undefined') {
+            SessionWords.shuffle();
+            renderTray();
+          }
+        });
+
+        // Show tray only when in impromptu exercise card
+        function checkImpromptuVisible() {
+          var card = document.querySelector('.fluency-card:has(#impromptu-speak-controls)');
+          // Fallback: check if the impromptu controls are visible
+          var controls = document.getElementById('impromptu-speak-controls');
+          if (controls) {
+            var rect = controls.getBoundingClientRect();
+            var inView = rect.top < window.innerHeight && rect.bottom > 0;
+            if (inView) { showTray(); } else { hideTray(); }
+          }
+        }
+
+        window.addEventListener('scroll', checkImpromptuVisible, { passive: true });
+        document.addEventListener('sessionWordsChanged', renderTray);
+
+        // Initial check after a short delay to let modules load
+        setTimeout(checkImpromptuVisible, 500);
+      })();
+    </script>
 </body>
 </html>

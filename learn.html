@@ -133,7 +133,7 @@
 
     <!-- Quick-Add FAB -->
     <button id="quick-add-fab" class="quick-add-fab" title="Save a word for later" aria-label="Save a word for later">
-        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
     </button>
 
     <!-- Quick-Add Sheet -->
@@ -850,6 +850,7 @@
     <script src="js/components/modal.js"></script>
     <script src="js/components/progressBar.js"></script>
     <script src="js/modules/nudge.js"></script>
+    <script src="js/modules/sessionWords.js"></script>
     <script src="js/data/wordTopics.js"></script>
     <script src="js/modules/api-service.js"></script>
     <script src="js/modules/vocabulary.js"></script>
@@ -1134,6 +1135,40 @@
             if (tab) tab.click();
           });
         }
+      })();
+    </script>
+
+    <!-- Learn → Polish floating bridge banner -->
+    <div id="learn-bridge-banner" class="learn-bridge-banner" aria-live="polite"></div>
+
+    <script>
+      // Show bridge banner on page load if session words already exist
+      (function() {
+        if (typeof SessionWords !== 'undefined' && typeof VocabularyModule !== 'undefined') {
+          if (SessionWords.get().length > 0) VocabularyModule._refreshBridgeBanner();
+        }
+        document.addEventListener('sessionWordsChanged', function() {
+          if (typeof VocabularyModule !== 'undefined') VocabularyModule._refreshBridgeBanner();
+        });
+      })();
+
+      // Align pill row top with FAB top using measured positions
+      (function() {
+        function alignBannerWithFab() {
+          var fab = document.getElementById('quick-add-fab');
+          var banner = document.getElementById('learn-bridge-banner');
+          if (!fab || !banner) return;
+          var fabRect = fab.getBoundingClientRect();
+          banner.style.bottom = '';
+          banner.style.top = fabRect.top + 'px';
+        }
+        // Delay to ensure tab bar and fonts have fully laid out
+        setTimeout(alignBannerWithFab, 150);
+        window.addEventListener('resize', alignBannerWithFab);
+        // Re-align whenever the banner becomes visible
+        document.addEventListener('sessionWordsChanged', function() {
+          setTimeout(alignBannerWithFab, 50);
+        });
       })();
     </script>
 </body>

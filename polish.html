@@ -901,10 +901,17 @@
                     </div>
                 </div>
 
-                <button class="page-next-btn" onclick="Router.navigateTo('storytelling')" aria-label="Go to Practice">
-                    <span class="page-next-label">Done with Polish — put your skills to work in Practice</span>
-                    <i data-lucide="chevron-down" style="width:22px;height:22px;stroke:currentColor;"></i>
-                </button>
+                <div id="polish-to-practice-bridge" class="polish-bridge">
+                    <div class="polish-bridge-words" id="polish-bridge-words" style="display:none;">
+                        <span class="polish-bridge-label">Deploy these in Practice:</span>
+                        <span id="polish-bridge-word-list" class="polish-bridge-word-list"></span>
+                    </div>
+                    <button class="page-next-btn" onclick="window.location.href='/practice'" aria-label="Go to Practice">
+                        <span class="page-next-label">Voice warmed up? Put it all together in Practice &rarr;</span>
+                        <i data-lucide="chevron-down" style="width:22px;height:22px;stroke:currentColor;"></i>
+                    </button>
+                </div>
+
             </div>
 
         </section>
@@ -934,6 +941,7 @@
     <script src="js/components/modal.js"></script>
     <script src="js/components/progressBar.js"></script>
     <script src="js/modules/nudge.js"></script>
+    <script src="js/modules/sessionWords.js"></script>
     <script src="js/modules/api-service.js"></script>
     <script src="js/modules/vocabulary.js"></script>
     <script src="js/modules/storytelling.js"></script>
@@ -1188,7 +1196,106 @@
         });
       })();
     </script>
-</body>
-</html>
+
+    <script>
+      // Polish → Practice bridge: render after all scripts loaded
+      (function() {
+        function renderPolishBridge() {
+          var words = typeof SessionWords !== 'undefined' ? SessionWords.get() : [];
+          var wrapEl = document.getElementById('polish-bridge-words');
+          var listEl = document.getElementById('polish-bridge-word-list');
+          if (!wrapEl || !listEl) return;
+          if (words.length === 0) { wrapEl.style.display = 'none'; return; }
+          listEl.innerHTML = words.map(function(w) { return '<span class="lbb-word">' + w + '</span>'; }).join('');
+          wrapEl.style.display = 'flex';
+        }
+        renderPolishBridge();
+        document.addEventListener('sessionWordsChanged', renderPolishBridge);
+      })();
+    </script>
+
+    <!-- Session Tray (Filler Word drill reference) -->
+    <div id="session-tray" class="session-tray" aria-live="polite">
+      <div id="session-tray-panel" class="st-panel">
+        <div class="st-panel-header">
+          <span class="st-panel-title">Today's Words</span>
+          <button class="st-panel-shuffle" id="st-shuffle-btn" title="New words">&#8635;</button>
+        </div>
+        <div id="st-word-list" class="st-word-list"></div>
+      </div>
+      <button class="st-pill" id="st-pill-btn" aria-expanded="false">
+        <span class="st-badge" id="st-badge">0</span>
+        Deploy Words
+      </button>
+    </div>
+
+    <script>
+      (function() {
+        var tray = document.getElementById('session-tray');
+        var panel = document.getElementById('session-tray-panel');
+        var pillBtn = document.getElementById('st-pill-btn');
+        var badge = document.getElementById('st-badge');
+        var wordList = document.getElementById('st-word-list');
+        var shuffleBtn = document.getElementById('st-shuffle-btn');
+        var isOpen = false;
+
+        function renderTray() {
+          if (typeof SessionWords === 'undefined') return;
+          var words = SessionWords.get();
+          if (words.length === 0) {
+            tray.classList.remove('st-visible');
+            return;
+          }
+          badge.textContent = words.length;
+          wordList.innerHTML = words.map(function(w) {
+            return '<span class="st-word-chip">' + w + '</span>';
+          }).join('');
+        }
+
+        function showTray() {
+          if (typeof SessionWords === 'undefined') return;
+          var words = SessionWords.get();
+          if (words.length === 0) return;
+          renderTray();
+          tray.classList.add('st-visible');
+        }
+
+        function hideTray() {
+          tray.classList.remove('st-visible');
+          panel.classList.remove('st-open');
+          pillBtn.classList.remove('st-open');
+          pillBtn.setAttribute('aria-expanded', 'false');
+          isOpen = false;
+        }
+
+        pillBtn.addEventListener('click', function() {
+          isOpen = !isOpen;
+          panel.classList.toggle('st-open', isOpen);
+          pillBtn.classList.toggle('st-open', isOpen);
+          pillBtn.setAttribute('aria-expanded', String(isOpen));
+        });
+
+        shuffleBtn.addEventListener('click', function() {
+          if (typeof SessionWords !== 'undefined') {
+            SessionWords.shuffle();
+            renderTray();
+          }
+        });
+
+        // Show tray only when Filler Word section is in view
+        function checkFillerVisible() {
+          var fillerSection = document.getElementById('fluency-filler-group');
+          if (!fillerSection) return;
+          var rect = fillerSection.getBoundingClientRect();
+          var inView = rect.top < window.innerHeight && rect.bottom > 0;
+          if (inView) { showTray(); } else { hideTray(); }
+        }
+
+        window.addEventListener('scroll', checkFillerVisible, { passive: true });
+        document.addEventListener('sessionWordsChanged', renderTray);
+
+        setTimeout(checkFillerVisible, 500);
+      })();
+    </script>
 </body>
 </html>
