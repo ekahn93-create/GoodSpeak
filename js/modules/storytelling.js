@@ -1794,11 +1794,57 @@ case 'recordings':
     }
 
     list.innerHTML = words.map(w =>
-      `<li class="deploy-checklist-item" data-word="${w.toLowerCase()}">
+      `<li class="deploy-checklist-item deploy-checklist-item--clickable" data-word="${w.toLowerCase()}">
          <span class="deploy-check-icon">&#9675;</span>
          <span class="deploy-word-text">${w}</span>
        </li>`
     ).join('');
+
+    // Inline definition toggle
+    const defPanel = document.getElementById('deploy-word-def');
+    let activeWord = null;
+    list.querySelectorAll('.deploy-checklist-item--clickable').forEach(function(item) {
+      item.addEventListener('click', function() {
+        // Don't interfere if already checked (checked by transcript watcher)
+        const wordName = item.querySelector('.deploy-word-text').textContent;
+        if (!defPanel) return;
+        if (activeWord === wordName) {
+          defPanel.style.display = 'none';
+          activeWord = null;
+          list.querySelectorAll('.deploy-checklist-item').forEach(i => i.classList.remove('deploy-item-active'));
+          return;
+        }
+        // Look up word
+        let word = null;
+        if (typeof vocabularyDatabase !== 'undefined') {
+          const allDb = [
+            ...(vocabularyDatabase.beginner || []),
+            ...(vocabularyDatabase.intermediate || []),
+            ...(vocabularyDatabase.advanced || []),
+          ];
+          word = allDb.find(w => w.word && w.word.toLowerCase() === wordName.toLowerCase());
+        }
+        if (!word) {
+          const ud = typeof StorageManager !== 'undefined' ? StorageManager.load() : null;
+          if (ud && ud.customWords) {
+            word = ud.customWords.find(w => w.word && w.word.toLowerCase() === wordName.toLowerCase());
+          }
+        }
+        if (!word) return;
+        activeWord = wordName;
+        list.querySelectorAll('.deploy-checklist-item').forEach(i => i.classList.remove('deploy-item-active'));
+        item.classList.add('deploy-item-active');
+        defPanel.innerHTML =
+          (word.partOfSpeech ? `<span class="deploy-def-pos">${word.partOfSpeech}</span> ` : '')
+          + (word.definition ? `<span class="deploy-def-text">${word.definition}</span>` : '')
+          + (word.exampleSentence ? `<div class="deploy-def-example">&ldquo;${word.exampleSentence}&rdquo;</div>` : '');
+        defPanel.style.display = 'block';
+      });
+    });
+
+    // Reset active def when checklist re-renders
+    if (defPanel) { defPanel.style.display = 'none'; }
+    activeWord = null;
 
     panel.style.display = 'block';
 

@@ -66,7 +66,7 @@ const SessionWords = (function() {
     const pool = [
       ...(userData.vocabulary.learned || []),
       ...(userData.vocabulary.stillLearning || []),
-    ];
+    ].map(w => (typeof w === 'string' ? w : w.word)).filter(Boolean);
 
     if (pool.length === 0) return;
 

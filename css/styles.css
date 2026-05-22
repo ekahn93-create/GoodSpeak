@@ -5973,6 +5973,18 @@ canvas {
   border: 1px solid #fcd34d;
 }
 
+.lbb-word-chip--clickable {
+  cursor: pointer;
+  transition: background 0.15s, border-color 0.15s;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .lbb-word-chip--clickable:hover {
+    background: #fde68a;
+    border-color: #d97706;
+  }
+}
+
 /* ============================================
    SESSION TRAY (floating word reference pill)
    ============================================ */
@@ -6120,6 +6132,18 @@ canvas {
   width: fit-content;
 }
 
+.st-word-chip--clickable {
+  cursor: pointer;
+  transition: background 0.15s, border-color 0.15s;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .st-word-chip--clickable:hover {
+    background: #fde68a;
+    border-color: #d97706;
+  }
+}
+
 /* ============================================
    POLISH → PRACTICE BRIDGE
    ============================================ */
@@ -6159,7 +6183,7 @@ canvas {
 .deploy-checklist {
   background: var(--bg-card);
   border: 1px solid var(--border-color);
-  border-left: 4px solid var(--secondary-color);
+  border-left: 4px solid #d97706;
   border-radius: var(--border-radius-sm);
   padding: var(--spacing-sm) var(--spacing-md);
   margin-bottom: var(--spacing-md);
@@ -6219,9 +6243,9 @@ canvas {
 }
 
 .deploy-checklist-item.deploy-checked {
-  background: #d1fae5;
-  border-color: #6ee7b7;
-  color: #065f46;
+  background: #fef3c7;
+  border-color: #fcd34d;
+  color: #92400e;
 }
 
 .deploy-check-icon {
@@ -6235,6 +6259,53 @@ canvas {
   color: var(--text-light);
   margin-top: var(--spacing-xs);
   margin-bottom: 0;
+}
+
+.deploy-checklist-item--clickable {
+  cursor: pointer;
+  transition: background 0.15s, border-color 0.15s;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .deploy-checklist-item--clickable:hover {
+    background: #fef3c7;
+    border-color: #fcd34d;
+  }
+}
+
+.deploy-checklist-item.deploy-item-active {
+  background: #fef3c7;
+  border-color: #d97706;
+  color: #92400e;
+}
+
+.deploy-word-def {
+  margin-top: var(--spacing-xs);
+  margin-bottom: var(--spacing-xs);
+  padding: var(--spacing-xs) var(--spacing-sm);
+  background: #fffbeb;
+  border: 1px solid #fcd34d;
+  border-radius: var(--border-radius-sm);
+  font-size: var(--font-size-sm);
+  color: var(--text-primary);
+  line-height: 1.5;
+}
+
+.deploy-def-pos {
+  font-style: italic;
+  color: var(--text-secondary);
+  font-size: 12px;
+}
+
+.deploy-def-text {
+  color: var(--text-primary);
+}
+
+.deploy-def-example {
+  margin-top: 4px;
+  font-style: italic;
+  color: var(--text-secondary);
+  font-size: 12px;
 }
 
 /* ============================================

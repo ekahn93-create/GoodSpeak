@@ -1413,7 +1413,7 @@ const VocabularyModule = (function() {
     if (!banner) return;
 
     const count = words.length;
-    const wordChips = words.map(w => `<span class="lbb-word-chip">${w}</span>`).join('');
+    const wordChips = words.map(w => `<span class="lbb-word-chip lbb-word-chip--clickable" data-word="${w}">${w}</span>`).join('');
     banner.innerHTML = `
       <div class="lbb-pill-row">
         <span class="lbb-count" id="lbb-count-btn">${count} word${count !== 1 ? 's' : ''} ready ▾</span>
@@ -1435,6 +1435,40 @@ const VocabularyModule = (function() {
     banner.querySelector('.lbb-close').onclick = function() {
       banner.classList.remove('lbb-visible', 'lbb-expanded');
     };
+
+    banner.querySelectorAll('.lbb-word-chip--clickable').forEach(function(chip) {
+      chip.addEventListener('click', function() {
+        const wordName = chip.dataset.word;
+        let word = null;
+        if (typeof vocabularyDatabase !== 'undefined') {
+          const allDb = [
+            ...(vocabularyDatabase.beginner || []),
+            ...(vocabularyDatabase.intermediate || []),
+            ...(vocabularyDatabase.advanced || []),
+          ];
+          word = allDb.find(w => w.word && w.word.toLowerCase() === wordName.toLowerCase());
+        }
+        if (!word) {
+          const ud = typeof StorageManager !== 'undefined' ? StorageManager.load() : null;
+          if (ud && ud.customWords) {
+            word = ud.customWords.find(w => w.word && w.word.toLowerCase() === wordName.toLowerCase());
+          }
+        }
+        if (!word || typeof Modal === 'undefined') return;
+        const content = `<div class="word-card word-card--learned">
+          <div class="word-main">${word.word}</div>
+          ${word.pronunciation ? `<div class="word-pronunciation">${word.pronunciation}</div>` : ''}
+          <div class="word-meta">
+            ${word.partOfSpeech ? `<span class="badge badge-primary">${word.partOfSpeech}</span>` : ''}
+            ${word.difficulty ? `<span class="badge badge-secondary">${word.difficulty}</span>` : ''}
+          </div>
+          ${word.definition ? `<div class="word-definition"><strong>Definition:</strong> ${word.definition}</div>` : ''}
+          ${word.exampleSentence ? `<div class="word-example"><strong>Example:</strong> &ldquo;${word.exampleSentence}&rdquo;</div>` : ''}
+          ${word.synonyms && word.synonyms.length ? `<div class="word-synonyms"><strong>Synonyms:</strong> ${word.synonyms.join(', ')}</div>` : ''}
+        </div>`;
+        Modal.show(content);
+      });
+    });
   }
 
   function _refreshBridgeBanner() {

@@ -279,104 +279,6 @@
             <!-- ========== FLUENCY BUILDING CATEGORY ========== -->
             <div id="fluency-category" class="fluency-category active">
 
-                <div class="exercise-group" id="precision-practice-group">
-                    <div class="exercise-group-label">Precision Practice</div>
-                    <p class="exercise-group-subtitle">Sharpen your word choice and speaking delivery — one word at a time</p>
-
-                <!-- Common Word of the Day + Precision Exercise -->
-                <div class="fluency-card">
-                    <div class="fluency-card-header">
-                        <div class="fluency-card-icon"><i data-lucide="zap" style="width:28px;height:28px;stroke:currentColor;"></i></div>
-                        <div>
-                            <h3>Precision Exercise</h3>
-                            <p class="fluency-card-description">Replace a weak, overused word with a stronger one — practice it in context</p>
-                        </div>
-                    </div>
-                    <div class="fluency-card-content">
-                        <!-- Word of the Day -->
-                        <div id="daily-word-display" class="daily-word-card">
-                            <h2>Common Word of the Day</h2>
-                            <div id="daily-word-content">
-                                <!-- Dynamic content will be added here -->
-                            </div>
-                        </div>
-
-                        <!-- Practice Exercise -->
-                        <div id="daily-exercise" class="exercise-section">
-                            <h3>Precision Exercise</h3>
-                            <div id="exercise-content">
-                                <!-- Dynamic exercise will be added here -->
-                            </div>
-
-                        </div>
-
-                    </div>
-                </div>
-
-                <!-- Speaking Challenge -->
-                <div class="fluency-card">
-                    <div class="fluency-card-header">
-                        <div class="fluency-card-icon"><i data-lucide="mic" style="width:28px;height:28px;stroke:currentColor;"></i></div>
-                        <div>
-                            <h3>Speaking Challenge</h3>
-                            <p class="fluency-card-description">Use today's word out loud — record your response and get AI feedback on your delivery</p>
-                        </div>
-                    </div>
-                    <div class="fluency-card-content">
-                        <div id="daily-speaking-section" class="daily-speaking-card">
-                            <!-- Idle state -->
-                            <div id="dsp-idle">
-                                <div class="dsp-prompt" id="dsp-prompt-text"></div>
-                                <div class="dsp-mic-wrap">
-                                    <button class="dsp-mic-btn" id="dsp-mic-btn" title="Start recording">
-                                        <i data-lucide="mic" style="width:28px;height:28px;stroke:currentColor;"></i>
-                                    </button>
-                                    <span class="dsp-mic-label">Tap to speak</span>
-                                </div>
-                                <div id="dsp-no-speech-msg" class="kc-empty-state" style="display:none;">
-                                    <p>Speech recognition is not supported in this browser. Try Chrome or Edge.</p>
-                                </div>
-                            </div>
-
-                            <!-- Recording state -->
-                            <div id="dsp-recording" style="display:none;">
-                                <div class="dsp-prompt" id="dsp-recording-prompt"></div>
-                                <div class="dsp-mic-wrap">
-                                    <button class="dsp-mic-btn dsp-mic-active" id="dsp-stop-btn" title="Stop recording">
-                                        <i data-lucide="square" style="width:28px;height:28px;stroke:currentColor;fill:currentColor;"></i>
-                                    </button>
-                                    <span class="dsp-mic-label dsp-recording-label">Recording... tap to stop</span>
-                                </div>
-                                <div class="dsp-transcript-live" id="dsp-transcript-live"></div>
-                            </div>
-
-                            <!-- Loading state -->
-                            <div id="dsp-loading" style="display:none;">
-                                <div class="twal-loading-wrap">
-                                    <div class="kc-spinner"></div>
-                                    <p>Claude is reviewing your response...</p>
-                                </div>
-                            </div>
-
-                            <!-- Feedback state -->
-                            <div id="dsp-feedback" style="display:none;">
-                                <div class="dsp-transcript-display" id="dsp-transcript-display"></div>
-                                <div class="dsp-feedback-grid" id="dsp-feedback-grid"></div>
-                                <div class="dsp-actions">
-                                    <button class="btn btn-primary" id="dsp-try-again-btn">Try Again</button>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                </div><!-- /exercise-group: Precision Practice -->
-
-                <button class="section-next-btn" onclick="document.getElementById('fluency-filler-group').scrollIntoView({behavior:'smooth', block:'start'})" aria-label="Next section">
-                    <span class="section-next-label">Reduce filler words and speak with more intention</span>
-                    <i data-lucide="chevron-down" style="width:22px;height:22px;stroke:currentColor;"></i>
-                </button>
-
                 <div class="exercise-group" id="fluency-filler-group">
                     <div class="exercise-group-label">Filler Reduction</div>
                     <p class="exercise-group-subtitle">Eliminate verbal crutches and speak with more intention</p>
@@ -604,7 +506,105 @@
             <!-- ========== ELOQUENCE & EXPRESSION CATEGORY ========== -->
             <div id="eloquence-category" class="fluency-category">
 
-                <div class="exercise-group">
+                <div class="exercise-group" id="precision-practice-group">
+                    <div class="exercise-group-label">Precision Practice</div>
+                    <p class="exercise-group-subtitle">Sharpen your word choice and speaking delivery — one word at a time</p>
+
+                <!-- Common Word of the Day + Precision Exercise -->
+                <div class="fluency-card">
+                    <div class="fluency-card-header">
+                        <div class="fluency-card-icon"><i data-lucide="zap" style="width:28px;height:28px;stroke:currentColor;"></i></div>
+                        <div>
+                            <h3>Precision Exercise</h3>
+                            <p class="fluency-card-description">Replace a weak, overused word with a stronger one — practice it in context</p>
+                        </div>
+                    </div>
+                    <div class="fluency-card-content">
+                        <!-- Word of the Day -->
+                        <div id="daily-word-display" class="daily-word-card">
+                            <h2>Common Word of the Day</h2>
+                            <div id="daily-word-content">
+                                <!-- Dynamic content will be added here -->
+                            </div>
+                        </div>
+
+                        <!-- Practice Exercise -->
+                        <div id="daily-exercise" class="exercise-section">
+                            <h3>Precision Exercise</h3>
+                            <div id="exercise-content">
+                                <!-- Dynamic exercise will be added here -->
+                            </div>
+
+                        </div>
+
+                    </div>
+                </div>
+
+                <!-- Speaking Challenge -->
+                <div class="fluency-card">
+                    <div class="fluency-card-header">
+                        <div class="fluency-card-icon"><i data-lucide="mic" style="width:28px;height:28px;stroke:currentColor;"></i></div>
+                        <div>
+                            <h3>Speaking Challenge</h3>
+                            <p class="fluency-card-description">Use today's word out loud — record your response and get AI feedback on your delivery</p>
+                        </div>
+                    </div>
+                    <div class="fluency-card-content">
+                        <div id="daily-speaking-section" class="daily-speaking-card">
+                            <!-- Idle state -->
+                            <div id="dsp-idle">
+                                <div class="dsp-prompt" id="dsp-prompt-text"></div>
+                                <div class="dsp-mic-wrap">
+                                    <button class="dsp-mic-btn" id="dsp-mic-btn" title="Start recording">
+                                        <i data-lucide="mic" style="width:28px;height:28px;stroke:currentColor;"></i>
+                                    </button>
+                                    <span class="dsp-mic-label">Tap to speak</span>
+                                </div>
+                                <div id="dsp-no-speech-msg" class="kc-empty-state" style="display:none;">
+                                    <p>Speech recognition is not supported in this browser. Try Chrome or Edge.</p>
+                                </div>
+                            </div>
+
+                            <!-- Recording state -->
+                            <div id="dsp-recording" style="display:none;">
+                                <div class="dsp-prompt" id="dsp-recording-prompt"></div>
+                                <div class="dsp-mic-wrap">
+                                    <button class="dsp-mic-btn dsp-mic-active" id="dsp-stop-btn" title="Stop recording">
+                                        <i data-lucide="square" style="width:28px;height:28px;stroke:currentColor;fill:currentColor;"></i>
+                                    </button>
+                                    <span class="dsp-mic-label dsp-recording-label">Recording... tap to stop</span>
+                                </div>
+                                <div class="dsp-transcript-live" id="dsp-transcript-live"></div>
+                            </div>
+
+                            <!-- Loading state -->
+                            <div id="dsp-loading" style="display:none;">
+                                <div class="twal-loading-wrap">
+                                    <div class="kc-spinner"></div>
+                                    <p>Claude is reviewing your response...</p>
+                                </div>
+                            </div>
+
+                            <!-- Feedback state -->
+                            <div id="dsp-feedback" style="display:none;">
+                                <div class="dsp-transcript-display" id="dsp-transcript-display"></div>
+                                <div class="dsp-feedback-grid" id="dsp-feedback-grid"></div>
+                                <div class="dsp-actions">
+                                    <button class="btn btn-primary" id="dsp-try-again-btn">Try Again</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                </div><!-- /exercise-group: Precision Practice -->
+
+                <button class="section-next-btn" onclick="document.getElementById('eloquence-word-choice-group').scrollIntoView({behavior:'smooth', block:'start'})" aria-label="Next section">
+                    <span class="section-next-label">Elevate your vocabulary with more precise and powerful language</span>
+                    <i data-lucide="chevron-down" style="width:22px;height:22px;stroke:currentColor;"></i>
+                </button>
+
+                <div class="exercise-group" id="eloquence-word-choice-group">
                     <div class="exercise-group-label">Word Choice</div>
                     <p class="exercise-group-subtitle">Elevate your vocabulary with more precise, powerful, and connected language</p>
 
@@ -1031,7 +1031,7 @@
           var scrollTarget = null;
 
           if (hash === 'precision') {
-            if (typeof FluencyModule !== 'undefined') FluencyModule.switchCategory('fluency');
+            if (typeof FluencyModule !== 'undefined') FluencyModule.switchCategory('eloquence');
             scrollTarget = document.getElementById('precision-practice-group');
 
           } else if (hash === 'filler') {
@@ -1239,6 +1239,37 @@
         var shuffleBtn = document.getElementById('st-shuffle-btn');
         var isOpen = false;
 
+        function showWordDef(wordName) {
+          var word = null;
+          if (typeof vocabularyDatabase !== 'undefined') {
+            var allDb = [].concat(
+              vocabularyDatabase.beginner || [],
+              vocabularyDatabase.intermediate || [],
+              vocabularyDatabase.advanced || []
+            );
+            word = allDb.find(function(w) { return w.word && w.word.toLowerCase() === wordName.toLowerCase(); });
+          }
+          if (!word) {
+            var userData = typeof StorageManager !== 'undefined' ? StorageManager.load() : null;
+            if (userData && userData.customWords) {
+              word = userData.customWords.find(function(w) { return w.word && w.word.toLowerCase() === wordName.toLowerCase(); });
+            }
+          }
+          if (!word) return;
+          var content = '<div class="word-card word-card--learned">'
+            + '<div class="word-main">' + word.word + '</div>'
+            + (word.pronunciation ? '<div class="word-pronunciation">' + word.pronunciation + '</div>' : '')
+            + '<div class="word-meta">'
+            + (word.partOfSpeech ? '<span class="badge badge-primary">' + word.partOfSpeech + '</span>' : '')
+            + (word.difficulty ? '<span class="badge badge-secondary">' + word.difficulty + '</span>' : '')
+            + '</div>'
+            + (word.definition ? '<div class="word-definition"><strong>Definition:</strong> ' + word.definition + '</div>' : '')
+            + (word.exampleSentence ? '<div class="word-example"><strong>Example:</strong> &ldquo;' + word.exampleSentence + '&rdquo;</div>' : '')
+            + (word.synonyms && word.synonyms.length ? '<div class="word-synonyms"><strong>Synonyms:</strong> ' + word.synonyms.join(', ') + '</div>' : '')
+            + '</div>';
+          if (typeof Modal !== 'undefined') Modal.show(content);
+        }
+
         function renderTray() {
           if (typeof SessionWords === 'undefined') return;
           var words = SessionWords.get();
@@ -1248,8 +1279,11 @@
           }
           badge.textContent = words.length;
           wordList.innerHTML = words.map(function(w) {
-            return '<span class="st-word-chip">' + w + '</span>';
+            return '<span class="st-word-chip st-word-chip--clickable" data-word="' + w + '">' + w + '</span>';
           }).join('');
+          wordList.querySelectorAll('.st-word-chip--clickable').forEach(function(chip) {
+            chip.addEventListener('click', function() { showWordDef(this.dataset.word); });
+          });
         }
 
         function showTray() {
@@ -1282,19 +1316,30 @@
           }
         });
 
-        // Show tray only when Filler Word section is in view
-        function checkFillerVisible() {
-          var fillerSection = document.getElementById('fluency-filler-group');
-          if (!fillerSection) return;
-          var rect = fillerSection.getBoundingClientRect();
-          var inView = rect.top < window.innerHeight && rect.bottom > 0;
-          if (inView) { showTray(); } else { hideTray(); }
+        // Show tray when Fluency Building or Read Aloud sections are in view
+        function checkSectionsVisible() {
+          var sections = [
+            document.getElementById('fluency-category'),
+            document.getElementById('readaloud-category'),
+          ];
+          var anyInView = sections.some(function(el) {
+            if (!el) return false;
+            var rect = el.getBoundingClientRect();
+            return rect.top < window.innerHeight && rect.bottom > 0;
+          });
+          if (anyInView) { showTray(); } else { hideTray(); }
         }
 
-        window.addEventListener('scroll', checkFillerVisible, { passive: true });
+        window.addEventListener('scroll', checkSectionsVisible, { passive: true });
         document.addEventListener('sessionWordsChanged', renderTray);
+        document.addEventListener('sessionWordsChanged', checkSectionsVisible);
 
-        setTimeout(checkFillerVisible, 500);
+        // Re-check when category tabs change (tab switch doesn't always trigger scroll)
+        document.querySelectorAll('.category-tab').forEach(function(tab) {
+          tab.addEventListener('click', function() { setTimeout(checkSectionsVisible, 50); });
+        });
+
+        setTimeout(checkSectionsVisible, 500);
       })();
     </script>
 </body>

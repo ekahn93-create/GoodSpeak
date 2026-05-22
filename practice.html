@@ -264,6 +264,7 @@
                             <button class="deploy-checklist-shuffle" id="deploy-shuffle-btn" title="Pick different words">&#8635;</button>
                         </div>
                         <ul id="deploy-checklist-list" class="deploy-checklist-list"></ul>
+                        <div id="deploy-word-def" class="deploy-word-def" style="display:none;"></div>
                         <p class="deploy-checklist-hint">Checked off as you say them.</p>
                     </div>
                     <div id="story-transcript-section" style="margin-top: var(--spacing-sm); display: none;">
@@ -1299,6 +1300,37 @@
         var shuffleBtn = document.getElementById('st-shuffle-btn');
         var isOpen = false;
 
+        function showWordDef(wordName) {
+          var word = null;
+          if (typeof vocabularyDatabase !== 'undefined') {
+            var allDb = [].concat(
+              vocabularyDatabase.beginner || [],
+              vocabularyDatabase.intermediate || [],
+              vocabularyDatabase.advanced || []
+            );
+            word = allDb.find(function(w) { return w.word && w.word.toLowerCase() === wordName.toLowerCase(); });
+          }
+          if (!word) {
+            var userData = typeof StorageManager !== 'undefined' ? StorageManager.load() : null;
+            if (userData && userData.customWords) {
+              word = userData.customWords.find(function(w) { return w.word && w.word.toLowerCase() === wordName.toLowerCase(); });
+            }
+          }
+          if (!word) return;
+          var content = '<div class="word-card word-card--learned">'
+            + '<div class="word-main">' + word.word + '</div>'
+            + (word.pronunciation ? '<div class="word-pronunciation">' + word.pronunciation + '</div>' : '')
+            + '<div class="word-meta">'
+            + (word.partOfSpeech ? '<span class="badge badge-primary">' + word.partOfSpeech + '</span>' : '')
+            + (word.difficulty ? '<span class="badge badge-secondary">' + word.difficulty + '</span>' : '')
+            + '</div>'
+            + (word.definition ? '<div class="word-definition"><strong>Definition:</strong> ' + word.definition + '</div>' : '')
+            + (word.exampleSentence ? '<div class="word-example"><strong>Example:</strong> &ldquo;' + word.exampleSentence + '&rdquo;</div>' : '')
+            + (word.synonyms && word.synonyms.length ? '<div class="word-synonyms"><strong>Synonyms:</strong> ' + word.synonyms.join(', ') + '</div>' : '')
+            + '</div>';
+          if (typeof Modal !== 'undefined') Modal.show(content);
+        }
+
         function renderTray() {
           if (typeof SessionWords === 'undefined') return;
           var words = SessionWords.get();
@@ -1308,8 +1340,11 @@
           }
           badge.textContent = words.length;
           wordList.innerHTML = words.map(function(w) {
-            return '<span class="st-word-chip">' + w + '</span>';
+            return '<span class="st-word-chip st-word-chip--clickable" data-word="' + w + '">' + w + '</span>';
           }).join('');
+          wordList.querySelectorAll('.st-word-chip--clickable').forEach(function(chip) {
+            chip.addEventListener('click', function() { showWordDef(this.dataset.word); });
+          });
         }
 
         function showTray() {
@@ -1342,23 +1377,53 @@
           }
         });
 
-        // Show tray only when in impromptu exercise card
-        function checkImpromptuVisible() {
-          var card = document.querySelector('.fluency-card:has(#impromptu-speak-controls)');
-          // Fallback: check if the impromptu controls are visible
-          var controls = document.getElementById('impromptu-speak-controls');
-          if (controls) {
-            var rect = controls.getBoundingClientRect();
-            var inView = rect.top < window.innerHeight && rect.bottom > 0;
-            if (inView) { showTray(); } else { hideTray(); }
+        // Show tray when Impromptu, Interactive Challenges, Reading & Comprehension,
+        // or Storytelling prompt grid is in view.
+        // For Storytelling: hide once the Deploy Checklist is fully visible (it's on-page).
+        function checkSectionsVisible() {
+          // Always-show sections
+          var alwaysSections = [
+            document.getElementById('impromptu-speak-controls'),
+            document.getElementById('challenges-category'),
+            document.getElementById('listening-category'),
+          ];
+          var anyAlways = alwaysSections.some(function(el) {
+            if (!el) return false;
+            var rect = el.getBoundingClientRect();
+            return rect.top < window.innerHeight && rect.bottom > 0;
+          });
+
+          // Storytelling: show when prompt grid is in view, hide when deploy-checklist is fully visible
+          var showForStorytelling = false;
+          var stCategory = document.getElementById('storytelling-category');
+          if (stCategory) {
+            var stRect = stCategory.getBoundingClientRect();
+            var stInView = stRect.top < window.innerHeight && stRect.bottom > 0;
+            if (stInView) {
+              var checklist = document.getElementById('deploy-checklist');
+              var checklistFullyVisible = false;
+              if (checklist && checklist.style.display !== 'none') {
+                var clRect = checklist.getBoundingClientRect();
+                checklistFullyVisible = clRect.top >= 0 && clRect.bottom <= window.innerHeight;
+              }
+              showForStorytelling = !checklistFullyVisible;
+            }
           }
+
+          if (anyAlways || showForStorytelling) { showTray(); } else { hideTray(); }
         }
 
-        window.addEventListener('scroll', checkImpromptuVisible, { passive: true });
+        window.addEventListener('scroll', checkSectionsVisible, { passive: true });
         document.addEventListener('sessionWordsChanged', renderTray);
+        document.addEventListener('sessionWordsChanged', checkSectionsVisible);
+
+        // Re-check when category tabs change
+        document.querySelectorAll('.storytelling-category-tab').forEach(function(tab) {
+          tab.addEventListener('click', function() { setTimeout(checkSectionsVisible, 50); });
+        });
 
         // Initial check after a short delay to let modules load
-        setTimeout(checkImpromptuVisible, 500);
+        setTimeout(checkSectionsVisible, 500);
       })();
     </script>
 </body>
