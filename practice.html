@@ -1404,7 +1404,9 @@
               var checklistFullyVisible = false;
               if (checklist && checklist.style.display !== 'none') {
                 var clRect = checklist.getBoundingClientRect();
-                checklistFullyVisible = clRect.top >= 0 && clRect.bottom <= window.innerHeight;
+                // clRect is all zeros when a parent is display:none — treat that as not visible
+                var hasSize = clRect.width > 0 || clRect.height > 0;
+                checklistFullyVisible = hasSize && clRect.top >= 0 && clRect.bottom <= window.innerHeight;
               }
               showForStorytelling = !checklistFullyVisible;
             }
