@@ -603,6 +603,140 @@ const ProgressChartsModule = (function() {
     if (tooltip) el.setAttribute('data-tip', tooltip);
   }
 
+  // ---- Session words scorecard ----
+  function renderDeployScorecard() {
+    const el = document.getElementById('review-deploy-scorecard');
+    if (!el) return;
+    if (typeof StorageManager === 'undefined') return;
+
+    const ud = StorageManager.load();
+    if (!ud) return;
+
+    const completed = (ud.storytelling && ud.storytelling.completedPrompts) || [];
+    // Only stories that had a deploy list
+    const withDeploy = completed.filter(function(cp) {
+      return cp.deployedWords && cp.deployedWords.length > 0;
+    });
+
+    if (withDeploy.length === 0) {
+      el.innerHTML = '<div class="review-quality-empty">Complete a story with session words loaded to see your deploy history.</div>';
+      return;
+    }
+
+    // All prompts flat for name lookup
+    const allPrompts = (typeof storyPromptsDatabase !== 'undefined')
+      ? [...(storyPromptsDatabase.personal || []), ...(storyPromptsDatabase.fictional || []), ...(storyPromptsDatabase.descriptive || [])]
+      : [];
+
+    const recent = withDeploy.slice(-5).reverse();
+
+    el.innerHTML = recent.map(function(cp) {
+      const prompt = allPrompts.find(function(p) { return p.id === cp.promptId; });
+      const title = prompt ? prompt.title : 'Story #' + cp.promptId;
+      const date = new Date(cp.completedAt).toLocaleDateString(undefined, { month: 'short', day: 'numeric' });
+      const words = cp.deployedWords;
+
+      return '<div class="deploy-scorecard-row">' +
+        '<div class="deploy-scorecard-meta">' +
+          '<span class="deploy-scorecard-title">' + title + '</span>' +
+          '<span class="deploy-scorecard-date">' + date + '</span>' +
+        '</div>' +
+        '<div class="deploy-scorecard-words">' +
+          words.map(function(w) {
+            return '<span class="deploy-scorecard-chip">' + w + '</span>';
+          }).join('') +
+        '</div>' +
+      '</div>';
+    }).join('');
+  }
+
+  // ---- Contextual insights panel ----
+  function renderInsights() {
+    const el = document.getElementById('review-insights');
+    if (!el) return;
+    if (typeof StorageManager === 'undefined') return;
+
+    const ud = StorageManager.load();
+    if (!ud) return;
+
+    const insights = [];
+
+    // 1. High filler words — avg > 5 over last 5 speech sessions
+    const speechSessions = getSpeechSessions();
+    if (speechSessions.length >= 2) {
+      const recent = speechSessions.slice(-5);
+      const avgFillers = recent.reduce((a, s) => a + (s.fillers || 0), 0) / recent.length;
+      if (avgFillers >= 5) {
+        insights.push({
+          icon: '🗣',
+          text: 'Your filler word count is averaging <strong>' + Math.round(avgFillers) + ' per session</strong>.',
+          cta: 'Run a Filler Word Drill',
+          href: '/polish#filler',
+          color: '#f43f5e'
+        });
+      }
+    }
+
+    // 2. No stories completed this month
+    const completed = (ud.storytelling && ud.storytelling.completedPrompts) || [];
+    const now = new Date();
+    const storiesThisMonth = completed.filter(s => {
+      const d = new Date(s.completedAt);
+      return d.getMonth() === now.getMonth() && d.getFullYear() === now.getFullYear();
+    }).length;
+    if (storiesThisMonth === 0) {
+      insights.push({
+        icon: '📖',
+        text: "You haven't completed a story prompt yet this month.",
+        cta: 'Start a Story in Practice',
+        href: '/practice',
+        color: '#6366f1'
+      });
+    }
+
+    // 3. Words sitting in "still learning" — SRS due
+    const stillLearning = (ud.vocabulary && ud.vocabulary.stillLearning) || [];
+    if (stillLearning.length >= 3) {
+      insights.push({
+        icon: '📚',
+        text: 'You have <strong>' + stillLearning.length + ' words</strong> still in progress — review them to lock them in.',
+        cta: 'Review in Knowledge Check',
+        href: '/learn#srs',
+        color: '#f97316'
+      });
+    }
+
+    // 4. No speech sessions at all
+    if (speechSessions.length === 0) {
+      insights.push({
+        icon: '🎙',
+        text: "You haven't done a Read Aloud session yet — it's the fastest way to track your speaking speed.",
+        cta: 'Try Read Aloud in Polish',
+        href: '/polish',
+        color: '#22c55e'
+      });
+    }
+
+    if (insights.length === 0) {
+      el.innerHTML = '';
+      el.style.display = 'none';
+      return;
+    }
+
+    el.style.display = '';
+    el.innerHTML =
+      '<div class="review-insights-header">Insights &amp; Actions</div>' +
+      '<div class="review-insights-list">' +
+      insights.map(function(ins) {
+        return '<div class="review-insight-item">' +
+          '<span class="review-insight-dot" style="background:' + ins.color + '"></span>' +
+          '<span class="review-insight-text">' + ins.text + '</span>' +
+          '<a href="' + ins.href + '" class="review-insight-cta btn btn-sm btn-secondary">' + ins.cta + ' &rarr;</a>' +
+          '</div>';
+      }).join('') +
+      '</div>';
+  }
+
   // ---- Main render ----
   function render() {
     const speechSessions = getSpeechSessions();
@@ -752,6 +886,12 @@ const ProgressChartsModule = (function() {
 
     // ---- Quality breakdown ----
     renderQualityBreakdown(speechSessions);
+
+    // ---- Insights panel ----
+    renderInsights();
+
+    // ---- Deploy scorecard ----
+    renderDeployScorecard();
   }
 
   function init() { requestAnimationFrame(render); }

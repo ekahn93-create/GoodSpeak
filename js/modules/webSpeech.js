@@ -745,8 +745,9 @@ const WebSpeechModule = (function() {
       if (timer) { clearInterval(timer); timer = null; }
       try { if (recognition) recognition.stop(); } catch(e) {}
 
-      const activeBtn = cardScope.querySelector('.ws-inst-time-btn.active');
-      totalSeconds = activeBtn ? parseInt(activeBtn.dataset.time) : 30;
+      const activeBtn = cardScope ? cardScope.querySelector('.ws-inst-time-btn.active') : null;
+      if (activeBtn) totalSeconds = parseInt(activeBtn.dataset.time);
+      // else keep totalSeconds as-is (set via setDuration when prompt was loaded)
       remainingSeconds = totalSeconds;
       elapsedSeconds = 0;
       finalTranscript = '';
@@ -760,6 +761,11 @@ const WebSpeechModule = (function() {
       const feedbackSection = el('feedback-section');
       if (feedbackSection) feedbackSection.style.display = 'none';
       clearTranscriptDisplay();
+
+      if (prefix === 'story') {
+        const markSection = document.getElementById('mark-story-complete-section');
+        if (markSection) markSection.style.display = 'none';
+      }
     }
 
     function finishSession() {
@@ -771,6 +777,9 @@ const WebSpeechModule = (function() {
       toggleSpeakButtons(false);
       setStatus('');
       showSpeakFeedback();
+      const markSection = document.getElementById(prefix + '-mark-complete-section') ||
+                          document.getElementById('mark-story-complete-section');
+      if (markSection && prefix === 'story') markSection.style.display = 'block';
     }
 
     function restoreStopBtn() {
@@ -976,6 +985,11 @@ const WebSpeechModule = (function() {
       if (transcriptSection) transcriptSection.style.display = 'none';
       if (feedbackSection)   feedbackSection.style.display   = 'none';
       clearTranscriptDisplay();
+
+      if (prefix === 'story') {
+        const markSection = document.getElementById('mark-story-complete-section');
+        if (markSection) markSection.style.display = 'none';
+      }
 
       // Hide finish button
       const finishBtn = el('finish-btn');

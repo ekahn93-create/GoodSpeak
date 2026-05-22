@@ -211,6 +211,63 @@ case 'recordings':
     if (document.getElementById('story-speak-controls')) {
       storyWebSpeechInstance = WebSpeechModule.create('story', () => document.getElementById('prompt-text')?.textContent || '', { countdown: 3, resumable: true });
       storyWebSpeechInstance.init();
+
+      // Clear vocab result banner on Start or Reset
+      function _clearStoryVocabResult() {
+        const el = document.getElementById('story-vocab-result');
+        if (el) el.remove();
+      }
+      const storyStartBtn = document.getElementById('story-start-btn');
+      const storyResetBtn = document.getElementById('story-reset-btn');
+      if (storyStartBtn) storyStartBtn.addEventListener('click', _clearStoryVocabResult);
+      if (storyResetBtn) storyResetBtn.addEventListener('click', _clearStoryVocabResult);
+
+      // Hook Finish button: verify deploy words used correctly
+      const storyFinishBtn = document.getElementById('story-finish-btn');
+      if (storyFinishBtn) {
+        storyFinishBtn.addEventListener('click', function() {
+          const transcript = storyWebSpeechInstance.getTranscript().trim();
+          const detectedWords = Array.from(_deployCheckedWords); // words checked off during session
+
+          if (!transcript || detectedWords.length === 0) {
+            _showStoryVocabResult([]);
+            return;
+          }
+
+          // Get word metadata for Claude
+          const allWords = (typeof WordBankModule !== 'undefined' && WordBankModule.getAllWordBankWords)
+            ? WordBankModule.getAllWordBankWords() : [];
+
+          // Show pending state
+          _showStoryVocabResult(null);
+
+          // Verify each detected word — run in parallel
+          const checks = detectedWords.map(wordName => {
+            const wordObj = allWords.find(w => w.word && w.word.toLowerCase() === wordName.toLowerCase()) || {};
+            return fetch('/.netlify/functions/claude-proxy', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                task: 'verify_vocab_usage',
+                payload: {
+                  word: wordName,
+                  definition: wordObj.definition || '',
+                  partOfSpeech: wordObj.partOfSpeech || '',
+                  transcript
+                }
+              })
+            })
+            .then(r => r.json())
+            .then(data => ({ word: wordName, correct: data.used_correctly, feedback: data.feedback }))
+            .catch(() => ({ word: wordName, correct: true, feedback: null })); // fallback: detected = good enough
+          });
+
+          Promise.all(checks).then(results => {
+            results.forEach(r => { if (r.correct) StorageManager.markWordSpoken(r.word); });
+            _showStoryVocabResult(results);
+          });
+        }, true); // capture phase — fires before WebSpeech's own handler
+      }
     }
 
     // Listen for view changes
@@ -353,6 +410,7 @@ case 'recordings':
 
     // Update "Mark as Complete" button state
     const markCompleteBtn = document.getElementById('mark-story-complete-btn');
+    const markCompleteSection = document.getElementById('mark-story-complete-section');
     if (markCompleteBtn) {
       const alreadyCompleted = userData.storytelling.completedPrompts.some(cp => cp.promptId === promptId);
       if (alreadyCompleted) {
@@ -360,11 +418,15 @@ case 'recordings':
         markCompleteBtn.disabled = true;
         markCompleteBtn.classList.add('btn-secondary');
         markCompleteBtn.classList.remove('btn-success');
+        // Already completed — show section right away
+        if (markCompleteSection) markCompleteSection.style.display = 'block';
       } else {
         markCompleteBtn.textContent = 'Mark as Complete';
         markCompleteBtn.disabled = false;
         markCompleteBtn.classList.remove('btn-secondary');
         markCompleteBtn.classList.add('btn-success');
+        // Hide until user clicks Finish
+        if (markCompleteSection) markCompleteSection.style.display = 'none';
       }
     }
   }
@@ -479,7 +541,7 @@ case 'recordings':
         }
       ],
       onSubmit: function(formData) {
-        completeStoryWithNotes(currentPrompt.id, formData.notes);
+        completeStoryWithNotes(currentPrompt.id, formData.notes, Array.from(_deployCheckedWords));
       },
       onCancel: function() {
         // Just close modal, don't complete
@@ -491,8 +553,9 @@ case 'recordings':
    * Complete story with notes
    * @param {number} promptId - The prompt ID
    * @param {string} notes - Optional reflection notes
+   * @param {string[]} deployedWords - Words from session deploy list that were spoken
    */
-  function completeStoryWithNotes(promptId, notes) {
+  function completeStoryWithNotes(promptId, notes, deployedWords) {
     // Check if already completed
     const alreadyCompleted = userData.storytelling.completedPrompts.some(cp => cp.promptId === promptId);
 
@@ -501,7 +564,8 @@ case 'recordings':
       userData.storytelling.completedPrompts.push({
         promptId: promptId,
         completedAt: new Date().toISOString(),
-        notes: notes || ''
+        notes: notes || '',
+        deployedWords: deployedWords || []
       });
 
       // Increment total stories
@@ -1026,6 +1090,67 @@ case 'recordings':
     }
   }
 
+
+  /**
+   * Show deploy word verification results above the story transcript section.
+   * results: null = pending, [] = no words detected, [{word, correct, feedback},...] = done
+   */
+  function _showStoryVocabResult(results) {
+    const transcriptSection = document.getElementById('story-transcript-section');
+    if (!transcriptSection) return;
+
+    let el = document.getElementById('story-vocab-result');
+    if (!el) {
+      el = document.createElement('div');
+      el.id = 'story-vocab-result';
+      el.style.cssText = 'margin-top: var(--spacing-sm); margin-bottom: var(--spacing-sm); padding: 10px 14px; border-radius: var(--border-radius-sm); border-left: 3px solid;';
+      transcriptSection.parentNode.insertBefore(el, transcriptSection);
+    }
+
+    // Pending state
+    if (results === null) {
+      el.style.background = 'var(--bg-secondary)';
+      el.style.borderColor = 'var(--text-secondary)';
+      el.innerHTML = '<span style="font-size:var(--font-size-sm);color:var(--text-secondary);">Verifying word usage...</span>';
+      return;
+    }
+
+    // No words detected
+    if (results.length === 0) {
+      el.style.background = '#fff8ec';
+      el.style.borderColor = '#e0a020';
+      el.innerHTML = '<span style="font-size:var(--font-size-sm);color:#8a5500;">None of your deploy words were detected — try weaving them into your story next time.</span>';
+      return;
+    }
+
+    // Build one row per word
+    const rows = results.map(r => {
+      if (r.correct) {
+        return `<div style="margin-bottom:6px;">
+          <div style="display:flex;align-items:center;gap:6px;">
+            <span style="font-size:0.9rem;">✓</span>
+            <span style="font-size:var(--font-size-sm);font-weight:700;color:#1a7a45;">${r.word} — used correctly</span>
+          </div>
+          ${r.feedback ? `<div style="font-size:var(--font-size-sm);color:#2d7a50;line-height:1.4;margin-left:18px;">${r.feedback}</div>` : ''}
+        </div>`;
+      } else {
+        return `<div style="margin-bottom:6px;">
+          <div style="display:flex;align-items:center;gap:6px;">
+            <span style="font-size:0.9rem;">✗</span>
+            <span style="font-size:var(--font-size-sm);font-weight:700;color:#a06000;">${r.word} — try again</span>
+          </div>
+          ${r.feedback ? `<div style="font-size:var(--font-size-sm);color:#8a5500;line-height:1.4;margin-left:18px;">${r.feedback}</div>` : ''}
+        </div>`;
+      }
+    }).join('');
+
+    const anyCorrect = results.some(r => r.correct);
+    el.style.background = anyCorrect ? '#f0faf4' : '#fff8ec';
+    el.style.borderColor = anyCorrect ? '#2d9e5f' : '#e0a020';
+    el.innerHTML = `
+      <div style="font-size:var(--font-size-sm);font-weight:700;margin-bottom:8px;color:var(--text-primary);">Deploy Word Feedback</div>
+      ${rows}`;
+  }
 
   /**
    * Show the vocab usage result banner above the impromptu vocab content.

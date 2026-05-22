@@ -2563,6 +2563,51 @@ canvas {
   margin-top: 2px;
 }
 
+/* Insights & Actions Panel */
+.review-insights {
+  margin: 0 0 24px 0;
+  background: #1e293b;
+  border: 1px solid rgba(148,163,184,0.12);
+  border-radius: 14px;
+  padding: 18px 20px;
+}
+.review-insights-header {
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: #94a3b8;
+  margin-bottom: 14px;
+}
+.review-insights-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.review-insight-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+.review-insight-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+.review-insight-text {
+  flex: 1;
+  min-width: 180px;
+  font-size: 14px;
+  color: #cbd5e1;
+  line-height: 1.4;
+}
+.review-insight-cta {
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
 /* KPI Cards */
 .review-kpi-row {
   display: grid;
@@ -2805,10 +2850,62 @@ canvas {
   transition: width 0.6s ease;
 }
 
+/* Deploy Words Scorecard */
+.deploy-scorecard-list {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+.deploy-scorecard-row {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid rgba(148,163,184,0.1);
+}
+.deploy-scorecard-row:last-child {
+  border-bottom: none;
+  padding-bottom: 0;
+}
+.deploy-scorecard-meta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+.deploy-scorecard-title {
+  font-size: 13px;
+  font-weight: 600;
+  color: #e2e8f0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 70%;
+}
+.deploy-scorecard-date {
+  font-size: 11px;
+  color: #64748b;
+  flex-shrink: 0;
+}
+.deploy-scorecard-words {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+.deploy-scorecard-chip {
+  font-size: 11px;
+  font-weight: 600;
+  background: rgba(99,102,241,0.15);
+  color: #a5b4fc;
+  border: 1px solid rgba(99,102,241,0.3);
+  border-radius: 999px;
+  padding: 2px 10px;
+}
+
 /* Bottom row */
 .review-bottom-row {
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: 1fr 1fr 1fr;
   gap: var(--spacing-lg);
   margin-bottom: var(--spacing-lg);
 }
