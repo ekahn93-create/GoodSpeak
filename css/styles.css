@@ -1023,8 +1023,8 @@ ul, ol {
 .tp-item {
   display: flex;
   align-items: center;
-  gap: var(--spacing-sm);
-  padding: var(--spacing-sm) var(--spacing-md);
+  gap: 6px;
+  padding: var(--spacing-sm) 0;
   border-radius: var(--border-radius-sm);
   cursor: pointer;
   transition: background 0.15s ease;
@@ -1079,6 +1079,11 @@ ul, ol {
   color: var(--tp-pill-color, var(--text-muted));
   line-height: 1.2;
   font-weight: 700;
+}
+
+.tp-page-icon {
+  flex-shrink: 0;
+  opacity: 0.85;
 }
 
 .tp-pill {

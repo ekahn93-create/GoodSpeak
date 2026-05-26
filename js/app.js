@@ -498,15 +498,23 @@ const App = (function() {
     const shown = suggestions.slice(0, 3);
 
     const pillColors = { vocab: '#0284c7', fluency: '#db2777', story: '#16a34a', recall: '#0891b2', challenge: '#7c3aed' };
+    const pageIcons = {
+      vocab:     '<svg style="display:inline;vertical-align:middle;margin-right:4px" xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>',
+      recall:    '<svg style="display:inline;vertical-align:middle;margin-right:4px" xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>',
+      fluency:   '<svg style="display:inline;vertical-align:middle;margin-right:4px" xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/><line x1="8" y1="23" x2="16" y2="23"/></svg>',
+      story:     '<svg style="display:inline;vertical-align:middle;margin-right:4px" xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="5 3 19 12 5 21 5 3"/></svg>',
+      challenge: '<svg style="display:inline;vertical-align:middle;margin-right:4px" xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="5 3 19 12 5 21 5 3"/></svg>'
+    };
     container.innerHTML = shown.map(function(s) {
       var destColor = pillColors[s.categoryClass] || 'var(--text-muted)';
+      var icon = pageIcons[s.categoryClass] || '';
       return '<div class="suggestion-item">' +
         '<div class="suggestion-body">' +
           '<div class="suggestion-top">' +
             '<span class="suggestion-pill suggestion-pill--' + s.categoryClass + '">' + s.category + '</span>' +
             '<span class="suggestion-text">' + s.text + '</span>' +
           '</div>' +
-          '<span class="suggestion-dest" style="color:' + destColor + ';font-weight:700">' + s.dest + '</span>' +
+          '<span class="suggestion-dest" style="color:' + destColor + ';font-weight:700">' + icon + s.dest + '</span>' +
         '</div>' +
         '<a href="' + s.link + '" class="suggestion-link btn btn-sm btn-primary">' + s.label + '</a>' +
         '</div>';
