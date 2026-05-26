@@ -574,7 +574,7 @@ const ProgressChartsModule = (function() {
 
     const items = [
       { name: 'Speaking Speed', val: last.wpm + ' WPM', pct: wpmScore, color: '#818cf8' },
-      { name: 'Filler Control',  val: last.fillers + ' fillers', pct: fillerScore, color: '#34d399' },
+      { name: 'Filler Control',  val: (last.fillers ?? 0) + ' fillers', pct: fillerScore, color: '#34d399' },
       { name: 'Consistency',     val: speechSessions.length + ' sessions', pct: consistency, color: '#fbbf24' },
     ];
 

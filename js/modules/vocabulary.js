@@ -1089,7 +1089,8 @@ const VocabularyModule = (function() {
       ...vocabularyDatabase.advanced
     ];
     const learnedAppWords = allAppWords.filter(w =>
-      data.vocabulary.learned.includes(w.id) || data.vocabulary.stillLearning.includes(w.id)
+      data.vocabulary.learned.includes(w.id) || data.vocabulary.learned.includes(w.word) ||
+      data.vocabulary.stillLearning.includes(w.id) || data.vocabulary.stillLearning.includes(w.word)
     ).map(w => ({
       word: w.word,
       partOfSpeech: w.partOfSpeech,
