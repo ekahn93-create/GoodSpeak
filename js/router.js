@@ -48,8 +48,9 @@ const Router = (function() {
     const thisPage   = document.body.getAttribute('data-page') || 'home';
 
     if (viewName === thisPage) {
-      // Already on this page — no-op (or could scroll to top)
-      window.scrollTo(0, 0);
+      // Already on this page — scroll to top (body or scroll wrapper on mobile)
+      var wrapper = document.getElementById('mobile-scroll-wrapper');
+      if (wrapper) { wrapper.scrollTop = 0; } else { window.scrollTo(0, 0); }
       return;
     }
 

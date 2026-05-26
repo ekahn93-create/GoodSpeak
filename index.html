@@ -20,6 +20,7 @@
     <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
 </head>
 <body data-page="home">
+    <div id="mobile-scroll-wrapper">
     <!-- Navigation Bar -->
     <nav id="main-nav" class="nav-bar">
         <div class="nav-brand">
@@ -169,6 +170,7 @@
             </div>
 
             <!-- ========== LEARNING PATH STEPPER (#1) ========== -->
+            <div class="learning-path-scroll-wrap">
             <div class="learning-path-strip" id="learning-path-strip">
                 <div class="lp-step" id="lp-step-learn">
                     <div class="lp-step-number">1</div>
@@ -220,6 +222,7 @@
                     <a href="/review" class="lp-step-btn btn btn-sm btn-primary">Go</a>
                 </div>
             </div>
+            </div>
 
             <!-- Today's Practice Checklist -->
             <div class="todays-practice-card" id="todays-practice-card">
@@ -231,7 +234,7 @@
                     </div>
                 </div>
                 <ul class="tp-list" id="tp-list">
-                    <li class="tp-item" data-task="word_of_day" style="--tp-pill-color:#6366F1">
+                    <li class="tp-item" data-task="word_of_day" style="--tp-pill-color:#0284c7">
                         <span class="tp-check" id="tp-check-word_of_day"></span>
                         <span class="tp-pill tp-pill--vocab">Vocabulary</span>
                         <span class="tp-label-group">
@@ -240,7 +243,7 @@
                         </span>
                         <a href="/learn#word_of_day" class="tp-go btn btn-sm btn-secondary">Go</a>
                     </li>
-                    <li class="tp-item" data-task="srs" style="--tp-pill-color:#F97316">
+                    <li class="tp-item" data-task="srs" style="--tp-pill-color:#0284c7">
                         <span class="tp-check" id="tp-check-srs"></span>
                         <span class="tp-pill tp-pill--recall">Recall</span>
                         <span class="tp-label-group">
@@ -249,7 +252,7 @@
                         </span>
                         <a href="/learn#srs" class="tp-go btn btn-sm btn-secondary">Go</a>
                     </li>
-                    <li class="tp-item" data-task="precision" style="--tp-pill-color:#3B82F6">
+                    <li class="tp-item" data-task="precision" style="--tp-pill-color:#db2777">
                         <span class="tp-check" id="tp-check-precision"></span>
                         <span class="tp-pill tp-pill--fluency">Fluency</span>
                         <span class="tp-label-group">
@@ -258,7 +261,7 @@
                         </span>
                         <a href="/polish#precision" class="tp-go btn btn-sm btn-secondary">Go</a>
                     </li>
-                    <li class="tp-item" data-task="filler" style="--tp-pill-color:#3B82F6">
+                    <li class="tp-item" data-task="filler" style="--tp-pill-color:#db2777">
                         <span class="tp-check" id="tp-check-filler"></span>
                         <span class="tp-pill tp-pill--fluency">Fluency</span>
                         <span class="tp-label-group">
@@ -267,7 +270,7 @@
                         </span>
                         <a href="/polish#filler" class="tp-go btn btn-sm btn-secondary">Go</a>
                     </li>
-                    <li class="tp-item" data-task="speaking" style="--tp-pill-color:#22C55E">
+                    <li class="tp-item" data-task="speaking" style="--tp-pill-color:#16a34a">
                         <span class="tp-check" id="tp-check-speaking"></span>
                         <span class="tp-pill tp-pill--story">Storytelling</span>
                         <span class="tp-label-group">
@@ -364,6 +367,7 @@
     <script src="js/components/modal.js"></script>
     <script src="js/components/progressBar.js"></script>
     <script src="js/modules/nudge.js"></script>
+    <script src="js/modules/sessionWords.js"></script>
     <script src="js/modules/vocabulary.js"></script>
     <script src="js/modules/storytelling.js"></script>
     <script src="js/modules/wordBank.js"></script>
@@ -593,5 +597,6 @@
         });
       })();
     </script>
+    </div><!-- /#mobile-scroll-wrapper -->
 </body>
 </html>

@@ -214,7 +214,7 @@ const App = (function() {
     const stories        = userData.storytelling.totalStories || 0;
     const streak         = userData.stats.practiceStreak || userData.dailyWord.currentStreak || 0;
     const days           = (userData.stats.activeDates || []).length;
-    const fluencyVisited = !!localStorage.getItem('fluency_visited');
+    const fluencyVisited = (userData.stats.polishSessionsCompleted || 0) >= 1;
     const next           = tier.nextThresholds;
 
     // --- Tier badge ---
@@ -247,12 +247,24 @@ const App = (function() {
     steps.forEach(function(s) {
       const el = document.getElementById(s.id);
       if (!el) return;
-      el.classList.remove('lp-step-done', 'lp-step-current');
+      el.classList.remove('lp-step-done', 'lp-step-current', 'lp-step-start-here');
+      // Remove any existing "Start here" badge
+      const existingBadge = el.querySelector('.lp-start-here-badge');
+      if (existingBadge) existingBadge.remove();
+
       if (s.done) {
         el.classList.add('lp-step-done');
       } else if (!foundCurrent) {
         el.classList.add('lp-step-current');
         foundCurrent = true;
+        // Show "Start here" badge until user has visited Learn page
+        if (!localStorage.getItem('learnVisited')) {
+          el.classList.add('lp-step-start-here');
+          const badge = document.createElement('span');
+          badge.className = 'lp-start-here-badge';
+          badge.textContent = 'Start here';
+          el.appendChild(badge);
+        }
       }
     });
 
@@ -287,27 +299,27 @@ const App = (function() {
   // At Advanced tier, goals shift to sustaining mastery.
   const TIER_GOALS = {
     Beginner: [
-      { key: 'words',   text: 'Learn 5 words',                  link: '/learn',  linkLabel: 'Vocabulary Builder',  check: function(w,s,d) { return w >= 5;  }, target: 5,  current: function(w,s,d) { return w; }, unit: 'words' },
-      { key: 'polish',  text: 'Try a pronunciation drill',       link: '/polish',     linkLabel: 'Polish',              check: function(w,s,d,f) { return f;    } },
-      { key: 'stories', text: 'Complete a storytelling prompt',  link: '/practice',linkLabel: 'Practice',            check: function(w,s,d) { return s >= 1;  }, target: 1,  current: function(w,s,d) { return s; }, unit: 'completed' },
-      { key: 'days',    text: 'Use the app 3 different days',    link: '/learn',  linkLabel: 'Keep going',          check: function(w,s,d) { return d >= 3;  }, target: 3,  current: function(w,s,d) { return d; }, unit: 'days' }
+      { key: 'words',   color: '#0284c7', text: 'Learn 5 words',                  link: '/learn',    linkLabel: 'Vocabulary Builder', check: function(w,s,d) { return w >= 5;  }, target: 5,  current: function(w,s,d) { return w; }, unit: 'words' },
+      { key: 'polish',  color: '#db2777', text: 'Try a pronunciation drill',       link: '/polish',   linkLabel: 'Polish',             check: function(w,s,d,f) { return f;    } },
+      { key: 'stories', color: '#16a34a', text: 'Complete a storytelling prompt',  link: '/practice', linkLabel: 'Practice',           check: function(w,s,d) { return s >= 1;  }, target: 1,  current: function(w,s,d) { return s; }, unit: 'completed' },
+      { key: 'days',    color: '#0284c7', text: 'Use the app 3 different days',    link: '/learn',    linkLabel: 'Keep going',         check: function(w,s,d) { return d >= 3;  }, target: 3,  current: function(w,s,d) { return d; }, unit: 'days' }
     ],
     Building: [
-      { key: 'words',   text: 'Reach 20 words learned',          link: '/learn',  linkLabel: 'Vocabulary Builder',  check: function(w,s,d) { return w >= 20; }, target: 20, current: function(w,s,d) { return w; }, unit: 'words' },
-      { key: 'stories', text: 'Complete 5 storytelling prompts', link: '/practice',linkLabel: 'Practice',            check: function(w,s,d) { return s >= 5;  }, target: 5,  current: function(w,s,d) { return s; }, unit: 'completed' },
-      { key: 'days',    text: 'Stay active for 14 days',         link: '/learn',  linkLabel: 'Keep going',          check: function(w,s,d) { return d >= 14; }, target: 14, current: function(w,s,d) { return d; }, unit: 'days' },
-      { key: 'quiz',    text: 'Pass a Knowledge Check quiz',     link: '/learn',  linkLabel: 'Knowledge Check',    check: function(w,s,d) { return w >= 10; } }
+      { key: 'words',   color: '#0284c7', text: 'Reach 20 words learned',          link: '/learn',    linkLabel: 'Vocabulary Builder', check: function(w,s,d) { return w >= 20; }, target: 20, current: function(w,s,d) { return w; }, unit: 'words' },
+      { key: 'stories', color: '#16a34a', text: 'Complete 5 storytelling prompts', link: '/practice', linkLabel: 'Practice',           check: function(w,s,d) { return s >= 5;  }, target: 5,  current: function(w,s,d) { return s; }, unit: 'completed' },
+      { key: 'days',    color: '#0284c7', text: 'Stay active for 14 days',         link: '/learn',    linkLabel: 'Keep going',         check: function(w,s,d) { return d >= 14; }, target: 14, current: function(w,s,d) { return d; }, unit: 'days' },
+      { key: 'quiz',    color: '#0284c7', text: 'Pass a Knowledge Check quiz',     link: '/learn',    linkLabel: 'Knowledge Check',    check: function(w,s,d) { return w >= 10; } }
     ],
     Intermediate: [
-      { key: 'words',   text: 'Reach 50 words learned',          link: '/learn',  linkLabel: 'Vocabulary Builder',  check: function(w,s,d) { return w >= 50; }, target: 50, current: function(w,s,d) { return w; }, unit: 'words' },
-      { key: 'stories', text: 'Complete 15 storytelling prompts',link: '/practice',linkLabel: 'Practice',            check: function(w,s,d) { return s >= 15; }, target: 15, current: function(w,s,d) { return s; }, unit: 'completed' },
-      { key: 'days',    text: 'Stay active for 30 days',         link: '/learn',  linkLabel: 'Keep going',          check: function(w,s,d) { return d >= 30; }, target: 30, current: function(w,s,d) { return d; }, unit: 'days' },
-      { key: 'drill',   text: 'Finish 10 daily drills',          link: '/',        linkLabel: 'Daily Drill',         check: function(w,s,d) { return d >= 10; } }
+      { key: 'words',   color: '#0284c7', text: 'Reach 50 words learned',          link: '/learn',    linkLabel: 'Vocabulary Builder', check: function(w,s,d) { return w >= 50; }, target: 50, current: function(w,s,d) { return w; }, unit: 'words' },
+      { key: 'stories', color: '#16a34a', text: 'Complete 15 storytelling prompts',link: '/practice', linkLabel: 'Practice',           check: function(w,s,d) { return s >= 15; }, target: 15, current: function(w,s,d) { return s; }, unit: 'completed' },
+      { key: 'days',    color: '#0284c7', text: 'Stay active for 30 days',         link: '/learn',    linkLabel: 'Keep going',         check: function(w,s,d) { return d >= 30; }, target: 30, current: function(w,s,d) { return d; }, unit: 'days' },
+      { key: 'drill',   color: '#6366f1', text: 'Finish 10 daily drills',          link: '/',         linkLabel: 'Daily Drill',         check: function(w,s,d) { return d >= 10; } }
     ],
     Advanced: [
-      { key: 'words',   text: '100 words learned — sustain it',  link: '/learn',  linkLabel: 'Vocabulary Builder',  check: function(w,s,d) { return w >= 100; }, target: 100, current: function(w,s,d) { return w; }, unit: 'words' },
-      { key: 'stories', text: '30 stories completed',            link: '/practice',linkLabel: 'Practice',            check: function(w,s,d) { return s >= 30;  }, target: 30,  current: function(w,s,d) { return s; }, unit: 'completed' },
-      { key: 'days',    text: 'Active on 60+ different days',    link: '/learn',  linkLabel: 'Keep going',          check: function(w,s,d) { return d >= 60;  }, target: 60,  current: function(w,s,d) { return d; }, unit: 'days' }
+      { key: 'words',   color: '#0284c7', text: '100 words learned — sustain it',  link: '/learn',    linkLabel: 'Vocabulary Builder', check: function(w,s,d) { return w >= 100; }, target: 100, current: function(w,s,d) { return w; }, unit: 'words' },
+      { key: 'stories', color: '#16a34a', text: '30 stories completed',            link: '/practice', linkLabel: 'Practice',           check: function(w,s,d) { return s >= 30;  }, target: 30,  current: function(w,s,d) { return s; }, unit: 'completed' },
+      { key: 'days',    color: '#0284c7', text: 'Active on 60+ different days',    link: '/learn',    linkLabel: 'Keep going',         check: function(w,s,d) { return d >= 60;  }, target: 60,  current: function(w,s,d) { return d; }, unit: 'days' }
     ]
   };
 
@@ -350,10 +362,10 @@ const App = (function() {
         progressHtml =
           '<div class="bcl-progress">' +
             '<div class="bcl-progress-header">' +
-              '<span class="bcl-progress-label">' + cur + ' / ' + g.target + ' ' + g.unit + '</span>' +
+              '<span class="bcl-progress-label" style="color:' + g.color + '">' + cur + ' / ' + g.target + ' ' + g.unit + '</span>' +
             '</div>' +
             '<div class="bcl-progress-bar-track">' +
-              '<div class="bcl-progress-bar-fill" style="width:' + pct + '%"></div>' +
+              '<div class="bcl-progress-bar-fill" style="width:' + pct + '%;background:' + g.color + '"></div>' +
             '</div>' +
           '</div>';
       }
@@ -364,7 +376,7 @@ const App = (function() {
           '<span class="bcl-text">' + g.text + '</span>' +
           progressHtml +
         '</div>' +
-        (done ? '' : '<a href="' + g.link + '" class="bcl-link">' + g.linkLabel + ' &#8594;</a>') +
+        (done ? '' : '<a href="' + g.link + '" class="bcl-link" style="color:' + g.color + '">' + g.linkLabel + ' &#8594;</a>') +
         '</li>';
     }).join('');
 
@@ -485,7 +497,7 @@ const App = (function() {
     // Cap at 3 suggestions
     const shown = suggestions.slice(0, 3);
 
-    const pillColors = { vocab: '#6366F1', fluency: '#3B82F6', story: '#22C55E', recall: '#F97316', challenge: '#EC4899' };
+    const pillColors = { vocab: '#0284c7', fluency: '#db2777', story: '#16a34a', recall: '#0891b2', challenge: '#7c3aed' };
     container.innerHTML = shown.map(function(s) {
       var destColor = pillColors[s.categoryClass] || 'var(--text-muted)';
       return '<div class="suggestion-item">' +
@@ -494,7 +506,7 @@ const App = (function() {
             '<span class="suggestion-pill suggestion-pill--' + s.categoryClass + '">' + s.category + '</span>' +
             '<span class="suggestion-text">' + s.text + '</span>' +
           '</div>' +
-          '<span class="suggestion-dest" style="color:' + destColor + ';font-weight:500">' + s.dest + '</span>' +
+          '<span class="suggestion-dest" style="color:' + destColor + ';font-weight:700">' + s.dest + '</span>' +
         '</div>' +
         '<a href="' + s.link + '" class="suggestion-link btn btn-sm btn-primary">' + s.label + '</a>' +
         '</div>';
@@ -555,23 +567,7 @@ const App = (function() {
 
     updateTPProgress(state);
 
-    // Wire up check clicks — clicking a row marks it done
-    container.querySelectorAll('.tp-item').forEach(function(item) {
-      item.addEventListener('click', function(e) {
-        // Don't intercept the "Go" link
-        if (e.target.classList.contains('tp-go') || e.target.closest('.tp-go')) return;
-        const task = item.dataset.task;
-        const state = loadTPState();
-        if (!state.completed.includes(task)) {
-          state.completed.push(task);
-          saveTPState(state);
-          const check = document.getElementById('tp-check-' + task);
-          if (check) { check.textContent = '✓'; check.classList.add('tp-check-done'); }
-          item.classList.add('tp-item-done');
-          updateTPProgress(state);
-        }
-      });
-    });
+    // No manual check clicks — tasks are only marked done by completing the exercise.
   }
 
   function updateTPProgress(state) {
@@ -944,7 +940,6 @@ const App = (function() {
         break;
       case 'fluency':
         if (typeof FluencyModule !== 'undefined') FluencyModule.refresh();
-        localStorage.setItem('fluency_visited', '1');
         break;
     }
   }

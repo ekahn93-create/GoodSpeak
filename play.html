@@ -20,6 +20,7 @@
     <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
 </head>
 <body data-page="play">
+    <div id="mobile-scroll-wrapper">
     <!-- Navigation Bar -->
     <nav id="main-nav" class="nav-bar">
         <div class="nav-brand">
@@ -347,5 +348,6 @@
         document.getElementById('footer-year').textContent = new Date().getFullYear();
         if (typeof lucide !== 'undefined') lucide.createIcons();
     </script>
+    </div><!-- /#mobile-scroll-wrapper -->
 </body>
 </html>

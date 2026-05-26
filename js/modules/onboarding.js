@@ -7,42 +7,42 @@ const OnboardingModule = (function() {
 
   const STORAGE_KEY = 'onboardingComplete';
 
-  // 5 curated words spanning beginner → advanced so users feel the range
+  // 5 curated words: 2 beginner, 1 intermediate, 2 advanced — so users feel the full range
   const starterWords = [
     {
-      word: 'articulate',
-      pronunciation: 'ar-TIK-yuh-layt',
-      definition: 'Expressing oneself clearly and effectively in speech',
-      example: 'She is very articulate when explaining complex topics.',
+      word: 'concise',
+      pronunciation: 'kuhn-SISE',
+      definition: 'Giving a lot of information clearly and in few words; brief but comprehensive',
+      example: 'His explanation was concise yet thorough.',
       difficulty: 'beginner'
     },
     {
-      word: 'convey',
-      pronunciation: 'kuhn-VAY',
-      definition: 'To communicate or make known; to express a thought or feeling',
-      example: 'He struggled to convey his emotions during the conversation.',
+      word: 'deliberate',
+      pronunciation: 'dih-LIB-er-it',
+      definition: 'Done consciously and intentionally; careful and unhurried',
+      example: 'She spoke in a deliberate manner to ensure everyone understood.',
       difficulty: 'beginner'
     },
     {
-      word: 'nuance',
-      pronunciation: 'NOO-ahns',
-      definition: 'A subtle difference in meaning, expression, or tone',
-      example: 'The nuance in her voice made all the difference.',
+      word: 'tenacious',
+      pronunciation: 'tuh-NAY-shuhs',
+      definition: 'Not readily relinquishing a position or principle; persistent',
+      example: 'She was tenacious in pursuing her goal of better communication.',
       difficulty: 'intermediate'
     },
     {
-      word: 'rhetoric',
-      pronunciation: 'RET-er-ik',
-      definition: 'The art of effective or persuasive speaking or writing',
-      example: 'His powerful rhetoric moved the entire audience.',
-      difficulty: 'intermediate'
+      word: 'veracity',
+      pronunciation: 'vuh-RAS-i-tee',
+      definition: 'Conformity to facts; accuracy; truthfulness',
+      example: 'The veracity of your statements affects your credibility.',
+      difficulty: 'advanced'
     },
     {
-      word: 'eloquent',
-      pronunciation: 'EL-uh-kwent',
-      definition: 'Fluent and persuasive in speaking or writing',
-      example: 'Her eloquent speech left the crowd speechless.',
-      difficulty: 'intermediate'
+      word: 'loquacious',
+      pronunciation: 'loh-KWAY-shuhs',
+      definition: 'Tending to talk a great deal; talkative',
+      example: 'Being loquacious doesn\'t necessarily mean being articulate.',
+      difficulty: 'advanced'
     }
   ];
 
@@ -133,6 +133,8 @@ const OnboardingModule = (function() {
         userData.vocabulary.stillLearning.push(wordObj.word);
         StorageManager.save(userData);
       }
+      // Add to Deploy Words tray so new users see session words immediately
+      if (typeof SessionWords !== 'undefined') SessionWords.add(wordObj.word);
     }
 
     currentIndex++;
@@ -145,41 +147,82 @@ const OnboardingModule = (function() {
 
   function showResult() {
     const total = starterWords.length;
-    let heading, message, level;
+    let heading, ctaLabel, ctaHref, level;
 
     if (knownCount === 0) {
       level = 'beginner';
       heading = 'You\'re just getting started — perfect.';
-      message = 'EZSpeaks is built for this. Head to <strong>Vocabulary Builder</strong> to start adding words you own.';
+      ctaLabel = 'Learn your first 5 words &rarr;';
+      ctaHref = '/learn';
     } else if (knownCount <= 2) {
       level = 'beginner';
       heading = `You know ${knownCount} of ${total} — solid start.`;
-      message = 'You\'ve got a foundation. The <strong>Vocabulary Builder</strong> will help you fill in the gaps fast.';
+      ctaLabel = 'Keep building in Vocabulary Builder &rarr;';
+      ctaHref = '/learn';
     } else if (knownCount <= 4) {
       level = 'intermediate';
       heading = `You know ${knownCount} of ${total} — you\'re building well.`;
-      message = 'Nice range. Try the <strong>Daily Word</strong> tab to sharpen the words you use every day.';
+      ctaLabel = 'Try today\'s Daily Word &rarr;';
+      ctaHref = '/learn#word_of_day';
     } else {
       level = 'advanced';
       heading = `You know all ${total} — you\'re ahead of most.`;
-      message = 'Impressive. Head to <strong>Knowledge Check</strong> to put your vocabulary to the test.';
+      ctaLabel = 'Test yourself in Knowledge Check &rarr;';
+      ctaHref = '/learn#kc';
     }
 
     localStorage.setItem('userLevel', level);
+
+    const goals = [
+      { value: 'public_speaking',       label: 'Public speaking',        sub: 'Presentations & talks',     href: '/practice', page: 'Practice' },
+      { value: 'job_interviews',         label: 'Job interviews',          sub: 'Confident & clear answers', href: '/practice', page: 'Practice' },
+      { value: 'everyday_conversation', label: 'Everyday conversation',   sub: 'Sound more natural',        href: '/learn',    page: 'Learn' },
+      { value: 'professional_presence', label: 'Professional presence',   sub: 'Command the room',          href: '/polish',   page: 'Polish' },
+      { value: 'general',               label: 'General improvement',     sub: 'All-around growth',         href: '/learn',    page: 'Learn' }
+    ];
 
     const body = document.getElementById('onboarding-body');
     body.innerHTML = `
       <div class="onboarding-result">
         <h3 class="onboarding-result-heading">${heading}</h3>
-        <p class="onboarding-rec">${message}</p>
         <div class="onboarding-actions">
-          <a href="/learn" class="btn btn-primary onboarding-start-btn">Start Learning</a>
-          <button class="btn btn-secondary" id="onboarding-explore-btn">Explore on My Own</button>
+          <a href="${ctaHref}" class="btn btn-primary onboarding-start-btn">${ctaLabel}</a>
         </div>
+        <div class="onboarding-or-divider"><span>or choose your goal</span></div>
+        <div class="onboarding-goal-grid">
+          ${goals.map(g => `
+            <button class="onboarding-goal-btn" data-goal="${g.value}" data-href="${g.href}" data-page="${g.page}">
+              ${g.label}
+              <span class="onboarding-goal-subtext">${g.sub}</span>
+            </button>
+          `).join('')}
+        </div>
+        <div class="onboarding-goal-cta" id="onboarding-goal-cta" style="display:none;">
+          <a class="btn btn-primary onboarding-goal-go-btn" id="onboarding-goal-go-btn" href="#">Let's go &rarr;</a>
+        </div>
+        <button class="onboarding-explore-btn" id="onboarding-explore-btn">Explore on my own</button>
       </div>
     `;
 
-    document.querySelector('.onboarding-start-btn').addEventListener('click', close);
+    body.querySelector('.onboarding-start-btn').addEventListener('click', close);
+
+    let selectedHref = null;
+    body.querySelectorAll('.onboarding-goal-btn').forEach(function(btn) {
+      btn.addEventListener('click', function() {
+        body.querySelectorAll('.onboarding-goal-btn').forEach(function(b) { b.classList.remove('selected'); });
+        this.classList.add('selected');
+        localStorage.setItem('userGoal', this.getAttribute('data-goal'));
+        selectedHref = this.getAttribute('data-href');
+        var page = this.getAttribute('data-page');
+        var cta = document.getElementById('onboarding-goal-cta');
+        var goBtn = document.getElementById('onboarding-goal-go-btn');
+        goBtn.href = selectedHref;
+        goBtn.innerHTML = 'Let\'s go to ' + page + ' &rarr;';
+        cta.style.display = 'block';
+      });
+    });
+
+    document.getElementById('onboarding-goal-go-btn').addEventListener('click', close);
     document.getElementById('onboarding-explore-btn').addEventListener('click', close);
   }
 

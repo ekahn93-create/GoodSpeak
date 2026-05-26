@@ -249,6 +249,9 @@ const MWWordOfDayModule = (function() {
     if (StorageManager.save(userData)) {
       const label = status === 'learned' ? 'Words Learned' : 'Still Learning';
       showToast(`"${cachedWord.word}" added to ${label}!`, 'success');
+      if (typeof SessionWords !== 'undefined') {
+        SessionWords.add(cachedWord.word);
+      }
     } else {
       showToast('Failed to save word', 'error');
     }

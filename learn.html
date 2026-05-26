@@ -20,6 +20,7 @@
     <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
 </head>
 <body data-page="vocabulary">
+    <div id="mobile-scroll-wrapper">
     <!-- Navigation Bar -->
     <nav id="main-nav" class="nav-bar">
         <div class="nav-brand">
@@ -202,6 +203,16 @@
                     <button class="pcb-toggle" id="pcb-learn-why-toggle" aria-expanded="false">Why start here? <i class="pcb-toggle-icon">▼</i></button>
                 </div>
                 <p class="pcb-why" id="pcb-learn-why">Every Polish drill and Practice prompt gets sharper when you know more words. Learn is the foundation — start here, then move to Polish to train how you sound saying them.</p>
+            </div>
+
+            <!-- First-visit tip banner (shown once to new users) -->
+            <div class="learn-first-visit-banner" id="learn-first-visit-banner">
+                <span class="lfvb-icon">&#128161;</span>
+                <div class="lfvb-body">
+                    <div class="lfvb-title">Start here: Vocabulary Builder</div>
+                    <p class="lfvb-desc">Browse a category, read a word, then tap <strong>Mark as Learned</strong> or <strong>Still Learning</strong>. The words you mark here unlock every other part of the app.</p>
+                </div>
+                <button class="lfvb-close" id="lfvb-close" aria-label="Dismiss">&times;</button>
             </div>
 
             <!-- Category Navigation -->
@@ -878,6 +889,33 @@
       if (typeof lucide !== 'undefined') lucide.createIcons();
     </script>
 
+    <!-- First-visit Learn banner: show only to new users, dismiss once -->
+    <script>
+      (function() {
+        // Mark that the user has visited Learn — removes "Start here" badge on home
+        localStorage.setItem('learnVisited', '1');
+        var LFVB_KEY = 'lfvbDismissed';
+        var banner = document.getElementById('learn-first-visit-banner');
+        // Hide if already dismissed OR if user has learned words (returning user)
+        function shouldShowBanner() {
+          if (localStorage.getItem(LFVB_KEY) === '1') return false;
+          try {
+            var data = StorageManager ? StorageManager.load() : null;
+            var learnedCount = (data && data.vocabulary && data.vocabulary.learned) ? data.vocabulary.learned.length : 0;
+            // Show only if brand-new (0 learned words)
+            return learnedCount === 0;
+          } catch(e) { return false; }
+        }
+        if (!shouldShowBanner()) {
+          banner.classList.add('lfvb-hidden');
+        }
+        document.getElementById('lfvb-close').addEventListener('click', function() {
+          banner.classList.add('lfvb-hidden');
+          localStorage.setItem(LFVB_KEY, '1');
+        });
+      })();
+    </script>
+
     <!-- Page context banner: dismiss + accordion logic -->
     <script>
       (function() {
@@ -1171,5 +1209,6 @@
         });
       })();
     </script>
+    </div><!-- /#mobile-scroll-wrapper -->
 </body>
 </html>

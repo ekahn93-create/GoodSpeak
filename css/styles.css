@@ -184,6 +184,54 @@ ul, ol {
   box-shadow: 0 2px 8px rgba(99, 102, 241, 0.35);
 }
 
+/* Per-section nav accent colors — desktop nav links only */
+.nav-link[data-view="vocabulary"].active {
+  background-color: #0284c7; /* sky blue — Learn */
+  box-shadow: 0 2px 8px rgba(2, 132, 199, 0.35);
+}
+.nav-link[data-view="fluency"].active {
+  background-color: #db2777; /* rose — Polish */
+  box-shadow: 0 2px 8px rgba(219, 39, 119, 0.35);
+}
+.nav-link[data-view="storytelling"].active {
+  background-color: #16a34a; /* green — Practice */
+  box-shadow: 0 2px 8px rgba(22, 163, 74, 0.35);
+}
+.nav-link[data-view="play"].active {
+  background-color: #7c3aed; /* purple — Play */
+  box-shadow: 0 2px 8px rgba(124, 58, 237, 0.35);
+}
+.nav-link[data-view="progress"].active {
+  background-color: #0891b2; /* cyan — Stats */
+  box-shadow: 0 2px 8px rgba(8, 145, 178, 0.35);
+}
+/* Hover accents per section */
+.nav-link[data-view="vocabulary"]:not(.active):hover { color: #0284c7; }
+.nav-link[data-view="fluency"]:not(.active):hover    { color: #db2777; }
+.nav-link[data-view="storytelling"]:not(.active):hover { color: #16a34a; }
+.nav-link[data-view="play"]:not(.active):hover       { color: #7c3aed; }
+.nav-link[data-view="progress"]:not(.active):hover   { color: #0891b2; }
+
+/* Color line on desktop nav — always visible, longer when active */
+.nav-link::after {
+  content: '';
+  display: block;
+  width: 16px;
+  height: 3px;
+  border-radius: 2px;
+  margin-top: 3px;
+  transition: width var(--transition-fast);
+}
+.nav-link[data-view="home"]::after         { background: #6366f1; }
+.nav-link[data-view="vocabulary"]::after   { background: #0284c7; }
+.nav-link[data-view="fluency"]::after      { background: #db2777; }
+.nav-link[data-view="storytelling"]::after { background: #16a34a; }
+.nav-link[data-view="play"]::after         { background: #7c3aed; }
+.nav-link[data-view="progress"]::after     { background: #0891b2; }
+.nav-link.active::after {
+  width: 32px;
+}
+
 /* ==================== MAIN CONTAINER ==================== */
 #app-container {
   max-width: 1200px;
@@ -422,7 +470,7 @@ ul, ol {
   border: 1px solid var(--border-color);
   box-shadow: var(--shadow-sm);
   margin-bottom: var(--spacing-lg);
-  overflow: hidden;
+  overflow: visible; /* allow Start Here badge to show above strip */
 }
 
 .lp-step {
@@ -430,12 +478,21 @@ ul, ol {
   display: flex;
   flex-direction: column;
   align-items: center;
+  justify-content: space-between;
   text-align: center;
   padding: var(--spacing-md) var(--spacing-sm);
   gap: var(--spacing-xs);
   border-right: 1px solid var(--border-color);
   transition: background var(--transition-fast);
   position: relative;
+}
+
+.lp-step-body {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--spacing-xs);
+  flex: 1;
 }
 
 .lp-step:last-child {
@@ -475,7 +532,7 @@ ul, ol {
 }
 
 .lp-step-btn {
-  margin-top: 4px;
+  margin-top: var(--spacing-xs);
   font-size: 12px;
   padding: 4px 12px;
   text-decoration: none;
@@ -512,6 +569,52 @@ ul, ol {
 
 .lp-step-done .lp-step-stat {
   color: var(--secondary-color);
+}
+
+/* Scroll wrapper — only activates on mobile via responsive.css */
+.learning-path-scroll-wrap {
+  /* No styles on desktop — strip displays normally */
+}
+
+/* "Start here" highlight for brand-new users */
+.lp-step-start-here {
+  position: relative;
+  box-shadow: 0 0 0 2px #6366f1, 0 0 0 5px rgba(99, 102, 241, 0.2);
+  border-radius: var(--border-radius-sm);
+}
+
+@keyframes lp-pulse {
+  0%, 100% { box-shadow: 0 0 0 2px #6366f1, 0 0 0 5px rgba(99, 102, 241, 0.2); }
+  50%       { box-shadow: 0 0 0 2px #6366f1, 0 0 0 9px rgba(99, 102, 241, 0.08); }
+}
+
+.lp-step-start-here {
+  animation: lp-pulse 2s ease-in-out infinite;
+}
+
+.lp-start-here-badge {
+  position: absolute;
+  top: -13px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: #6366f1;
+  color: #fff;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  padding: 2px 10px;
+  border-radius: 999px;
+  white-space: nowrap;
+  pointer-events: none;
+  z-index: 1;
+}
+
+/* Make room above strip for the badge on desktop */
+@media (min-width: 641px) {
+  .learning-path-strip:has(.lp-start-here-badge) {
+    margin-top: 16px;
+  }
 }
 
 .lp-arrow {
@@ -975,7 +1078,7 @@ ul, ol {
   font-size: 0.72rem;
   color: var(--tp-pill-color, var(--text-muted));
   line-height: 1.2;
-  font-weight: 500;
+  font-weight: 700;
 }
 
 .tp-pill {
@@ -994,11 +1097,11 @@ ul, ol {
   white-space: nowrap;
 }
 
-.tp-pill--vocab      { background: #6366F1; }
-.tp-pill--fluency    { background: #3B82F6; }
-.tp-pill--story      { background: #22C55E; }
-.tp-pill--recall     { background: #F97316; }
-.tp-pill--challenge  { background: #EC4899; }
+.tp-pill--vocab      { background: #0284c7; }
+.tp-pill--fluency    { background: #db2777; }
+.tp-pill--story      { background: #16a34a; }
+.tp-pill--recall     { background: #0284c7; }
+.tp-pill--challenge  { background: #7c3aed; }
 
 .tp-go {
   flex-shrink: 0;
@@ -1074,6 +1177,7 @@ ul, ol {
   font-size: 0.68rem;
   color: var(--text-muted);
   line-height: 1.2;
+  font-weight: 700;
 }
 
 .suggestion-pill {
@@ -1091,11 +1195,11 @@ ul, ol {
   white-space: nowrap;
 }
 
-.suggestion-pill--vocab      { background: #6366F1; }
-.suggestion-pill--fluency    { background: #3B82F6; }
-.suggestion-pill--story      { background: #22C55E; }
-.suggestion-pill--recall     { background: #F97316; }
-.suggestion-pill--challenge  { background: #EC4899; }
+.suggestion-pill--vocab      { background: #0284c7; }
+.suggestion-pill--fluency    { background: #db2777; }
+.suggestion-pill--story      { background: #16a34a; }
+.suggestion-pill--recall     { background: #0284c7; }
+.suggestion-pill--challenge  { background: #7c3aed; }
 
 .suggestion-link {
   white-space: nowrap;
@@ -2217,6 +2321,108 @@ ul, ol {
   margin-bottom: var(--spacing-md);
 }
 
+/* Onboarding goal-selection screen */
+.onboarding-goal-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--spacing-sm);
+  margin: var(--spacing-md) 0;
+}
+
+.onboarding-goal-btn:last-child:nth-child(odd) {
+  grid-column: 1 / -1;
+  max-width: calc(50% - var(--spacing-sm) / 2);
+  margin: 0 auto;
+}
+
+.onboarding-goal-btn {
+  background: var(--bg-hover);
+  border: 2px solid var(--border-color);
+  border-radius: var(--border-radius-sm);
+  padding: var(--spacing-sm) var(--spacing-md);
+  font-size: var(--font-size-sm);
+  font-weight: 600;
+  color: var(--text-primary);
+  cursor: pointer;
+  text-align: center;
+  transition: all var(--transition-fast);
+  line-height: 1.4;
+}
+
+.onboarding-goal-btn:hover {
+  border-color: var(--primary-color);
+  background: rgba(99, 102, 241, 0.06);
+  color: var(--primary-color);
+}
+
+.onboarding-goal-btn.selected {
+  border-color: var(--primary-color);
+  background: rgba(99, 102, 241, 0.1);
+  color: var(--primary-color);
+}
+
+.onboarding-goal-subtext {
+  font-size: 11px;
+  font-weight: 400;
+  color: var(--text-secondary);
+  display: block;
+  margin-top: 2px;
+}
+
+.onboarding-goal-btn.selected .onboarding-goal-subtext {
+  color: var(--primary-color);
+  opacity: 0.8;
+}
+
+/* Tighten onboarding result CTA after adding goal step */
+.onboarding-actions {
+  margin-top: var(--spacing-md);
+  flex-direction: column;
+  align-items: center;
+}
+
+.onboarding-or-divider {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+  margin: var(--spacing-md) 0 var(--spacing-sm);
+  color: var(--text-light);
+  font-size: var(--font-size-sm);
+}
+
+.onboarding-or-divider::before,
+.onboarding-or-divider::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: var(--border-color);
+}
+
+.onboarding-goal-cta {
+  margin-top: var(--spacing-md);
+  text-align: center;
+}
+
+.onboarding-explore-btn {
+  display: block;
+  margin: var(--spacing-sm) auto 0;
+  background: none;
+  border: 1.5px solid var(--border-color);
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text-secondary);
+  cursor: pointer;
+  padding: 5px 18px;
+  border-radius: 999px;
+  transition: all var(--transition-fast);
+}
+
+.onboarding-explore-btn:hover {
+  color: var(--text-primary);
+  border-color: var(--text-secondary);
+  background: var(--bg-hover);
+}
+
 /* ==================== RECORDINGS ==================== */
 .rec-status {
   font-size: var(--font-size-lg);
@@ -3320,6 +3526,64 @@ canvas {
 
 .page-context-banner.pcb-hidden {
   display: none;
+}
+
+/* ==================== FIRST-VISIT LEARN BANNER ==================== */
+.learn-first-visit-banner {
+  background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%);
+  border: 1.5px solid #93c5fd;
+  border-radius: var(--border-radius);
+  padding: var(--spacing-md) var(--spacing-lg);
+  margin-bottom: var(--spacing-md);
+  display: flex;
+  align-items: flex-start;
+  gap: var(--spacing-md);
+  position: relative;
+}
+
+.learn-first-visit-banner.lfvb-hidden {
+  display: none;
+}
+
+.lfvb-icon {
+  font-size: 28px;
+  flex-shrink: 0;
+  line-height: 1;
+}
+
+.lfvb-body {
+  flex: 1;
+}
+
+.lfvb-title {
+  font-weight: 700;
+  font-size: var(--font-size-base);
+  color: #1e40af;
+  margin-bottom: 4px;
+}
+
+.lfvb-desc {
+  font-size: var(--font-size-sm);
+  color: #1d4ed8;
+  margin: 0;
+  line-height: 1.5;
+}
+
+.lfvb-close {
+  position: absolute;
+  top: 10px;
+  right: 12px;
+  background: none;
+  border: none;
+  font-size: 18px;
+  color: #93c5fd;
+  cursor: pointer;
+  line-height: 1;
+  padding: 2px 4px;
+}
+
+.lfvb-close:hover {
+  color: #1e40af;
 }
 
 /* ==================== MERRIAM-WEBSTER WORD OF THE DAY ==================== */

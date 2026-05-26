@@ -424,6 +424,9 @@ const WordBankModule = (function() {
     if (StorageManager.save(userData)) {
       const label = status === 'learned' ? 'Learned Words' : 'Still Learning';
       showToast(`Word added to ${label}!`, 'success');
+      if (typeof SessionWords !== 'undefined') {
+        SessionWords.add(word);
+      }
 
       // Clear form and lookup status
       addWordForm.reset();
@@ -800,6 +803,9 @@ const WordBankModule = (function() {
     word.status = 'learned';
     if (StorageManager.save(userData)) {
       showToast('Word moved to Learned!', 'success');
+      if (typeof SessionWords !== 'undefined') {
+        SessionWords.add(word.word);
+      }
       displayStillLearningWords();
       displayAppLearnedWords();
       updateCounts();
@@ -1803,6 +1809,10 @@ const WordBankModule = (function() {
     data.savedForLater.splice(index, 1);
     StorageManager.save(data);
     userData = data;
+
+    if (typeof SessionWords !== 'undefined') {
+      SessionWords.add(item.word);
+    }
 
     const label = status === 'learned' ? 'Learned Words' : 'Still Learning';
     _showToast('"' + item.word + '" moved to ' + label + '!');
