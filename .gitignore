@@ -3,3 +3,6 @@
 
 # Environment variables
 .env
+
+# Dependencies (Netlify installs these from package.json at build time)
+node_modules
