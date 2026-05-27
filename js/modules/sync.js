@@ -24,7 +24,7 @@ const SyncModule = (function () {
     try {
       const { data, error } = await client
         .from(TABLE)
-        .select('data, updated_at')
+        .select('data, updated_at, subscription_status, subscription_end')
         .eq('user_id', user.id)
         .maybeSingle();
 
@@ -45,6 +45,9 @@ const SyncModule = (function () {
       // Always trust cloud data — it is the source of truth on login
       console.log('SyncModule: loading cloud data');
       StorageManager.save(data.data);
+
+      // Cache subscription status so AuthModule.isPremium() works offline
+      AuthModule.setSubscriptionStatus(data.subscription_status, data.subscription_end);
 
       // Notify app to re-render with updated data
       document.dispatchEvent(new CustomEvent('syncComplete'));

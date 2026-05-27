@@ -10,6 +10,8 @@ const AuthModule = (function () {
   let onAuthChangeCallback = null;
   let initialSessionHandled = false;
   let _justSignedIn = false; // true only when user explicitly submitted the login form
+  let _subscriptionStatus = null;
+  let _subscriptionEnd = null;
 
   // ── Init ──────────────────────────────────────────────────────────────────
 
@@ -416,6 +418,20 @@ const AuthModule = (function () {
     return _justSignedIn;
   }
 
+  function setSubscriptionStatus(status, end) {
+    _subscriptionStatus = status || null;
+    _subscriptionEnd = end || null;
+  }
+
+  function isPremium() {
+    if (!currentUser) return false;
+    return _subscriptionStatus === 'active' || _subscriptionStatus === 'trialing';
+  }
+
+  function getSubscriptionStatus() {
+    return _subscriptionStatus;
+  }
+
   return {
     init,
     signUp,
@@ -428,7 +444,10 @@ const AuthModule = (function () {
     getDisplayName,
     openModal,
     closeModal,
-    _setCurrentUser
+    _setCurrentUser,
+    setSubscriptionStatus,
+    isPremium,
+    getSubscriptionStatus
   };
 
 })();
