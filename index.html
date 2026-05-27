@@ -875,6 +875,15 @@
             const userId = result.data.user.id;
             closeModal();
 
+            // For new signups: create the user_progress row immediately so the
+            // confirm-subscription function has a row to update after payment
+            if (mode === 'signup') {
+                await supabase.from('user_progress').upsert(
+                    { user_id: userId, data: '{}', updated_at: new Date().toISOString() },
+                    { onConflict: 'user_id' }
+                );
+            }
+
             if (mode === 'login') {
                 let subData = await _getSubscriptionData(userId);
                 if (_hasAccess(subData)) {

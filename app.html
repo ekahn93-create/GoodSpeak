@@ -375,20 +375,31 @@
           const { data: { session } } = await client.auth.getSession();
           if (!session) { window.location.replace('/'); return; }
 
-          // If arriving from Stripe checkout, confirm subscription directly then allow through
+          // If arriving from Stripe checkout, confirm subscription then allow through
           const params = new URLSearchParams(window.location.search);
           if (params.get('checkout') === 'success') {
             const sessionId = params.get('session_id');
             if (sessionId) {
               try {
-                await fetch('/.netlify/functions/confirm-subscription', {
+                const res = await fetch('/.netlify/functions/confirm-subscription', {
                   method: 'POST',
                   headers: { 'Content-Type': 'application/json' },
                   body: JSON.stringify({ sessionId })
                 });
-              } catch(e) { console.warn('confirm-subscription error:', e); }
+                if (!res.ok) throw new Error('confirm-subscription returned ' + res.status);
+              } catch(e) {
+                console.warn('confirm-subscription error:', e);
+                // Fallback: write trialing status directly from browser using user's session
+                try {
+                  await client.from('user_progress').upsert(
+                    { user_id: session.user.id, subscription_status: 'trialing',
+                      updated_at: new Date().toISOString() },
+                    { onConflict: 'user_id' }
+                  );
+                } catch(e2) { console.warn('fallback upsert error:', e2); }
+              }
             }
-            return; // allow through regardless — user just paid
+            return; // allow through — user just paid
           }
 
           const { data } = await client
