@@ -335,6 +335,25 @@
     <!-- JavaScript -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
     <script src="js/config.js"></script>
+    <script>
+      (async function() {
+        try {
+          await AppConfig.load();
+          const { url, anonKey } = AppConfig.supabase;
+          if (!url || url === 'YOUR_SUPABASE_URL') return;
+          const client = window.supabase.createClient(url, anonKey);
+          const { data: { session } } = await client.auth.getSession();
+          if (!session) { window.location.replace('/'); return; }
+          const { data } = await client.from('user_progress')
+            .select('subscription_status, stripe_customer_id')
+            .eq('user_id', session.user.id).maybeSingle();
+          const s = data?.subscription_status;
+          if (s !== 'active' && s !== 'trialing' && !data?.stripe_customer_id) {
+            window.location.replace('/');
+          }
+        } catch(e) { console.warn('Auth gate error:', e); }
+      })();
+    </script>
     <script src="js/storage.js"></script>
     <script src="js/router.js"></script>
     <script src="js/components/modal.js"></script>

@@ -876,14 +876,33 @@
             closeModal();
 
             if (mode === 'login') {
-                const subData = await _getSubscriptionData(userId);
+                let subData = await _getSubscriptionData(userId);
                 if (_hasAccess(subData)) {
                     window.location.href = '/app';
                     return;
                 }
+                // If they have a stripe_customer_id but status isn't set yet, retry once after a delay
+                // (webhook may still be in flight)
+                if (subData.stripe_customer_id) {
+                    await new Promise(r => setTimeout(r, 3000));
+                    subData = await _getSubscriptionData(userId);
+                    if (_hasAccess(subData)) {
+                        window.location.href = '/app';
+                        return;
+                    }
+                    // Payment exists but something went wrong — don't charge again
+                    const errEl = document.getElementById('auth-error');
+                    document.getElementById('auth-modal').classList.add('active');
+                    errEl.style.color = '#dc2626';
+                    errEl.textContent = 'Your payment was received but your account is still activating. Please wait a moment and try again, or contact support.';
+                    return;
+                }
+                // No payment record — send to Stripe
+                await _redirectToCheckout(userId, email, _selectedPlan);
+                return;
             }
 
-            // New signup or no subscription — send to Stripe
+            // New signup — send to Stripe
             await _redirectToCheckout(userId, email, _selectedPlan);
         }
 
