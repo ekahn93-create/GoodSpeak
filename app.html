@@ -1,0 +1,632 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Improve your speaking skills with vocabulary building, story-telling practice, and daily word exercises.">
+    <title>EZSpeaks - Say it Better</title>
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+    <!-- Stylesheets -->
+    <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="css/components.css">
+    <link rel="stylesheet" href="css/responsive.css">
+
+    <!-- Icons -->
+    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+</head>
+<body data-page="home">
+    <div id="mobile-scroll-wrapper">
+    <!-- Navigation Bar -->
+    <nav id="main-nav" class="nav-bar">
+        <div class="nav-brand">
+            <svg width="36" height="32" viewBox="0 0 220 200" xmlns="http://www.w3.org/2000/svg" style="display:inline-block;vertical-align:middle;flex-shrink:0;">
+                <rect x="10" y="10" width="200" height="150" rx="28" ry="28" fill="#4F46E5"/>
+                <polygon points="60,155 30,190 100,155" fill="#4F46E5"/>
+                <polygon points="130,30 85,100 115,100 90,165 155,85 120,85 148,30" fill="white" opacity="0.95"/>
+            </svg>
+            <span class="brand-text">EZSpeaks</span>
+        </div>
+        <ul class="nav-menu">
+            <li><a href="/app" class="nav-link" data-view="home"><span class="nav-label">Home</span><span class="nav-sub">Dashboard</span></a></li>
+            <li><a href="/learn" class="nav-link" data-view="vocabulary"><span class="nav-label">Learn</span><span class="nav-sub">Words &amp; Grammar</span></a></li>
+            <li><a href="/polish" class="nav-link" data-view="fluency"><span class="nav-label">Polish</span><span class="nav-sub">Pronunciation &amp; Fluency</span></a></li>
+            <li><a href="/practice" class="nav-link" data-view="storytelling"><span class="nav-label">Practice</span><span class="nav-sub">Storytelling &amp; Challenges</span></a></li>
+            <li><a href="/play" class="nav-link" data-view="play"><span class="nav-label">Play</span><span class="nav-sub">30-Second Game</span></a></li>
+            <li><a href="/review" class="nav-link" data-view="progress"><span class="nav-label">Stats</span><span class="nav-sub">Progress &amp; Streaks</span></a></li>
+        </ul>
+        <div class="nav-auth">
+            <button id="auth-nav-btn" class="auth-nav-btn" title="Sign in to save progress across devices">
+                <span class="auth-nav-icon">&#9786;</span>
+                <span id="auth-nav-label">Sign In</span>
+            </button>
+        </div>
+    </nav>
+
+    <!-- Auth Modal -->
+    <div id="auth-modal" class="auth-modal-overlay" role="dialog" aria-modal="true" aria-labelledby="auth-modal-title">
+        <div class="auth-modal">
+            <button id="auth-modal-close" class="auth-modal-close" aria-label="Close">&times;</button>
+            <h2 id="auth-modal-title">Sign In</h2>
+            <p class="auth-modal-subtitle">Save your progress and access it from any device.</p>
+            <div class="auth-form">
+                <div id="auth-signup-fields" class="auth-signup-fields" style="display:none;">
+                    <div class="auth-name-row">
+                        <div class="auth-name-col">
+                            <label for="auth-first-name">First Name <span class="auth-required">*</span></label>
+                            <input type="text" id="auth-first-name" placeholder="First name" autocomplete="given-name" />
+                        </div>
+                        <div class="auth-name-col">
+                            <label for="auth-last-name">Last Name <span class="auth-required">*</span></label>
+                            <input type="text" id="auth-last-name" placeholder="Last name" autocomplete="family-name" />
+                        </div>
+                    </div>
+                    <label for="auth-nickname">Nickname <span class="auth-optional">(optional)</span></label>
+                    <p class="auth-field-hint">What should we call you?</p>
+                    <input type="text" id="auth-nickname" placeholder="e.g. Ace, Coach, Jazz..." autocomplete="nickname" />
+                    <label for="auth-goal">My main goal <span class="auth-required">*</span></label>
+                    <select id="auth-goal">
+                        <option value="" disabled selected>Select a goal...</option>
+                        <option value="public_speaking">Public speaking</option>
+                        <option value="job_interviews">Job interviews</option>
+                        <option value="everyday_conversation">Everyday conversation</option>
+                        <option value="professional_presence">Professional presence</option>
+                        <option value="general">General improvement</option>
+                    </select>
+                </div>
+                <label for="auth-email">Email</label>
+                <input type="email" id="auth-email" placeholder="you@example.com" autocomplete="email" />
+                <label for="auth-password">Password</label>
+                <div class="auth-password-wrapper">
+                    <input type="password" id="auth-password" placeholder="Password" autocomplete="current-password" />
+                    <button type="button" id="auth-password-toggle" class="auth-password-toggle" aria-label="Show password">
+                        <svg id="auth-eye-icon" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                            <circle cx="12" cy="12" r="3"/>
+                        </svg>
+                    </button>
+                </div>
+                <p id="auth-error" class="auth-error"></p>
+                <button id="auth-submit-btn" class="btn btn-primary auth-submit-btn" data-mode="login">Sign In</button>
+            </div>
+            <p class="auth-switch">
+                <span id="auth-switch-text">Don't have an account?</span>
+                <a href="#" id="auth-switch-link">Sign up</a>
+            </p>
+        </div>
+    </div>
+
+    <!-- Mobile Bottom Tab Bar -->
+    <nav id="mobile-tab-bar" class="mobile-tab-bar" aria-label="Main navigation">
+        <a href="/app" class="mobile-tab" data-view="home">
+            <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+            <span>Home</span>
+        </a>
+        <a href="/learn" class="mobile-tab" data-view="vocabulary">
+            <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
+            <span>Learn</span>
+        </a>
+        <a href="/polish" class="mobile-tab" data-view="fluency">
+            <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/><line x1="8" y1="23" x2="16" y2="23"/></svg>
+            <span>Polish</span>
+        </a>
+        <a href="/practice" class="mobile-tab" data-view="storytelling">
+            <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+            <span>Practice</span>
+        </a>
+        <a href="/play" class="mobile-tab" data-view="play">
+            <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polygon points="10 8 16 12 10 16 10 8"/></svg>
+            <span>Play</span>
+        </a>
+        <a href="/review" class="mobile-tab" data-view="progress">
+            <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+            <span>Stats</span>
+        </a>
+        <button id="mobile-auth-tab" class="mobile-tab mobile-auth-tab">
+            <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+            <span id="mobile-auth-label">Sign In</span>
+        </button>
+    </nav>
+
+    <!-- Quick-Add FAB -->
+    <button id="quick-add-fab" class="quick-add-fab" title="Save a word for later" aria-label="Save a word for later">
+        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+    </button>
+
+    <!-- Quick-Add Sheet -->
+    <div id="quick-add-overlay" class="quick-add-overlay" role="dialog" aria-modal="true" aria-label="Save a word">
+        <div class="quick-add-sheet">
+            <div class="quick-add-header">
+                <span class="quick-add-title">Save a word</span>
+                <button id="quick-add-close" class="quick-add-close" aria-label="Close">&times;</button>
+            </div>
+            <div class="quick-add-body">
+                <input type="text" id="quick-add-input" class="quick-add-input" placeholder="Type a word..." autocomplete="off" autocapitalize="none" spellcheck="false" />
+                <button id="quick-add-save" class="btn btn-primary quick-add-save-btn">Save for Later</button>
+            </div>
+            <p class="quick-add-hint">Find it in your Word Bank to add a definition.</p>
+            <a href="/learn" id="quick-add-goto-bank" class="quick-add-goto-bank">Go to Word Bank &rarr;</a>
+        </div>
+    </div>
+
+    <!-- Main Content Container -->
+    <main id="app-container">
+
+        <!-- ==================== HOME/DASHBOARD VIEW ==================== -->
+        <section id="home-view" class="view active">
+            <div class="hero-section">
+                <div class="hero-top">
+                    <h1 id="hero-welcome">Welcome to EZSpeaks</h1>
+                    <div class="tier-display">
+                        <span class="tier-eyebrow">Your Level</span>
+                        <span class="tier-badge" id="tier-badge">Beginner</span>
+                        <span class="tier-description" id="tier-description">Just getting started</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ========== LEARNING PATH STEPPER (#1) ========== -->
+            <div class="learning-path-scroll-wrap">
+            <div class="learning-path-strip" id="learning-path-strip">
+                <div class="lp-step" id="lp-step-learn">
+                    <div class="lp-step-number">1</div>
+                    <div class="lp-step-body">
+                        <div class="lp-step-label">Learn</div>
+                        <div class="lp-step-desc">Build your vocabulary &amp; grammar foundation</div>
+                        <div class="lp-step-stat" id="lp-stat-learn">0 words learned</div>
+                    </div>
+                    <a href="/learn" class="lp-step-btn btn btn-sm btn-primary">Go</a>
+                </div>
+                <div class="lp-arrow">&#8594;</div>
+                <div class="lp-step" id="lp-step-polish">
+                    <div class="lp-step-number">2</div>
+                    <div class="lp-step-body">
+                        <div class="lp-step-label">Polish</div>
+                        <div class="lp-step-desc">Refine how you sound out loud</div>
+                        <div class="lp-step-stat" id="lp-stat-polish">Drills &amp; exercises</div>
+                    </div>
+                    <a href="/polish" class="lp-step-btn btn btn-sm btn-primary">Go</a>
+                </div>
+                <div class="lp-arrow">&#8594;</div>
+                <div class="lp-step" id="lp-step-practice">
+                    <div class="lp-step-number">3</div>
+                    <div class="lp-step-body">
+                        <div class="lp-step-label">Practice</div>
+                        <div class="lp-step-desc">Apply it in real speaking scenarios</div>
+                        <div class="lp-step-stat" id="lp-stat-practice">0 stories completed</div>
+                    </div>
+                    <a href="/practice" class="lp-step-btn btn btn-sm btn-primary">Go</a>
+                </div>
+                <div class="lp-arrow">&#8594;</div>
+                <div class="lp-step" id="lp-step-play">
+                    <div class="lp-step-number">4</div>
+                    <div class="lp-step-body">
+                        <div class="lp-step-label">Play</div>
+                        <div class="lp-step-desc">Test yourself under pressure</div>
+                        <div class="lp-step-stat" id="lp-stat-play">30-second game</div>
+                    </div>
+                    <a href="/play" class="lp-step-btn btn btn-sm btn-primary">Go</a>
+                </div>
+                <div class="lp-arrow">&#8594;</div>
+                <div class="lp-step" id="lp-step-review">
+                    <div class="lp-step-number">5</div>
+                    <div class="lp-step-body">
+                        <div class="lp-step-label">Stats</div>
+                        <div class="lp-step-desc">See your growth &amp; track progress</div>
+                        <div class="lp-step-stat" id="lp-stat-review">0 day streak</div>
+                    </div>
+                    <a href="/review" class="lp-step-btn btn btn-sm btn-primary">Go</a>
+                </div>
+            </div>
+            </div>
+
+            <!-- Today's Practice Checklist -->
+            <div class="todays-practice-card" id="todays-practice-card">
+                <div class="tp-header">
+                    <h3 class="tp-title">Today's Practice</h3>
+                    <div class="tp-progress-wrap">
+                        <div class="tp-progress-bar"><div class="tp-progress-fill" id="tp-progress-fill"></div></div>
+                        <span class="tp-progress-label" id="tp-progress-label">0 / 5</span>
+                    </div>
+                </div>
+                <ul class="tp-list" id="tp-list">
+                    <li class="tp-item" data-task="word_of_day" style="--tp-pill-color:#0284c7">
+                        <span class="tp-check" id="tp-check-word_of_day"></span>
+                        <svg class="tp-page-icon" style="color:#0284c7" xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
+                        <span class="tp-pill tp-pill--vocab">Vocabulary</span>
+                        <span class="tp-label-group">
+                            <span class="tp-label">Word of the Day</span>
+                            <span class="tp-sublabel">Learn &rsaquo; Daily Word</span>
+                        </span>
+                        <a href="/learn#word_of_day" class="tp-go btn btn-sm btn-secondary">Go</a>
+                    </li>
+                    <li class="tp-item" data-task="srs" style="--tp-pill-color:#0284c7">
+                        <span class="tp-check" id="tp-check-srs"></span>
+                        <svg class="tp-page-icon" style="color:#0284c7" xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
+                        <span class="tp-pill tp-pill--recall">Recall</span>
+                        <span class="tp-label-group">
+                            <span class="tp-label" id="tp-label-srs">Vocab Review</span>
+                            <span class="tp-sublabel">Learn &rsaquo; Knowledge Check</span>
+                        </span>
+                        <a href="/learn#srs" class="tp-go btn btn-sm btn-secondary">Go</a>
+                    </li>
+                    <li class="tp-item" data-task="precision" style="--tp-pill-color:#db2777">
+                        <span class="tp-check" id="tp-check-precision"></span>
+                        <svg class="tp-page-icon" style="color:#db2777" xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/><line x1="8" y1="23" x2="16" y2="23"/></svg>
+                        <span class="tp-pill tp-pill--fluency">Fluency</span>
+                        <span class="tp-label-group">
+                            <span class="tp-label">Precision Exercise</span>
+                            <span class="tp-sublabel">Polish &rsaquo; Precision Drills</span>
+                        </span>
+                        <a href="/polish#precision" class="tp-go btn btn-sm btn-secondary">Go</a>
+                    </li>
+                    <li class="tp-item" data-task="filler" style="--tp-pill-color:#db2777">
+                        <span class="tp-check" id="tp-check-filler"></span>
+                        <svg class="tp-page-icon" style="color:#db2777" xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/><line x1="8" y1="23" x2="16" y2="23"/></svg>
+                        <span class="tp-pill tp-pill--fluency">Fluency</span>
+                        <span class="tp-label-group">
+                            <span class="tp-label">Filler Word Reducer</span>
+                            <span class="tp-sublabel">Polish &rsaquo; Filler Words</span>
+                        </span>
+                        <a href="/polish#filler" class="tp-go btn btn-sm btn-secondary">Go</a>
+                    </li>
+                    <li class="tp-item" data-task="speaking" style="--tp-pill-color:#16a34a">
+                        <span class="tp-check" id="tp-check-speaking"></span>
+                        <svg class="tp-page-icon" style="color:#16a34a" xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+                        <span class="tp-pill tp-pill--story">Storytelling</span>
+                        <span class="tp-label-group">
+                            <span class="tp-label">Speaking Challenge</span>
+                            <span class="tp-sublabel">Polish &rsaquo; Speaking Challenges</span>
+                        </span>
+                        <a href="/polish#speaking" class="tp-go btn btn-sm btn-secondary">Go</a>
+                    </li>
+                </ul>
+            </div>
+
+            <!-- Daily Suggestions -->
+            <div class="suggestions-card">
+                <h3 class="suggestions-title">What to do today</h3>
+                <div class="suggestions-list" id="daily-suggestions">
+                    <!-- Rendered by JS -->
+                </div>
+            </div>
+
+            <!-- ========== TIERED CHECKLIST (collapsed) ========== -->
+            <div class="beginner-checklist-card" id="beginner-checklist-card">
+                <button class="bcl-toggle" id="bcl-toggle" aria-expanded="false">
+                    <span class="bcl-toggle-left">
+                        <span class="bcl-title">Your Next Goals</span>
+                        <span class="bcl-subtitle">Complete these to get the full experience</span>
+                    </span>
+                    <span class="bcl-toggle-right">
+                        <span class="bcl-progress-summary" id="bcl-progress-summary"></span>
+                        <span class="bcl-chevron">&#8250;</span>
+                    </span>
+                </button>
+                <div class="bcl-body" id="bcl-body" hidden>
+                    <ul class="bcl-list"></ul>
+                    <div class="bcl-complete" style="display:none;"></div>
+                </div>
+            </div>
+
+            <div class="stat-tiles">
+                <a href="/learn" class="stat-tile">
+                    <span class="stat-tile-icon"><i data-lucide="book-open" style="width:22px;height:22px;stroke:currentColor;"></i></span>
+                    <span class="stat-tile-label">Learn</span>
+                    <span class="stat-tile-value"><span id="vocab-learned-count">0</span> words</span>
+                </a>
+                <a href="/polish" class="stat-tile">
+                    <span class="stat-tile-icon"><i data-lucide="mic" style="width:22px;height:22px;stroke:currentColor;"></i></span>
+                    <span class="stat-tile-label">Polish</span>
+                    <span class="stat-tile-value">Drills &amp; exercises</span>
+                </a>
+                <a href="/practice" class="stat-tile">
+                    <span class="stat-tile-icon"><i data-lucide="message-square" style="width:22px;height:22px;stroke:currentColor;"></i></span>
+                    <span class="stat-tile-label">Practice</span>
+                    <span class="stat-tile-value"><span id="stories-completed-count">0</span> stories</span>
+                </a>
+                <a href="/review" class="stat-tile">
+                    <span class="stat-tile-icon"><i data-lucide="bar-chart-2" style="width:22px;height:22px;stroke:currentColor;"></i></span>
+                    <span class="stat-tile-label">Stats</span>
+                    <span class="stat-tile-value"><span id="daily-streak-count">0</span> day streak</span>
+                </a>
+            </div>
+
+            <button class="page-next-btn" onclick="window.location.href='/learn'" aria-label="Go to Learn">
+                <span class="page-next-label">Ready to start? Head to Learn to build your vocabulary</span>
+                <i data-lucide="chevron-down" style="width:22px;height:22px;stroke:currentColor;"></i>
+            </button>
+
+        </section>
+
+        <!-- Other views live on their own pages: /learn /polish /practice /review -->
+    </main>
+
+    <!-- Modal Overlay for Dialogs -->
+    <div id="modal-overlay" class="modal-overlay">
+        <div class="modal-content">
+            <button class="modal-close">&times;</button>
+            <div id="modal-body">
+                <!-- Dynamic modal content will be added here -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Notifications Container -->
+    <div id="toast-container" class="toast-container">
+        <!-- Toast notifications will be dynamically added here -->
+    </div>
+
+    <!-- JavaScript Files -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+    <script src="js/config.js"></script>
+    <script>
+      // Gate: redirect to landing if not logged in or no active subscription
+      (async function() {
+        try {
+          await AppConfig.load();
+          const { url, anonKey } = AppConfig.supabase;
+          if (!url || url === 'YOUR_SUPABASE_URL') return; // dev mode, skip gate
+          const client = window.supabase.createClient(url, anonKey);
+          const { data: { session } } = await client.auth.getSession();
+          if (!session) { window.location.replace('/'); return; }
+          const { data } = await client
+            .from('user_progress')
+            .select('subscription_status')
+            .eq('user_id', session.user.id)
+            .maybeSingle();
+          const status = data?.subscription_status;
+          if (status !== 'active' && status !== 'trialing') {
+            window.location.replace('/');
+          }
+        } catch(e) {
+          // If gate fails, allow through to avoid locking out users
+          console.warn('Auth gate error:', e);
+        }
+      })();
+    </script>
+    <script src="js/storage.js"></script>
+    <script src="js/router.js"></script>
+    <script src="js/data/vocabularyData.js"></script>
+    <script src="js/data/wordTopics.js"></script>
+    <script src="js/data/storyPrompts.js"></script>
+    <script src="js/components/modal.js"></script>
+    <script src="js/components/progressBar.js"></script>
+    <script src="js/modules/nudge.js"></script>
+    <script src="js/modules/sessionWords.js"></script>
+    <script src="js/modules/vocabulary.js"></script>
+    <script src="js/modules/storytelling.js"></script>
+    <script src="js/modules/wordBank.js"></script>
+    <script src="js/modules/grammar.js"></script>
+    <script src="js/modules/fluency.js"></script>
+    <script src="js/modules/onboarding.js"></script>
+    <script src="js/modules/dailyDrill.js"></script>
+    <script src="js/modules/srs.js"></script>
+    <script src="js/modules/progressCharts.js"></script>
+    <script src="js/modules/auth.js"></script>
+    <script src="js/modules/sync.js"></script>
+    <script src="js/app.js"></script>
+
+    <!-- KPI tooltip -->
+    <div id="kpi-tooltip"></div>
+    <script>
+      (function() {
+        var tip = document.getElementById('kpi-tooltip');
+        document.addEventListener('mouseover', function(e) {
+          var el = e.target.closest('[data-tip]');
+          if (!el) return;
+          tip.textContent = el.getAttribute('data-tip');
+          tip.style.display = 'block';
+        });
+        document.addEventListener('mouseout', function(e) {
+          var el = e.target.closest('[data-tip]');
+          if (!el) return;
+          tip.style.display = 'none';
+        });
+        document.addEventListener('mousemove', function(e) {
+          if (tip.style.display === 'none') return;
+          var margin = 8;
+          var tw = tip.offsetWidth;
+          var th = tip.offsetHeight;
+          var x = e.clientX - tw / 2;
+          var y = e.clientY + 18;
+          // clamp to viewport
+          x = Math.max(margin, Math.min(x, window.innerWidth - tw - margin));
+          if (y + th > window.innerHeight - margin) y = e.clientY - th - 10;
+          tip.style.left = x + 'px';
+          tip.style.top  = y + 'px';
+        });
+      })();
+    </script>
+
+    <!-- Quick-Add FAB Script -->
+    <script>
+      (function() {
+        var fab = document.getElementById('quick-add-fab');
+        var overlay = document.getElementById('quick-add-overlay');
+        var closeBtn = document.getElementById('quick-add-close');
+        var input = document.getElementById('quick-add-input');
+        var saveBtn = document.getElementById('quick-add-save');
+
+        function openSheet() {
+          overlay.classList.add('active');
+          setTimeout(function() { input.focus(); }, 50);
+        }
+
+        function closeSheet() {
+          overlay.classList.remove('active');
+          input.value = '';
+        }
+
+        function saveWord() {
+          var word = input.value.trim().toLowerCase();
+          if (!word) return;
+          if (typeof WordBankModule !== 'undefined') {
+            WordBankModule.quickSave(word);
+          }
+          closeSheet();
+        }
+
+        fab.addEventListener('click', openSheet);
+        closeBtn.addEventListener('click', closeSheet);
+        overlay.addEventListener('click', function(e) { if (e.target === overlay) closeSheet(); });
+        saveBtn.addEventListener('click', saveWord);
+        input.addEventListener('keydown', function(e) {
+          if (e.key === 'Enter') { e.preventDefault(); saveWord(); }
+          if (e.key === 'Escape') closeSheet();
+        });
+      })();
+    </script>
+
+    <script>
+      // Initialize Lucide icons after DOM is ready
+      if (typeof lucide !== 'undefined') lucide.createIcons();
+    </script>
+
+    <!-- Footer Modals -->
+    <div id="footer-modal-overlay" class="footer-modal-overlay" role="dialog" aria-modal="true" hidden>
+      <div class="footer-modal">
+        <button class="footer-modal-close" id="footer-modal-close" aria-label="Close">&times;</button>
+        <h2 id="footer-modal-title"></h2>
+        <div id="footer-modal-body"></div>
+      </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="site-footer">
+      <div class="footer-inner">
+        <div class="footer-brand">
+          <svg width="20" height="18" viewBox="0 0 220 200" xmlns="http://www.w3.org/2000/svg" style="display:inline-block;vertical-align:middle;flex-shrink:0;">
+            <rect x="10" y="10" width="200" height="150" rx="28" ry="28" fill="#4F46E5"/>
+            <polygon points="60,155 30,190 100,155" fill="#4F46E5"/>
+            <polygon points="130,30 85,100 115,100 90,165 155,85 120,85 148,30" fill="white" opacity="0.95"/>
+          </svg>
+          <span class="footer-brand-name">EZSpeaks</span>
+          <span class="footer-tagline">Speak more eloquently, every day.</span>
+        </div>
+
+        <!-- Quick Stats -->
+        <div class="footer-stats">
+          <span class="footer-stat"><span id="footer-words-learned">0</span> words learned</span>
+          <span class="footer-stat-divider">·</span>
+          <span class="footer-stat"><span id="footer-streak">0</span> day streak</span>
+        </div>
+
+        <!-- Links row -->
+        <div class="footer-links">
+          <button class="footer-link" id="footer-share-btn">Share</button>
+          <button class="footer-link" data-footer-modal="about">About</button>
+          <button class="footer-link" data-footer-modal="privacy">Privacy</button>
+          <button class="footer-link" data-footer-modal="terms">Terms</button>
+          <a href="mailto:admin@ezspeaks.com?subject=EZSpeaks Feedback" class="footer-link footer-link--feedback">Feedback</a>
+        </div>
+
+        <!-- Tip + copyright -->
+        <p class="footer-tip">Pro tip: use the tabs at the top to jump between sections anytime.</p>
+        <p class="footer-copy">&copy; <span id="footer-year"></span> EZSpeaks. All rights reserved. &nbsp;v1.0</p>
+      </div>
+    </footer>
+
+    <script>
+      (function() {
+        // Year
+        document.getElementById('footer-year').textContent = new Date().getFullYear();
+
+        // Quick stats — read from StorageManager if available
+        function updateFooterStats() {
+          try {
+            var data = (typeof StorageManager !== 'undefined') ? StorageManager.load() : null;
+            if (data) {
+              var customLearned = (data.customWords || []).filter(function(w) { return w.status === 'learned'; }).length;
+              var words = ((data.vocabulary && data.vocabulary.learned) ? data.vocabulary.learned.length : 0) + customLearned;
+              var streak = (data.stats && data.stats.practiceStreak) || (data.dailyWord && data.dailyWord.currentStreak) || 0;
+              document.getElementById('footer-words-learned').textContent = words;
+              document.getElementById('footer-streak').textContent = streak;
+            }
+          } catch(e) {}
+        }
+        // Run on load and whenever views change (reuses existing router event)
+        updateFooterStats();
+        window.addEventListener('hashchange', updateFooterStats);
+        window.addEventListener('storage', updateFooterStats);
+        document.addEventListener('appDataSaved', updateFooterStats);
+        document.addEventListener('visibilitychange', function() { if (!document.hidden) updateFooterStats(); });
+
+        // Modal content
+        var modals = {
+          about: {
+            title: 'About EZSpeaks',
+            body: '<p>EZSpeaks is a personal speech and vocabulary coach designed to help you speak more eloquently every day.</p><p>Build your vocabulary with spaced repetition, sharpen your pronunciation, tell better stories, and track your growth — all in one place.</p><p>Built for anyone who wants to communicate with more confidence and clarity.</p>'
+          },
+          privacy: {
+            title: 'Privacy Policy',
+            body: '<p class="footer-modal-coming-soon">A full Privacy Policy is coming soon.</p><p>For now: your data is stored locally on your device. If you sign in, your progress is saved to a secure cloud database. We do not sell or share your data with third parties.</p>'
+          },
+          terms: {
+            title: 'Terms of Use',
+            body: '<p class="footer-modal-coming-soon">Full Terms of Use are coming soon.</p><p>By using EZSpeaks you agree to use it for personal, non-commercial purposes. The app is provided as-is without warranty.</p>'
+          }
+        };
+
+        var overlay = document.getElementById('footer-modal-overlay');
+        var modalTitle = document.getElementById('footer-modal-title');
+        var modalBody = document.getElementById('footer-modal-body');
+
+        function openFooterModal(key) {
+          var m = modals[key];
+          if (!m) return;
+          modalTitle.textContent = m.title;
+          modalBody.innerHTML = m.body;
+          overlay.hidden = false;
+        }
+
+        function closeFooterModal() {
+          overlay.hidden = true;
+        }
+
+        document.getElementById('footer-modal-close').addEventListener('click', closeFooterModal);
+        overlay.addEventListener('click', function(e) {
+          if (e.target === overlay) closeFooterModal();
+        });
+        document.addEventListener('keydown', function(e) {
+          if (e.key === 'Escape' && !overlay.hidden) closeFooterModal();
+        });
+
+        document.querySelectorAll('[data-footer-modal]').forEach(function(btn) {
+          btn.addEventListener('click', function() {
+            openFooterModal(this.getAttribute('data-footer-modal'));
+          });
+        });
+
+        // Share — copy to clipboard
+        document.getElementById('footer-share-btn').addEventListener('click', function() {
+          var btn = this;
+          var url = window.location.origin + window.location.pathname;
+          if (navigator.clipboard && navigator.clipboard.writeText) {
+            navigator.clipboard.writeText(url).then(function() {
+              btn.textContent = 'Copied!';
+              setTimeout(function() { btn.textContent = 'Share'; }, 2000);
+            });
+          } else {
+            // Fallback
+            var ta = document.createElement('textarea');
+            ta.value = url;
+            ta.style.position = 'fixed';
+            ta.style.opacity = '0';
+            document.body.appendChild(ta);
+            ta.select();
+            document.execCommand('copy');
+            document.body.removeChild(ta);
+            btn.textContent = 'Copied!';
+            setTimeout(function() { btn.textContent = 'Share'; }, 2000);
+          }
+        });
+      })();
+    </script>
+    </div><!-- /#mobile-scroll-wrapper -->
+</body>
+</html>
