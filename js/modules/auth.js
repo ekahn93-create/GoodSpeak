@@ -41,6 +41,8 @@ const AuthModule = (function () {
         currentUser = session.user;
         _updateUI();
         if (isNewLogin) {
+          // Ensure profile row exists in public.profiles for leaderboard
+          _upsertProfile(session.user);
           if (onAuthChangeCallback) onAuthChangeCallback('SIGNED_IN', session.user);
         }
       } else if (event === 'SIGNED_OUT') {
@@ -70,7 +72,23 @@ const AuthModule = (function () {
         }
       }
     });
+    // If signup succeeded and we have a session, write to public.profiles
+    if (!error && data && data.user) {
+      await _upsertProfile(data.user, { nickname, first_name: firstName });
+    }
     return { data, error };
+  }
+
+  // Writes display_name to public.profiles so the leaderboard view can join
+  // against public schema instead of auth.users (which would expose PII).
+  async function _upsertProfile(user, meta) {
+    if (!supabase || !user) return;
+    const m = meta || user.user_metadata || {};
+    const displayName = m.nickname || m.first_name || user.email.split('@')[0];
+    await supabase
+      .from('profiles')
+      .upsert({ user_id: user.id, display_name: displayName, updated_at: new Date().toISOString() },
+               { onConflict: 'user_id' });
   }
 
   async function signIn(email, password) {

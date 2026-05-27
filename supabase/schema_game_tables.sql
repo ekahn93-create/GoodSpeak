@@ -176,23 +176,67 @@ CREATE POLICY "challenges readable by all" ON public.challenges FOR SELECT USING
 CREATE POLICY "anyone can create challenge" ON public.challenges FOR INSERT WITH CHECK (true);
 
 
--- ── 7. LEADERBOARD VIEW ──────────────────────────────────────────────────────
+-- ── 7. PROFILES ───────────────────────────────────────────────────────────────
+-- Public display name per user. Populated on signup/login by the browser client
+-- and by the trigger below. This keeps the leaderboard view out of auth.users,
+-- which would expose PII and trigger Supabase security advisories.
+
+CREATE TABLE IF NOT EXISTS public.profiles (
+  user_id      uuid        PRIMARY KEY REFERENCES auth.users(id) ON DELETE CASCADE,
+  display_name text        NOT NULL DEFAULT '',
+  updated_at   timestamptz NOT NULL DEFAULT now()
+);
+
+ALTER TABLE public.profiles ENABLE ROW LEVEL SECURITY;
+CREATE POLICY "profiles readable by all"   ON public.profiles FOR SELECT USING (true);
+CREATE POLICY "users insert own profile"   ON public.profiles FOR INSERT WITH CHECK (auth.uid() = user_id);
+CREATE POLICY "users update own profile"   ON public.profiles FOR UPDATE USING (auth.uid() = user_id);
+
+-- Trigger: auto-create a profile row when a new auth user is created
+CREATE OR REPLACE FUNCTION public.handle_new_user()
+RETURNS trigger
+LANGUAGE plpgsql
+SECURITY DEFINER
+SET search_path = public
+AS $$
+BEGIN
+  INSERT INTO public.profiles (user_id, display_name)
+  VALUES (
+    NEW.id,
+    COALESCE(
+      NEW.raw_user_meta_data->>'nickname',
+      NEW.raw_user_meta_data->>'first_name',
+      split_part(NEW.email, '@', 1)
+    )
+  )
+  ON CONFLICT (user_id) DO NOTHING;
+  RETURN NEW;
+END;
+$$;
+
+-- Lock down direct execution (trigger runs as security definer)
+REVOKE EXECUTE ON FUNCTION public.handle_new_user() FROM PUBLIC, anon, authenticated;
+
+CREATE OR REPLACE TRIGGER on_auth_user_created
+AFTER INSERT ON auth.users
+FOR EACH ROW EXECUTE FUNCTION public.handle_new_user();
+
+
+-- ── 8. LEADERBOARD VIEW ──────────────────────────────────────────────────────
 -- Pre-computed top scores per user (average of last 5 games).
+-- Joins public.profiles instead of auth.users — no PII exposed, no SECURITY DEFINER.
 -- Used by the Rank/leaderboard feature. Query this view, not play_sessions directly.
 
-CREATE OR REPLACE VIEW public.leaderboard AS
+CREATE OR REPLACE VIEW public.leaderboard
+WITH (security_invoker = true)
+AS
 SELECT
   ps.user_id,
-  -- Pull display name from Supabase auth metadata (first_name / nickname)
-  COALESCE(
-    au.raw_user_meta_data->>'nickname',
-    au.raw_user_meta_data->>'first_name',
-    split_part(au.email, '@', 1)
-  ) AS display_name,
-  ROUND(AVG(ps.score))::int                        AS avg_score,
-  MAX(ps.score)                                    AS best_score,
-  COUNT(*)::int                                    AS games_played,
-  COALESCE(st.current_streak, 0)                   AS current_streak
+  COALESCE(p.display_name, 'Player')   AS display_name,
+  ROUND(AVG(ps.score))::int            AS avg_score,
+  MAX(ps.score)                        AS best_score,
+  COUNT(*)::int                        AS games_played,
+  COALESCE(st.current_streak, 0)       AS current_streak
 FROM (
   -- Last 5 sessions per user
   SELECT
@@ -201,10 +245,10 @@ FROM (
     ROW_NUMBER() OVER (PARTITION BY user_id ORDER BY played_at DESC) AS rn
   FROM public.play_sessions
 ) ps
-JOIN auth.users au ON au.id = ps.user_id
-LEFT JOIN public.streaks st ON st.user_id = ps.user_id
+LEFT JOIN public.profiles p  ON p.user_id  = ps.user_id
+LEFT JOIN public.streaks   st ON st.user_id = ps.user_id
 WHERE ps.rn <= 5
-GROUP BY ps.user_id, au.raw_user_meta_data, au.email, st.current_streak
+GROUP BY ps.user_id, p.display_name, st.current_streak
 ORDER BY avg_score DESC;
 
 -- Allow all authenticated and anonymous users to read the leaderboard
