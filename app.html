@@ -374,13 +374,19 @@
           const client = window.supabase.createClient(url, anonKey);
           const { data: { session } } = await client.auth.getSession();
           if (!session) { window.location.replace('/'); return; }
+
+          // If arriving from Stripe checkout, skip subscription check — webhook may not have fired yet
+          const params = new URLSearchParams(window.location.search);
+          if (params.get('checkout') === 'success') return;
+
           const { data } = await client
             .from('user_progress')
-            .select('subscription_status')
+            .select('subscription_status, stripe_customer_id')
             .eq('user_id', session.user.id)
             .maybeSingle();
           const status = data?.subscription_status;
-          if (status !== 'active' && status !== 'trialing') {
+          // Allow through if active/trialing, OR if stripe_customer_id exists (payment done, webhook may be lagging)
+          if (status !== 'active' && status !== 'trialing' && !data?.stripe_customer_id) {
             window.location.replace('/');
           }
         } catch(e) {

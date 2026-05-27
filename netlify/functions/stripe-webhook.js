@@ -44,13 +44,13 @@ exports.handler = async function(event) {
 
         await supabase
           .from('user_progress')
-          .update({
+          .upsert({
+            user_id: userId,
             subscription_status: subscription.status, // 'trialing' or 'active'
             stripe_customer_id: session.customer,
             stripe_subscription_id: session.subscription,
             subscription_end: new Date(subscription.current_period_end * 1000).toISOString()
-          })
-          .eq('user_id', userId);
+          }, { onConflict: 'user_id' });
 
         break;
       }

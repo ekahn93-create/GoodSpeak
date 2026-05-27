@@ -721,8 +721,8 @@
                     // If already logged in with active subscription, go straight to app
                     supabase.auth.onAuthStateChange(async (event, session) => {
                         if (event === 'INITIAL_SESSION' && session) {
-                            const status = await _getSubscriptionStatus(session.user.id);
-                            if (status === 'active' || status === 'trialing') {
+                            const subData = await _getSubscriptionData(session.user.id);
+                            if (_hasAccess(subData)) {
                                 window.location.href = '/app';
                             }
                         }
@@ -741,16 +741,22 @@
             }
         }
 
-        async function _getSubscriptionStatus(userId) {
-            if (!supabase) return null;
+        async function _getSubscriptionData(userId) {
+            if (!supabase) return {};
             try {
                 const { data } = await supabase
                     .from('user_progress')
-                    .select('subscription_status')
+                    .select('subscription_status, stripe_customer_id')
                     .eq('user_id', userId)
                     .maybeSingle();
-                return data?.subscription_status || null;
-            } catch(e) { return null; }
+                return data || {};
+            } catch(e) { return {}; }
+        }
+
+        function _hasAccess(subData) {
+            return subData.subscription_status === 'active'
+                || subData.subscription_status === 'trialing'
+                || !!subData.stripe_customer_id; // paid but webhook may be lagging
         }
 
         // ── Auth Modal ─────────────────────────────────────────────────────────
@@ -870,8 +876,8 @@
             closeModal();
 
             if (mode === 'login') {
-                const status = await _getSubscriptionStatus(userId);
-                if (status === 'active' || status === 'trialing') {
+                const subData = await _getSubscriptionData(userId);
+                if (_hasAccess(subData)) {
                     window.location.href = '/app';
                     return;
                 }
