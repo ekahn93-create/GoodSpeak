@@ -1,12 +1,45 @@
 // ============================================
 // STRIPE WEBHOOK - Netlify Serverless Function
-// Handles Stripe events to update subscription status in Supabase
-// Events: checkout.session.completed, customer.subscription.deleted,
-//         customer.subscription.updated
+// Uses fetch against Supabase REST API directly (no SDK) to avoid
+// the WebSocket crash on Node 20 with @supabase/supabase-js v2.
 // ============================================
 
 const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
-const { createClient } = require('@supabase/supabase-js');
+
+async function supabaseUpsert(data) {
+  const url = process.env.SUPABASE_URL + '/rest/v1/user_progress';
+  const res = await fetch(url, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'apikey': process.env.SUPABASE_SERVICE_ROLE_KEY,
+      'Authorization': 'Bearer ' + process.env.SUPABASE_SERVICE_ROLE_KEY,
+      'Prefer': 'resolution=merge-duplicates'
+    },
+    body: JSON.stringify(data)
+  });
+  if (!res.ok) {
+    const text = await res.text();
+    throw new Error('Supabase upsert failed: ' + text);
+  }
+}
+
+async function supabaseUpdateByColumn(column, value, data) {
+  const url = process.env.SUPABASE_URL + '/rest/v1/user_progress?' + column + '=eq.' + encodeURIComponent(value);
+  const res = await fetch(url, {
+    method: 'PATCH',
+    headers: {
+      'Content-Type': 'application/json',
+      'apikey': process.env.SUPABASE_SERVICE_ROLE_KEY,
+      'Authorization': 'Bearer ' + process.env.SUPABASE_SERVICE_ROLE_KEY
+    },
+    body: JSON.stringify(data)
+  });
+  if (!res.ok) {
+    const text = await res.text();
+    throw new Error('Supabase update failed: ' + text);
+  }
+}
 
 exports.handler = async function(event) {
   if (event.httpMethod !== 'POST') {
@@ -27,11 +60,6 @@ exports.handler = async function(event) {
     return { statusCode: 400, body: `Webhook Error: ${err.message}` };
   }
 
-  const supabase = createClient(
-    process.env.SUPABASE_URL,
-    process.env.SUPABASE_SERVICE_ROLE_KEY
-  );
-
   try {
     switch (stripeEvent.type) {
 
@@ -42,51 +70,36 @@ exports.handler = async function(event) {
 
         const subscription = await stripe.subscriptions.retrieve(session.subscription);
 
-        await supabase
-          .from('user_progress')
-          .upsert({
-            user_id: userId,
-            subscription_status: subscription.status, // 'trialing' or 'active'
-            stripe_customer_id: session.customer,
-            stripe_subscription_id: session.subscription,
-            subscription_end: new Date(subscription.current_period_end * 1000).toISOString()
-          }, { onConflict: 'user_id' });
-
+        await supabaseUpsert({
+          user_id: userId,
+          subscription_status: subscription.status,
+          stripe_customer_id: session.customer,
+          stripe_subscription_id: session.subscription,
+          subscription_end: new Date(subscription.current_period_end * 1000).toISOString()
+        });
         break;
       }
 
       case 'customer.subscription.updated': {
         const subscription = stripeEvent.data.object;
-        const userId = subscription.metadata?.userId;
-        if (!userId) break;
-
-        await supabase
-          .from('user_progress')
-          .update({
-            subscription_status: subscription.status,
-            subscription_end: new Date(subscription.current_period_end * 1000).toISOString()
-          })
-          .eq('stripe_subscription_id', subscription.id);
-
+        await supabaseUpdateByColumn('stripe_subscription_id', subscription.id, {
+          subscription_status: subscription.status,
+          subscription_end: new Date(subscription.current_period_end * 1000).toISOString()
+        });
         break;
       }
 
       case 'customer.subscription.deleted': {
         const subscription = stripeEvent.data.object;
-
-        await supabase
-          .from('user_progress')
-          .update({
-            subscription_status: 'cancelled',
-            subscription_end: new Date(subscription.current_period_end * 1000).toISOString()
-          })
-          .eq('stripe_subscription_id', subscription.id);
-
+        await supabaseUpdateByColumn('stripe_subscription_id', subscription.id, {
+          subscription_status: 'cancelled',
+          subscription_end: new Date(subscription.current_period_end * 1000).toISOString()
+        });
         break;
       }
 
       default:
-        console.log(`Unhandled event type: ${stripeEvent.type}`);
+        console.log('Unhandled event type:', stripeEvent.type);
     }
 
     return { statusCode: 200, body: JSON.stringify({ received: true }) };

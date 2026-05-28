@@ -1,12 +1,11 @@
 // ============================================
 // CONFIRM SUBSCRIPTION - Netlify Serverless Function
 // Called by browser immediately after Stripe checkout redirect.
-// Verifies the Stripe session and writes subscription status to Supabase
-// directly — does not rely on the webhook arriving in time.
+// Uses fetch against Supabase REST API directly (no SDK) to avoid
+// the WebSocket crash on Node 20 with @supabase/supabase-js v2.
 // ============================================
 
 const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
-const { createClient } = require('@supabase/supabase-js');
 
 const CORS_HEADERS = {
   'Access-Control-Allow-Origin': '*',
@@ -28,12 +27,11 @@ exports.handler = async function(event) {
       return { statusCode: 400, headers: CORS_HEADERS, body: JSON.stringify({ error: 'Missing sessionId' }) };
     }
 
-    // Retrieve the checkout session from Stripe to verify it's real and paid
     const session = await stripe.checkout.sessions.retrieve(sessionId, {
       expand: ['subscription']
     });
 
-    if (session.payment_status !== 'paid' && session.status !== 'complete') {
+    if (session.status !== 'complete') {
       return { statusCode: 402, headers: CORS_HEADERS, body: JSON.stringify({ error: 'Payment not completed' }) };
     }
 
@@ -43,29 +41,34 @@ exports.handler = async function(event) {
     }
 
     const subscription = session.subscription;
-    const status = subscription?.status || 'trialing';
-    const periodEnd = subscription?.current_period_end
+    const status = (typeof subscription === 'object' ? subscription?.status : null) || 'trialing';
+    const subId = typeof subscription === 'object' ? subscription?.id : subscription;
+    const periodEnd = typeof subscription === 'object' && subscription?.current_period_end
       ? new Date(subscription.current_period_end * 1000).toISOString()
       : null;
 
-    const supabase = createClient(
-      process.env.SUPABASE_URL,
-      process.env.SUPABASE_SERVICE_ROLE_KEY
-    );
-
-    const { error } = await supabase
-      .from('user_progress')
-      .upsert({
+    const url = process.env.SUPABASE_URL + '/rest/v1/user_progress';
+    const res = await fetch(url, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'apikey': process.env.SUPABASE_SERVICE_ROLE_KEY,
+        'Authorization': 'Bearer ' + process.env.SUPABASE_SERVICE_ROLE_KEY,
+        'Prefer': 'resolution=merge-duplicates'
+      },
+      body: JSON.stringify({
         user_id: userId,
         subscription_status: status,
         stripe_customer_id: session.customer,
-        stripe_subscription_id: typeof subscription === 'string' ? subscription : subscription?.id,
+        stripe_subscription_id: subId,
         subscription_end: periodEnd
-      }, { onConflict: 'user_id' });
+      })
+    });
 
-    if (error) {
-      console.error('Supabase upsert error:', error);
-      return { statusCode: 500, headers: CORS_HEADERS, body: JSON.stringify({ error: error.message }) };
+    if (!res.ok) {
+      const text = await res.text();
+      console.error('Supabase upsert error:', text);
+      return { statusCode: 500, headers: CORS_HEADERS, body: JSON.stringify({ error: text }) };
     }
 
     return {
