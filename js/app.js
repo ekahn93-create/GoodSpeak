@@ -117,6 +117,11 @@ const App = (function() {
       return result;
     };
 
+    // Flush any pending debounced save before the user navigates away
+    window.addEventListener('beforeunload', function() {
+      SyncModule.saveNow();
+    });
+
     isInitialized = true;
     console.log('Articulation Trainer App initialized successfully!');
   }

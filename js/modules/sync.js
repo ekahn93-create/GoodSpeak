@@ -8,7 +8,7 @@ const SyncModule = (function () {
 
   const TABLE = 'user_progress';
   let _saveTimer = null;
-  const DEBOUNCE_MS = 3000;
+  const DEBOUNCE_MS = 1000;
 
   // ── Public API ────────────────────────────────────────────────────────────
 
