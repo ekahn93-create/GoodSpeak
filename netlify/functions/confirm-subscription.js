@@ -47,7 +47,7 @@ exports.handler = async function(event) {
       ? new Date(subscription.current_period_end * 1000).toISOString()
       : null;
 
-    const url = process.env.SUPABASE_URL + '/rest/v1/user_progress';
+    const url = process.env.SUPABASE_URL + '/rest/v1/user_progress?on_conflict=user_id';
     const res = await fetch(url, {
       method: 'POST',
       headers: {

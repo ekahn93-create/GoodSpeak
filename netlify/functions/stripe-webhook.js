@@ -7,7 +7,7 @@
 const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
 
 async function supabaseUpsert(data) {
-  const url = process.env.SUPABASE_URL + '/rest/v1/user_progress';
+  const url = process.env.SUPABASE_URL + '/rest/v1/user_progress?on_conflict=user_id';
   const res = await fetch(url, {
     method: 'POST',
     headers: {
