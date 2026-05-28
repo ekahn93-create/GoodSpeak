@@ -192,8 +192,6 @@ const MWWordOfDayModule = (function() {
     `;
 
     wordContent.innerHTML = html;
-
-    if (typeof App !== 'undefined' && App.markTPTaskDone) App.markTPTaskDone('word_of_day');
   }
 
   /**
@@ -252,6 +250,7 @@ const MWWordOfDayModule = (function() {
       if (typeof SessionWords !== 'undefined') {
         SessionWords.add(cachedWord.word);
       }
+      if (typeof App !== 'undefined' && App.markTPTaskDone) App.markTPTaskDone('word_of_day');
     } else {
       showToast('Failed to save word', 'error');
     }

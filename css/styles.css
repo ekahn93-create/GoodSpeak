@@ -5534,9 +5534,25 @@ canvas {
 .sfl-no-def {
   font-size: var(--font-size-sm);
   color: var(--text-secondary);
-  font-style: italic;
   padding: 0 var(--spacing-sm) var(--spacing-sm);
   border-top: 1px solid var(--border-color);
+}
+
+.sfl-lookup-btn {
+  display: inline-block;
+  background: #e8610a;
+  color: #fff;
+  border: none;
+  border-radius: 999px;
+  padding: 4px 12px;
+  font-size: var(--font-size-sm);
+  font-weight: 500;
+  cursor: pointer;
+  margin-top: 6px;
+  transition: opacity 0.15s;
+}
+.sfl-lookup-btn:hover {
+  opacity: 0.85;
 }
 
 /* Expanded definition */
@@ -7199,8 +7215,9 @@ canvas {
 
 .play-goto-bank-btn {
   display: block;
-  text-align: center;
-  margin-top: var(--spacing-sm);
+  width: fit-content;
+  margin-top: var(--spacing-md);
+  margin-inline: auto;
   text-decoration: none;
 }
 

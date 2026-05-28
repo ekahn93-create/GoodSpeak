@@ -1174,7 +1174,19 @@
           if (typeof WordBankModule !== 'undefined') {
             WordBankModule.quickSave(word);
           }
-          closeSheet();
+          // Show confirmation on button, then reset (sheet stays open)
+          input.value = '';
+          saveBtn.textContent = '✓ Saved!';
+          saveBtn.style.background = '#16a34a';
+          saveBtn.style.borderColor = '#16a34a';
+          saveBtn.disabled = true;
+          setTimeout(function() {
+            saveBtn.textContent = 'Save for Later';
+            saveBtn.style.background = '';
+            saveBtn.style.borderColor = '';
+            saveBtn.disabled = false;
+            input.focus();
+          }, 1500);
         }
 
         var gotoBtn = document.getElementById('quick-add-goto-bank');

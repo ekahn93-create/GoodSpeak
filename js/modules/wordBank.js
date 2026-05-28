@@ -1753,14 +1753,17 @@ const WordBankModule = (function() {
               ${hasDef ? '<svg class="sfl-chevron" xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>' : ''}
             </button>
             <div class="sfl-actions">
-              <button class="btn btn-sm btn-secondary sfl-status-btn" onclick="WordBankModule.promoteToWordBank(${idx}, 'stillLearning')">Still Learning</button>
-              <button class="btn btn-sm btn-primary sfl-status-btn" onclick="WordBankModule.promoteToWordBank(${idx}, 'learned')">Learned</button>
+              ${hasDef
+                ? `<button class="btn btn-sm btn-secondary sfl-status-btn" onclick="WordBankModule.promoteToWordBank(${idx}, 'stillLearning')">Still Learning</button>
+                   <button class="btn btn-sm btn-primary sfl-status-btn" onclick="WordBankModule.promoteToWordBank(${idx}, 'learned')">Learned</button>`
+                : `<button class="sfl-lookup-btn" onclick="WordBankModule.lookupFromInbox('${item.word}')">Look Up "${item.word}"</button>`
+              }
               <button class="sfl-dismiss" onclick="WordBankModule.dismissSavedWord(${idx})" aria-label="Dismiss">&times;</button>
             </div>
           </div>
           ${hasDef
             ? `<div class="sfl-definition" id="sfl-def-${idx}" hidden>${item.definition}</div>`
-            : `<div class="sfl-no-def">Look up this word in the <strong>Look Up a Custom Word</strong> section below.</div>`
+            : ''
           }
         </li>
       `;
@@ -1845,6 +1848,27 @@ const WordBankModule = (function() {
   /**
    * Dismiss (delete) a word from the inbox without adding it.
    */
+  function lookupFromInbox(word) {
+    // Expand the add section if collapsed
+    const body = document.getElementById('word-bank-add-body');
+    const toggle = document.getElementById('word-bank-add-toggle');
+    const chevron = toggle && toggle.querySelector('.word-bank-add-chevron');
+    if (body && body.style.display === 'none') {
+      body.style.display = 'block';
+      if (toggle) toggle.setAttribute('aria-expanded', 'true');
+      if (chevron) chevron.style.transform = 'rotate(180deg)';
+    }
+    // Populate the word input and trigger lookup
+    const input = document.getElementById('custom-word');
+    if (input) {
+      input.value = word;
+      handleLookupWord();
+    }
+    // Scroll the form into view
+    const section = document.querySelector('.word-bank-add-section');
+    if (section) section.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
+
   function dismissSavedWord(index) {
     const data = StorageManager.load();
     if (!data || !data.savedForLater) return;
@@ -1906,7 +1930,8 @@ const WordBankModule = (function() {
     promoteToWordBank: promoteToWordBank,
     dismissSavedWord: dismissSavedWord,
     toggleSflAccordion: toggleSflAccordion,
-    getAllWordBankWords: getAllWordBankWords
+    getAllWordBankWords: getAllWordBankWords,
+    lookupFromInbox: lookupFromInbox
   };
 })();
 

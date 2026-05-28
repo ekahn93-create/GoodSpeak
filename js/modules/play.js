@@ -504,7 +504,10 @@ const PlayModule = (function () {
           const def  = btn.getAttribute('data-def');
           if (typeof WordBankModule !== 'undefined' && WordBankModule.quickSave) {
             WordBankModule.quickSave(word, def);
-            btn.textContent = 'Saved!';
+            btn.textContent = '✓ Saved!';
+            btn.style.background = '#16a34a';
+            btn.style.borderColor = '#16a34a';
+            btn.style.color = '#fff';
             btn.disabled = true;
           } else {
             _showToast('Word Bank not available on this page.', 'error');
