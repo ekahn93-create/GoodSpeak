@@ -195,7 +195,7 @@ const PlayModule = (function () {
 
       let query = supabase
         .from('words')
-        .select('id, word, definition, difficulty, synonyms, antonyms')
+        .select('id, word, definition, difficulty, synonyms, antonyms, part_of_speech')
         .limit(100);
 
       if (seenIds.length > 0) {
@@ -208,7 +208,7 @@ const PlayModule = (function () {
         // All seen today — allow replay
         const { data: allWords } = await supabase
           .from('words')
-          .select('id, word, definition, difficulty, synonyms, antonyms')
+          .select('id, word, definition, difficulty, synonyms, antonyms, part_of_speech')
           .limit(100);
         return _shuffle(allWords || []);
       }
@@ -262,17 +262,18 @@ const PlayModule = (function () {
       if (distractors.length < 3) continue; // need at least 3 distractors for 4 choices
 
       questions.push({
-        id:          w.id + '-' + type,
-        wordId:      w.id,
-        word:        w.word,
-        difficulty:  w.difficulty || 1,
-        type:        type,
-        prompt:      type === 'synonym'
+        id:           w.id + '-' + type,
+        wordId:       w.id,
+        word:         w.word,
+        difficulty:   w.difficulty || 1,
+        type:         type,
+        prompt:       type === 'synonym'
           ? 'Which word is <u><strong>closest in meaning</strong></u> to "' + w.word + '"?'
           : 'Which word is the <u><strong>opposite</strong></u> of "' + w.word + '"?',
-        correct:     correct,
-        distractors: distractors,
-        definition:  w.definition || ''
+        correct:      correct,
+        distractors:  distractors,
+        definition:   w.definition || '',
+        partOfSpeech: w.part_of_speech || ''
       });
     }
 
@@ -362,7 +363,7 @@ const PlayModule = (function () {
       _updateScoreDisplay();
       _recordDailyPlayed(q.wordId);
     } else {
-      missedWords.push({ wordId: q.wordId, word: q.word, definition: q.definition });
+      missedWords.push({ wordId: q.wordId, word: q.word, definition: q.definition, partOfSpeech: q.partOfSpeech || '' });
       _recordDailyPlayed(q.wordId);
       _recordIncorrect(q.wordId);
     }
@@ -494,7 +495,7 @@ const PlayModule = (function () {
             '<span class="play-missed-word">' + _escHtml(w.word) + '</span>' +
             '<span class="play-missed-def">'  + _escHtml(w.definition || '') + '</span>' +
           '</div>' +
-          '<button class="btn btn-secondary play-missed-save-btn" data-word="' + _escHtml(w.word) + '" data-def="' + _escHtml(w.definition) + '">Save for Later</button>';
+          '<button class="btn btn-secondary play-missed-save-btn" data-word="' + _escHtml(w.word) + '" data-def="' + _escHtml(w.definition) + '" data-pos="' + _escHtml(w.partOfSpeech) + '">Save for Later</button>';
         missedList.appendChild(li);
       });
 
@@ -503,7 +504,8 @@ const PlayModule = (function () {
           const word = btn.getAttribute('data-word');
           const def  = btn.getAttribute('data-def');
           if (typeof WordBankModule !== 'undefined' && WordBankModule.quickSave) {
-            WordBankModule.quickSave(word, def);
+            const pos = btn.getAttribute('data-pos');
+            WordBankModule.quickSave(word, def, pos);
             btn.textContent = '✓ Saved!';
             btn.style.background = '#16a34a';
             btn.style.borderColor = '#16a34a';

@@ -420,6 +420,13 @@ const WordBankModule = (function() {
     }
     userData.customWords.push(customWord);
 
+    // Remove from savedForLater if it was queued there
+    if (userData.savedForLater) {
+      userData.savedForLater = userData.savedForLater.filter(
+        item => item.word.toLowerCase() !== word.toLowerCase()
+      );
+    }
+
     // Save to storage
     if (StorageManager.save(userData)) {
       const label = status === 'learned' ? 'Learned Words' : 'Still Learning';
@@ -432,6 +439,9 @@ const WordBankModule = (function() {
       addWordForm.reset();
       if (lookupStatus) lookupStatus.innerHTML = '';
       pickerDefs = [];
+
+      // Refresh saved-for-later inbox
+      renderSavedForLater();
 
       // Refresh display
       if (status === 'learned') {
@@ -1691,7 +1701,7 @@ const WordBankModule = (function() {
    * Save a word to the "Saved for Later" inbox from the quick-add FAB.
    * Called from the inline FAB script on each page.
    */
-  function quickSave(word, definition) {
+  function quickSave(word, definition, partOfSpeech) {
     if (!word) return;
     const data = StorageManager.load();
     if (!data) return;
@@ -1707,7 +1717,7 @@ const WordBankModule = (function() {
       return;
     }
 
-    data.savedForLater.push({ word: word, definition: definition || '', savedAt: new Date().toISOString() });
+    data.savedForLater.push({ word: word, definition: definition || '', partOfSpeech: partOfSpeech || '', savedAt: new Date().toISOString() });
     StorageManager.save(data);
 
     _showToast('"' + word + '" saved for later!');
@@ -1794,7 +1804,7 @@ const WordBankModule = (function() {
         id: Date.now(),
         word: item.word,
         pronunciation: '',
-        partOfSpeech: 'other',
+        partOfSpeech: item.partOfSpeech || 'other',
         definition: item.definition || '',
         exampleSentence: '',
         synonyms: [],
