@@ -135,7 +135,7 @@
 
         /* ── FEATURES ── */
         .section {
-            padding: 72px 24px;
+            padding: 48px 24px;
         }
         .section-alt { background: var(--bg-alt); }
         .section-inner {
@@ -149,46 +149,46 @@
             color: var(--indigo);
             letter-spacing: 0.08em;
             text-transform: uppercase;
-            margin-bottom: 12px;
+            margin-bottom: 8px;
         }
         .section-title {
             text-align: center;
-            font-size: clamp(24px, 4vw, 36px);
+            font-size: clamp(22px, 4vw, 32px);
             font-weight: 800;
             letter-spacing: -0.02em;
-            margin-bottom: 48px;
+            margin-bottom: 28px;
         }
         .features-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-            gap: 24px;
+            gap: 14px;
         }
         .feature-card {
             background: var(--bg);
             border: 1px solid var(--border);
             border-radius: var(--radius);
-            padding: 28px 24px;
+            padding: 18px 20px;
         }
         .feature-icon {
-            width: 44px;
-            height: 44px;
+            width: 38px;
+            height: 38px;
             background: var(--indigo-light);
-            border-radius: 10px;
+            border-radius: 9px;
             display: flex;
             align-items: center;
             justify-content: center;
-            margin-bottom: 16px;
+            margin-bottom: 10px;
             color: var(--indigo);
         }
         .feature-card h3 {
-            font-size: 17px;
+            font-size: 15px;
             font-weight: 700;
-            margin-bottom: 8px;
+            margin-bottom: 5px;
         }
         .feature-card p {
-            font-size: 14px;
+            font-size: 13px;
             color: var(--text-muted);
-            line-height: 1.6;
+            line-height: 1.55;
         }
 
         /* ── PRICING ── */
@@ -316,8 +316,9 @@
         }
 
         /* ── FAQ ── */
-        #faq-section .section-label { font-size: 16px; }
-        #faq-section .section-title { font-size: clamp(18px, 3vw, 24px); }
+        #faq-section { padding: 36px 24px; }
+        #faq-section .section-label { font-size: 13px; }
+        #faq-section .section-title { font-size: clamp(18px, 3vw, 22px); margin-bottom: 20px; }
         .faq-list {
             max-width: 680px;
             margin: 0 auto;
@@ -489,6 +490,290 @@
         .auth-switch a { color: var(--indigo); font-weight: 600; text-decoration: none; }
         .auth-signup-fields { margin-bottom: 4px; }
 
+        /* ── TAGLINE STRIP ── */
+        .tagline-strip {
+            background: var(--indigo);
+            color: white;
+            text-align: center;
+            padding: 18px 24px;
+            font-size: clamp(15px, 2.5vw, 18px);
+            font-weight: 600;
+            letter-spacing: -0.01em;
+        }
+        .tagline-strip span {
+            opacity: 0.75;
+            font-weight: 400;
+        }
+
+        /* ── APP PREVIEW ── */
+        .preview-section {
+            background: var(--bg);
+            padding: 36px 24px;
+        }
+        .preview-tabs {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 28px;
+            flex-wrap: wrap;
+        }
+        .preview-tab {
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            border: 1.5px solid var(--border);
+            background: white;
+            color: var(--text-muted);
+            transition: all 0.15s;
+        }
+        .preview-tab.active {
+            background: var(--indigo);
+            color: white;
+            border-color: var(--indigo);
+        }
+        .preview-panel { display: none; }
+        .preview-panel.active { display: block; }
+        .preview-frame {
+            background: var(--bg-alt);
+            border: 1.5px solid var(--border);
+            border-radius: 16px;
+            overflow: hidden;
+        }
+        .preview-frame-header {
+            background: white;
+            border-bottom: 1px solid var(--border);
+            padding: 10px 16px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .pf-dot { width: 10px; height: 10px; border-radius: 50%; }
+        .pf-dot-r { background: #ef4444; }
+        .pf-dot-y { background: #f59e0b; }
+        .pf-dot-g { background: #10b981; }
+        .pf-url {
+            flex: 1;
+            background: var(--bg-alt);
+            border-radius: 6px;
+            padding: 4px 10px;
+            font-size: 12px;
+            color: var(--text-muted);
+            text-align: center;
+        }
+        .preview-body { padding: 20px; }
+
+        /* word card mockup */
+        .mock-word-card {
+            background: white;
+            border-radius: 12px;
+            border: 1.5px solid var(--border);
+            padding: 20px;
+            margin-bottom: 12px;
+        }
+        .mock-word-title {
+            font-size: 22px;
+            font-weight: 800;
+            color: var(--indigo);
+            margin-bottom: 2px;
+        }
+        .mock-word-pos {
+            font-size: 12px;
+            color: var(--text-muted);
+            font-style: italic;
+            margin-bottom: 10px;
+        }
+        .mock-word-def {
+            font-size: 14px;
+            color: var(--text);
+            line-height: 1.6;
+            margin-bottom: 12px;
+        }
+        .mock-word-example {
+            font-size: 13px;
+            color: var(--text-muted);
+            font-style: italic;
+            border-left: 3px solid var(--indigo-light);
+            padding-left: 10px;
+            margin-bottom: 14px;
+        }
+        .mock-word-actions { display: flex; gap: 8px; }
+        .mock-btn {
+            padding: 7px 14px;
+            border-radius: 7px;
+            font-size: 13px;
+            font-weight: 600;
+            border: none;
+            cursor: default;
+        }
+        .mock-btn-primary { background: var(--indigo); color: white; }
+        .mock-btn-outline { background: white; color: var(--text-muted); border: 1.5px solid var(--border); }
+        .mock-srs-row {
+            display: flex;
+            gap: 8px;
+            margin-top: 10px;
+        }
+        .mock-srs-chip {
+            font-size: 11px;
+            padding: 3px 8px;
+            border-radius: 12px;
+            background: var(--indigo-light);
+            color: var(--indigo);
+            font-weight: 600;
+        }
+
+        /* filler word mockup */
+        .mock-filler-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+        }
+        .mock-filler-timer {
+            font-size: 28px;
+            font-weight: 800;
+            color: var(--indigo);
+            letter-spacing: -1px;
+        }
+        .mock-transcript {
+            background: white;
+            border: 1.5px solid var(--border);
+            border-radius: 10px;
+            padding: 14px;
+            font-size: 14px;
+            line-height: 1.8;
+            color: var(--text);
+            margin-bottom: 14px;
+            min-height: 80px;
+        }
+        .mock-filler-highlight { color: #ef4444; font-weight: 700; }
+        .mock-filler-stats {
+            display: flex;
+            gap: 12px;
+        }
+        .mock-stat-pill {
+            flex: 1;
+            background: white;
+            border: 1.5px solid var(--border);
+            border-radius: 10px;
+            padding: 10px;
+            text-align: center;
+        }
+        .mock-stat-num {
+            font-size: 22px;
+            font-weight: 800;
+            color: var(--indigo);
+        }
+        .mock-stat-label { font-size: 11px; color: var(--text-muted); font-weight: 500; }
+
+        /* play game mockup */
+        .mock-game-hud {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 16px;
+        }
+        .mock-hud-block { text-align: center; }
+        .mock-hud-num { font-size: 24px; font-weight: 800; color: var(--indigo); }
+        .mock-hud-label { font-size: 10px; font-weight: 600; color: var(--text-muted); letter-spacing: 0.05em; text-transform: uppercase; }
+        .mock-game-prompt {
+            background: white;
+            border: 1.5px solid var(--border);
+            border-radius: 12px;
+            padding: 18px;
+            text-align: center;
+            margin-bottom: 14px;
+        }
+        .mock-game-question { font-size: 13px; color: var(--text-muted); margin-bottom: 6px; }
+        .mock-game-word { font-size: 26px; font-weight: 800; color: var(--text); }
+        .mock-choices { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+        .mock-choice {
+            background: white;
+            border: 1.5px solid var(--border);
+            border-radius: 10px;
+            padding: 12px 10px;
+            text-align: center;
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text);
+            cursor: default;
+        }
+        .mock-choice.correct { background: #d1fae5; border-color: #10b981; color: #065f46; }
+        .mock-choice.wrong { background: #fee2e2; border-color: #ef4444; color: #991b1b; }
+
+        /* twal mockup */
+        .mock-twal-prompt {
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--text-muted);
+            margin-bottom: 12px;
+            text-align: center;
+        }
+        .mock-twal-word {
+            font-size: 22px;
+            font-weight: 800;
+            color: var(--indigo);
+            text-align: center;
+            margin-bottom: 16px;
+        }
+        .mock-twal-options { display: flex; flex-direction: column; gap: 8px; }
+        .mock-twal-option {
+            background: white;
+            border: 1.5px solid var(--border);
+            border-radius: 10px;
+            padding: 12px 14px;
+            font-size: 13px;
+            color: var(--text);
+            line-height: 1.5;
+            cursor: default;
+        }
+        .mock-twal-option.lie { border-color: #ef4444; background: #fee2e2; color: #991b1b; }
+        .mock-twal-option.truth { border-color: #10b981; background: #d1fae5; color: #065f46; }
+
+        /* ── TESTIMONIALS ── */
+        .testimonials-section { padding: 36px 24px; }
+        .testimonials-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+            gap: 14px;
+            margin-top: 4px;
+        }
+        .testimonial-card {
+            background: white;
+            border: 1.5px solid var(--border);
+            border-radius: 12px;
+            padding: 16px 18px;
+        }
+        .testimonial-stars {
+            color: #f59e0b;
+            font-size: 13px;
+            letter-spacing: 2px;
+            margin-bottom: 7px;
+        }
+        .testimonial-quote {
+            font-size: 14px;
+            line-height: 1.6;
+            color: var(--text);
+            margin-bottom: 10px;
+            font-style: italic;
+        }
+        .testimonial-author {
+            font-size: 13px;
+            font-weight: 700;
+            color: var(--text);
+        }
+        .testimonial-role {
+            font-size: 12px;
+            color: var(--text-muted);
+            margin-top: 1px;
+        }
+        .testimonials-placeholder-note {
+            text-align: center;
+            font-size: 12px;
+            color: var(--text-muted);
+            margin-top: 16px;
+            font-style: italic;
+        }
+
         /* ── MOBILE ── */
         @media (max-width: 600px) {
             .landing-nav-brand span { display: none; }
@@ -518,7 +803,7 @@
 
     <!-- Hero -->
     <section class="hero">
-        <div class="hero-badge">7-Day Free Trial — No Credit Card Required to Start</div>
+        <div class="hero-badge">Start Speaking Better in 5 Minutes a Day</div>
         <h1>Speak with <span>Clarity</span> and Confidence</h1>
         <p>EZSpeaks is your AI-powered speech coach. Build vocabulary, cut filler words, and practice storytelling — all in one place.</p>
         <div class="hero-cta">
@@ -547,6 +832,11 @@
             <p class="pricing-trial" id="pricing-trial">7 days free, then $9.99/mo</p>
         </div>
     </section>
+
+    <!-- Tagline Strip -->
+    <div class="tagline-strip">
+        Build vocabulary, cut filler words, speak fluently. <span>It's EZ.</span>
+    </div>
 
     <!-- Features -->
     <section class="section section-alt">
@@ -597,6 +887,177 @@
                     <p>Streaks, tiers, and stats keep you motivated. See exactly how far you've come and what to do next.</p>
                 </div>
             </div>
+        </div>
+    </section>
+
+    <!-- App Preview -->
+    <section class="section preview-section">
+        <div class="section-inner">
+            <p class="section-label">See It In Action</p>
+            <h2 class="section-title">A taste of what's inside</h2>
+
+            <div class="preview-tabs">
+                <button class="preview-tab active" data-panel="learn">Learn</button>
+                <button class="preview-tab" data-panel="polish">Polish</button>
+                <button class="preview-tab" data-panel="play">Play</button>
+                <button class="preview-tab" data-panel="quiz">Knowledge Check</button>
+            </div>
+
+            <!-- Learn panel -->
+            <div class="preview-panel active" id="preview-learn">
+                <div class="preview-frame">
+                    <div class="preview-frame-header">
+                        <div class="pf-dot pf-dot-r"></div>
+                        <div class="pf-dot pf-dot-y"></div>
+                        <div class="pf-dot pf-dot-g"></div>
+                        <div class="pf-url">ezspeaks.com / learn</div>
+                    </div>
+                    <div class="preview-body">
+                        <div class="mock-word-card">
+                            <div class="mock-word-title">Articulate</div>
+                            <div class="mock-word-pos">adjective / verb</div>
+                            <div class="mock-word-def">Having or showing the ability to speak fluently and coherently; to express an idea clearly and effectively.</div>
+                            <div class="mock-word-example">"She gave an articulate presentation that left the entire room impressed."</div>
+                            <div class="mock-word-actions">
+                                <div class="mock-btn mock-btn-primary">Learned it</div>
+                                <div class="mock-btn mock-btn-outline">Still learning</div>
+                            </div>
+                        </div>
+                        <div class="mock-srs-row">
+                            <div class="mock-srs-chip">12 words learned</div>
+                            <div class="mock-srs-chip">3 due for review</div>
+                            <div class="mock-srs-chip">5-day streak</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Polish panel -->
+            <div class="preview-panel" id="preview-polish">
+                <div class="preview-frame">
+                    <div class="preview-frame-header">
+                        <div class="pf-dot pf-dot-r"></div>
+                        <div class="pf-dot pf-dot-y"></div>
+                        <div class="pf-dot pf-dot-g"></div>
+                        <div class="pf-url">ezspeaks.com / polish</div>
+                    </div>
+                    <div class="preview-body">
+                        <div class="mock-filler-header">
+                            <div>
+                                <div style="font-size:13px;font-weight:600;color:var(--text-muted);margin-bottom:2px;">Filler Word Drill</div>
+                                <div style="font-size:11px;color:var(--text-muted);">Speak freely — we'll flag your fillers</div>
+                            </div>
+                            <div class="mock-filler-timer">0:42</div>
+                        </div>
+                        <div class="mock-transcript">
+                            I think the most important thing is, <span class="mock-filler-highlight">um</span>, making sure you're consistent. <span class="mock-filler-highlight">Like</span>, if you practice every day, even for five minutes, <span class="mock-filler-highlight">uh</span>, you'll start to notice a real difference in...
+                        </div>
+                        <div class="mock-filler-stats">
+                            <div class="mock-stat-pill">
+                                <div class="mock-stat-num" style="color:#ef4444;">3</div>
+                                <div class="mock-stat-label">Fillers</div>
+                            </div>
+                            <div class="mock-stat-pill">
+                                <div class="mock-stat-num">87</div>
+                                <div class="mock-stat-label">Words spoken</div>
+                            </div>
+                            <div class="mock-stat-pill">
+                                <div class="mock-stat-num" style="color:#10b981;">96%</div>
+                                <div class="mock-stat-label">Clean speech</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Play panel -->
+            <div class="preview-panel" id="preview-play">
+                <div class="preview-frame">
+                    <div class="preview-frame-header">
+                        <div class="pf-dot pf-dot-r"></div>
+                        <div class="pf-dot pf-dot-y"></div>
+                        <div class="pf-dot pf-dot-g"></div>
+                        <div class="pf-url">ezspeaks.com / play</div>
+                    </div>
+                    <div class="preview-body">
+                        <div class="mock-game-hud">
+                            <div class="mock-hud-block">
+                                <div class="mock-hud-num">80</div>
+                                <div class="mock-hud-label">Score</div>
+                            </div>
+                            <div class="mock-hud-block" style="text-align:center;">
+                                <div class="mock-hud-num" style="color:#ef4444;">14.3S</div>
+                                <div class="mock-hud-label">Time left</div>
+                            </div>
+                            <div class="mock-hud-block" style="text-align:right;">
+                                <div class="mock-hud-num">8</div>
+                                <div class="mock-hud-label">Correct</div>
+                            </div>
+                        </div>
+                        <div class="mock-game-prompt">
+                            <div class="mock-game-question">Which word is <u><strong>closest in meaning</strong></u> to</div>
+                            <div class="mock-game-word">"Eloquent"</div>
+                        </div>
+                        <div class="mock-choices">
+                            <div class="mock-choice correct">Articulate</div>
+                            <div class="mock-choice">Hesitant</div>
+                            <div class="mock-choice">Verbose</div>
+                            <div class="mock-choice">Abrupt</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Knowledge Check / TWAL panel -->
+            <div class="preview-panel" id="preview-quiz">
+                <div class="preview-frame">
+                    <div class="preview-frame-header">
+                        <div class="pf-dot pf-dot-r"></div>
+                        <div class="pf-dot pf-dot-y"></div>
+                        <div class="pf-dot pf-dot-g"></div>
+                        <div class="pf-url">ezspeaks.com / learn → Knowledge Check</div>
+                    </div>
+                    <div class="preview-body">
+                        <div class="mock-twal-prompt">2 Words and a Lie — spot the incorrect sentence</div>
+                        <div class="mock-twal-word">Concise</div>
+                        <div class="mock-twal-options">
+                            <div class="mock-twal-option truth">Her concise email covered all the key points in just three sentences.</div>
+                            <div class="mock-twal-option lie">He was known for his concise speeches that lasted well over two hours.</div>
+                            <div class="mock-twal-option truth">The professor appreciated concise answers that showed clear thinking.</div>
+                        </div>
+                        <div style="margin-top:12px;font-size:12px;color:#10b981;font-weight:600;text-align:center;">Correct! "Concise" means brief — a two-hour speech is the opposite.</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Testimonials -->
+    <section class="section section-alt testimonials-section">
+        <div class="section-inner">
+            <p class="section-label">What People Say</p>
+            <h2 class="section-title">Real results from real speakers</h2>
+            <div class="testimonials-grid">
+                <div class="testimonial-card">
+                    <div class="testimonial-stars">&#9733;&#9733;&#9733;&#9733;&#9733;</div>
+                    <div class="testimonial-quote">"I used to say 'um' constantly in meetings. After two weeks of the filler word drill, my coworkers actually noticed the difference before I said anything."</div>
+                    <div class="testimonial-author">— Placeholder Name</div>
+                    <div class="testimonial-role">Sales Manager</div>
+                </div>
+                <div class="testimonial-card">
+                    <div class="testimonial-stars">&#9733;&#9733;&#9733;&#9733;&#9733;</div>
+                    <div class="testimonial-quote">"The vocabulary builder is genuinely addictive. I'm using words in conversations I never would have reached for before. It's changed how people perceive me."</div>
+                    <div class="testimonial-author">— Placeholder Name</div>
+                    <div class="testimonial-role">Graduate Student</div>
+                </div>
+                <div class="testimonial-card">
+                    <div class="testimonial-stars">&#9733;&#9733;&#9733;&#9733;&#9733;</div>
+                    <div class="testimonial-quote">"Five minutes a day sounds too simple to work. But the streak kept me coming back, and now I can hold my own in any conversation without freezing up."</div>
+                    <div class="testimonial-author">— Placeholder Name</div>
+                    <div class="testimonial-role">Project Manager</div>
+                </div>
+            </div>
+            <p class="testimonials-placeholder-note">Testimonials are placeholders — real reviews coming soon.</p>
         </div>
     </section>
 
@@ -1060,6 +1521,19 @@
         }
 
     })();
+    </script>
+
+    <script>
+        // Preview tab switching
+        document.querySelectorAll('.preview-tab').forEach(function(tab) {
+            tab.addEventListener('click', function() {
+                document.querySelectorAll('.preview-tab').forEach(function(t) { t.classList.remove('active'); });
+                document.querySelectorAll('.preview-panel').forEach(function(p) { p.classList.remove('active'); });
+                tab.classList.add('active');
+                var panel = document.getElementById('preview-' + tab.dataset.panel);
+                if (panel) panel.classList.add('active');
+            });
+        });
     </script>
 
 </body>
