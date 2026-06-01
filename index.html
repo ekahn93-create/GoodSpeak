@@ -192,36 +192,51 @@
         }
 
         /* ── PRICING ── */
-        .pricing-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-            gap: 24px;
-            max-width: 680px;
-            margin: 0 auto;
-        }
         .pricing-card {
-            border: 2px solid var(--border);
+            border: 2px solid var(--indigo);
+            box-shadow: 0 0 0 4px rgba(79,70,229,0.08);
             border-radius: var(--radius);
             padding: 32px 28px;
             position: relative;
             background: var(--bg);
+            max-width: 360px;
+            margin: 0 auto;
         }
-        .pricing-card.featured {
-            border-color: var(--indigo);
-            box-shadow: 0 0 0 4px rgba(79,70,229,0.08);
+        .pricing-toggle {
+            display: flex;
+            background: var(--bg-alt, #f3f4f6);
+            border-radius: 999px;
+            padding: 4px;
+            margin-bottom: 28px;
+            gap: 0;
+        }
+        .pricing-toggle-btn {
+            flex: 1;
+            border: none;
+            background: none;
+            border-radius: 999px;
+            padding: 8px 0;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            color: var(--text-muted);
+            transition: background 0.15s, color 0.15s;
+        }
+        .pricing-toggle-btn.active {
+            background: white;
+            color: var(--text);
+            box-shadow: 0 1px 3px rgba(0,0,0,0.12);
         }
         .pricing-badge {
-            position: absolute;
-            top: -12px;
-            left: 50%;
-            transform: translateX(-50%);
+            display: inline-block;
             background: var(--indigo);
             color: white;
-            font-size: 12px;
+            font-size: 11px;
             font-weight: 700;
-            padding: 3px 12px;
+            padding: 2px 8px;
             border-radius: 999px;
-            white-space: nowrap;
+            margin-left: 6px;
+            vertical-align: middle;
         }
         .pricing-name {
             font-size: 16px;
@@ -541,38 +556,24 @@
         <div class="section-inner">
             <p class="section-label">Pricing</p>
             <h2 class="section-title">Simple, honest pricing</h2>
-            <div class="pricing-grid">
-                <div class="pricing-card">
-                    <div class="pricing-name">Monthly</div>
-                    <div class="pricing-price"><sup>$</sup>9.99</div>
-                    <div class="pricing-period">per month</div>
-                    <ul class="pricing-features">
-                        <li>Full access to all features</li>
-                        <li>AI vocabulary feedback</li>
-                        <li>Unlimited word bank</li>
-                        <li>Speech analysis</li>
-                        <li>Cloud sync across devices</li>
-                        <li>Cancel anytime</li>
-                    </ul>
-                    <button class="btn btn-outline btn-full" data-plan="monthly">Start Free Trial</button>
-                    <p class="pricing-trial">7 days free, then $9.99/mo</p>
+            <div class="pricing-card">
+                <div class="pricing-toggle">
+                    <button class="pricing-toggle-btn active" id="plan-toggle-monthly">Monthly</button>
+                    <button class="pricing-toggle-btn" id="plan-toggle-yearly">Yearly <span class="pricing-badge">Save 17%</span></button>
                 </div>
-                <div class="pricing-card featured">
-                    <div class="pricing-badge">Best Value — Save 17%</div>
-                    <div class="pricing-name">Yearly</div>
-                    <div class="pricing-price"><sup>$</sup>100</div>
-                    <div class="pricing-period">per year &mdash; just $8.33/mo</div>
-                    <ul class="pricing-features">
-                        <li>Full access to all features</li>
-                        <li>AI vocabulary feedback</li>
-                        <li>Unlimited word bank</li>
-                        <li>Speech analysis</li>
-                        <li>Cloud sync across devices</li>
-                        <li>Cancel anytime</li>
-                    </ul>
-                    <button class="btn btn-primary btn-full" data-plan="yearly">Start Free Trial</button>
-                    <p class="pricing-trial">7 days free, then $100/yr</p>
-                </div>
+                <div class="pricing-name" id="pricing-name">Monthly</div>
+                <div class="pricing-price"><sup>$</sup><span id="pricing-amount">9.99</span></div>
+                <div class="pricing-period" id="pricing-period">per month</div>
+                <ul class="pricing-features">
+                    <li>Full access to all features</li>
+                    <li>AI vocabulary feedback</li>
+                    <li>Unlimited word bank</li>
+                    <li>Speech analysis</li>
+                    <li>Cloud sync across devices</li>
+                    <li>Cancel anytime</li>
+                </ul>
+                <button class="btn btn-primary btn-full" id="pricing-cta">Start Free Trial</button>
+                <p class="pricing-trial" id="pricing-trial">7 days free, then $9.99/mo</p>
             </div>
         </div>
     </section>
@@ -950,13 +951,20 @@
             document.getElementById('hero-signup-btn').addEventListener('click', () => { _selectedPlan = 'monthly'; openModal('signup'); });
             document.getElementById('hero-login-btn').addEventListener('click', () => openModal('login'));
 
-            // Pricing cards
-            document.querySelectorAll('[data-plan]').forEach(btn => {
-                btn.addEventListener('click', () => {
-                    _selectedPlan = btn.dataset.plan;
-                    openModal('signup');
-                });
-            });
+            // Pricing toggle
+            function _setPricingPlan(plan) {
+                _selectedPlan = plan;
+                const isYearly = plan === 'yearly';
+                document.getElementById('plan-toggle-monthly').classList.toggle('active', !isYearly);
+                document.getElementById('plan-toggle-yearly').classList.toggle('active', isYearly);
+                document.getElementById('pricing-name').textContent = isYearly ? 'Yearly' : 'Monthly';
+                document.getElementById('pricing-amount').textContent = isYearly ? '100' : '9.99';
+                document.getElementById('pricing-period').textContent = isYearly ? 'per year — just $8.33/mo' : 'per month';
+                document.getElementById('pricing-trial').textContent = isYearly ? '7 days free, then $100/yr' : '7 days free, then $9.99/mo';
+            }
+            document.getElementById('plan-toggle-monthly').addEventListener('click', () => _setPricingPlan('monthly'));
+            document.getElementById('plan-toggle-yearly').addEventListener('click', () => _setPricingPlan('yearly'));
+            document.getElementById('pricing-cta').addEventListener('click', () => openModal('signup'));
 
             // Bottom CTA
             document.getElementById('cta-signup-btn').addEventListener('click', () => { _selectedPlan = 'monthly'; openModal('signup'); });
