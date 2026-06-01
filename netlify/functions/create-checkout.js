@@ -53,6 +53,7 @@ exports.handler = async function(event) {
         metadata: { userId }
       },
       metadata: { userId },
+      allow_promotion_codes: true,
       success_url: 'https://ezspeaks.com/app?checkout=success&session_id={CHECKOUT_SESSION_ID}',
       cancel_url: 'https://ezspeaks.com/?checkout=cancelled',
     });
