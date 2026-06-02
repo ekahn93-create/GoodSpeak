@@ -337,6 +337,57 @@ ul, ol {
   text-align: center;
 }
 
+/* Hero stat strip */
+.hero-stat-strip {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  margin-top: 14px;
+  flex-wrap: wrap;
+}
+
+.hss-pill {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: 999px;
+  padding: 5px 14px 5px 10px;
+  box-shadow: var(--shadow-sm);
+}
+
+.hss-icon {
+  font-size: 14px;
+  line-height: 1;
+}
+
+.hss-value {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--primary-color);
+  line-height: 1;
+}
+
+.hss-label {
+  font-size: 12px;
+  color: var(--text-secondary);
+  line-height: 1;
+}
+
+.hss-nudge {
+  font-size: 13px;
+  color: var(--primary-color);
+  text-decoration: none;
+  font-weight: 500;
+  padding: 5px 0;
+}
+
+.hss-nudge:hover {
+  text-decoration: underline;
+}
+
 /* ==================== STAT TILES ==================== */
 .stat-tiles {
   display: grid;

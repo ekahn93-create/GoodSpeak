@@ -276,6 +276,9 @@ const App = (function() {
 
     // --- This Week calendar ---
     updateThisWeek();
+
+    // --- Hero stat strip ---
+    updateHeroStats();
   }
 
   // ----------------------------------------------------------------
@@ -472,6 +475,42 @@ const App = (function() {
         goalLabel.textContent = activeDaysThisWeek + ' / ' + WEEKLY_GOAL + ' days' + (remaining === 1 ? ' — 1 more to go' : '');
         goalLabel.className = 'tw-goal-label';
       }
+    }
+  }
+
+  // ----------------------------------------------------------------
+  // HERO STAT STRIP
+  // ----------------------------------------------------------------
+
+  function updateHeroStats() {
+    const strip = document.getElementById('hero-stat-strip');
+    if (!strip || !userData) return;
+
+    const words        = userData.vocabulary.learned.length || 0;
+    const streak       = userData.stats.practiceStreak || userData.dailyWord.currentStreak || 0;
+    const daysActive   = (userData.stats.activeDates || []).length;
+    const isNewUser    = words === 0 && daysActive === 0;
+
+    if (isNewUser) {
+      strip.innerHTML =
+        '<a href="/learn" class="hss-nudge">Start with Learn to build your vocabulary &rarr;</a>';
+    } else {
+      strip.innerHTML =
+        '<div class="hss-pill">' +
+          '<span class="hss-icon">&#128293;</span>' +
+          '<span class="hss-value">' + streak + '</span>' +
+          '<span class="hss-label">' + (streak === 1 ? 'day streak' : 'day streak') + '</span>' +
+        '</div>' +
+        '<div class="hss-pill">' +
+          '<span class="hss-icon">&#128218;</span>' +
+          '<span class="hss-value">' + words + '</span>' +
+          '<span class="hss-label">' + (words === 1 ? 'word learned' : 'words learned') + '</span>' +
+        '</div>' +
+        '<div class="hss-pill">' +
+          '<span class="hss-icon">&#128197;</span>' +
+          '<span class="hss-value">' + daysActive + '</span>' +
+          '<span class="hss-label">' + (daysActive === 1 ? 'day active' : 'days active') + '</span>' +
+        '</div>';
     }
   }
 
