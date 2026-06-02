@@ -1239,8 +1239,7 @@
 
         function _hasAccess(subData) {
             return subData.subscription_status === 'active'
-                || subData.subscription_status === 'trialing'
-                || !!subData.stripe_customer_id; // paid but webhook may be lagging
+                || subData.subscription_status === 'trialing';
         }
 
         // ── Auth Modal ─────────────────────────────────────────────────────────

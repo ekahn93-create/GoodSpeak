@@ -379,10 +379,10 @@
           const { data: { session } } = await client.auth.getSession();
           if (!session) { window.location.replace('/'); return; }
           const { data } = await client.from('user_progress')
-            .select('subscription_status, stripe_customer_id')
+            .select('subscription_status')
             .eq('user_id', session.user.id).maybeSingle();
           const s = data?.subscription_status;
-          if (s !== 'active' && s !== 'trialing' && !data?.stripe_customer_id) {
+          if (s !== 'active' && s !== 'trialing') {
             window.location.replace('/');
           }
         } catch(e) { console.warn('Auth gate error:', e); }
