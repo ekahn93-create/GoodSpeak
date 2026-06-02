@@ -129,5 +129,3 @@ function getTodaysWordOfTheDay() {
   return wordOfTheDayList[index];
 }
 
-// Log that word of the day list is loaded
-console.log(`Word of the Day list loaded: ${wordOfTheDayList.length} words available`);

@@ -22,7 +22,6 @@ const DailyWordModule = (function() {
    * Initialize the daily word module
    */
   function init() {
-    console.log('DailyWordModule initializing...');
 
     // Get DOM elements
     dailyWordContent = document.getElementById('daily-word-content');
@@ -62,7 +61,6 @@ const DailyWordModule = (function() {
     });
 
     initialized = true;
-    console.log('DailyWordModule initialized successfully');
   }
 
   /**
@@ -615,4 +613,3 @@ const DailyWordModule = (function() {
 })();
 
 // Log that DailyWordModule is loaded
-console.log('DailyWordModule loaded successfully');

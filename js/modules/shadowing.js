@@ -175,4 +175,3 @@ const ShadowingModule = (function() {
   };
 })();
 
-console.log('ShadowingModule loaded');

@@ -139,12 +139,10 @@ const AuthModule = (function () {
   // ── Internal ──────────────────────────────────────────────────────────────
 
   function _onSignedIn(user) {
-    console.log('AuthModule: signed in as', user.email);
     if (onAuthChangeCallback) onAuthChangeCallback('SIGNED_IN', user);
   }
 
   function _onSignedOut() {
-    console.log('AuthModule: signed out');
     if (onAuthChangeCallback) onAuthChangeCallback('SIGNED_OUT', null);
   }
 
@@ -213,6 +211,7 @@ const AuthModule = (function () {
     const switchText = document.getElementById('auth-switch-text');
     const signupFields = document.getElementById('auth-signup-fields');
 
+    const forgotLink = document.getElementById('auth-forgot-link');
     if (mode === 'signup') {
       title.textContent = 'Create Account';
       submitBtn.textContent = 'Create Account';
@@ -221,6 +220,7 @@ const AuthModule = (function () {
       switchLink.textContent = 'Sign in';
       submitBtn.dataset.mode = 'signup';
       if (signupFields) signupFields.style.display = '';
+      if (forgotLink) forgotLink.style.display = 'none';
     } else {
       title.textContent = 'Sign In';
       submitBtn.textContent = 'Sign In';
@@ -229,13 +229,16 @@ const AuthModule = (function () {
       switchLink.textContent = 'Sign up';
       submitBtn.dataset.mode = 'login';
       if (signupFields) signupFields.style.display = 'none';
+      if (forgotLink) forgotLink.style.display = '';
     }
     _clearModalError();
   }
 
   function _clearModalError() {
     const err = document.getElementById('auth-error');
-    if (err) err.textContent = '';
+    if (err) { err.textContent = ''; err.style.color = ''; }
+    const forgotLink = document.getElementById('auth-forgot-link');
+    if (forgotLink) { forgotLink.textContent = 'Forgot password?'; forgotLink.style.pointerEvents = ''; }
   }
 
   function _showModalError(msg) {
@@ -311,6 +314,32 @@ const AuthModule = (function () {
             : '<path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>';
         }
         pwToggle.setAttribute('aria-label', isHidden ? 'Hide password' : 'Show password');
+      });
+    }
+
+    // Forgot password link
+    const forgotLink = document.getElementById('auth-forgot-link');
+    if (forgotLink) {
+      forgotLink.addEventListener('click', async (e) => {
+        e.preventDefault();
+        const email = document.getElementById('auth-email').value.trim();
+        if (!email) {
+          _showModalError('Enter your email address above first.');
+          return;
+        }
+        if (!supabase) return;
+        forgotLink.textContent = 'Sending...';
+        forgotLink.style.pointerEvents = 'none';
+        await supabase.auth.resetPasswordForEmail(email, {
+          redirectTo: window.location.origin + '/app'
+        });
+        forgotLink.style.pointerEvents = '';
+        forgotLink.style.display = 'none';
+        const errEl = document.getElementById('auth-error');
+        if (errEl) {
+          errEl.style.color = 'var(--secondary-color, #10b981)';
+          errEl.textContent = 'Password reset email sent. Check your inbox.';
+        }
       });
     }
 
@@ -452,4 +481,3 @@ const AuthModule = (function () {
 
 })();
 
-console.log('AuthModule loaded');

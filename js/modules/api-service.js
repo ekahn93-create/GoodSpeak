@@ -419,7 +419,6 @@ const APIService = (function() {
     cache.definitions.clear();
     cache.rhymes.clear();
     cache.relatedWords.clear();
-    console.log('API cache cleared');
   }
 
   /**
@@ -453,5 +452,3 @@ const APIService = (function() {
   };
 })();
 
-// Log that APIService is loaded
-console.log('APIService loaded successfully');

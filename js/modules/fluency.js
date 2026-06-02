@@ -383,7 +383,6 @@ const FluencyModule = (function() {
    * Initialize the fluency module
    */
   function init() {
-    console.log('FluencyModule initializing...');
 
     // Load user data
     userData = StorageManager.load();
@@ -405,7 +404,6 @@ const FluencyModule = (function() {
     // Add AI generate buttons next to existing "New" buttons
     initAIGenerateButtons();
 
-    console.log('FluencyModule initialized successfully');
   }
 
   /**
@@ -1547,7 +1545,6 @@ const FluencyModule = (function() {
    * Refresh the view (called when navigating to this view)
    */
   function refresh() {
-    console.log('Refreshing FluencyModule...');
     userData = StorageManager.load();
   }
 

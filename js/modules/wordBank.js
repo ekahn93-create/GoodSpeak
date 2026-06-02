@@ -56,7 +56,6 @@ const WordBankModule = (function() {
    * Initialize the word bank module
    */
   function init() {
-    console.log('WordBankModule initializing...');
 
     // Get DOM elements
     addWordForm = document.getElementById('add-custom-word-form');
@@ -118,12 +117,10 @@ const WordBankModule = (function() {
     // Check if we're already on the word-bank view on page load
     const currentHash = window.location.hash.replace('#', '');
     if (currentHash === 'word-bank') {
-      console.log('Word Bank view active on init, loading data...');
       // Give scripts time to load, then refresh
       setTimeout(() => refresh(), 250);
     }
 
-    console.log('WordBankModule initialized successfully');
   }
 
   /**
@@ -1945,5 +1942,3 @@ const WordBankModule = (function() {
   };
 })();
 
-// Log that WordBankModule is loaded
-console.log('WordBankModule loaded successfully');

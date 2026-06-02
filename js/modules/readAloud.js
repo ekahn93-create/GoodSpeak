@@ -364,4 +364,3 @@ const ReadAloudModule = (function() {
   };
 })();
 
-console.log('ReadAloudModule loaded');

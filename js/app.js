@@ -16,7 +16,6 @@ const App = (function() {
    * Initialize the application
    */
   function init() {
-    console.log('Articulation Trainer App initializing...');
 
     if (!StorageManager.isAvailable()) {
       alert('LocalStorage is not available. The app requires LocalStorage to save your progress.');
@@ -123,7 +122,6 @@ const App = (function() {
     });
 
     isInitialized = true;
-    console.log('Articulation Trainer App initialized successfully!');
   }
 
 
@@ -276,8 +274,8 @@ const App = (function() {
     // --- Tier-aware checklist (Option A) ---
     updateChecklist(tier, words, stories, days, fluencyVisited);
 
-    // --- Daily suggestions (Option B) ---
-    updateSuggestions(tier, words, stories, streak, fluencyVisited);
+    // --- This Week calendar ---
+    updateThisWeek();
   }
 
   // ----------------------------------------------------------------
@@ -427,103 +425,54 @@ const App = (function() {
   }
 
   // ----------------------------------------------------------------
-  // DAILY SUGGESTIONS (Option B)
+  // THIS WEEK CALENDAR
   // ----------------------------------------------------------------
 
-  function updateSuggestions(tier, words, stories, streak, fluencyVisited) {
-    const container = document.getElementById('daily-suggestions');
+  function updateThisWeek() {
+    const container = document.getElementById('tw-days');
+    const goalLabel = document.getElementById('tw-goal-label');
     if (!container) return;
 
-    const suggestions = [];
-    const srsData     = getSRSDueCount();
+    const activeDates = (userData && userData.stats && userData.stats.activeDates) ? userData.stats.activeDates : [];
+    const WEEKLY_GOAL = 5;
 
-    // Priority 1 — urgent: SRS reviews due
-    if (srsData > 0) {
-      suggestions.push({
-        text: srsData + ' word' + (srsData === 1 ? '' : 's') + ' due for review — keep them fresh',
-        link: '/learn',
-        tab: 'knowledge-check',
-        label: 'Start Review',
-        category: 'Recall',
-        categoryClass: 'recall',
-        dest: 'Learn \u203a Knowledge Check'
-      });
-    }
+    // Build array of this week's dates (Mon–Sun)
+    const today = new Date();
+    const dayOfWeek = today.getDay(); // 0=Sun
+    const monday = new Date(today);
+    monday.setDate(today.getDate() - ((dayOfWeek + 6) % 7));
 
-    // Priority 2 — streak at risk
-    const activeDates = userData.stats.activeDates || [];
-    const today = new Date().toISOString().split('T')[0];
-    const yesterday = new Date(Date.now() - 86400000).toISOString().split('T')[0];
-    const doneToday = activeDates.includes(today);
-    const activeYesterday = activeDates.includes(yesterday);
-    if (!doneToday && streak > 0 && activeYesterday) {
-      suggestions.push({
-        text: 'Your ' + streak + '-day streak is at risk — do something today',
-        link: '/',
-        tab: null,
-        label: 'Do Today\'s Drill',
-        category: 'Recall',
-        categoryClass: 'recall',
-        dest: 'Home \u203a Today\'s Practice'
-      });
-    }
+    const days = ['M', 'T', 'W', 'T', 'F', 'S', 'S'];
+    let activeDaysThisWeek = 0;
 
-    // Priority 3 — tier-specific nudges
-    if (tier.name === 'Beginner') {
-      if (words < 5) {
-        suggestions.push({ text: 'Start with your first words — even one a day adds up', link: '/learn', tab: 'builder', label: 'Learn a Word', category: 'Vocabulary', categoryClass: 'vocab', dest: 'Learn \u203a Vocabulary Builder' });
-      }
-      if (!fluencyVisited) {
-        suggestions.push({ text: 'Try a pronunciation drill to build confidence out loud', link: '/polish', tab: null, label: 'Go to Polish', category: 'Fluency', categoryClass: 'fluency', dest: 'Polish \u203a Precision Drills' });
-      }
-      if (words >= 3 && stories === 0) {
-        suggestions.push({ text: 'You have some words — try putting them into a story', link: '/practice', tab: 'storytelling', label: 'Try a Prompt', category: 'Storytelling', categoryClass: 'story', dest: 'Practice \u203a Story Prompts' });
-      }
-    } else if (tier.name === 'Building') {
-      if (words < 20) {
-        suggestions.push({ text: 'Keep building — you need ' + (20 - words) + ' more words to reach Intermediate', link: '/learn', tab: 'builder', label: 'Learn Words', category: 'Vocabulary', categoryClass: 'vocab', dest: 'Learn \u203a Vocabulary Builder' });
-      }
-      if (stories < 5) {
-        suggestions.push({ text: 'Practice makes permanent — ' + (5 - stories) + ' more stories to reach Intermediate', link: '/practice', tab: 'storytelling', label: 'Tell a Story', category: 'Storytelling', categoryClass: 'story', dest: 'Practice \u203a Story Prompts' });
-      }
-      suggestions.push({ text: 'Challenge yourself with a quiz on your word bank', link: '/learn', tab: 'knowledge-check', label: 'Take a Quiz', category: 'Vocabulary', categoryClass: 'vocab', dest: 'Learn \u203a Knowledge Check' });
-    } else if (tier.name === 'Intermediate') {
-      suggestions.push({ text: 'Try Impromptu Speaking — 60 seconds, no preparation', link: '/practice', tab: 'practical', label: 'Speak Now', category: 'Storytelling', categoryClass: 'story', dest: 'Practice \u203a Impromptu Speaking' });
-      if (words < 50) {
-        suggestions.push({ text: (50 - words) + ' more words to reach Advanced', link: '/learn', tab: 'builder', label: 'Learn Words', category: 'Vocabulary', categoryClass: 'vocab', dest: 'Learn \u203a Vocabulary Builder' });
-      }
-      suggestions.push({ text: 'Try shadowing to refine your delivery and rhythm', link: '/polish', tab: null, label: 'Go to Shadowing', category: 'Fluency', categoryClass: 'fluency', dest: 'Polish \u203a Shadowing' });
-    } else if (tier.name === 'Advanced') {
-      suggestions.push({ text: 'Advanced tier — focus on consistency and nuance', link: '/practice', tab: 'storytelling', label: 'New Story', category: 'Storytelling', categoryClass: 'story', dest: 'Practice \u203a Story Prompts' });
-      suggestions.push({ text: 'Keep your SRS reviews up to maintain long-term retention', link: '/learn', tab: 'knowledge-check', label: 'Review Words', category: 'Recall', categoryClass: 'recall', dest: 'Learn \u203a Knowledge Check' });
-      suggestions.push({ text: 'Read Aloud mode builds pace and clarity — try it today', link: '/polish', tab: null, label: 'Read Aloud', category: 'Fluency', categoryClass: 'fluency', dest: 'Polish \u203a Read Aloud' });
-    }
-
-    // Cap at 3 suggestions
-    const shown = suggestions.slice(0, 3);
-
-    const pillColors = { vocab: '#0284c7', fluency: '#db2777', story: '#16a34a', recall: '#0891b2', challenge: '#7c3aed' };
-    const pageIcons = {
-      vocab:     '<svg style="display:inline;vertical-align:middle;margin-right:4px" xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>',
-      recall:    '<svg style="display:inline;vertical-align:middle;margin-right:4px" xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>',
-      fluency:   '<svg style="display:inline;vertical-align:middle;margin-right:4px" xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/><line x1="8" y1="23" x2="16" y2="23"/></svg>',
-      story:     '<svg style="display:inline;vertical-align:middle;margin-right:4px" xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="5 3 19 12 5 21 5 3"/></svg>',
-      challenge: '<svg style="display:inline;vertical-align:middle;margin-right:4px" xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="5 3 19 12 5 21 5 3"/></svg>'
-    };
-    container.innerHTML = shown.map(function(s) {
-      var destColor = pillColors[s.categoryClass] || 'var(--text-muted)';
-      var icon = pageIcons[s.categoryClass] || '';
-      return '<div class="suggestion-item">' +
-        '<div class="suggestion-body">' +
-          '<div class="suggestion-top">' +
-            '<span class="suggestion-pill suggestion-pill--' + s.categoryClass + '">' + s.category + '</span>' +
-            '<span class="suggestion-text">' + s.text + '</span>' +
-          '</div>' +
-          '<span class="suggestion-dest" style="color:' + destColor + ';font-weight:700">' + icon + s.dest + '</span>' +
-        '</div>' +
-        '<a href="' + s.link + '" class="suggestion-link btn btn-sm btn-primary">' + s.label + '</a>' +
+    container.innerHTML = days.map(function(label, i) {
+      const d = new Date(monday);
+      d.setDate(monday.getDate() + i);
+      const iso = d.toISOString().split('T')[0];
+      const isToday = iso === today.toISOString().split('T')[0];
+      const isFuture = d > today;
+      const isActive = activeDates.includes(iso);
+      if (isActive) activeDaysThisWeek++;
+      var cls = 'tw-day';
+      if (isActive) cls += ' tw-day-active';
+      else if (isToday) cls += ' tw-day-today';
+      else if (isFuture) cls += ' tw-day-future';
+      return '<div class="' + cls + '">' +
+        '<span class="tw-day-label">' + label + '</span>' +
+        '<span class="tw-day-dot"></span>' +
         '</div>';
     }).join('');
+
+    if (goalLabel) {
+      var remaining = WEEKLY_GOAL - activeDaysThisWeek;
+      if (activeDaysThisWeek >= WEEKLY_GOAL) {
+        goalLabel.textContent = 'Weekly goal reached!';
+        goalLabel.className = 'tw-goal-label tw-goal-met';
+      } else {
+        goalLabel.textContent = activeDaysThisWeek + ' / ' + WEEKLY_GOAL + ' days' + (remaining === 1 ? ' — 1 more to go' : '');
+        goalLabel.className = 'tw-goal-label';
+      }
+    }
   }
 
   // ----------------------------------------------------------------
@@ -700,6 +649,8 @@ const App = (function() {
     if (el('words-today-stat'))    el('words-today-stat').textContent    = wordsToday;
     if (el('total-days-active'))   el('total-days-active').textContent   = totalDaysActive;
 
+    const emptyState = el('stats-empty-state');
+    if (emptyState) emptyState.style.display = (totalSessions === 0 && totalWords === 0) ? '' : 'none';
   }
 
   /**
@@ -984,9 +935,7 @@ const App = (function() {
 
 // Initialize the app when DOM is ready
 document.addEventListener('DOMContentLoaded', function() {
-  console.log('DOM loaded, starting Articulation Trainer...');
   App.init();
 });
 
 // Log that App module is loaded
-console.log('App module loaded successfully');

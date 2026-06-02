@@ -37,13 +37,11 @@ const SyncModule = (function () {
 
       if (!data) {
         // No cloud record yet — push current local data up
-        console.log('SyncModule: no cloud record, uploading local data');
         await _pushToCloud(user.id, localData || StorageManager.getDefaultProgress());
         return;
       }
 
       // Always trust cloud data — it is the source of truth on login
-      console.log('SyncModule: loading cloud data');
       StorageManager.save(data.data);
 
       // Cache subscription status so AuthModule.isPremium() works offline
@@ -106,7 +104,6 @@ const SyncModule = (function () {
     if (error) {
       console.error('SyncModule: error saving to cloud', error);
     } else {
-      console.log('SyncModule: saved to cloud');
     }
   }
 
@@ -121,4 +118,3 @@ const SyncModule = (function () {
 
 })();
 
-console.log('SyncModule loaded');

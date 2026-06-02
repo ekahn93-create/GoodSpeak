@@ -413,4 +413,3 @@ const RecordingsModule = (function() {
   };
 })();
 
-console.log('RecordingsModule loaded');

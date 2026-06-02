@@ -230,5 +230,3 @@ const ProgressBar = (function() {
   };
 })();
 
-// Log that ProgressBar component is loaded
-console.log('ProgressBar component loaded successfully');

@@ -424,8 +424,3 @@ const DIFFICULTY_TIME = {
   advanced:     { label: '10-15 minutes', seconds: 900  }
 };
 
-// Log that story prompts database is loaded
-console.log('Story prompts database loaded: 30 prompts total');
-console.log(`- Personal: ${storyPromptsDatabase.personal.length} prompts`);
-console.log(`- Fictional: ${storyPromptsDatabase.fictional.length} prompts`);
-console.log(`- Descriptive: ${storyPromptsDatabase.descriptive.length} prompts`);

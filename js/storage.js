@@ -122,7 +122,6 @@ const StorageManager = (function() {
 
       // Version checking - handle migrations if needed
       if (data.version !== VERSION) {
-        console.log('Data version mismatch. Migrating...');
         // In future versions, handle data migrations here
       }
 
@@ -142,11 +141,9 @@ const StorageManager = (function() {
 
     if (!data) {
       // No existing data, create new
-      console.log('No existing data found. Creating new user profile.');
       data = getDefaultProgress();
       save(data);
     } else {
-      console.log('Loaded existing user data.');
 
       // Ensure all required fields exist (in case of partial data)
       const defaultData = getDefaultProgress();
@@ -209,7 +206,6 @@ const StorageManager = (function() {
   function clear() {
     try {
       localStorage.removeItem(STORAGE_KEY);
-      console.log('LocalStorage cleared.');
       return true;
     } catch (error) {
       console.error('Error clearing LocalStorage:', error);
@@ -461,8 +457,6 @@ const StorageManager = (function() {
   };
 })();
 
-// Log that StorageManager is loaded
-console.log('StorageManager module loaded successfully');
 
 // ============================================
 // TTS HELPER

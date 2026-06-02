@@ -181,7 +181,6 @@ const GrammarModule = (function() {
    * Initialize the grammar module
    */
   function init() {
-    console.log('GrammarModule initializing...');
 
     // Set up event listeners
     setupEventListeners();
@@ -189,7 +188,6 @@ const GrammarModule = (function() {
     // Don't load initial exercises here - they will be loaded
     // when the grammar category becomes visible via refresh()
 
-    console.log('GrammarModule initialized successfully');
   }
 
   /**
@@ -478,7 +476,6 @@ const GrammarModule = (function() {
    * Called when the grammar category becomes visible
    */
   function refresh() {
-    console.log('GrammarModule refreshing...');
     loadNewSentenceTransform();
     loadNewCombining();
     loadNewError();
@@ -695,4 +692,3 @@ const GrammarModule = (function() {
 })();
 
 // Log that GrammarModule is loaded
-console.log('GrammarModule loaded successfully');

@@ -866,6 +866,19 @@
   margin-top: 4px;
 }
 
+/* Forgot password link */
+.auth-forgot-link {
+  display: none;
+  font-size: var(--font-size-sm);
+  color: var(--primary-color);
+  text-decoration: none;
+  margin-bottom: 12px;
+}
+
+.auth-forgot-link:hover {
+  text-decoration: underline;
+}
+
 /* Switch mode */
 .auth-switch {
   margin: 16px 0 0;

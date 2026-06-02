@@ -1119,8 +1119,3 @@ const vocabularyDatabase = {
   ]
 };
 
-// Log that vocabulary database is loaded
-console.log('Vocabulary database loaded: 100 words total');
-console.log(`- Beginner: ${vocabularyDatabase.beginner.length} words`);
-console.log(`- Intermediate: ${vocabularyDatabase.intermediate.length} words`);
-console.log(`- Advanced: ${vocabularyDatabase.advanced.length} words`);

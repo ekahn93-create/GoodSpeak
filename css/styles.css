@@ -1113,105 +1113,128 @@ ul, ol {
   font-size: var(--font-size-xs, 0.75rem);
 }
 
-/* ==================== DAILY SUGGESTIONS CARD (Option B) ==================== */
-.suggestions-card {
+/* ==================== THIS WEEK CARD ==================== */
+.this-week-card {
   background: var(--bg-card);
   border-radius: var(--border-radius);
-  padding: var(--spacing-lg);
+  padding: var(--spacing-md) var(--spacing-lg);
   box-shadow: var(--shadow-sm);
   border: 1px solid var(--border-color);
 }
 
-.suggestions-title {
-  color: var(--text-primary);
+.tw-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
   margin-bottom: var(--spacing-md);
-  font-size: var(--font-size-lg);
 }
 
-.suggestions-list {
+.tw-title {
+  font-size: var(--font-size-lg);
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.tw-goal-label {
+  font-size: var(--font-size-sm);
+  color: var(--text-secondary);
+  font-weight: 500;
+}
+
+.tw-goal-label.tw-goal-met {
+  color: var(--secondary-color);
+  font-weight: 600;
+}
+
+.tw-days {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 8px;
+}
+
+.tw-day {
   display: flex;
   flex-direction: column;
-  gap: var(--spacing-sm);
-}
-
-.suggestion-item {
-  display: flex;
   align-items: center;
-  gap: var(--spacing-sm);
-  padding: var(--spacing-sm) var(--spacing-md);
-  background: var(--bg-main);
-  border-radius: var(--border-radius-sm);
-  border: 1px solid var(--border-color);
-  transition: border-color var(--transition-fast), box-shadow var(--transition-fast);
+  gap: 6px;
 }
 
-.suggestion-item:hover {
-  border-color: var(--primary-light);
+.tw-day-label {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--text-light);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.tw-day-dot {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: var(--bg-main);
+  border: 2px solid var(--border-color);
+  transition: background var(--transition-fast), border-color var(--transition-fast);
+}
+
+.tw-day-active .tw-day-label {
+  color: var(--secondary-color);
+}
+
+.tw-day-active .tw-day-dot {
+  background: var(--secondary-color);
+  border-color: var(--secondary-color);
+}
+
+.tw-day-today .tw-day-label {
+  color: var(--primary-color);
+}
+
+.tw-day-today .tw-day-dot {
+  border-color: var(--primary-color);
+  border-width: 2px;
+}
+
+.tw-day-future .tw-day-dot {
+  opacity: 0.35;
+}
+
+/* ==================== STATS EMPTY STATE ==================== */
+.stats-empty-state {
+  margin: var(--spacing-lg) var(--spacing-md) 0;
+  padding: var(--spacing-lg);
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: var(--border-radius);
+  text-align: center;
   box-shadow: var(--shadow-sm);
 }
 
-.suggestion-icon {
-  font-size: 1.25rem;
-  flex-shrink: 0;
-  width: 28px;
-  text-align: center;
+.stats-empty-icon {
+  color: var(--text-light);
+  margin-bottom: var(--spacing-sm);
 }
 
-.suggestion-body {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  gap: 3px;
-  min-width: 0;
-}
-
-.suggestion-top {
-  display: flex;
-  align-items: center;
-  gap: var(--spacing-xs, 6px);
-  flex-wrap: wrap;
-}
-
-.suggestion-text {
-  font-size: var(--font-size-sm);
-  color: var(--text-primary);
-  line-height: 1.4;
-}
-
-.suggestion-dest {
-  font-size: 0.68rem;
-  color: var(--text-muted);
-  line-height: 1.2;
-  font-weight: 700;
-}
-
-.suggestion-pill {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 0.65rem;
+.stats-empty-title {
+  font-size: var(--font-size-lg);
   font-weight: 600;
-  letter-spacing: 0.03em;
-  line-height: normal;
-  padding: 3px 8px;
-  border-radius: 99px;
-  color: #fff;
-  flex-shrink: 0;
-  white-space: nowrap;
+  color: var(--text-primary);
+  margin-bottom: 8px;
 }
 
-.suggestion-pill--vocab      { background: #0284c7; }
-.suggestion-pill--fluency    { background: #db2777; }
-.suggestion-pill--story      { background: #16a34a; }
-.suggestion-pill--recall     { background: #0284c7; }
-.suggestion-pill--challenge  { background: #7c3aed; }
+.stats-empty-sub {
+  font-size: var(--font-size-sm);
+  color: var(--text-secondary);
+  line-height: 1.5;
+}
 
-.suggestion-link {
-  white-space: nowrap;
-  font-size: 12px;
-  padding: 4px 12px;
+.stats-empty-sub a {
+  color: var(--primary-color);
+  font-weight: 500;
   text-decoration: none;
-  flex-shrink: 0;
+}
+
+.stats-empty-sub a:hover {
+  text-decoration: underline;
 }
 
 /* ==================== TIPS SECTION (kept for fallback) ==================== */

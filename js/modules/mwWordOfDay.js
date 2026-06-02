@@ -19,7 +19,6 @@ const MWWordOfDayModule = (function() {
    * Initialize the module
    */
   function init() {
-    console.log('WordOfDayModule initializing...');
 
     // Get DOM elements
     wordContent = document.getElementById('mw-word-content');
@@ -32,7 +31,6 @@ const MWWordOfDayModule = (function() {
       }
     });
 
-    console.log('WordOfDayModule initialized successfully');
   }
 
   /**
@@ -310,4 +308,3 @@ const MWWordOfDayModule = (function() {
 })();
 
 // Log that WordOfDayModule is loaded
-console.log('WordOfDayModule loaded successfully');

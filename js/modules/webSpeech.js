@@ -1399,4 +1399,3 @@ const WebSpeechModule = (function() {
 
 })();
 
-console.log('WebSpeechModule loaded');

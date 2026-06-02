@@ -304,4 +304,3 @@ const DailyDrillModule = (function() {
   };
 })();
 
-console.log('DailyDrillModule loaded');

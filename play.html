@@ -41,7 +41,7 @@
         </ul>
         <div class="nav-auth">
             <button id="auth-nav-btn" class="auth-nav-btn" title="Sign in to save progress across devices">
-                <span class="auth-nav-icon">&#9786;</span>
+                <span class="auth-nav-icon"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></span>
                 <span id="auth-nav-label">Sign In</span>
             </button>
         </div>
@@ -91,6 +91,7 @@
                     </button>
                 </div>
                 <p id="auth-error" class="auth-error"></p>
+                <a href="#" id="auth-forgot-link" class="auth-forgot-link">Forgot password?</a>
                 <button id="auth-submit-btn" class="btn btn-primary auth-submit-btn" data-mode="login">Sign In</button>
             </div>
             <p class="auth-switch">
@@ -332,15 +333,20 @@
         </div>
     </footer>
 
+    <!-- Auth gate overlay — hidden by JS once gate resolves -->
+    <div id="auth-gate-overlay" style="position:fixed;inset:0;background:#fff;z-index:9999;"></div>
+
     <!-- JavaScript -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
     <script src="js/config.js"></script>
     <script>
       (async function() {
+        const overlay = document.getElementById('auth-gate-overlay');
+        const removeOverlay = () => { if (overlay) overlay.remove(); };
         try {
           await AppConfig.load();
           const { url, anonKey } = AppConfig.supabase;
-          if (!url || url === 'YOUR_SUPABASE_URL') return;
+          if (!url || url === 'YOUR_SUPABASE_URL') { removeOverlay(); return; }
           const client = window.supabase.createClient(url, anonKey);
           const { data: { session } } = await client.auth.getSession();
           if (!session) { window.location.replace('/'); return; }
@@ -350,8 +356,10 @@
           const s = data?.subscription_status;
           if (s !== 'active' && s !== 'trialing') {
             window.location.replace('/');
+          } else {
+            removeOverlay();
           }
-        } catch(e) { console.warn('Auth gate error:', e); }
+        } catch(e) { console.warn('Auth gate error:', e); removeOverlay(); }
       })();
     </script>
     <script src="js/storage.js"></script>

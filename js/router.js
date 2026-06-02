@@ -19,7 +19,6 @@ const Router = (function() {
   };
 
   function init() {
-    console.log('Router initializing...');
 
     // Determine current page from body data-page attribute
     const page = document.body.getAttribute('data-page') || 'home';
@@ -38,7 +37,6 @@ const Router = (function() {
     // Fire viewChanged so modules can initialize for this page
     document.dispatchEvent(new CustomEvent('viewChanged', { detail: { viewName: page } }));
 
-    console.log('Router initialized for page:', page);
   }
 
   // navigateTo: if the target view is on this page, show it (sub-tab use).
@@ -92,5 +90,3 @@ const Router = (function() {
   };
 })();
 
-// Log that Router is loaded
-console.log('Router module loaded successfully');

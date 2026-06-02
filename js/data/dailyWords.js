@@ -876,5 +876,3 @@ function getDailyWordById(wordId) {
   return dailyWordsDatabase.find(word => word.id === wordId) || null;
 }
 
-// Log that daily words database is loaded
-console.log(`Daily words database loaded: ${dailyWordsDatabase.length} words total`);

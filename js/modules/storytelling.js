@@ -39,7 +39,6 @@ const StorytellingModule = (function() {
    * Initialize the storytelling module
    */
   function init() {
-    console.log('StorytellingModule initializing...');
 
     // Get DOM elements - Category tabs
     storyCategoryTabs = document.querySelectorAll('.storytelling-category-tab');
@@ -80,7 +79,6 @@ const StorytellingModule = (function() {
       displayPrompts(currentTheme);
     }
 
-    console.log('StorytellingModule initialized successfully');
   }
 
   /**
@@ -2045,5 +2043,3 @@ case 'recordings':
   };
 })();
 
-// Log that StorytellingModule is loaded
-console.log('StorytellingModule loaded successfully');

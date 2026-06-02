@@ -250,4 +250,3 @@ const OnboardingModule = (function() {
   };
 })();
 
-console.log('OnboardingModule loaded');

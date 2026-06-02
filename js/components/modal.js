@@ -30,7 +30,6 @@ const Modal = (function() {
    * Sets up event listeners
    */
   function init() {
-    console.log('Modal component initializing...');
 
     // Get modal elements
     modalOverlay = document.getElementById('modal-overlay');
@@ -45,7 +44,6 @@ const Modal = (function() {
     // Set up event listeners
     setupEventListeners();
 
-    console.log('Modal component initialized successfully');
   }
 
   /**
@@ -297,5 +295,3 @@ const Modal = (function() {
   };
 })();
 
-// Log that Modal component is loaded
-console.log('Modal component loaded successfully');

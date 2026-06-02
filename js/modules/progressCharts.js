@@ -905,4 +905,3 @@ const ProgressChartsModule = (function() {
   };
 })();
 
-console.log('ProgressChartsModule loaded');

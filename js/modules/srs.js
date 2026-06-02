@@ -290,4 +290,3 @@ const SRSModule = (function() {
   };
 })();
 
-console.log('SRSModule loaded');

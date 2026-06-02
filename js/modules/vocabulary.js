@@ -59,7 +59,6 @@ const VocabularyModule = (function() {
     const threshold = typeof POOL_REFILL_THRESHOLD !== 'undefined' ? POOL_REFILL_THRESHOLD : 20;
     if (!force && available.length >= threshold) return;
 
-    console.log(`Word pool for ${diff} is low (${pool.length}), refilling from Datamuse...`);
     try {
       const candidates = await APIService.buildWordPool(diff);
       if (!candidates.length) return;
@@ -71,7 +70,6 @@ const VocabularyModule = (function() {
       const maxSize = typeof POOL_MAX_SIZE !== 'undefined' ? POOL_MAX_SIZE : 200;
       const merged = [...pool, ...newWords].slice(0, maxSize);
       savePool(diff, merged);
-      console.log(`Pool for ${diff} refilled to ${merged.length} words`);
     } catch (err) {
       console.warn('Pool refill failed:', err);
     }
@@ -135,7 +133,6 @@ const VocabularyModule = (function() {
    * Initialize the vocabulary module
    */
   function init() {
-    console.log('VocabularyModule initializing...');
 
     // Get DOM elements - Category tabs
     vocabCategoryTabs = document.querySelectorAll('.vocab-category-tab');
@@ -203,7 +200,6 @@ const VocabularyModule = (function() {
       }
     }
 
-    console.log('VocabularyModule initialized successfully');
   }
 
   /**
@@ -1500,5 +1496,3 @@ const VocabularyModule = (function() {
   };
 })();
 
-// Log that VocabularyModule is loaded
-console.log('VocabularyModule loaded successfully');
