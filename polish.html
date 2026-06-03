@@ -804,6 +804,11 @@
                             <div class="exercise-controls" style="margin-top: var(--spacing-md);">
                                 <button class="btn btn-primary" id="readaloud-start-btn">Start Reading</button>
                                 <button class="btn btn-secondary" id="readaloud-sample-btn">Load Sample Text</button>
+                                <button class="btn btn-secondary" id="readaloud-poem-btn">Load a Poem</button>
+                            </div>
+                            <div id="readaloud-poem-picker" style="display:none; margin-top: var(--spacing-md); border: 1px solid var(--border-color); border-radius: var(--border-radius-sm); overflow:hidden;">
+                                <div style="padding: 8px 12px; background: var(--bg-secondary); border-bottom: 1px solid var(--border-color); font-size: var(--font-size-sm); font-weight: 600; color: var(--text-secondary);">Poems for Cultivating Articulate Speech</div>
+                                <!-- Rendered by JS -->
                             </div>
                             <div id="readaloud-unsupported-msg" style="display:none; margin-top: var(--spacing-md); padding: var(--spacing-md); background: var(--accent-color); color: white; border-radius: var(--border-radius-sm);">
                                 Read Aloud Mode requires Chrome or Edge for speech recognition.
@@ -873,6 +878,13 @@
                             <h4 style="margin-bottom: var(--spacing-md);">Choose a passage:</h4>
                             <div id="shadowing-passage-list" class="shadowing-passage-list">
                                 <!-- Rendered by JS -->
+                            </div>
+                            <div style="margin-top: var(--spacing-lg); border-top: 1px solid var(--border-color); padding-top: var(--spacing-md);">
+                                <div style="font-size: var(--font-size-sm); font-weight: 600; color: var(--text-secondary); margin-bottom: var(--spacing-sm);">Suggested speakers to shadow on YouTube &amp; Spotify:</div>
+                                <div id="shadowing-suggested-speakers" style="display:flex; flex-wrap:wrap; gap: 6px;">
+                                    <!-- Rendered by JS -->
+                                </div>
+                                <div style="margin-top: var(--spacing-sm); font-size: var(--font-size-xs, 11px); color: var(--text-secondary);">Find a speech, listen once, then read aloud along with them to absorb their rhythm and emphasis.</div>
                             </div>
                         </div>
 
@@ -1119,6 +1131,7 @@
           <button class="footer-link" data-footer-modal="privacy">Privacy</button>
           <button class="footer-link" data-footer-modal="terms">Terms</button>
           <a href="mailto:admin@ezspeaks.com?subject=EZSpeaks Feedback" class="footer-link footer-link--feedback">Feedback</a>
+          <a href="/resources" class="footer-link footer-link--resources">Resources</a>
         </div>
 
         <!-- Tip + copyright -->

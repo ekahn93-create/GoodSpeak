@@ -353,7 +353,7 @@
 
   /* Hero Section */
   .hero-section {
-    padding: var(--spacing-lg) 0;
+    padding: var(--spacing-lg) 0 0;
   }
 
   .hero-section h1 {
@@ -779,7 +779,7 @@
 /* ==================== LANDSCAPE MOBILE (max-height: 500px) ==================== */
 @media (max-height: 500px) and (orientation: landscape) {
   .hero-section {
-    padding: var(--spacing-md) 0;
+    padding: var(--spacing-md) 0 0;
   }
 
   .hero-section h1 {

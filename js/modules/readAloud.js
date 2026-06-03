@@ -10,6 +10,57 @@ const ReadAloudModule = (function() {
 
   const SAMPLE_TEXT = `Good communication is one of the most valuable skills you can develop. Whether you are speaking to a colleague, presenting to an audience, or simply having a conversation with a friend, the ability to express yourself clearly and confidently makes a profound difference. Strong speakers choose their words deliberately, vary their pace, and pause with purpose rather than filling silence with hesitation. The good news is that eloquence is not a talent you are born with — it is a skill you can practice, refine, and master over time. Every sentence you speak is an opportunity to improve.`;
 
+  const POEMS = [
+    {
+      title: 'Ode',
+      author: 'Arthur O\'Shaughnessy',
+      url: 'https://www.poetryfoundation.org/poems/54933/ode-',
+      text: `We are the music makers,\nAnd we are the dreamers of dreams,\nWandering by lone sea-breakers,\nAnd sitting by desolate streams;\nWorld-losers and world-forsakers,\nOn whom the pale moon gleams:\nYet we are the movers and shakers\nOf the world for ever, it seems.`
+    },
+    {
+      title: 'Invictus',
+      author: 'William Ernest Henley',
+      url: 'https://www.poetryfoundation.org/poems/51642/invictus',
+      text: `Out of the night that covers me,\nBlack as the pit from pole to pole,\nI thank whatever gods may be\nFor my unconquerable soul.\n\nIn the fell clutch of circumstance\nI have not winced nor cried aloud.\nUnder the bludgeonings of chance\nMy head is bloody, but unbowed.\n\nBeyond this place of wrath and tears\nLooms but the Horror of the shade,\nAnd yet the menace of the years\nFinds and shall find me unafraid.\n\nIt matters not how strait the gate,\nHow charged with punishments the scroll,\nI am the master of my fate,\nI am the captain of my soul.`
+    },
+    {
+      title: 'Still I Rise',
+      author: 'Maya Angelou',
+      url: 'https://www.poetryfoundation.org/poems/46446/still-i-rise',
+      text: `You may write me down in history\nWith your bitter, twisted lies,\nYou may trod me in the very dirt\nBut still, like dust, I'll rise.\n\nDoes my sassiness upset you?\nWhy are you beset with gloom?\n'Cause I walk like I've got oil wells\nPumping in my living room.\n\nJust like moons and like suns,\nWith the certainty of tides,\nJust like hopes springing high,\nStill I'll rise.\n\nOut of the huts of history's shame\nI rise\nUp from a past that's rooted in pain\nI rise\nI'm a black ocean, leaping and wide,\nWelling and swelling I bear in the tide.\nLeaving behind nights of terror and fear\nI rise\nInto a daybreak that's wondrously clear\nI rise\nBringing the gifts that my ancestors gave,\nI am the dream and the hope of the slave.\nI rise\nI rise\nI rise.`
+    },
+    {
+      title: 'If—',
+      author: 'Rudyard Kipling',
+      url: 'https://allpoetry.com/On-Raglan-Road',
+      text: `If you can keep your head when all about you\nAre losing theirs and blaming it on you,\nIf you can trust yourself when all men doubt you,\nBut make allowance for their doubting too;\nIf you can wait and not be tired by waiting,\nOr being lied about, don't deal in lies,\nOr being hated, don't give way to hating,\nAnd yet don't look too good, nor talk too wise:\n\nIf you can dream—and not make dreams your master;\nIf you can think—and not make thoughts your aim;\nIf you can meet with Triumph and Disaster\nAnd treat those two impostors just the same;\nIf you can bear to hear the truth you've spoken\nTwisted by knaves to make a trap for fools,\nOr watch the things you gave your life to, broken,\nAnd stoop and build 'em up with worn-out tools:\n\nIf you can make one heap of all your winnings\nAnd risk it on one turn of pitch-and-toss,\nAnd lose, and start again at your beginnings\nAnd never breathe a word about your loss;\nIf you can force your heart and nerve and sinew\nTo serve your turn long after they are gone,\nAnd so hold on when there is nothing in you\nExcept the Will which says to them: 'Hold on!'\n\nIf you can talk with crowds and keep your virtue,\nOr walk with Kings—nor lose the common touch,\nIf neither foes nor loving friends can hurt you,\nIf all men count with you, but none too much;\nIf you can fill the unforgiving minute\nWith sixty seconds' worth of distance run,\nYours is the Earth and everything that's in it,\nAnd—which is more—you'll be a Man, my son!`
+    },
+    {
+      title: 'Do Not Go Gentle into That Good Night',
+      author: 'Dylan Thomas',
+      url: 'https://www.poetryfoundation.org/poems/46569/do-not-go-gentle-into-that-good-night',
+      text: `Do not go gentle into that good night,\nOld age should burn and rave at close of day;\nRage, rage against the dying of the light.\n\nThough wise men at their end know dark is right,\nBecause their words had forked no lightning they\nDo not go gentle into that good night.\n\nGood men, the last wave by, crying how bright\nTheir frail deeds might have danced in a green bay,\nRage, rage against the dying of the light.\n\nWild men who caught and sang the sun in flight,\nAnd learn, too late, they grieved it on its way,\nDo not go gentle into that good night.\n\nGrave men, near death, who see with blinding sight\nBlind eyes could blaze like meteors and be gay,\nRage, rage against the dying of the light.\n\nAnd you, my father, there on the sad height,\nCurse, bless, me now with your fierce tears, I pray.\nDo not go gentle into that good night.\nRage, rage against the dying of the light.`
+    },
+    {
+      title: 'High Flight',
+      author: 'John Gillespie Magee',
+      url: 'https://www.poetryfoundation.org/poems/157986/high-flight-627d3cfb1e9b7',
+      text: `Oh! I have slipped the surly bonds of Earth\nAnd danced the skies on laughter-silvered wings;\nSunward I've climbed, and joined the tumbling mirth\nOf sun-split clouds, — and done a hundred things\nYou have not dreamed of — wheeled and soared and swung\nHigh in the sunlit silence. Hov'ring there,\nI've chased the shouting wind along, and flung\nMy eager craft through footless halls of air....\n\nUp, up the long, delirious burning blue\nI've topped the wind-swept heights with easy grace\nWhere never lark, or ever eagle flew —\nAnd, while with silent, lifting mind I've trod\nThe high untrespassed sanctity of space,\nPut out my hand, and touched the face of God.`
+    },
+    {
+      title: 'To Autumn',
+      author: 'John Keats',
+      url: 'https://www.poetryfoundation.org/poems/44484/to-autumn',
+      text: `Season of mists and mellow fruitfulness,\nClose bosom-friend of the maturing sun;\nConspiring with him how to load and bless\nWith fruit the vines that round the thatch-eves run;\nTo bend with apples the moss'd cottage-trees,\nAnd fill all fruit with ripeness to the core;\nTo swell the gourd, and plump the hazel shells\nWith a sweet kernel; to set budding more,\nAnd still more, later flowers for the bees,\nUntil they think warm days will never cease,\nFor Summer has o'er-brimm'd their clammy cells.\n\nWho hath not seen thee oft amid thy store?\nSometimes whoever seeks abroad may find\nThee sitting careless on a granary floor,\nThy hair soft-lifted by the winnowing wind;\nOr on a half-reap'd furrow sound asleep,\nDrows'd with the fume of poppies, while thy hook\nSpares the next swath and all its twined flowers:\nAnd sometimes like a gleaner thou dost keep\nSteady thy laden head across a brook;\nOr by a cider-press, with patient look,\nThou watchest the last oozings hours by hours.\n\nWhere are the songs of Spring? Ay, where are they?\nThink not of them, thou hast thy music too,—\nWhile barred clouds bloom the soft-dying day,\nAnd touch the stubble-plains with rosy hue;\nThen in a wailful choir the small gnats mourn\nAmong the river sallows, borne aloft\nOr sinking as the light wind lives or dies;\nAnd full-grown lambs loud bleat from hilly bourn;\nHedge-crickets sing; and now with treble soft\nThe red-breast whistles from a garden-croft;\nAnd gathering swallows twitter in the skies.`
+    },
+    {
+      title: 'Ode on a Grecian Urn',
+      author: 'John Keats',
+      url: 'https://www.poetryfoundation.org/poems/44477/ode-on-a-grecian-urn',
+      text: `Thou still unravish'd bride of quietness,\nThou foster-child of silence and slow time,\nSylvan historian, who canst thus express\nA flowery tale more sweetly than our rhyme:\nWhat leaf-fring'd legend haunts about thy shape\nOf deities or mortals, or of both,\nIn Tempe or the dales of Arcady?\nWhat men or gods are these? What maidens loth?\nWhat mad pursuit? What struggle to escape?\nWhat pipes and timbrels? What wild ecstasy?\n\nHeard melodies are sweet, but those unheard\nAre sweeter; therefore, ye soft pipes, play on;\nNot to the sensual ear, but, more endear'd,\nPipe to the spirit ditties of no tone:\nFair youth, beneath the trees, thou canst not leave\nThy song, nor ever can those trees be bare;\nBold Lover, never, never canst thou kiss,\nThough winning near the goal yet, do not grieve;\nShe cannot fade, though thou hast not thy bliss,\nFor ever wilt thou love, and she be fair!\n\nBeauty is truth, truth beauty, — that is all\nYe know on earth, and all ye need to know.`
+    }
+  ];
+
   let recognition = null;
   let isRecording = false;
   let startTime = null;
@@ -26,6 +77,8 @@ const ReadAloudModule = (function() {
     const retryBtn = document.getElementById('readaloud-retry-btn');
     const newBtn = document.getElementById('readaloud-new-btn');
     const textInput = document.getElementById('readaloud-text-input');
+    const poemBtn = document.getElementById('readaloud-poem-btn');
+    const poemPicker = document.getElementById('readaloud-poem-picker');
 
     if (!startBtn) return;
 
@@ -39,12 +92,42 @@ const ReadAloudModule = (function() {
     sampleBtn.addEventListener('click', function() {
       textInput.value = SAMPLE_TEXT;
       updateEstTime();
+      if (poemPicker) poemPicker.style.display = 'none';
     });
+
+    if (poemBtn && poemPicker) {
+      renderPoemPicker(poemPicker, textInput);
+      poemBtn.addEventListener('click', function() {
+        poemPicker.style.display = poemPicker.style.display === 'none' ? '' : 'none';
+      });
+    }
 
     startBtn.addEventListener('click', startSession);
     stopBtn.addEventListener('click', stopSession);
     retryBtn.addEventListener('click', retrySession);
     newBtn.addEventListener('click', newText);
+  }
+
+  function renderPoemPicker(container, textInput) {
+    container.innerHTML = POEMS.map((p, i) => `
+      <div class="poem-picker-item" data-idx="${i}" style="display:flex; align-items:center; justify-content:space-between; padding: 8px 10px; border-radius: 6px; cursor:pointer; gap: 8px;">
+        <div>
+          <div style="font-weight:600; font-size: var(--font-size-sm);">${p.title}</div>
+          <div style="font-size: var(--font-size-xs, 11px); color: var(--text-secondary);">${p.author}</div>
+        </div>
+        <button class="btn btn-secondary btn-sm poem-load-btn" data-idx="${i}" style="flex-shrink:0; font-size:12px; padding:4px 10px;">Load</button>
+      </div>
+    `).join('');
+
+    container.querySelectorAll('.poem-load-btn').forEach(function(btn) {
+      btn.addEventListener('click', function(e) {
+        e.stopPropagation();
+        const poem = POEMS[parseInt(btn.dataset.idx)];
+        textInput.value = poem.title + ' by ' + poem.author + '\n\n' + poem.text;
+        document.getElementById('readaloud-poem-picker').style.display = 'none';
+        updateEstTime();
+      });
+    });
   }
 
   function updateEstTime() {

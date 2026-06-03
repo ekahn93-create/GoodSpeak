@@ -1,0 +1,558 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Books, articles, and resources for improving articulate speech and building a richer vocabulary.">
+    <title>EZSpeaks - Further Reading</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="css/components.css">
+    <link rel="stylesheet" href="css/responsive.css">
+
+    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+
+    <style>
+        /* ── Accordion ── */
+        .res-accordion {
+            border: 1px solid var(--border-color);
+            border-radius: var(--border-radius);
+            margin-bottom: var(--spacing-md);
+            overflow: hidden;
+        }
+
+        .res-accordion summary {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 12px 16px;
+            font-weight: 600;
+            font-size: var(--font-size-base);
+            color: var(--text-primary);
+            cursor: pointer;
+            list-style: none;
+            user-select: none;
+            background: var(--bg-card);
+            border-bottom: 1px solid transparent;
+            transition: background 0.15s;
+        }
+
+        .res-accordion summary::-webkit-details-marker { display: none; }
+
+        .res-accordion[open] summary {
+            border-bottom-color: var(--border-color);
+        }
+
+        .res-accordion summary:hover {
+            background: var(--bg-secondary);
+        }
+
+        .res-accordion-chevron {
+            transition: transform 0.2s;
+            color: var(--text-secondary);
+            flex-shrink: 0;
+        }
+
+        .res-accordion[open] .res-accordion-chevron {
+            transform: rotate(180deg);
+        }
+
+        .res-accordion-body {
+            padding: 0 16px;
+            background: var(--bg-card);
+        }
+
+        .res-section-note {
+            font-size: var(--font-size-sm);
+            color: var(--text-secondary);
+            padding: 10px 0 4px;
+            line-height: 1.5;
+        }
+
+        /* ── Resource items ── */
+        .resource-item {
+            padding: 8px 0;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .resource-item:last-child {
+            border-bottom: none;
+        }
+
+        .resource-title {
+            font-weight: 600;
+            font-size: var(--font-size-sm);
+            color: var(--text-primary);
+        }
+
+        .resource-author {
+            font-size: 12px;
+            color: var(--text-secondary);
+        }
+
+        .resource-note {
+            font-size: 12px;
+            color: var(--text-secondary);
+            line-height: 1.4;
+            margin-top: 2px;
+        }
+
+        .resource-link {
+            color: var(--primary-color);
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        .resource-link:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body data-page="resources">
+    <div id="mobile-scroll-wrapper">
+
+    <!-- Navigation Bar -->
+    <nav id="main-nav" class="nav-bar">
+        <div class="nav-brand">
+            <svg width="36" height="32" viewBox="0 0 220 200" xmlns="http://www.w3.org/2000/svg" style="display:inline-block;vertical-align:middle;flex-shrink:0;">
+                <rect x="10" y="10" width="200" height="150" rx="28" ry="28" fill="#4F46E5"/>
+                <polygon points="60,155 30,190 100,155" fill="#4F46E5"/>
+                <polygon points="130,30 85,100 115,100 90,165 155,85 120,85 148,30" fill="white" opacity="0.95"/>
+            </svg>
+            <span class="brand-text">EZSpeaks</span>
+        </div>
+        <ul class="nav-menu">
+            <li><a href="/app" class="nav-link" data-view="home"><span class="nav-label">Home</span><span class="nav-sub">Dashboard</span></a></li>
+            <li><a href="/learn" class="nav-link" data-view="vocabulary"><span class="nav-label">Learn</span><span class="nav-sub">Words &amp; Grammar</span></a></li>
+            <li><a href="/polish" class="nav-link" data-view="fluency"><span class="nav-label">Polish</span><span class="nav-sub">Pronunciation &amp; Fluency</span></a></li>
+            <li><a href="/practice" class="nav-link" data-view="storytelling"><span class="nav-label">Practice</span><span class="nav-sub">Storytelling &amp; Challenges</span></a></li>
+            <li><a href="/play" class="nav-link" data-view="play"><span class="nav-label">Play</span><span class="nav-sub">30-Second Game</span></a></li>
+            <li><a href="/review" class="nav-link" data-view="progress"><span class="nav-label">Stats</span><span class="nav-sub">Progress &amp; Streaks</span></a></li>
+        </ul>
+        <div class="nav-auth">
+            <button id="auth-nav-btn" class="auth-nav-btn" title="Sign in to save progress across devices">
+                <span class="auth-nav-icon"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></span>
+                <span id="auth-nav-label">Sign In</span>
+            </button>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="main-content" style="max-width: 640px; margin: 0 auto; padding: var(--spacing-xl) var(--spacing-md);">
+
+        <div style="margin-bottom: var(--spacing-lg);">
+            <h1 style="font-size: var(--font-size-xxl); font-weight: 700; color: var(--text-primary); margin-bottom: var(--spacing-sm);">Further Reading</h1>
+            <p style="color: var(--text-secondary); font-size: var(--font-size-sm); line-height: 1.6;">
+                Reading more is one of the most effective ways to improve your vocabulary, rhythm, and articulation. These are curated picks — non-exhaustive, but consistently recommended for speakers who want to communicate with more precision and style.
+            </p>
+        </div>
+
+        <!-- Non-Fiction -->
+        <details class="res-accordion" open>
+            <summary>
+                <span>Non-Fiction</span>
+                <svg class="res-accordion-chevron" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+            </summary>
+            <div class="res-accordion-body">
+                <div class="resource-item">
+                    <div class="resource-title">Elements of Eloquence</div>
+                    <div class="resource-author">Mark Forsyth</div>
+                    <div class="resource-note">How the rules of rhetoric make writing sing. Practical, witty, and immediately useful.</div>
+                </div>
+                <div class="resource-item">
+                    <div class="resource-title">Word Power Made Easy</div>
+                    <div class="resource-author">Norman Lewis</div>
+                    <div class="resource-note">The gold standard for vocabulary building. Methodical and thorough.</div>
+                </div>
+                <div class="resource-item">
+                    <div class="resource-title">The User Illusion</div>
+                    <div class="resource-author">Tor Norretranders</div>
+                    <div class="resource-note">Explores how much of thought and language lives below conscious awareness.</div>
+                </div>
+                <div class="resource-item">
+                    <div class="resource-title">Metaphors We Live By</div>
+                    <div class="resource-author">George Lakoff &amp; Mark Johnson</div>
+                    <div class="resource-note">How metaphor shapes the way we think, speak, and persuade.</div>
+                </div>
+                <div class="resource-item">
+                    <div class="resource-title">The Language Instinct</div>
+                    <div class="resource-author">Steven Pinker</div>
+                    <div class="resource-note">Why humans are wired for language and what that means for how we communicate.</div>
+                </div>
+            </div>
+        </details>
+
+        <!-- Fiction -->
+        <details class="res-accordion">
+            <summary>
+                <span>Fiction</span>
+                <svg class="res-accordion-chevron" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+            </summary>
+            <div class="res-accordion-body">
+                <p class="res-section-note">Read these aloud — even a few paragraphs — and notice how sentence rhythm changes your delivery.</p>
+                <div class="resource-item">
+                    <div class="resource-title">Fahrenheit 451</div>
+                    <div class="resource-author">Ray Bradbury</div>
+                </div>
+                <div class="resource-item">
+                    <div class="resource-title">A Series of Unfortunate Events</div>
+                    <div class="resource-author">Lemony Snicket</div>
+                </div>
+                <div class="resource-item">
+                    <div class="resource-title">The Brothers Karamazov</div>
+                    <div class="resource-author">Fyodor Dostoevsky</div>
+                </div>
+                <div class="resource-item">
+                    <div class="resource-title">Brave New World</div>
+                    <div class="resource-author">Aldous Huxley</div>
+                </div>
+                <div class="resource-item">
+                    <div class="resource-title">Infinite Jest</div>
+                    <div class="resource-author">David Foster Wallace</div>
+                </div>
+                <div class="resource-item">
+                    <div class="resource-title">Pride and Prejudice</div>
+                    <div class="resource-author">Jane Austen</div>
+                </div>
+                <div class="resource-item">
+                    <div class="resource-title">The Great Gatsby</div>
+                    <div class="resource-author">F. Scott Fitzgerald</div>
+                </div>
+                <div class="resource-item">
+                    <div class="resource-title">The Picture of Dorian Gray</div>
+                    <div class="resource-author">Oscar Wilde</div>
+                </div>
+                <div class="resource-item">
+                    <div class="resource-title">Frankenstein</div>
+                    <div class="resource-author">Mary Shelley</div>
+                </div>
+                <div class="resource-item">
+                    <div class="resource-title">Blood Meridian</div>
+                    <div class="resource-author">Cormac McCarthy</div>
+                </div>
+            </div>
+        </details>
+
+        <!-- Articles -->
+        <details class="res-accordion">
+            <summary>
+                <span>Articles</span>
+                <svg class="res-accordion-chevron" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+            </summary>
+            <div class="res-accordion-body">
+                <div class="resource-item">
+                    <div class="resource-title">
+                        <a href="https://www.orwellfoundation.com/the-orwell-foundation/orwell/essays-and-other-works/politics-and-the-english-language/" target="_blank" rel="noopener" class="resource-link">Politics and the English Language</a>
+                    </div>
+                    <div class="resource-author">George Orwell</div>
+                    <div class="resource-note">The most-cited essay on clear, honest writing. Orwell's six rules still hold up. Required reading.</div>
+                </div>
+                <div class="resource-item">
+                    <div class="resource-title">
+                        <a href="https://www.stephenfry.com/2008/11/dont-mind-your-language%E2%80%A6/" target="_blank" rel="noopener" class="resource-link">Don't Mind Your Language</a>
+                    </div>
+                    <div class="resource-author">Stephen Fry</div>
+                    <div class="resource-note">A joyful defence of playing with language rather than policing it.</div>
+                </div>
+            </div>
+        </details>
+
+        <!-- Poems -->
+        <details class="res-accordion">
+            <summary>
+                <span>Poems</span>
+                <svg class="res-accordion-chevron" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+            </summary>
+            <div class="res-accordion-body">
+                <p class="res-section-note">Poems reward reading aloud — try them in the <a href="/polish" class="resource-link">Read Aloud</a> tool. Links go to the full text.</p>
+                <div class="resource-item">
+                    <div class="resource-title"><a href="https://www.poetryfoundation.org/poems/54933/ode-" target="_blank" rel="noopener" class="resource-link">Ode</a></div>
+                    <div class="resource-author">Arthur O'Shaughnessy</div>
+                </div>
+                <div class="resource-item">
+                    <div class="resource-title"><a href="https://www.poetryfoundation.org/poetrymagazine/poems/44212/the-love-song-of-j-alfred-prufrock" target="_blank" rel="noopener" class="resource-link">The Love Song of J. Alfred Prufrock</a></div>
+                    <div class="resource-author">T.S. Eliot</div>
+                </div>
+                <div class="resource-item">
+                    <div class="resource-title"><a href="https://www.poetryfoundation.org/poems/157986/high-flight-627d3cfb1e9b7" target="_blank" rel="noopener" class="resource-link">High Flight</a></div>
+                    <div class="resource-author">John Gillespie Magee</div>
+                </div>
+                <div class="resource-item">
+                    <div class="resource-title"><a href="https://www.poetry-archive.com/y/the_two_trees.html" target="_blank" rel="noopener" class="resource-link">The Two Trees</a></div>
+                    <div class="resource-author">William Butler Yeats</div>
+                </div>
+                <div class="resource-item">
+                    <div class="resource-title"><a href="https://www.poetryfoundation.org/poems/153877/somewhere-i-have-never-travelledgladly-beyond" target="_blank" rel="noopener" class="resource-link">Somewhere I Have Never Traveled</a></div>
+                    <div class="resource-author">E.E. Cummings</div>
+                </div>
+                <div class="resource-item">
+                    <div class="resource-title"><a href="https://writersalmanac.publicradio.org/index.php%3Fdate=2006%252F02%252F13.html" target="_blank" rel="noopener" class="resource-link">Antilamentation</a></div>
+                    <div class="resource-author">Dorianne Laux</div>
+                </div>
+                <div class="resource-item">
+                    <div class="resource-title"><a href="https://www.poetryfoundation.org/poems/46569/do-not-go-gentle-into-that-good-night" target="_blank" rel="noopener" class="resource-link">Do Not Go Gentle into That Good Night</a></div>
+                    <div class="resource-author">Dylan Thomas</div>
+                </div>
+                <div class="resource-item">
+                    <div class="resource-title"><a href="https://www.poetryfoundation.org/poems/51642/invictus" target="_blank" rel="noopener" class="resource-link">Invictus</a></div>
+                    <div class="resource-author">William Ernest Henley</div>
+                </div>
+                <div class="resource-item">
+                    <div class="resource-title"><a href="https://allpoetry.com/On-Raglan-Road" target="_blank" rel="noopener" class="resource-link">On Raglan Road</a></div>
+                    <div class="resource-author">Patrick Kavanagh</div>
+                </div>
+                <div class="resource-item">
+                    <div class="resource-title"><a href="https://allpoetry.com/If---" target="_blank" rel="noopener" class="resource-link">If—</a></div>
+                    <div class="resource-author">Rudyard Kipling</div>
+                </div>
+                <div class="resource-item">
+                    <div class="resource-title"><a href="https://www.poetryfoundation.org/poems/46446/still-i-rise" target="_blank" rel="noopener" class="resource-link">Still I Rise</a></div>
+                    <div class="resource-author">Maya Angelou</div>
+                </div>
+                <div class="resource-item">
+                    <div class="resource-title"><a href="https://www.poetryfoundation.org/poems/44484/to-autumn" target="_blank" rel="noopener" class="resource-link">To Autumn</a></div>
+                    <div class="resource-author">John Keats</div>
+                </div>
+                <div class="resource-item">
+                    <div class="resource-title"><a href="https://www.coldbacon.com/poems/fq.html" target="_blank" rel="noopener" class="resource-link">Four Quartets</a></div>
+                    <div class="resource-author">T.S. Eliot</div>
+                </div>
+                <div class="resource-item">
+                    <div class="resource-title"><a href="https://www.poetryfoundation.org/poems/44477/ode-on-a-grecian-urn" target="_blank" rel="noopener" class="resource-link">Ode on a Grecian Urn</a></div>
+                    <div class="resource-author">John Keats</div>
+                </div>
+            </div>
+        </details>
+
+        <div style="text-align: center; padding: var(--spacing-lg) 0; border-top: 1px solid var(--border-color); margin-top: var(--spacing-md);">
+            <p style="font-size: var(--font-size-sm); color: var(--text-secondary); margin-bottom: var(--spacing-md);">Ready to put it into practice?</p>
+            <div style="display: flex; gap: var(--spacing-md); justify-content: center; flex-wrap: wrap;">
+                <a href="/polish" class="btn btn-primary">Read Aloud Practice</a>
+                <a href="/learn" class="btn btn-secondary">Build Vocabulary</a>
+            </div>
+        </div>
+
+    </main>
+
+    <!-- Auth Modal -->
+    <div id="auth-modal" class="auth-modal-overlay" role="dialog" aria-modal="true" aria-labelledby="auth-modal-title">
+        <div class="auth-modal">
+            <button id="auth-modal-close" class="auth-modal-close" aria-label="Close">&times;</button>
+            <h2 id="auth-modal-title">Sign In</h2>
+            <p class="auth-modal-subtitle">Save your progress and access it from any device.</p>
+            <div class="auth-form">
+                <div id="auth-signup-fields" class="auth-signup-fields" style="display:none;">
+                    <div class="auth-name-row">
+                        <div class="auth-name-col">
+                            <label for="auth-first-name">First Name <span class="auth-required">*</span></label>
+                            <input type="text" id="auth-first-name" placeholder="First name" autocomplete="given-name" />
+                        </div>
+                        <div class="auth-name-col">
+                            <label for="auth-last-name">Last Name <span class="auth-required">*</span></label>
+                            <input type="text" id="auth-last-name" placeholder="Last name" autocomplete="family-name" />
+                        </div>
+                    </div>
+                    <label for="auth-nickname">Nickname <span class="auth-optional">(optional)</span></label>
+                    <p class="auth-field-hint">What should we call you?</p>
+                    <input type="text" id="auth-nickname" placeholder="e.g. Ace, Coach, Jazz..." autocomplete="nickname" />
+                    <label for="auth-goal">My main goal <span class="auth-required">*</span></label>
+                    <select id="auth-goal">
+                        <option value="" disabled selected>Select a goal...</option>
+                        <option value="public_speaking">Public speaking</option>
+                        <option value="job_interviews">Job interviews</option>
+                        <option value="everyday_conversation">Everyday conversation</option>
+                        <option value="professional_presence">Professional presence</option>
+                        <option value="general">General improvement</option>
+                    </select>
+                </div>
+                <label for="auth-email">Email</label>
+                <input type="email" id="auth-email" placeholder="you@example.com" autocomplete="email" />
+                <label for="auth-password">Password</label>
+                <div class="auth-password-wrapper">
+                    <input type="password" id="auth-password" placeholder="Password" autocomplete="current-password" />
+                    <button type="button" id="auth-password-toggle" class="auth-password-toggle" aria-label="Show password">
+                        <svg id="auth-eye-icon" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                            <circle cx="12" cy="12" r="3"/>
+                        </svg>
+                    </button>
+                </div>
+                <p id="auth-error" class="auth-error"></p>
+                <a href="#" id="auth-forgot-link" class="auth-forgot-link">Forgot password?</a>
+                <button id="auth-submit-btn" class="btn btn-primary auth-submit-btn" data-mode="login">Sign In</button>
+            </div>
+            <p class="auth-switch">
+                <span id="auth-switch-text">Don't have an account?</span>
+                <a href="#" id="auth-switch-link">Sign up</a>
+            </p>
+        </div>
+    </div>
+
+    <!-- Mobile Bottom Tab Bar -->
+    <nav id="mobile-tab-bar" class="mobile-tab-bar" aria-label="Main navigation">
+        <a href="/app" class="mobile-tab" data-view="home">
+            <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+            <span>Home</span>
+        </a>
+        <a href="/learn" class="mobile-tab" data-view="vocabulary">
+            <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
+            <span>Learn</span>
+        </a>
+        <a href="/polish" class="mobile-tab" data-view="fluency">
+            <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/><line x1="8" y1="23" x2="16" y2="23"/></svg>
+            <span>Polish</span>
+        </a>
+        <a href="/practice" class="mobile-tab" data-view="storytelling">
+            <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+            <span>Practice</span>
+        </a>
+        <a href="/play" class="mobile-tab" data-view="play">
+            <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polygon points="10 8 16 12 10 16 10 8"/></svg>
+            <span>Play</span>
+        </a>
+        <a href="/review" class="mobile-tab" data-view="progress">
+            <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+            <span>Stats</span>
+        </a>
+        <button id="mobile-auth-tab" class="mobile-tab mobile-auth-tab">
+            <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+            <span id="mobile-auth-label">Sign In</span>
+        </button>
+    </nav>
+
+    <!-- Footer Modals -->
+    <div id="footer-modal-overlay" class="footer-modal-overlay" role="dialog" aria-modal="true" hidden>
+      <div class="footer-modal">
+        <button class="footer-modal-close" id="footer-modal-close" aria-label="Close">&times;</button>
+        <h2 id="footer-modal-title"></h2>
+        <div id="footer-modal-body"></div>
+      </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="site-footer">
+      <div class="footer-inner">
+        <div class="footer-brand">
+          <svg width="20" height="18" viewBox="0 0 220 200" xmlns="http://www.w3.org/2000/svg" style="display:inline-block;vertical-align:middle;flex-shrink:0;">
+            <rect x="10" y="10" width="200" height="150" rx="28" ry="28" fill="#4F46E5"/>
+            <polygon points="60,155 30,190 100,155" fill="#4F46E5"/>
+            <polygon points="130,30 85,100 115,100 90,165 155,85 120,85 148,30" fill="white" opacity="0.95"/>
+          </svg>
+          <span class="footer-brand-name">EZSpeaks</span>
+          <span class="footer-tagline">Speak more eloquently, every day.</span>
+        </div>
+        <div class="footer-stats">
+          <span class="footer-stat"><span id="footer-words-learned">0</span> words learned</span>
+          <span class="footer-stat-divider">·</span>
+          <span class="footer-stat"><span id="footer-streak">0</span> day streak</span>
+        </div>
+        <div class="footer-links">
+          <button class="footer-link" id="footer-share-btn">Share</button>
+          <button class="footer-link" data-footer-modal="about">About</button>
+          <button class="footer-link" data-footer-modal="privacy">Privacy</button>
+          <button class="footer-link" data-footer-modal="terms">Terms</button>
+          <a href="mailto:admin@ezspeaks.com?subject=EZSpeaks Feedback" class="footer-link footer-link--feedback">Feedback</a>
+          <a href="/resources" class="footer-link footer-link--resources">Resources</a>
+        </div>
+        <p class="footer-tip">Pro tip: use the tabs at the top to jump between sections anytime.</p>
+        <p class="footer-copy">&copy; <span id="footer-year"></span> EZSpeaks. All rights reserved. &nbsp;v1.0</p>
+      </div>
+    </footer>
+
+    <script src="js/config.js"></script>
+    <script src="js/storage.js"></script>
+    <script src="js/modules/auth.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            if (typeof lucide !== 'undefined') lucide.createIcons();
+            AppConfig.load().then(function() {
+                if (typeof AuthModule !== 'undefined') AuthModule.init();
+            });
+        });
+    </script>
+
+    <script>
+      (function() {
+        document.getElementById('footer-year').textContent = new Date().getFullYear();
+
+        function updateFooterStats() {
+          try {
+            var data = (typeof StorageManager !== 'undefined') ? StorageManager.load() : null;
+            if (data) {
+              var customLearned = (data.customWords || []).filter(function(w) { return w.status === 'learned'; }).length;
+              var words = ((data.vocabulary && data.vocabulary.learned) ? data.vocabulary.learned.length : 0) + customLearned;
+              var streak = (data.stats && data.stats.practiceStreak) || (data.dailyWord && data.dailyWord.currentStreak) || 0;
+              document.getElementById('footer-words-learned').textContent = words;
+              document.getElementById('footer-streak').textContent = streak;
+            }
+          } catch(e) {}
+        }
+        updateFooterStats();
+
+        var modals = {
+          about: {
+            title: 'About EZSpeaks',
+            body: '<p>EZSpeaks is a personal speech and vocabulary coach designed to help you speak more eloquently every day.</p><p>Build your vocabulary with spaced repetition, sharpen your pronunciation, tell better stories, and track your growth — all in one place.</p><p>Built for anyone who wants to communicate with more confidence and clarity.</p>'
+          },
+          privacy: {
+            title: 'Privacy Policy',
+            body: '<p class="footer-modal-coming-soon">A full Privacy Policy is coming soon.</p><p>For now: your data is stored locally on your device. If you sign in, your progress is saved to a secure cloud database. We do not sell or share your data with third parties.</p>'
+          },
+          terms: {
+            title: 'Terms of Use',
+            body: '<p class="footer-modal-coming-soon">Full Terms of Use are coming soon.</p><p>By using EZSpeaks you agree to use it for personal, non-commercial purposes. The app is provided as-is without warranty.</p>'
+          }
+        };
+
+        var overlay = document.getElementById('footer-modal-overlay');
+        var modalTitle = document.getElementById('footer-modal-title');
+        var modalBody = document.getElementById('footer-modal-body');
+
+        function openFooterModal(key) {
+          var m = modals[key];
+          if (!m) return;
+          modalTitle.textContent = m.title;
+          modalBody.innerHTML = m.body;
+          overlay.hidden = false;
+        }
+
+        function closeFooterModal() { overlay.hidden = true; }
+
+        document.getElementById('footer-modal-close').addEventListener('click', closeFooterModal);
+        overlay.addEventListener('click', function(e) { if (e.target === overlay) closeFooterModal(); });
+        document.addEventListener('keydown', function(e) { if (e.key === 'Escape' && !overlay.hidden) closeFooterModal(); });
+
+        document.querySelectorAll('[data-footer-modal]').forEach(function(btn) {
+          btn.addEventListener('click', function() { openFooterModal(this.getAttribute('data-footer-modal')); });
+        });
+
+        document.getElementById('footer-share-btn').addEventListener('click', function() {
+          var btn = this;
+          var url = window.location.origin + window.location.pathname;
+          if (navigator.clipboard && navigator.clipboard.writeText) {
+            navigator.clipboard.writeText(url).then(function() {
+              btn.textContent = 'Copied!';
+              setTimeout(function() { btn.textContent = 'Share'; }, 2000);
+            });
+          } else {
+            var ta = document.createElement('textarea');
+            ta.value = url;
+            ta.style.position = 'fixed';
+            ta.style.opacity = '0';
+            document.body.appendChild(ta);
+            ta.select();
+            document.execCommand('copy');
+            document.body.removeChild(ta);
+            btn.textContent = 'Copied!';
+            setTimeout(function() { btn.textContent = 'Share'; }, 2000);
+          }
+        });
+      })();
+    </script>
+    </div><!-- /#mobile-scroll-wrapper -->
+</body>
+</html>

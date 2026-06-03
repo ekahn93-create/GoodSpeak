@@ -92,6 +92,15 @@ const ShadowingModule = (function() {
     if (ttsStopBtn) ttsStopBtn.addEventListener('click', stopSpeaking);
   }
 
+  const SUGGESTED_SPEAKERS = [
+    'Christopher Hitchens', 'Milton Friedman', 'Tony Robbins', 'Jimmy Carr',
+    'Barack Obama', 'Martin Luther King Jr.', 'Malala Yousafzai', 'Brene Brown',
+    'John F. Kennedy', 'Carl Sagan', 'Simon Sinek', 'Steve Jobs', 'Ronald Reagan',
+    'David Foster Wallace', 'Mahatma Gandhi', 'Jane Goodall', 'Rod Serling',
+    'Winston Churchill', 'JK Rowling', 'Frank Sinatra', 'Nick Vujicic',
+    'Zig Ziglar', 'Mel Robbins', 'Stephen Fry'
+  ];
+
   function renderPassageList() {
     const listEl = document.getElementById('shadowing-passage-list');
     if (!listEl) return;
@@ -105,6 +114,13 @@ const ShadowingModule = (function() {
         </div>
       </div>
     `).join('');
+
+    const suggestEl = document.getElementById('shadowing-suggested-speakers');
+    if (suggestEl) {
+      suggestEl.innerHTML = SUGGESTED_SPEAKERS.map(s =>
+        `<span class="shadowing-speaker-chip">${s}</span>`
+      ).join('');
+    }
   }
 
   function selectPassage(id) {
