@@ -2,7 +2,14 @@
   "name": "ezspeaks",
   "version": "1.0.0",
   "private": true,
+  "scripts": {
+    "test": "playwright test --config=tests/playwright.config.js",
+    "test:url": "playwright test --config=tests/playwright.config.js"
+  },
   "dependencies": {
     "stripe": "^14.0.0"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.44.0"
   }
 }

@@ -6,3 +6,6 @@
 
 # Dependencies (Netlify installs these from package.json at build time)
 node_modules
+test-results/
+.claude/settings.local.json
+tests/tests/
