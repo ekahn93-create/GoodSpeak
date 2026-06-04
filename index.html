@@ -24,6 +24,20 @@
             --bg-alt: #f9fafb;
             --radius: 12px;
             --shadow: 0 4px 24px rgba(0,0,0,0.08);
+            /* Aliases for site-footer CSS from styles.css */
+            --primary-color: #4F46E5;
+            --primary-dark: #3730a3;
+            --text-primary: #111827;
+            --text-secondary: #6b7280;
+            --text-light: #9ca3af;
+            --border-color: #e5e7eb;
+            --bg-card: #ffffff;
+            --bg-hover: #f9fafb;
+            --font-size-sm: 13px;
+            --font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            --spacing-sm: 12px;
+            --spacing-md: 20px;
+            --transition-fast: 0.15s ease;
         }
 
         body {
@@ -189,6 +203,11 @@
             font-size: 13px;
             color: var(--text-muted);
             line-height: 1.55;
+        }
+        .feature-card--full {
+            width: 100%;
+            max-width: 480px;
+            margin: 0 auto;
         }
 
         /* ── PRICING ── */
@@ -382,13 +401,109 @@
         .btn-white:hover { background: var(--indigo-light); }
 
         /* ── FOOTER ── */
-        .landing-footer {
-            padding: 32px 24px;
-            border-top: 1px solid var(--border);
-            text-align: center;
-            font-size: 13px;
-            color: var(--text-muted);
+        /* ── SITE FOOTER ── */
+        .site-footer {
+            margin-top: auto;
+            border-top: 1px solid var(--border-color);
+            background: var(--bg-card);
+            padding: var(--spacing-sm) var(--spacing-md) 96px;
         }
+        .footer-inner {
+            max-width: 960px;
+            margin: 0 auto;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 6px;
+            text-align: center;
+        }
+        .footer-brand {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            color: var(--text-secondary);
+            font-size: var(--font-size-sm);
+            font-weight: 500;
+        }
+        .footer-brand-name { font-weight: 600; color: var(--text-primary); }
+        .footer-tagline { color: var(--text-light); }
+        .footer-tagline::before { content: '—'; margin-right: 6px; }
+        .footer-stats {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: var(--font-size-sm);
+            color: var(--text-secondary);
+            background: var(--bg-hover);
+            border: 1px solid var(--border-color);
+            border-radius: 20px;
+            padding: 4px 14px;
+        }
+        .footer-stats span[id] { font-weight: 600; color: var(--primary-color); }
+        .footer-stat-divider { color: var(--text-light); }
+        .footer-links {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 4px var(--spacing-md);
+        }
+        .footer-link {
+            font-size: var(--font-size-sm);
+            color: var(--text-secondary);
+            text-decoration: none;
+            background: none;
+            border: none;
+            cursor: pointer;
+            padding: 0;
+            font-family: var(--font-family);
+            transition: color var(--transition-fast);
+        }
+        .footer-link:hover { color: var(--primary-color); }
+        .footer-link--feedback { color: var(--primary-color); font-weight: 500; }
+        .footer-link--feedback:hover { color: var(--primary-dark); }
+        .footer-link--resources { color: #059669; font-weight: 700; }
+        .footer-link--resources:hover { color: #047857; }
+        .footer-tip { font-size: 12px; color: var(--text-light); font-style: italic; }
+        .footer-copy { font-size: 12px; color: var(--text-light); }
+        /* Footer modal */
+        .footer-modal-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(15,23,42,0.5);
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        .footer-modal-overlay[hidden] { display: none; }
+        .footer-modal {
+            background: #fff;
+            border-radius: 12px;
+            box-shadow: 0 8px 40px rgba(0,0,0,0.18);
+            padding: 28px;
+            max-width: 480px;
+            width: 100%;
+            position: relative;
+        }
+        .footer-modal h2 { font-size: 18px; margin-bottom: 12px; color: var(--text-primary); }
+        .footer-modal p { font-size: 13px; color: var(--text-secondary); line-height: 1.7; margin-bottom: 12px; }
+        .footer-modal p:last-child { margin-bottom: 0; }
+        .footer-modal-coming-soon { font-weight: 600; color: var(--primary-color) !important; }
+        .footer-modal-close {
+            position: absolute;
+            top: 12px;
+            right: 12px;
+            background: none;
+            border: none;
+            font-size: 20px;
+            cursor: pointer;
+            color: var(--text-light);
+            line-height: 1;
+            padding: 4px 8px;
+            border-radius: 6px;
+        }
+        .footer-modal-close:hover { color: var(--text-primary); background: var(--bg-hover); }
 
         /* ── AUTH MODAL ── */
         .auth-modal-overlay {
@@ -525,6 +640,7 @@
             /* peek: clip but let sides breathe via padding on wrap */
             margin: 0 -8px;
             padding: 0 8px;
+            transition: height 0.35s ease;
         }
         .preview-track {
             display: flex;
@@ -892,6 +1008,11 @@
             color: var(--text-muted);
             line-height: 1.6;
         }
+        .persona-card--full {
+            width: 100%;
+            max-width: 480px;
+            margin: 0 auto;
+        }
 
         /* ── STICKY CTA BAR ── */
         .sticky-cta-bar {
@@ -967,7 +1088,7 @@
             <p class="section-label">See It In Action</p>
             <h2 class="section-title">A taste of what's inside</h2>
 
-            <div class="preview-tabs">
+            <div class="preview-tabs" id="demo-tabs">
                 <button class="preview-tab active" data-panel="learn">Learn</button>
                 <button class="preview-tab" data-panel="polish">Polish</button>
                 <button class="preview-tab" data-panel="play">Play</button>
@@ -1136,41 +1257,62 @@
         </div>
     </section>
 
-    <!-- Features (trimmed to top 4) -->
+    <!-- Features (What's Inside) -->
     <section class="section">
         <div class="section-inner">
             <p class="section-label">What's Inside</p>
             <h2 class="section-title">Everything you need to speak better</h2>
-            <div class="features-grid">
-                <div class="feature-card">
-                    <div class="feature-icon">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
+
+            <div class="preview-tabs" id="features-tabs">
+                <button class="preview-tab active">Vocabulary Builder</button>
+                <button class="preview-tab">Filler Word Reducer</button>
+                <button class="preview-tab">Storytelling Practice</button>
+                <button class="preview-tab">AI Feedback</button>
+            </div>
+
+            <div class="preview-carousel-wrap">
+            <div class="preview-carousel">
+            <div class="preview-track" id="features-track">
+                <div class="preview-panel feature-slide">
+                    <div class="feature-card feature-card--full">
+                        <div class="feature-icon">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
+                        </div>
+                        <h3>Vocabulary Builder</h3>
+                        <p>Learn words that actually improve how you sound. Spaced repetition keeps them locked in for the long term.</p>
                     </div>
-                    <h3>Vocabulary Builder</h3>
-                    <p>Learn words that actually improve how you sound. Spaced repetition keeps them locked in for the long term.</p>
                 </div>
-                <div class="feature-card">
-                    <div class="feature-icon">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/><line x1="8" y1="23" x2="16" y2="23"/></svg>
+                <div class="preview-panel feature-slide">
+                    <div class="feature-card feature-card--full">
+                        <div class="feature-icon">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/><line x1="8" y1="23" x2="16" y2="23"/></svg>
+                        </div>
+                        <h3>Filler Word Reducer</h3>
+                        <p>Real-time speech analysis catches your "um", "uh", and "like" habits — then helps you break them.</p>
                     </div>
-                    <h3>Filler Word Reducer</h3>
-                    <p>Real-time speech analysis catches your "um", "uh", and "like" habits — then helps you break them.</p>
                 </div>
-                <div class="feature-card">
-                    <div class="feature-icon">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+                <div class="preview-panel feature-slide">
+                    <div class="feature-card feature-card--full">
+                        <div class="feature-icon">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+                        </div>
+                        <h3>Storytelling Practice</h3>
+                        <p>AI-generated prompts push you to speak on any topic. Build the habit of thinking and speaking on your feet.</p>
                     </div>
-                    <h3>Storytelling Practice</h3>
-                    <p>AI-generated prompts push you to speak on any topic. Build the habit of thinking and speaking on your feet.</p>
                 </div>
-                <div class="feature-card">
-                    <div class="feature-icon">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"/></svg>
+                <div class="preview-panel feature-slide">
+                    <div class="feature-card feature-card--full">
+                        <div class="feature-icon">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"/></svg>
+                        </div>
+                        <h3>AI Feedback</h3>
+                        <p>Claude AI verifies that you're using new vocabulary correctly in context — not just memorizing definitions.</p>
                     </div>
-                    <h3>AI Feedback</h3>
-                    <p>Claude AI verifies that you're using new vocabulary correctly in context — not just memorizing definitions.</p>
                 </div>
             </div>
+            </div>
+            </div>
+            <div class="carousel-dots" id="features-dots"></div>
         </div>
     </section>
 
@@ -1179,23 +1321,41 @@
         <div class="section-inner">
             <p class="section-label">Who It's For</p>
             <h2 class="section-title">Built for people who communicate for a living</h2>
-            <div class="persona-grid">
-                <div class="persona-card">
-                    <div class="persona-icon">🎤</div>
-                    <h3>Public Speakers</h3>
-                    <p>Eliminate filler words, sharpen your vocabulary, and build confidence speaking under pressure — on stage or in a meeting.</p>
+
+            <div class="preview-tabs" id="persona-tabs">
+                <button class="preview-tab active">Public Speakers</button>
+                <button class="preview-tab">Professionals</button>
+                <button class="preview-tab">Students</button>
+            </div>
+
+            <div class="preview-carousel-wrap">
+            <div class="preview-carousel">
+            <div class="preview-track" id="persona-track">
+                <div class="preview-panel persona-slide">
+                    <div class="persona-card persona-card--full">
+                        <div class="persona-icon">🎤</div>
+                        <h3>Public Speakers</h3>
+                        <p>Eliminate filler words, sharpen your vocabulary, and build confidence speaking under pressure — on stage or in a meeting.</p>
+                    </div>
                 </div>
-                <div class="persona-card">
-                    <div class="persona-icon">💼</div>
-                    <h3>Professionals</h3>
-                    <p>Make a stronger impression in interviews, presentations, and client calls. Sound as sharp as your résumé reads.</p>
+                <div class="preview-panel persona-slide">
+                    <div class="persona-card persona-card--full">
+                        <div class="persona-icon">💼</div>
+                        <h3>Professionals</h3>
+                        <p>Make a stronger impression in interviews, presentations, and client calls. Sound as sharp as your résumé reads.</p>
+                    </div>
                 </div>
-                <div class="persona-card">
-                    <div class="persona-icon">🎓</div>
-                    <h3>Students</h3>
-                    <p>Build the vocabulary and articulation skills that set you apart in seminars, debates, and job interviews before graduation.</p>
+                <div class="preview-panel persona-slide">
+                    <div class="persona-card persona-card--full">
+                        <div class="persona-icon">🎓</div>
+                        <h3>Students</h3>
+                        <p>Build the vocabulary and articulation skills that set you apart in seminars, debates, and job interviews before graduation.</p>
+                    </div>
                 </div>
             </div>
+            </div>
+            </div>
+            <div class="carousel-dots" id="persona-dots"></div>
         </div>
     </section>
 
@@ -1321,9 +1481,113 @@
     </section>
 
     <!-- Footer -->
-    <footer class="landing-footer">
-        <p>&copy; <span id="footer-year"></span> EZSpeaks. All rights reserved. &nbsp;&middot;&nbsp; <a href="mailto:admin@ezspeaks.com" style="color:inherit">Contact</a> &nbsp;&middot;&nbsp; <a href="/resources" style="color:inherit">Further Reading</a></p>
+    <div id="footer-modal-overlay" class="footer-modal-overlay" role="dialog" aria-modal="true" hidden>
+      <div class="footer-modal">
+        <button class="footer-modal-close" id="footer-modal-close" aria-label="Close">&times;</button>
+        <h2 id="footer-modal-title"></h2>
+        <div id="footer-modal-body"></div>
+      </div>
+    </div>
+
+    <footer class="site-footer">
+      <div class="footer-inner">
+        <div class="footer-brand">
+          <svg width="20" height="18" viewBox="0 0 220 200" xmlns="http://www.w3.org/2000/svg" style="display:inline-block;vertical-align:middle;flex-shrink:0;">
+            <rect x="10" y="10" width="200" height="150" rx="28" ry="28" fill="#4F46E5"/>
+            <polygon points="60,155 30,190 100,155" fill="#4F46E5"/>
+            <polygon points="130,30 85,100 115,100 90,165 155,85 120,85 148,30" fill="white" opacity="0.95"/>
+          </svg>
+          <span class="footer-brand-name">EZSpeaks</span>
+          <span class="footer-tagline">Speak more eloquently, every day.</span>
+        </div>
+
+        <!-- Quick Stats -->
+        <div class="footer-stats">
+          <span class="footer-stat"><span id="footer-words-learned">0</span> words learned</span>
+          <span class="footer-stat-divider">·</span>
+          <span class="footer-stat"><span id="footer-streak">0</span> day streak</span>
+        </div>
+
+        <!-- Links row -->
+        <div class="footer-links">
+          <button class="footer-link" id="footer-share-btn">Share</button>
+          <button class="footer-link" data-footer-modal="about">About</button>
+          <button class="footer-link" data-footer-modal="privacy">Privacy</button>
+          <button class="footer-link" data-footer-modal="terms">Terms</button>
+          <a href="mailto:admin@ezspeaks.com?subject=EZSpeaks Feedback" class="footer-link footer-link--feedback">Feedback</a>
+          <a href="/resources" class="footer-link footer-link--resources">Resources</a>
+        </div>
+
+        <!-- Tip + copyright -->
+        <p class="footer-tip">Pro tip: use the nav to jump between sections anytime.</p>
+        <p class="footer-copy">&copy; <span id="footer-year"></span> EZSpeaks. All rights reserved. &nbsp;v1.0</p>
+      </div>
     </footer>
+
+    <script>
+      (function() {
+        document.getElementById('footer-year').textContent = new Date().getFullYear();
+
+        var modals = {
+          about: {
+            title: 'About EZSpeaks',
+            body: '<p>EZSpeaks is a personal speech and vocabulary coach designed to help you speak more eloquently every day.</p><p>Build your vocabulary with spaced repetition, sharpen your pronunciation, tell better stories, and track your growth — all in one place.</p><p>Built for anyone who wants to communicate with more confidence and clarity.</p>'
+          },
+          privacy: {
+            title: 'Privacy Policy',
+            body: '<p class="footer-modal-coming-soon">A full Privacy Policy is coming soon.</p><p>For now: your data is stored locally on your device. If you sign in, your progress is saved to a secure cloud database. We do not sell or share your data with third parties.</p>'
+          },
+          terms: {
+            title: 'Terms of Use',
+            body: '<p class="footer-modal-coming-soon">Full Terms of Use are coming soon.</p><p>By using EZSpeaks you agree to use it for personal, non-commercial purposes. The app is provided as-is without warranty.</p>'
+          }
+        };
+
+        var overlay = document.getElementById('footer-modal-overlay');
+        var modalTitle = document.getElementById('footer-modal-title');
+        var modalBody = document.getElementById('footer-modal-body');
+
+        function openFooterModal(key) {
+          var m = modals[key];
+          if (!m) return;
+          modalTitle.textContent = m.title;
+          modalBody.innerHTML = m.body;
+          overlay.hidden = false;
+        }
+
+        function closeFooterModal() { overlay.hidden = true; }
+
+        document.getElementById('footer-modal-close').addEventListener('click', closeFooterModal);
+        overlay.addEventListener('click', function(e) { if (e.target === overlay) closeFooterModal(); });
+        document.addEventListener('keydown', function(e) { if (e.key === 'Escape' && !overlay.hidden) closeFooterModal(); });
+
+        document.querySelectorAll('[data-footer-modal]').forEach(function(btn) {
+          btn.addEventListener('click', function() { openFooterModal(this.getAttribute('data-footer-modal')); });
+        });
+
+        document.getElementById('footer-share-btn').addEventListener('click', function() {
+          var btn = this;
+          var url = window.location.origin + window.location.pathname;
+          if (navigator.clipboard && navigator.clipboard.writeText) {
+            navigator.clipboard.writeText(url).then(function() {
+              btn.textContent = 'Copied!';
+              setTimeout(function() { btn.textContent = 'Share'; }, 2000);
+            });
+          } else {
+            var ta = document.createElement('textarea');
+            ta.value = url;
+            ta.style.position = 'fixed';
+            ta.style.opacity = '0';
+            document.body.appendChild(ta);
+            ta.select();
+            document.execCommand('copy');
+            document.body.removeChild(ta);
+            btn.textContent = 'Copied!';
+            setTimeout(function() { btn.textContent = 'Share'; }, 2000);
+          }
+        });
+      })();
+    </script>
 
     <!-- Sticky CTA Bar -->
     <div class="sticky-cta-bar" id="sticky-cta-bar">
@@ -1739,15 +2003,16 @@
     </script>
 
     <script>
-        (function() {
-            var tabs = Array.from(document.querySelectorAll('.preview-tab'));
-            var panels = Array.from(document.querySelectorAll('.preview-panel'));
-            var track = document.getElementById('preview-track');
-            var dotsContainer = document.getElementById('carousel-dots');
+        function initCarousel(tabsContainerId, trackId, dotsContainerId) {
+            var tabsContainer = document.getElementById(tabsContainerId);
+            var track = document.getElementById(trackId);
+            var dotsContainer = document.getElementById(dotsContainerId);
+            if (!tabsContainer || !track || !dotsContainer) return;
+            var tabs = Array.from(tabsContainer.querySelectorAll('.preview-tab'));
+            var panels = Array.from(track.querySelectorAll('.preview-panel'));
             var current = 0;
             var total = tabs.length;
 
-            // Build dots
             var dots = tabs.map(function(_, i) {
                 var d = document.createElement('button');
                 d.className = 'carousel-dot';
@@ -1763,6 +2028,84 @@
                 tabs.forEach(function(t, i) { t.classList.toggle('active', i === index); });
                 panels.forEach(function(p, i) { p.classList.toggle('active-slide', i === index); });
                 dots.forEach(function(d, i) { d.classList.toggle('active', i === index); });
+            }
+
+            tabs.forEach(function(tab, i) {
+                tab.addEventListener('click', function() { goTo(i); });
+            });
+
+            var startX = 0, startY = 0, isDragging = false, isHorizontal = null, trackWidth = 0;
+            track.addEventListener('touchstart', function(e) {
+                startX = e.touches[0].clientX;
+                startY = e.touches[0].clientY;
+                isDragging = true;
+                isHorizontal = null;
+                trackWidth = track.parentElement.offsetWidth;
+                track.style.transition = 'none';
+            }, { passive: true });
+            track.addEventListener('touchmove', function(e) {
+                if (!isDragging) return;
+                var dx = e.touches[0].clientX - startX;
+                var dy = e.touches[0].clientY - startY;
+                if (isHorizontal === null) {
+                    if (Math.abs(dx) < 5 && Math.abs(dy) < 5) return;
+                    isHorizontal = Math.abs(dx) > Math.abs(dy);
+                }
+                if (!isHorizontal) return;
+                e.preventDefault();
+                var base = current * 100;
+                var offset = (dx / trackWidth) * 100;
+                if ((current === 0 && dx > 0) || (current === total - 1 && dx < 0)) offset *= 0.2;
+                track.style.transform = 'translateX(-' + (base - offset) + '%)';
+            }, { passive: false });
+            track.addEventListener('touchend', function(e) {
+                if (!isDragging) return;
+                isDragging = false;
+                track.style.transition = '';
+                if (!isHorizontal) return;
+                var dx = e.changedTouches[0].clientX - startX;
+                if (Math.abs(dx) < 40) { goTo(current); return; }
+                if (dx < 0 && current < total - 1) goTo(current + 1);
+                else if (dx > 0 && current > 0) goTo(current - 1);
+                else goTo(current);
+            }, { passive: true });
+
+            goTo(0);
+        }
+
+        initCarousel('features-tabs', 'features-track', 'features-dots');
+        initCarousel('persona-tabs', 'persona-track', 'persona-dots');
+    </script>
+
+    <script>
+        (function() {
+            var demoTabsEl = document.getElementById('demo-tabs');
+            var tabs = Array.from(demoTabsEl.querySelectorAll('.preview-tab'));
+            var track = document.getElementById('preview-track');
+            var panels = Array.from(track.querySelectorAll('.preview-panel'));
+            var dotsContainer = document.getElementById('carousel-dots');
+            var current = 0;
+            var total = tabs.length;
+
+            // Build dots
+            var dots = tabs.map(function(_, i) {
+                var d = document.createElement('button');
+                d.className = 'carousel-dot';
+                d.setAttribute('aria-label', 'Go to slide ' + (i + 1));
+                d.addEventListener('click', function() { goTo(i); });
+                dotsContainer.appendChild(d);
+                return d;
+            });
+
+            var carousel = track.parentElement;
+            function goTo(index) {
+                current = index;
+                track.style.transform = 'translateX(-' + (index * 100) + '%)';
+                tabs.forEach(function(t, i) { t.classList.toggle('active', i === index); });
+                panels.forEach(function(p, i) { p.classList.toggle('active-slide', i === index); });
+                dots.forEach(function(d, i) { d.classList.toggle('active', i === index); });
+                var frameH = panels[index].querySelector('.preview-frame').offsetHeight;
+                carousel.style.height = frameH + 'px';
             }
 
             tabs.forEach(function(tab, i) {
