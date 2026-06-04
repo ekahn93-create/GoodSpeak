@@ -496,18 +496,18 @@ const App = (function() {
         '<a href="/learn" class="hss-nudge">Start with Learn to build your vocabulary &rarr;</a>';
     } else {
       strip.innerHTML =
-        '<div class="hss-pill">' +
-          '<span class="hss-icon">&#128293;</span>' +
+        '<div class="hss-stat hss-stat--streak">' +
+          '<svg class="hss-icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>' +
           '<span class="hss-value">' + streak + '</span>' +
-          '<span class="hss-label">' + (streak === 1 ? 'day streak' : 'day streak') + '</span>' +
+          '<span class="hss-label">day streak</span>' +
         '</div>' +
-        '<div class="hss-pill">' +
-          '<span class="hss-icon">&#128218;</span>' +
+        '<div class="hss-stat hss-stat--words">' +
+          '<svg class="hss-icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>' +
           '<span class="hss-value">' + words + '</span>' +
           '<span class="hss-label">' + (words === 1 ? 'word learned' : 'words learned') + '</span>' +
         '</div>' +
-        '<div class="hss-pill">' +
-          '<span class="hss-icon">&#128197;</span>' +
+        '<div class="hss-stat hss-stat--days">' +
+          '<svg class="hss-icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>' +
           '<span class="hss-value">' + daysActive + '</span>' +
           '<span class="hss-label">' + (daysActive === 1 ? 'day active' : 'days active') + '</span>' +
         '</div>';
