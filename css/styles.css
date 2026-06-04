@@ -352,8 +352,8 @@ ul, ol {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 4px;
-  padding: 14px 8px;
+  gap: 6px;
+  padding: 20px 8px;
   position: relative;
 }
 
@@ -368,8 +368,8 @@ ul, ol {
 }
 
 .hss-icon {
-  width: 16px;
-  height: 16px;
+  width: 22px;
+  height: 22px;
   flex-shrink: 0;
   margin-bottom: 2px;
 }
@@ -382,7 +382,7 @@ ul, ol {
 }
 
 .hss-label {
-  font-size: 11px;
+  font-size: 13px;
   line-height: 1;
   color: #64748b;
   letter-spacing: 0.02em;
