@@ -90,7 +90,7 @@
         /* ── HERO ── */
         .hero {
             text-align: center;
-            padding: 80px 24px 64px;
+            padding: 80px 24px 16px;
             max-width: 720px;
             margin: 0 auto;
         }
@@ -508,13 +508,68 @@
         /* ── APP PREVIEW ── */
         .preview-section {
             background: var(--bg);
-            padding: 36px 24px;
+            padding: 24px 24px 20px;
         }
         .preview-tabs {
             display: flex;
             gap: 8px;
-            margin-bottom: 28px;
+            margin-bottom: 16px;
             flex-wrap: wrap;
+            justify-content: center;
+        }
+        .preview-carousel-wrap {
+            position: relative;
+        }
+        .preview-carousel {
+            overflow: hidden;
+            /* peek: clip but let sides breathe via padding on wrap */
+            margin: 0 -8px;
+            padding: 0 8px;
+        }
+        .preview-track {
+            display: flex;
+            transition: transform 0.35s ease;
+            will-change: transform;
+        }
+        .preview-track .preview-panel {
+            flex: 0 0 100%;
+            min-width: 0;
+            display: block;
+            padding: 0 8px;
+            box-sizing: border-box;
+            opacity: 0.35;
+            transform: scale(0.95);
+            transition: opacity 0.35s, transform 0.35s;
+            pointer-events: none;
+            font-size: 0; /* collapse any inline whitespace below the frame */
+        }
+        .preview-track .preview-panel > * {
+            font-size: initial;
+        }
+        .preview-track .preview-panel.active-slide {
+            opacity: 1;
+            transform: scale(1);
+            pointer-events: auto;
+        }
+        .carousel-dots {
+            display: flex;
+            justify-content: center;
+            gap: 6px;
+            margin-top: 8px;
+        }
+        .carousel-dot {
+            width: 7px;
+            height: 7px;
+            border-radius: 50%;
+            background: var(--border);
+            border: none;
+            padding: 0;
+            cursor: pointer;
+            transition: background 0.2s, transform 0.2s;
+        }
+        .carousel-dot.active {
+            background: var(--indigo);
+            transform: scale(1.25);
         }
         .preview-tab {
             padding: 8px 16px;
@@ -561,7 +616,7 @@
             color: var(--text-muted);
             text-align: center;
         }
-        .preview-body { padding: 20px; }
+        .preview-body { padding: 16px 16px 12px; }
 
         /* word card mockup */
         .mock-word-card {
@@ -612,6 +667,7 @@
             display: flex;
             gap: 8px;
             margin-top: 10px;
+            padding: 0 8px;
         }
         .mock-srs-chip {
             font-size: 11px;
@@ -774,6 +830,103 @@
             font-style: italic;
         }
 
+        /* ── HOW IT WORKS ── */
+        .hiw-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 24px;
+            counter-reset: hiw;
+        }
+        .hiw-step {
+            text-align: center;
+            padding: 8px 16px;
+        }
+        .hiw-number {
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            background: var(--indigo);
+            color: white;
+            font-size: 20px;
+            font-weight: 800;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 14px;
+        }
+        .hiw-step h3 {
+            font-size: 17px;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+        .hiw-step p {
+            font-size: 14px;
+            color: var(--text-muted);
+            line-height: 1.6;
+        }
+
+        /* ── WHO IT'S FOR ── */
+        .persona-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 14px;
+        }
+        .persona-card {
+            background: var(--bg);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 22px 20px;
+            text-align: center;
+        }
+        .persona-icon {
+            font-size: 32px;
+            margin-bottom: 10px;
+        }
+        .persona-card h3 {
+            font-size: 16px;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+        .persona-card p {
+            font-size: 13px;
+            color: var(--text-muted);
+            line-height: 1.6;
+        }
+
+        /* ── STICKY CTA BAR ── */
+        .sticky-cta-bar {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: white;
+            border-top: 1px solid var(--border);
+            padding: 12px 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            z-index: 90;
+            transform: translateY(100%);
+            transition: transform 0.3s ease;
+            box-shadow: 0 -4px 16px rgba(0,0,0,0.08);
+        }
+        .sticky-cta-bar.visible { transform: translateY(0); }
+        .sticky-cta-copy {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text);
+            white-space: nowrap;
+        }
+        .sticky-cta-copy span {
+            color: var(--text-muted);
+            font-weight: 400;
+        }
+        @media (max-width: 480px) {
+            .sticky-cta-copy { display: none; }
+            .sticky-cta-bar { justify-content: center; }
+        }
+
         /* ── MOBILE ── */
         @media (max-width: 600px) {
             .landing-nav-brand span { display: none; }
@@ -804,100 +957,11 @@
     <!-- Hero -->
     <section class="hero">
         <div class="hero-badge">Start Speaking Better in 5 Minutes a Day</div>
-        <h1>Speak with <span>Clarity</span> and Confidence</h1>
+        <h1>Your Ideas Deserve Better Than <span>"Uh, So Basically..."</span></h1>
         <p>EZSpeaks is your AI-powered speech coach. Build vocabulary, cut filler words, and practice storytelling — all in one place.</p>
-        <div class="hero-cta">
-            <button class="btn btn-primary btn-lg" id="hero-signup-btn">Start Free Trial</button>
-            <button class="btn btn-outline btn-lg" id="hero-login-btn">Sign In</button>
-        </div>
-        <p class="hero-trial-note">7 days free, then $9.99/mo. Cancel anytime.</p>
-        <div class="pricing-card" style="margin-top: 32px; text-align: left;">
-            <div class="pricing-toggle">
-                <button class="pricing-toggle-btn active" id="plan-toggle-monthly">Monthly</button>
-                <button class="pricing-toggle-btn" id="plan-toggle-yearly">Yearly <span class="pricing-badge">Save 17%</span></button>
-            </div>
-            <div class="pricing-name" id="pricing-name">Monthly</div>
-            <div class="pricing-price"><sup>$</sup><span id="pricing-amount">9.99</span></div>
-            <div class="pricing-period" id="pricing-period">per month</div>
-            <button class="pricing-features-toggle" id="pricing-features-toggle">What's included <i class="pft-arrow">▾</i></button>
-            <ul class="pricing-features" id="pricing-features-list">
-                <li>Full access to all features</li>
-                <li>AI vocabulary feedback</li>
-                <li>Unlimited word bank</li>
-                <li>Speech analysis</li>
-                <li>Cloud sync across devices</li>
-                <li>Cancel anytime</li>
-            </ul>
-            <button class="btn btn-primary btn-full" id="pricing-cta">Start Free Trial</button>
-            <p class="pricing-trial" id="pricing-trial">7 days free, then $9.99/mo</p>
-        </div>
     </section>
 
-    <!-- Tagline Strip -->
-    <div class="tagline-strip">
-        Build vocabulary, cut filler words, speak fluently. <span>It's EZ.</span>
-    </div>
-
-    <!-- Features -->
-    <section class="section section-alt">
-        <div class="section-inner">
-            <p class="section-label">What's Inside</p>
-            <h2 class="section-title">Everything you need to speak better</h2>
-            <div class="features-grid">
-                <div class="feature-card">
-                    <div class="feature-icon">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
-                    </div>
-                    <h3>Vocabulary Builder</h3>
-                    <p>Learn words that actually improve how you sound. Spaced repetition keeps them locked in for the long term.</p>
-                </div>
-                <div class="feature-card">
-                    <div class="feature-icon">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/><line x1="8" y1="23" x2="16" y2="23"/></svg>
-                    </div>
-                    <h3>Filler Word Reducer</h3>
-                    <p>Real-time speech analysis catches your "um", "uh", and "like" habits — then helps you break them.</p>
-                </div>
-                <div class="feature-card">
-                    <div class="feature-icon">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="5 3 19 12 5 21 5 3"/></svg>
-                    </div>
-                    <h3>Storytelling Practice</h3>
-                    <p>AI-generated prompts push you to speak on any topic. Build the habit of thinking and speaking on your feet.</p>
-                </div>
-                <div class="feature-card">
-                    <div class="feature-icon">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polygon points="10 8 16 12 10 16 10 8"/></svg>
-                    </div>
-                    <h3>30-Second Challenge</h3>
-                    <p>Test your vocabulary under pressure with a fast-paced synonym and antonym game. Fun, addictive, and effective.</p>
-                </div>
-                <div class="feature-card">
-                    <div class="feature-icon">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"/></svg>
-                    </div>
-                    <h3>AI Feedback</h3>
-                    <p>Claude AI verifies that you're using new vocabulary correctly in context — not just memorizing definitions.</p>
-                </div>
-                <div class="feature-card">
-                    <div class="feature-icon">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
-                    </div>
-                    <h3>Progress Tracking</h3>
-                    <p>Streaks, tiers, and stats keep you motivated. See exactly how far you've come and what to do next.</p>
-                </div>
-                <a href="/resources" class="feature-card" style="text-decoration:none; color:inherit;">
-                    <div class="feature-icon">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
-                    </div>
-                    <h3>Further Reading</h3>
-                    <p>Curated books, articles, and poems to deepen your vocabulary and absorb great writing from the source.</p>
-                </a>
-            </div>
-        </div>
-    </section>
-
-    <!-- App Preview -->
+    <!-- App Preview (moved up — show before features) -->
     <section class="section preview-section">
         <div class="section-inner">
             <p class="section-label">See It In Action</p>
@@ -910,8 +974,11 @@
                 <button class="preview-tab" data-panel="quiz">Knowledge Check</button>
             </div>
 
+            <div class="preview-carousel-wrap">
+            <div class="preview-carousel" id="preview-carousel">
+            <div class="preview-track" id="preview-track">
             <!-- Learn panel -->
-            <div class="preview-panel active" id="preview-learn">
+            <div class="preview-panel" id="preview-learn">
                 <div class="preview-frame">
                     <div class="preview-frame-header">
                         <div class="pf-dot pf-dot-r"></div>
@@ -930,12 +997,12 @@
                                 <div class="mock-btn mock-btn-outline">Still learning</div>
                             </div>
                         </div>
-                        <div class="mock-srs-row">
-                            <div class="mock-srs-chip">12 words learned</div>
-                            <div class="mock-srs-chip">3 due for review</div>
-                            <div class="mock-srs-chip">5-day streak</div>
-                        </div>
                     </div>
+                </div>
+                <div class="mock-srs-row">
+                    <div class="mock-srs-chip">12 words learned</div>
+                    <div class="mock-srs-chip">3 due for review</div>
+                    <div class="mock-srs-chip">5-day streak</div>
                 </div>
             </div>
 
@@ -1017,6 +1084,7 @@
 
             <!-- Knowledge Check / TWAL panel -->
             <div class="preview-panel" id="preview-quiz">
+
                 <div class="preview-frame">
                     <div class="preview-frame-header">
                         <div class="pf-dot pf-dot-r"></div>
@@ -1036,8 +1104,105 @@
                     </div>
                 </div>
             </div>
+            </div><!-- /preview-track -->
+            </div><!-- /preview-carousel -->
+            </div><!-- /preview-carousel-wrap -->
+            <div class="carousel-dots" id="carousel-dots"></div>
         </div>
     </section>
+
+    <!-- How It Works -->
+    <section class="section section-alt">
+        <div class="section-inner">
+            <p class="section-label">How It Works</p>
+            <h2 class="section-title">Three steps. Five minutes a day.</h2>
+            <div class="hiw-grid">
+                <div class="hiw-step">
+                    <div class="hiw-number">1</div>
+                    <h3>Learn</h3>
+                    <p>Pick up new vocabulary and communication concepts through spaced repetition — words that actually come up in real conversations.</p>
+                </div>
+                <div class="hiw-step">
+                    <div class="hiw-number">2</div>
+                    <h3>Practice</h3>
+                    <p>Speak out loud. Cut filler words in real time. Tell stories under pressure. Use your new words in context so they actually stick.</p>
+                </div>
+                <div class="hiw-step">
+                    <div class="hiw-number">3</div>
+                    <h3>Deploy</h3>
+                    <p>Take what you practiced into the real world. The app tracks your growth so each session builds on the last.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features (trimmed to top 4) -->
+    <section class="section">
+        <div class="section-inner">
+            <p class="section-label">What's Inside</p>
+            <h2 class="section-title">Everything you need to speak better</h2>
+            <div class="features-grid">
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
+                    </div>
+                    <h3>Vocabulary Builder</h3>
+                    <p>Learn words that actually improve how you sound. Spaced repetition keeps them locked in for the long term.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/><line x1="8" y1="23" x2="16" y2="23"/></svg>
+                    </div>
+                    <h3>Filler Word Reducer</h3>
+                    <p>Real-time speech analysis catches your "um", "uh", and "like" habits — then helps you break them.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+                    </div>
+                    <h3>Storytelling Practice</h3>
+                    <p>AI-generated prompts push you to speak on any topic. Build the habit of thinking and speaking on your feet.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"/></svg>
+                    </div>
+                    <h3>AI Feedback</h3>
+                    <p>Claude AI verifies that you're using new vocabulary correctly in context — not just memorizing definitions.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Who It's For -->
+    <section class="section section-alt">
+        <div class="section-inner">
+            <p class="section-label">Who It's For</p>
+            <h2 class="section-title">Built for people who communicate for a living</h2>
+            <div class="persona-grid">
+                <div class="persona-card">
+                    <div class="persona-icon">🎤</div>
+                    <h3>Public Speakers</h3>
+                    <p>Eliminate filler words, sharpen your vocabulary, and build confidence speaking under pressure — on stage or in a meeting.</p>
+                </div>
+                <div class="persona-card">
+                    <div class="persona-icon">💼</div>
+                    <h3>Professionals</h3>
+                    <p>Make a stronger impression in interviews, presentations, and client calls. Sound as sharp as your résumé reads.</p>
+                </div>
+                <div class="persona-card">
+                    <div class="persona-icon">🎓</div>
+                    <h3>Students</h3>
+                    <p>Build the vocabulary and articulation skills that set you apart in seminars, debates, and job interviews before graduation.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Tagline Strip -->
+    <div class="tagline-strip">
+        Build vocabulary, cut filler words, speak fluently. <span>It's EZ.</span>
+    </div>
 
     <!-- Testimonials -->
     <section class="section section-alt testimonials-section">
@@ -1065,6 +1230,34 @@
                 </div>
             </div>
             <p class="testimonials-placeholder-note">Testimonials are placeholders — real reviews coming soon.</p>
+        </div>
+    </section>
+
+    <!-- Pricing -->
+    <section class="section" id="pricing-section">
+        <div class="section-inner">
+            <p class="section-label">Pricing</p>
+            <h2 class="section-title">Simple, honest pricing</h2>
+            <div class="pricing-card">
+                <div class="pricing-toggle">
+                    <button class="pricing-toggle-btn active" id="plan-toggle-monthly">Monthly</button>
+                    <button class="pricing-toggle-btn" id="plan-toggle-yearly">Yearly <span class="pricing-badge">Save 17%</span></button>
+                </div>
+                <div class="pricing-name" id="pricing-name">Monthly</div>
+                <div class="pricing-price"><sup>$</sup><span id="pricing-amount">9.99</span></div>
+                <div class="pricing-period" id="pricing-period">per month</div>
+                <button class="pricing-features-toggle" id="pricing-features-toggle">What's included <i class="pft-arrow">▾</i></button>
+                <ul class="pricing-features" id="pricing-features-list">
+                    <li>Full access to all features</li>
+                    <li>AI vocabulary feedback</li>
+                    <li>Unlimited word bank</li>
+                    <li>Speech analysis</li>
+                    <li>Cloud sync across devices</li>
+                    <li>Cancel anytime</li>
+                </ul>
+                <button class="btn btn-primary btn-full" id="pricing-cta">Start Free Trial</button>
+                <p class="pricing-trial" id="pricing-trial">7 days free, then $9.99/mo</p>
+            </div>
         </div>
     </section>
 
@@ -1131,6 +1324,12 @@
     <footer class="landing-footer">
         <p>&copy; <span id="footer-year"></span> EZSpeaks. All rights reserved. &nbsp;&middot;&nbsp; <a href="mailto:admin@ezspeaks.com" style="color:inherit">Contact</a> &nbsp;&middot;&nbsp; <a href="/resources" style="color:inherit">Further Reading</a></p>
     </footer>
+
+    <!-- Sticky CTA Bar -->
+    <div class="sticky-cta-bar" id="sticky-cta-bar">
+        <div class="sticky-cta-copy">Ready to speak better? <span>7 days free.</span></div>
+        <button class="btn btn-primary" id="sticky-cta-btn">Get Started</button>
+    </div>
 
     <!-- Auth Modal -->
     <div id="auth-modal" class="auth-modal-overlay" role="dialog" aria-modal="true">
@@ -1437,9 +1636,7 @@
             document.getElementById('nav-login-btn').addEventListener('click', () => openModal('login'));
             document.getElementById('nav-signup-btn').addEventListener('click', () => { _selectedPlan = 'monthly'; openModal('signup'); });
 
-            // Hero
-            document.getElementById('hero-signup-btn').addEventListener('click', () => { _selectedPlan = 'monthly'; openModal('signup'); });
-            document.getElementById('hero-login-btn').addEventListener('click', () => openModal('login'));
+            // Hero (buttons removed — handled by sticky CTA + pricing section)
 
             // Pricing toggle
             function _setPricingPlan(plan) {
@@ -1507,6 +1704,17 @@
             document.addEventListener('keydown', e => {
                 if (e.key === 'Escape') closeModal();
             });
+
+            // Sticky CTA bar
+            document.getElementById('sticky-cta-btn').addEventListener('click', () => { _selectedPlan = 'monthly'; openModal('signup'); });
+            const heroEl = document.querySelector('.hero');
+            const stickyCta = document.getElementById('sticky-cta-bar');
+            if (heroEl && stickyCta) {
+                const obs = new IntersectionObserver(([entry]) => {
+                    stickyCta.classList.toggle('visible', !entry.isIntersecting);
+                }, { threshold: 0 });
+                obs.observe(heroEl);
+            }
         }
 
         function _bindFAQ() {
@@ -1531,16 +1739,76 @@
     </script>
 
     <script>
-        // Preview tab switching
-        document.querySelectorAll('.preview-tab').forEach(function(tab) {
-            tab.addEventListener('click', function() {
-                document.querySelectorAll('.preview-tab').forEach(function(t) { t.classList.remove('active'); });
-                document.querySelectorAll('.preview-panel').forEach(function(p) { p.classList.remove('active'); });
-                tab.classList.add('active');
-                var panel = document.getElementById('preview-' + tab.dataset.panel);
-                if (panel) panel.classList.add('active');
+        (function() {
+            var tabs = Array.from(document.querySelectorAll('.preview-tab'));
+            var panels = Array.from(document.querySelectorAll('.preview-panel'));
+            var track = document.getElementById('preview-track');
+            var dotsContainer = document.getElementById('carousel-dots');
+            var current = 0;
+            var total = tabs.length;
+
+            // Build dots
+            var dots = tabs.map(function(_, i) {
+                var d = document.createElement('button');
+                d.className = 'carousel-dot';
+                d.setAttribute('aria-label', 'Go to slide ' + (i + 1));
+                d.addEventListener('click', function() { goTo(i); });
+                dotsContainer.appendChild(d);
+                return d;
             });
-        });
+
+            function goTo(index) {
+                current = index;
+                track.style.transform = 'translateX(-' + (index * 100) + '%)';
+                tabs.forEach(function(t, i) { t.classList.toggle('active', i === index); });
+                panels.forEach(function(p, i) { p.classList.toggle('active-slide', i === index); });
+                dots.forEach(function(d, i) { d.classList.toggle('active', i === index); });
+            }
+
+            tabs.forEach(function(tab, i) {
+                tab.addEventListener('click', function() { goTo(i); });
+            });
+
+            // Swipe support — real-time finger tracking
+            var startX = 0, startY = 0, isDragging = false, isHorizontal = null, trackWidth = 0;
+            track.addEventListener('touchstart', function(e) {
+                startX = e.touches[0].clientX;
+                startY = e.touches[0].clientY;
+                isDragging = true;
+                isHorizontal = null;
+                trackWidth = track.parentElement.offsetWidth;
+                track.style.transition = 'none';
+            }, { passive: true });
+            track.addEventListener('touchmove', function(e) {
+                if (!isDragging) return;
+                var dx = e.touches[0].clientX - startX;
+                var dy = e.touches[0].clientY - startY;
+                if (isHorizontal === null) {
+                    if (Math.abs(dx) < 5 && Math.abs(dy) < 5) return;
+                    isHorizontal = Math.abs(dx) > Math.abs(dy);
+                }
+                if (!isHorizontal) return;
+                e.preventDefault();
+                var base = current * 100;
+                var offset = (dx / trackWidth) * 100;
+                // resist at edges
+                if ((current === 0 && dx > 0) || (current === total - 1 && dx < 0)) offset *= 0.2;
+                track.style.transform = 'translateX(-' + (base - offset) + '%)';
+            }, { passive: false });
+            track.addEventListener('touchend', function(e) {
+                if (!isDragging) return;
+                isDragging = false;
+                track.style.transition = '';
+                if (!isHorizontal) return;
+                var dx = e.changedTouches[0].clientX - startX;
+                if (Math.abs(dx) < 40) { goTo(current); return; }
+                if (dx < 0 && current < total - 1) goTo(current + 1);
+                else if (dx > 0 && current > 0) goTo(current - 1);
+                else goTo(current);
+            }, { passive: true });
+
+            goTo(0);
+        })();
     </script>
 
 </body>
