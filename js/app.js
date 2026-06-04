@@ -486,7 +486,8 @@ const App = (function() {
     const strip = document.getElementById('hero-stat-strip');
     if (!strip || !userData) return;
 
-    const words        = userData.vocabulary.learned.length || 0;
+    const customLearned = (userData.customWords || []).filter(w => w.status === 'learned').length;
+    const words        = (userData.vocabulary.learned.length || 0) + customLearned;
     const streak       = userData.stats.practiceStreak || userData.dailyWord.currentStreak || 0;
     const daysActive   = (userData.stats.activeDates || []).length;
     const isNewUser    = words === 0 && daysActive === 0;

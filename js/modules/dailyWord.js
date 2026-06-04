@@ -312,10 +312,11 @@ const DailyWordModule = (function() {
 
     if (typeof App !== 'undefined' && App.markTPTaskDone) App.markTPTaskDone('precision');
 
-    // Track Polish session count
+    // Track Polish session count and count as a word learned today
     var _pdata = StorageManager.load();
     _pdata.stats.polishSessionsCompleted = (_pdata.stats.polishSessionsCompleted || 0) + 1;
     StorageManager.save(_pdata);
+    StorageManager.incrementWordsLearnedToday();
 
     // Replace the button with a done state so it can't be clicked again
     const completeBtn = document.querySelector('#daily-exercise .btn[onclick*="completeToday"]');
