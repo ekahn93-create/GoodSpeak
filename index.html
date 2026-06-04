@@ -605,6 +605,197 @@
         .auth-switch a { color: var(--indigo); font-weight: 600; text-decoration: none; }
         .auth-signup-fields { margin-bottom: 4px; }
 
+        /* ── HERO PLAY LINK ── */
+        .hero-play-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            margin-top: 18px;
+            font-size: 14px;
+            font-weight: 600;
+            color: #92400e;
+            text-decoration: none;
+            background: #fef3c7;
+            border: 1.5px solid #f59e0b;
+            border-radius: 999px;
+            padding: 8px 18px;
+            transition: background 0.15s;
+        }
+        .hero-play-link:hover { background: #fde68a; }
+
+        /* ── FREE GAME SECTION ── */
+        #free-game-section {
+            background: var(--bg-alt);
+            padding: 56px 24px;
+        }
+        .fgs-inner {
+            max-width: 480px;
+            margin: 0 auto;
+        }
+        .fgs-card {
+            background: white;
+            border: 1.5px solid var(--border);
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: var(--shadow);
+        }
+        /* Screens */
+        .fgs-screen { display: none; padding: 28px 24px; }
+        .fgs-screen.active { display: block; }
+
+        /* Ready screen */
+        .fgs-ready-icon {
+            width: 56px;
+            height: 56px;
+            background: var(--indigo-light);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 16px;
+            color: var(--indigo);
+        }
+        .fgs-ready-title {
+            font-size: 22px;
+            font-weight: 800;
+            text-align: center;
+            margin-bottom: 8px;
+            letter-spacing: -0.02em;
+        }
+        .fgs-ready-sub {
+            font-size: 14px;
+            color: var(--text-muted);
+            text-align: center;
+            margin-bottom: 24px;
+            line-height: 1.5;
+        }
+
+        /* HUD */
+        .fgs-hud {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 14px 20px;
+            background: var(--bg-alt);
+            border-bottom: 1px solid var(--border);
+        }
+        .fgs-hud-block { text-align: center; }
+        .fgs-hud-num { font-size: 22px; font-weight: 800; color: var(--indigo); }
+        .fgs-hud-label { font-size: 10px; font-weight: 600; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.05em; }
+
+        /* Timer bar */
+        .fgs-timer-track {
+            height: 5px;
+            background: var(--border);
+        }
+        .fgs-timer-bar {
+            height: 100%;
+            width: 100%;
+            background: var(--indigo);
+            transition: background 0.5s;
+        }
+
+        /* Game body */
+        .fgs-game-body { padding: 20px; }
+        .fgs-question-type {
+            font-size: 11px;
+            font-weight: 700;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            color: var(--text-muted);
+            margin-bottom: 10px;
+        }
+        .fgs-prompt {
+            font-size: 17px;
+            font-weight: 600;
+            color: var(--text);
+            margin-bottom: 18px;
+            line-height: 1.4;
+        }
+        .fgs-choice-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+        }
+        .fgs-choice-btn {
+            padding: 13px 10px;
+            background: white;
+            border: 1.5px solid var(--border);
+            border-radius: 10px;
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text);
+            cursor: pointer;
+            transition: border-color 0.12s, background 0.12s;
+            text-align: center;
+            font-family: inherit;
+        }
+        .fgs-choice-btn:hover:not(:disabled) {
+            border-color: var(--indigo);
+            background: var(--indigo-light);
+            color: var(--indigo);
+        }
+        .fgs-choice-btn--correct { background: #d1fae5 !important; border-color: #10b981 !important; color: #065f46 !important; }
+        .fgs-choice-btn--wrong   { background: #fee2e2 !important; border-color: #ef4444 !important; color: #991b1b !important; }
+        .fgs-choice-btn--dim     { opacity: 0.4; }
+
+        /* Postgame */
+        .fgs-postgame-score {
+            font-size: 56px;
+            font-weight: 800;
+            color: var(--indigo);
+            text-align: center;
+            letter-spacing: -0.03em;
+            line-height: 1;
+            margin-bottom: 4px;
+        }
+        .fgs-postgame-label {
+            font-size: 13px;
+            color: var(--text-muted);
+            text-align: center;
+            margin-bottom: 6px;
+        }
+        .fgs-postgame-correct {
+            font-size: 15px;
+            font-weight: 600;
+            text-align: center;
+            margin-bottom: 24px;
+        }
+        .fgs-upsell {
+            background: var(--indigo-light);
+            border: 1.5px solid var(--indigo);
+            border-radius: 12px;
+            padding: 20px;
+            text-align: center;
+            margin-bottom: 16px;
+        }
+        .fgs-upsell-title {
+            font-size: 16px;
+            font-weight: 800;
+            color: var(--indigo);
+            margin-bottom: 6px;
+        }
+        .fgs-upsell-body {
+            font-size: 13px;
+            color: var(--indigo-dark);
+            margin-bottom: 16px;
+            line-height: 1.5;
+        }
+        .fgs-play-again-link {
+            display: block;
+            text-align: center;
+            font-size: 13px;
+            color: var(--text-muted);
+            cursor: pointer;
+            background: none;
+            border: none;
+            font-family: inherit;
+            text-decoration: underline;
+            margin-top: 4px;
+            padding: 4px;
+        }
+        .fgs-play-again-link:hover { color: var(--indigo); }
+
         /* ── TAGLINE STRIP ── */
         .tagline-strip {
             background: var(--indigo);
@@ -1080,6 +1271,10 @@
         <div class="hero-badge">Start Speaking Better in 5 Minutes a Day</div>
         <h1>Your Ideas Deserve Better Than <span>"Uh, So Basically..."</span></h1>
         <p>EZSpeaks is your AI-powered speech coach. Build vocabulary, cut filler words, and practice storytelling — all in one place.</p>
+        <a href="#free-game-section" class="hero-play-link" id="hero-play-link">
+            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+            Play a free game — no account needed
+        </a>
     </section>
 
     <!-- App Preview (moved up — show before features) -->
@@ -1393,6 +1588,67 @@
         </div>
     </section>
 
+    <!-- Free Game -->
+    <section id="free-game-section">
+        <div class="fgs-inner">
+            <p class="section-label" style="text-align:center;margin-bottom:6px;">Try It Free</p>
+            <h2 class="section-title" style="margin-bottom:20px;">Test your vocabulary — no account needed</h2>
+
+            <div class="fgs-card">
+
+                <!-- Ready screen -->
+                <div class="fgs-screen active" id="fgs-ready">
+                    <div class="fgs-ready-icon">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="26" height="26" viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+                    </div>
+                    <div class="fgs-ready-title">Vocabulary Blitz</div>
+                    <div class="fgs-ready-sub">30 seconds. Synonyms &amp; antonyms. See how many you can get right — then decide if you want the full game.</div>
+                    <button class="btn btn-primary btn-full" id="fgs-start-btn">Start Game</button>
+                </div>
+
+                <!-- Playing screen -->
+                <div class="fgs-screen" id="fgs-playing">
+                    <div class="fgs-hud">
+                        <div class="fgs-hud-block">
+                            <div class="fgs-hud-num" id="fgs-score">0</div>
+                            <div class="fgs-hud-label">Score</div>
+                        </div>
+                        <div class="fgs-hud-block">
+                            <div class="fgs-hud-num" id="fgs-timer-label" style="color:#ef4444;">30.0S</div>
+                            <div class="fgs-hud-label">Time</div>
+                        </div>
+                        <div class="fgs-hud-block">
+                            <div class="fgs-hud-num" id="fgs-correct">0</div>
+                            <div class="fgs-hud-label">Correct</div>
+                        </div>
+                    </div>
+                    <div class="fgs-timer-track">
+                        <div class="fgs-timer-bar" id="fgs-timer-bar"></div>
+                    </div>
+                    <div class="fgs-game-body">
+                        <div class="fgs-question-type" id="fgs-question-type">SYNONYM · 4 CHOICES</div>
+                        <div class="fgs-prompt" id="fgs-prompt"></div>
+                        <div class="fgs-choice-grid" id="fgs-choice-grid"></div>
+                    </div>
+                </div>
+
+                <!-- Postgame screen -->
+                <div class="fgs-screen" id="fgs-postgame" style="padding:28px 24px 24px;">
+                    <div class="fgs-postgame-score" id="fgs-postgame-score">0</div>
+                    <div class="fgs-postgame-label">points</div>
+                    <div class="fgs-postgame-correct" id="fgs-postgame-correct"></div>
+                    <div class="fgs-upsell">
+                        <div class="fgs-upsell-title">Want the full experience?</div>
+                        <div class="fgs-upsell-body">Track your streak, compete on the leaderboard, and unlock 200+ words with personalized AI feedback.</div>
+                        <button class="btn btn-primary btn-full" id="fgs-signup-btn">Create Free Account</button>
+                    </div>
+                    <button class="fgs-play-again-link" id="fgs-play-again-btn">Play again</button>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
     <!-- Pricing -->
     <section class="section" id="pricing-section">
         <div class="section-inner">
@@ -1648,6 +1904,201 @@
         </div>
     </div>
 
+    <!-- Free Game Script -->
+    <script>
+    (function() {
+        'use strict';
+
+        var WORDS = [
+            { word: 'Eloquent',   type: 'synonym',  correct: 'Articulate',   distractors: ['Hesitant','Verbose','Mumbling'] },
+            { word: 'Concise',    type: 'antonym',  correct: 'Rambling',     distractors: ['Brief','Succinct','Precise'] },
+            { word: 'Confident',  type: 'synonym',  correct: 'Assured',      distractors: ['Timid','Uncertain','Nervous'] },
+            { word: 'Articulate', type: 'antonym',  correct: 'Incoherent',   distractors: ['Fluent','Clear','Expressive'] },
+            { word: 'Vivid',      type: 'synonym',  correct: 'Striking',     distractors: ['Dull','Faint','Vague'] },
+            { word: 'Persuade',   type: 'synonym',  correct: 'Convince',     distractors: ['Confuse','Repel','Discourage'] },
+            { word: 'Succinct',   type: 'antonym',  correct: 'Lengthy',      distractors: ['Brief','Compact','Terse'] },
+            { word: 'Candid',     type: 'synonym',  correct: 'Frank',        distractors: ['Evasive','Deceitful','Vague'] },
+            { word: 'Fluent',     type: 'antonym',  correct: 'Halting',      distractors: ['Smooth','Polished','Easy'] },
+            { word: 'Assertive',  type: 'synonym',  correct: 'Confident',    distractors: ['Passive','Meek','Timid'] },
+            { word: 'Verbose',    type: 'antonym',  correct: 'Concise',      distractors: ['Wordy','Lengthy','Chatty'] },
+            { word: 'Poised',     type: 'synonym',  correct: 'Composed',     distractors: ['Rattled','Anxious','Jittery'] },
+            { word: 'Tactful',    type: 'antonym',  correct: 'Blunt',        distractors: ['Diplomatic','Careful','Subtle'] },
+            { word: 'Coherent',   type: 'synonym',  correct: 'Logical',      distractors: ['Jumbled','Rambling','Confused'] },
+            { word: 'Empathetic', type: 'synonym',  correct: 'Understanding', distractors: ['Cold','Indifferent','Dismissive'] },
+            { word: 'Hesitant',   type: 'antonym',  correct: 'Decisive',     distractors: ['Unsure','Reluctant','Wavering'] },
+            { word: 'Engaging',   type: 'synonym',  correct: 'Captivating',  distractors: ['Boring','Dull','Flat'] },
+            { word: 'Subtle',     type: 'antonym',  correct: 'Obvious',      distractors: ['Nuanced','Gentle','Delicate'] }
+        ];
+
+        var START_DURATION = 30;
+        var BONUS_CORRECT  = 5;
+        var POINTS_CORRECT = 10;
+
+        var score = 0, correctCount = 0, totalAnswered = 0;
+        var timeLeft = START_DURATION, maxSeconds = START_DURATION;
+        var gameRunning = false, pickedIdx = null;
+        var rafId = null, lastTimestamp = null;
+        var currentIdx = 0, questions = [];
+
+        // DOM
+        var readyScreen    = document.getElementById('fgs-ready');
+        var playingScreen  = document.getElementById('fgs-playing');
+        var postgameScreen = document.getElementById('fgs-postgame');
+        var startBtn       = document.getElementById('fgs-start-btn');
+        var playAgainBtn   = document.getElementById('fgs-play-again-btn');
+        var signupBtn      = document.getElementById('fgs-signup-btn');
+        var timerBar       = document.getElementById('fgs-timer-bar');
+        var timerLabel     = document.getElementById('fgs-timer-label');
+        var scoreEl        = document.getElementById('fgs-score');
+        var correctEl      = document.getElementById('fgs-correct');
+        var questionTypeEl = document.getElementById('fgs-question-type');
+        var promptEl       = document.getElementById('fgs-prompt');
+        var choiceGrid     = document.getElementById('fgs-choice-grid');
+        var postgameScore  = document.getElementById('fgs-postgame-score');
+        var postgameCorrect = document.getElementById('fgs-postgame-correct');
+
+        startBtn.addEventListener('click', _startGame);
+        playAgainBtn.addEventListener('click', _resetToReady);
+        signupBtn.addEventListener('click', function() {
+            // Trigger the signup modal from the main page script
+            var btn = document.getElementById('nav-signup-btn');
+            if (btn) btn.click();
+        });
+
+        function _startGame() {
+            score = 0; correctCount = 0; totalAnswered = 0;
+            timeLeft = START_DURATION; maxSeconds = START_DURATION;
+            gameRunning = false; pickedIdx = null; currentIdx = 0;
+
+            questions = _shuffle(WORDS.slice());
+            _showScreen(playingScreen);
+            _updateHUD();
+            _showQuestion();
+            _startTimer();
+        }
+
+        function _showQuestion() {
+            if (currentIdx >= questions.length) { _endGame(); return; }
+
+            var q = questions[currentIdx];
+            pickedIdx = null;
+
+            var prompt = q.type === 'synonym'
+                ? 'Which word is <u><strong>closest in meaning</strong></u> to "' + q.word + '"?'
+                : 'Which word is the <u><strong>opposite</strong></u> of "' + q.word + '"?';
+
+            questionTypeEl.textContent = (q.type === 'synonym' ? 'SYNONYM' : 'ANTONYM') + ' · 4 CHOICES';
+            promptEl.innerHTML = prompt;
+
+            var options = _shuffle([q.correct].concat(q.distractors.slice(0, 3)));
+            var correctIndex = options.indexOf(q.correct);
+
+            choiceGrid.innerHTML = '';
+            options.forEach(function(opt, i) {
+                var btn = document.createElement('button');
+                btn.className = 'fgs-choice-btn';
+                btn.textContent = opt;
+                btn.addEventListener('click', function() { _handleChoice(i, correctIndex); });
+                choiceGrid.appendChild(btn);
+            });
+        }
+
+        function _handleChoice(i, correctIndex) {
+            if (pickedIdx !== null || !gameRunning) return;
+            pickedIdx = i;
+            totalAnswered++;
+
+            var isCorrect = (i === correctIndex);
+            var btns = choiceGrid.querySelectorAll('.fgs-choice-btn');
+            btns.forEach(function(btn, idx) {
+                btn.disabled = true;
+                if (idx === correctIndex) {
+                    btn.classList.add('fgs-choice-btn--correct');
+                } else if (idx === i && !isCorrect) {
+                    btn.classList.add('fgs-choice-btn--wrong');
+                } else {
+                    btn.classList.add('fgs-choice-btn--dim');
+                }
+            });
+
+            if (isCorrect) {
+                score += POINTS_CORRECT;
+                correctCount++;
+                timeLeft = Math.min(timeLeft + BONUS_CORRECT, 90);
+                maxSeconds = Math.max(maxSeconds, timeLeft);
+                _updateHUD();
+            }
+
+            setTimeout(function() { currentIdx++; _showQuestion(); }, 450);
+        }
+
+        function _startTimer() {
+            gameRunning = true;
+            lastTimestamp = performance.now();
+            rafId = requestAnimationFrame(_timerTick);
+        }
+
+        function _timerTick(ts) {
+            if (!gameRunning) return;
+            var elapsed = (ts - lastTimestamp) / 1000;
+            lastTimestamp = ts;
+            timeLeft -= elapsed;
+            if (timeLeft <= 0) { timeLeft = 0; _updateTimerDisplay(); _endGame(); return; }
+            _updateTimerDisplay();
+            rafId = requestAnimationFrame(_timerTick);
+        }
+
+        function _updateTimerDisplay() {
+            timerLabel.textContent = Math.max(0, timeLeft).toFixed(1) + 'S';
+            var pct = Math.min((timeLeft / maxSeconds) * 100, 100);
+            timerBar.style.width = pct + '%';
+            if (timeLeft <= 10) {
+                timerBar.style.background = '#ef4444';
+                timerLabel.style.color = '#ef4444';
+            } else if (timeLeft <= 20) {
+                timerBar.style.background = '#f59e0b';
+                timerLabel.style.color = '#f59e0b';
+            } else {
+                timerBar.style.background = 'var(--indigo)';
+                timerLabel.style.color = 'var(--indigo)';
+            }
+        }
+
+        function _updateHUD() {
+            scoreEl.textContent = score;
+            correctEl.textContent = correctCount;
+        }
+
+        function _endGame() {
+            gameRunning = false;
+            if (rafId) cancelAnimationFrame(rafId);
+
+            postgameScore.textContent = score;
+            postgameCorrect.textContent = correctCount + ' correct out of ' + totalAnswered + ' answered';
+            _showScreen(postgameScreen);
+        }
+
+        function _resetToReady() {
+            _showScreen(readyScreen);
+        }
+
+        function _showScreen(el) {
+            [readyScreen, playingScreen, postgameScreen].forEach(function(s) {
+                s.classList.remove('active');
+            });
+            el.classList.add('active');
+        }
+
+        function _shuffle(arr) {
+            for (var i = arr.length - 1; i > 0; i--) {
+                var j = Math.floor(Math.random() * (i + 1));
+                var tmp = arr[i]; arr[i] = arr[j]; arr[j] = tmp;
+            }
+            return arr;
+        }
+    })();
+    </script>
+
     <!-- Supabase -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
     <script src="js/config.js"></script>
@@ -1900,7 +2351,7 @@
             document.getElementById('nav-login-btn').addEventListener('click', () => openModal('login'));
             document.getElementById('nav-signup-btn').addEventListener('click', () => { _selectedPlan = 'monthly'; openModal('signup'); });
 
-            // Hero (buttons removed — handled by sticky CTA + pricing section)
+            // Hero (buttons handled by sticky CTA + pricing section)
 
             // Pricing toggle
             function _setPricingPlan(plan) {
@@ -2150,7 +2601,18 @@
                 else goTo(current);
             }, { passive: true });
 
-            goTo(0);
+            function updateHeight() {
+                var frameH = panels[current].querySelector('.preview-frame').offsetHeight;
+                carousel.style.height = frameH + 'px';
+            }
+
+            window.addEventListener('resize', updateHeight);
+
+            if (document.readyState === 'complete') {
+                goTo(0);
+            } else {
+                window.addEventListener('load', function() { goTo(0); });
+            }
         })();
     </script>
 
