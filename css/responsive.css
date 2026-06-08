@@ -402,22 +402,43 @@
     min-height: 250px;
   }
 
+  .word-card {
+    padding: 4px var(--spacing-xs);
+  }
+
+  .word-card-mode-toggle {
+    justify-content: center;
+    margin-bottom: var(--spacing-sm);
+  }
+
   .word-main {
-    font-size: 28px;
+    font-size: 24px;
+    margin-bottom: var(--spacing-xs);
   }
 
   .word-pronunciation {
-    font-size: var(--font-size-base);
+    font-size: var(--font-size-sm);
+    margin-bottom: var(--spacing-sm);
+  }
+
+  .word-meta {
+    margin-bottom: var(--spacing-xs);
   }
 
   .word-definition {
     font-size: var(--font-size-base);
     padding: var(--spacing-sm);
+    margin: var(--spacing-sm) 0;
   }
 
   .word-example {
     font-size: var(--font-size-sm);
     padding: var(--spacing-sm);
+    margin: var(--spacing-sm) 0;
+  }
+
+  .word-synonyms {
+    margin-top: var(--spacing-sm);
   }
 
   /* Difficulty/Theme Selector */
