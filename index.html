@@ -16,14 +16,17 @@
         :root {
             --indigo: #4F46E5;
             --indigo-dark: #3730a3;
-            --indigo-light: #e0e7ff;
+            --indigo-light: #ede9fe;
+            --amber: #f59e0b;
+            --amber-dark: #d97706;
+            --amber-light: #fef3c7;
             --text: #111827;
             --text-muted: #6b7280;
             --border: #e5e7eb;
-            --bg: #ffffff;
-            --bg-alt: #f9fafb;
+            --bg: #fefcff;
+            --bg-alt: #f7f5fa;
             --radius: 12px;
-            --shadow: 0 4px 24px rgba(0,0,0,0.08);
+            --shadow: 0 4px 16px rgba(79, 70, 229, 0.09), 0 2px 8px rgba(15, 23, 42, 0.07);
             /* Aliases for site-footer CSS from styles.css */
             --primary-color: #4F46E5;
             --primary-dark: #3730a3;
@@ -103,6 +106,9 @@
 
 
         /* ── HERO ── */
+        .hero-section {
+            background: radial-gradient(ellipse 80% 60% at 50% 0%, rgba(224,220,255,0.5) 0%, transparent 70%), var(--bg);
+        }
         .hero {
             text-align: center;
             padding: 80px 24px 16px;
@@ -111,8 +117,8 @@
         }
 .hero-badge {
             display: inline-block;
-            background: var(--indigo-light);
-            color: var(--indigo);
+            background: var(--amber-light);
+            color: var(--amber-dark);
             font-size: 13px;
             font-weight: 600;
             padding: 4px 12px;
@@ -194,13 +200,13 @@
         .feature-icon {
             width: 38px;
             height: 38px;
-            background: var(--indigo-light);
+            background: var(--amber-light);
             border-radius: 9px;
             display: flex;
             align-items: center;
             justify-content: center;
             margin-bottom: 10px;
-            color: var(--indigo);
+            color: var(--amber-dark);
         }
         .feature-card h3 {
             font-size: 15px;
@@ -331,7 +337,7 @@
         }
         .pricing-features li::before {
             content: '✓';
-            color: var(--indigo);
+            color: var(--amber-dark);
             font-weight: 700;
             flex-shrink: 0;
         }
@@ -386,7 +392,7 @@
 
         /* ── CTA SECTION ── */
         .cta-section {
-            background: var(--indigo);
+            background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
             color: white;
             text-align: center;
             padding: 72px 24px;
@@ -655,13 +661,13 @@
         .fgs-ready-icon {
             width: 56px;
             height: 56px;
-            background: var(--indigo-light);
+            background: var(--amber-light);
             border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
             margin: 0 auto 16px;
-            color: var(--indigo);
+            color: var(--amber-dark);
         }
         .fgs-ready-title {
             font-size: 22px;
@@ -806,7 +812,7 @@
 
         /* ── TAGLINE STRIP ── */
         .tagline-strip {
-            background: var(--indigo);
+            background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
             color: white;
             text-align: center;
             padding: 18px 24px;
@@ -1109,7 +1115,7 @@
             margin-top: 4px;
         }
         .testimonial-card {
-            background: white;
+            background: var(--bg);
             border: 1.5px solid var(--border);
             border-radius: 12px;
             padding: 16px 18px;
@@ -1275,6 +1281,7 @@
     </nav>
 
     <!-- Hero -->
+    <div class="hero-section">
     <section class="hero">
         <div class="hero-badge">Start Speaking Better in 5 Minutes a Day</div>
 
@@ -1287,6 +1294,7 @@
             Play a free game — no account needed
         </a>
     </section>
+    </div>
 
     <!-- App Preview (moved up — show before features) -->
     <section class="section preview-section">
