@@ -116,15 +116,15 @@
             margin: 0 auto;
         }
 .hero-badge {
-            display: inline-block;
-            background: var(--amber-light);
-            color: var(--amber-dark);
-            font-size: 13px;
-            font-weight: 600;
-            padding: 4px 12px;
-            border-radius: 999px;
+            display: block;
+            background: none;
+            color: #f59e0b;
+            font-size: 25px;
+            font-weight: 700;
+            padding: 0;
+            border-radius: 0;
             margin-bottom: 20px;
-            letter-spacing: 0.02em;
+            letter-spacing: 0.01em;
         }
         .hero h1 {
             font-size: clamp(32px, 6vw, 56px);
@@ -623,19 +623,24 @@
         .hero-play-link {
             display: inline-flex;
             align-items: center;
-            gap: 6px;
+            gap: 7px;
             margin-top: 18px;
-            font-size: 14px;
-            font-weight: 600;
-            color: #92400e;
+            font-size: 16px;
+            font-weight: 700;
+            color: #fff;
             text-decoration: none;
-            background: #fef3c7;
-            border: 1.5px solid #f59e0b;
+            background: #f59e0b;
+            border: none;
             border-radius: 999px;
-            padding: 8px 18px;
-            transition: background 0.15s;
+            padding: 11px 22px;
+            box-shadow: 0 2px 10px rgba(245,158,11,0.45);
+            transition: background 0.15s, box-shadow 0.15s, transform 0.1s;
         }
-        .hero-play-link:hover { background: #fde68a; }
+        .hero-play-link:hover {
+            background: #d97706;
+            box-shadow: 0 4px 14px rgba(245,158,11,0.5);
+            transform: translateY(-1px);
+        }
 
         /* ── FREE GAME SECTION ── */
         #free-game-section {
@@ -1283,7 +1288,7 @@
     <!-- Hero -->
     <div class="hero-section">
     <section class="hero">
-        <div class="hero-badge">Start Speaking Better in 5 Minutes a Day</div>
+        <div class="hero-badge">| Start Speaking Better in 5 Minutes a Day |</div>
 
         <!-- Mik the Mic — coming soon -->
 
@@ -1619,7 +1624,7 @@
                 <!-- Ready screen -->
                 <div class="fgs-screen active" id="fgs-ready">
                     <div class="fgs-ready-icon">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="26" height="26" viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+                        <svg xmlns="http://www.w3.org/2000/svg" width="26" height="26" viewBox="0 0 24 24" fill="currentColor" style="transform:translateX(1px)"><polygon points="5 3 19 12 5 21 5 3"/></svg>
                     </div>
                     <div class="fgs-ready-title">Vocabulary Blitz</div>
                     <div class="fgs-ready-sub">30 seconds. Synonyms &amp; antonyms. See how many you can get right — then decide if you want the full game.</div>
