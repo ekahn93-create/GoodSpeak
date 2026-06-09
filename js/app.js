@@ -95,6 +95,7 @@ const App = (function() {
     if (typeof ShadowingModule      !== 'undefined') ShadowingModule.init();
     if (typeof ProgressChartsModule !== 'undefined') ProgressChartsModule.init();
     if (typeof PlayModule           !== 'undefined') PlayModule.init();
+    if (typeof ProfileModule        !== 'undefined') ProfileModule.init();
 
     // Initialize dashboard
     initializeDashboard();
