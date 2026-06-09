@@ -335,6 +335,45 @@
             cursor: pointer;
         }
 
+        /* ── Plan card ── */
+        .profile-plan-row {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+        .profile-plan-detail {
+            font-size: 13px;
+            color: var(--text-secondary);
+        }
+        .profile-plan-cta-btn {
+            display: inline-block;
+            padding: 9px 18px;
+            border-radius: 8px;
+            font-size: 13px;
+            font-weight: 600;
+            text-decoration: none;
+            cursor: pointer;
+            border: none;
+        }
+        .profile-plan-cta-btn.primary {
+            background: var(--primary-color);
+            color: #fff;
+        }
+        .profile-plan-cta-btn.secondary {
+            background: none;
+            border: 1.5px solid var(--border-color);
+            color: var(--text-secondary);
+        }
+        .profile-plan-cta-btn.secondary:hover {
+            border-color: var(--primary-color);
+            color: var(--primary-color);
+        }
+        .profile-plan-expired-badge {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+
         /* ── Reset confirm dialog ── */
         .profile-reset-confirm {
             display: none;
@@ -598,6 +637,16 @@
                                 <div class="profile-stat-label">Days Active</div>
                             </div>
                         </div>
+                    </div>
+
+                    <!-- Plan card -->
+                    <div class="profile-card" id="profile-plan-card">
+                        <div class="profile-card-title">Subscription</div>
+                        <div class="profile-plan-row">
+                            <span id="profile-plan-badge" class="profile-plan-badge free">Free Trial</span>
+                            <span id="profile-plan-detail" class="profile-plan-detail"></span>
+                        </div>
+                        <div id="profile-plan-cta" style="margin-top:14px;"></div>
                     </div>
 
                     <!-- Account actions card -->

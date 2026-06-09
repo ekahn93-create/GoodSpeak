@@ -461,6 +461,10 @@ const AuthModule = (function () {
     return _subscriptionStatus;
   }
 
+  function getSubscriptionEnd() {
+    return _subscriptionEnd;
+  }
+
   return {
     init,
     signUp,
@@ -476,7 +480,8 @@ const AuthModule = (function () {
     _setCurrentUser,
     setSubscriptionStatus,
     isPremium,
-    getSubscriptionStatus
+    getSubscriptionStatus,
+    getSubscriptionEnd
   };
 
 })();

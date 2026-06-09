@@ -13,6 +13,8 @@ const ProfileModule = (function () {
     general:              'General improvement'
   };
 
+  const STRIPE_PORTAL = 'https://billing.stripe.com/p/login/28E9AV5O54TA14vf3vdUY00';
+
   const TIER_COLORS = {
     Beginner:     { bg: '#f1f5f9', color: '#475569' },
     Building:     { bg: '#ede9fe', color: '#4f46e5' },
@@ -50,6 +52,7 @@ const ProfileModule = (function () {
 
     _renderIdentity(user);
     _renderStats();
+    _renderPlan();
     _bindActions(user);
   }
 
@@ -107,6 +110,48 @@ const ProfileModule = (function () {
     _set('pstat-streak',         streak);
     _set('pstat-longest-streak', longestStreak);
     _set('pstat-days',           days);
+  }
+
+  // ── Plan ─────────────────────────────────────────────────────────────────
+
+  function _renderPlan() {
+    const badge  = document.getElementById('profile-plan-badge');
+    const detail = document.getElementById('profile-plan-detail');
+    const cta    = document.getElementById('profile-plan-cta');
+    if (!badge || !detail || !cta) return;
+
+    const status = AuthModule.getSubscriptionStatus();  // 'trialing' | 'active' | 'canceled' | null
+    const endRaw = AuthModule.getSubscriptionEnd();
+    const endDate = endRaw ? new Date(endRaw) : null;
+
+    const fmt = (d) => d ? d.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : '';
+
+    if (status === 'trialing') {
+      badge.textContent = 'Free Trial';
+      badge.className = 'profile-plan-badge free';
+      const daysLeft = endDate ? Math.max(0, Math.ceil((endDate - Date.now()) / 86400000)) : null;
+      detail.textContent = daysLeft !== null ? daysLeft + ' day' + (daysLeft === 1 ? '' : 's') + ' remaining' : '';
+      cta.innerHTML = '<a href="' + STRIPE_PORTAL + '" target="_blank" class="profile-plan-cta-btn primary">Subscribe Now</a>';
+
+    } else if (status === 'active') {
+      badge.textContent = 'Premium';
+      badge.className = 'profile-plan-badge premium';
+      detail.textContent = endDate ? 'Renews ' + fmt(endDate) : '';
+      cta.innerHTML = '<a href="' + STRIPE_PORTAL + '" target="_blank" class="profile-plan-cta-btn secondary">Manage Subscription</a>';
+
+    } else if (status === 'canceled') {
+      badge.textContent = 'Expired';
+      badge.className = 'profile-plan-badge profile-plan-expired-badge';
+      detail.textContent = endDate ? 'Ended ' + fmt(endDate) : '';
+      cta.innerHTML = '<a href="' + STRIPE_PORTAL + '" target="_blank" class="profile-plan-cta-btn primary">Resubscribe</a>';
+
+    } else {
+      // No subscription record — never started a trial
+      badge.textContent = 'No Plan';
+      badge.className = 'profile-plan-badge free';
+      detail.textContent = '';
+      cta.innerHTML = '<a href="' + STRIPE_PORTAL + '" target="_blank" class="profile-plan-cta-btn primary">Start Free Trial</a>';
+    }
   }
 
   // ── Tier helper (mirrors App.getTier logic without importing it) ──────────
