@@ -69,31 +69,40 @@ exports.handler = async function(event) {
         if (!userId) break;
 
         const subscription = await stripe.subscriptions.retrieve(session.subscription);
+        const periodEnd = subscription.current_period_end
+          ? new Date(subscription.current_period_end * 1000).toISOString()
+          : null;
 
         await supabaseUpsert({
           user_id: userId,
           subscription_status: subscription.status,
           stripe_customer_id: session.customer,
           stripe_subscription_id: session.subscription,
-          subscription_end: new Date(subscription.current_period_end * 1000).toISOString()
+          ...(periodEnd && { subscription_end: periodEnd })
         });
         break;
       }
 
       case 'customer.subscription.updated': {
         const subscription = stripeEvent.data.object;
+        const periodEnd = subscription.current_period_end
+          ? new Date(subscription.current_period_end * 1000).toISOString()
+          : null;
         await supabaseUpdateByColumn('stripe_subscription_id', subscription.id, {
           subscription_status: subscription.status,
-          subscription_end: new Date(subscription.current_period_end * 1000).toISOString()
+          ...(periodEnd && { subscription_end: periodEnd })
         });
         break;
       }
 
       case 'customer.subscription.deleted': {
         const subscription = stripeEvent.data.object;
+        const periodEnd = subscription.current_period_end
+          ? new Date(subscription.current_period_end * 1000).toISOString()
+          : null;
         await supabaseUpdateByColumn('stripe_subscription_id', subscription.id, {
           subscription_status: 'cancelled',
-          subscription_end: new Date(subscription.current_period_end * 1000).toISOString()
+          ...(periodEnd && { subscription_end: periodEnd })
         });
         break;
       }
