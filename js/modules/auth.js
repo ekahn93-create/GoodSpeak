@@ -252,7 +252,7 @@ const AuthModule = (function () {
     if (navBtn) {
       navBtn.addEventListener('click', () => {
         if (currentUser) {
-          _showAccountMenu(navBtn);
+          window.location.href = '/profile';
         } else {
           openModal('login');
         }
@@ -264,7 +264,7 @@ const AuthModule = (function () {
     if (mobileAuthTab) {
       mobileAuthTab.addEventListener('click', () => {
         if (currentUser) {
-          _showAccountMenu(mobileAuthTab);
+          window.location.href = '/profile';
         } else {
           openModal('login');
         }
