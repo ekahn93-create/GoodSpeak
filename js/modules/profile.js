@@ -22,6 +22,13 @@ const ProfileModule = (function () {
     Advanced:     { bg: '#d1fae5', color: '#065f46' }
   };
 
+  const TIER_CRITERIA = {
+    Beginner:     'You\'re just getting started. Learn 5 words, complete 1 story, and practice on 3 separate days to reach Building.',
+    Building:     'You\'re developing the habit. Reach 20 words learned, 5 stories completed, and 14 days active to reach Intermediate.',
+    Intermediate: 'You\'re consistent and growing. Reach 50 words learned, 15 stories completed, and 30 days active to reach Advanced.',
+    Advanced:     'You\'ve reached the top tier — speaking with confidence across all three dimensions. Keep it up.'
+  };
+
   function init() {
     // Only run on the profile page
     if (!document.getElementById('profile-view')) return;
@@ -71,14 +78,18 @@ const ProfileModule = (function () {
       _set('profile-first-name-display', meta.first_name);
     }
 
-    // Tier badge
-    const tierBadge = document.getElementById('profile-tier-badge');
+    // Tier badge + criteria
+    const tierBadge    = document.getElementById('profile-tier-badge');
+    const tierCriteria = document.getElementById('profile-tier-criteria');
+    const tierName     = _getTierName();
+    const colors       = TIER_COLORS[tierName] || TIER_COLORS.Beginner;
     if (tierBadge) {
-      const tierName = _getTierName();
-      const colors   = TIER_COLORS[tierName] || TIER_COLORS.Beginner;
-      tierBadge.textContent = tierName;
+      tierBadge.textContent      = tierName;
       tierBadge.style.background = colors.bg;
       tierBadge.style.color      = colors.color;
+    }
+    if (tierCriteria) {
+      tierCriteria.textContent = TIER_CRITERIA[tierName] || '';
     }
 
     // Pre-fill edit form

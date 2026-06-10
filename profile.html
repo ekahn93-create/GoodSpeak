@@ -52,6 +52,16 @@
             margin-bottom: 14px;
         }
 
+        .profile-card-title-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 14px;
+        }
+        .profile-card-title-row .profile-card-title {
+            margin-bottom: 0;
+        }
+
         /* ── Identity card ── */
         .profile-identity {
             display: flex;
@@ -100,13 +110,23 @@
             display: inline-flex;
             align-items: center;
             gap: 5px;
-            margin-top: 6px;
             font-size: 11px;
             font-weight: 600;
             padding: 3px 9px;
             border-radius: 20px;
             background: #ede9fe;
             color: #4f46e5;
+            white-space: nowrap;
+            flex-shrink: 0;
+        }
+
+        .profile-tier-criteria {
+            font-size: 12px;
+            color: var(--text-secondary);
+            margin-top: 10px;
+            line-height: 1.5;
+            padding-top: 10px;
+            border-top: 1px solid var(--border-color);
         }
 
         /* ── Goal row ── */
@@ -571,15 +591,18 @@
 
                     <!-- Identity card -->
                     <div class="profile-card">
-                        <div class="profile-card-title">Account</div>
+                        <div class="profile-card-title-row">
+                            <div class="profile-card-title">Account</div>
+                            <div class="profile-tier-badge" id="profile-tier-badge">Beginner</div>
+                        </div>
                         <div class="profile-identity">
                             <div class="profile-avatar" id="profile-avatar">?</div>
                             <div class="profile-identity-info">
                                 <div class="profile-display-name" id="profile-display-name">—</div>
                                 <div class="profile-email" id="profile-email">—</div>
-                                <div class="profile-tier-badge" id="profile-tier-badge">Beginner</div>
                             </div>
                         </div>
+                        <div class="profile-tier-criteria" id="profile-tier-criteria"></div>
 
                         <!-- Edit nickname/goal inline form -->
                         <div style="display:flex; justify-content:flex-end; margin-top:12px;">
