@@ -338,17 +338,39 @@
     padding: var(--spacing-sm);
   }
 
-  /* View Header */
+  /* View Header — compact on mobile */
   .view-header {
-    margin-bottom: var(--spacing-lg);
+    margin-bottom: var(--spacing-md);
+    margin-left: calc(-1 * var(--spacing-sm));
+    margin-right: calc(-1 * var(--spacing-sm));
+    padding: 14px var(--spacing-md) 12px;
+    border-radius: 0;
   }
 
   .view-header h1 {
-    font-size: 24px;
+    font-size: 20px;
+    margin-bottom: 4px;
   }
 
   .view-header p {
-    font-size: var(--font-size-base);
+    font-size: 13px;
+  }
+
+  /* Arc strip — compact on mobile */
+  .page-arc-strip {
+    padding: 7px 10px;
+    margin-bottom: var(--spacing-md);
+  }
+
+  .pas-step {
+    font-size: 12px;
+    padding: 3px 7px;
+  }
+
+  .pas-step-number {
+    width: 17px;
+    height: 17px;
+    font-size: 10px;
   }
 
   /* Hero Section */

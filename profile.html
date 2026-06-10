@@ -706,6 +706,131 @@
         </section>
     </main>
 
+    <div id="footer-modal-overlay" class="footer-modal-overlay" role="dialog" aria-modal="true" hidden>
+      <div class="footer-modal">
+        <button class="footer-modal-close" id="footer-modal-close" aria-label="Close">&times;</button>
+        <h2 id="footer-modal-title"></h2>
+        <div id="footer-modal-body"></div>
+      </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="site-footer">
+      <div class="footer-inner">
+        <div class="footer-brand">
+          <svg width="20" height="18" viewBox="0 0 220 200" xmlns="http://www.w3.org/2000/svg" style="display:inline-block;vertical-align:middle;flex-shrink:0;">
+            <rect x="10" y="10" width="200" height="150" rx="28" ry="28" fill="#4F46E5"/>
+            <polygon points="60,155 30,190 100,155" fill="#4F46E5"/>
+            <polygon points="130,30 85,100 115,100 90,165 155,85 120,85 148,30" fill="white" opacity="0.95"/>
+          </svg>
+          <span class="footer-brand-name">EZSpeaks</span>
+          <span class="footer-tagline">Speak more eloquently, every day.</span>
+        </div>
+
+        <!-- Quick Stats -->
+        <div class="footer-stats">
+          <span class="footer-stat"><span id="footer-words-learned">0</span> words learned</span>
+          <span class="footer-stat-divider">·</span>
+          <span class="footer-stat"><span id="footer-streak">0</span> day streak</span>
+        </div>
+
+        <!-- Links row -->
+        <div class="footer-links">
+          <button class="footer-link" id="footer-share-btn">Share</button>
+          <button class="footer-link" data-footer-modal="about">About</button>
+          <button class="footer-link" data-footer-modal="privacy">Privacy</button>
+          <button class="footer-link" data-footer-modal="terms">Terms</button>
+          <a href="mailto:admin@ezspeaks.com?subject=EZSpeaks Feedback" class="footer-link footer-link--feedback">Feedback</a>
+          <a href="/resources" class="footer-link footer-link--resources">Resources</a>
+        </div>
+
+        <!-- Tip + copyright -->
+        <p class="footer-tip">Pro tip: use the nav to jump between sections anytime.</p>
+        <p class="footer-copy">&copy; <span id="footer-year"></span> EZSpeaks. All rights reserved. &nbsp;v1.0</p>
+      </div>
+    </footer>
+
+    <script>
+      (function() {
+        document.getElementById('footer-year').textContent = new Date().getFullYear();
+
+        function updateFooterStats() {
+          try {
+            var data = (typeof StorageManager !== 'undefined') ? StorageManager.load() : null;
+            if (data) {
+              var customLearned = (data.customWords || []).filter(function(w) { return w.status === 'learned'; }).length;
+              var words = ((data.vocabulary && data.vocabulary.learned) ? data.vocabulary.learned.length : 0) + customLearned;
+              var streak = (data.stats && data.stats.practiceStreak) || (data.dailyWord && data.dailyWord.currentStreak) || 0;
+              document.getElementById('footer-words-learned').textContent = words;
+              document.getElementById('footer-streak').textContent = streak;
+            }
+          } catch(e) {}
+        }
+        updateFooterStats();
+        window.addEventListener('storage', updateFooterStats);
+        document.addEventListener('appDataSaved', updateFooterStats);
+
+        var modals = {
+          about: {
+            title: 'About EZSpeaks',
+            body: '<p>EZSpeaks is a personal speech and vocabulary coach designed to help you speak more eloquently every day.</p><p>Build your vocabulary with spaced repetition, sharpen your pronunciation, tell better stories, and track your growth — all in one place.</p><p>Built for anyone who wants to communicate with more confidence and clarity.</p>'
+          },
+          privacy: {
+            title: 'Privacy Policy',
+            body: '<p class="footer-modal-coming-soon">A full Privacy Policy is coming soon.</p><p>For now: your data is stored locally on your device. If you sign in, your progress is saved to a secure cloud database. We do not sell or share your data with third parties.</p>'
+          },
+          terms: {
+            title: 'Terms of Use',
+            body: '<p class="footer-modal-coming-soon">Full Terms of Use are coming soon.</p><p>By using EZSpeaks you agree to use it for personal, non-commercial purposes. The app is provided as-is without warranty.</p>'
+          }
+        };
+
+        var overlay = document.getElementById('footer-modal-overlay');
+        var modalTitle = document.getElementById('footer-modal-title');
+        var modalBody = document.getElementById('footer-modal-body');
+
+        function openFooterModal(key) {
+          var m = modals[key];
+          if (!m) return;
+          modalTitle.textContent = m.title;
+          modalBody.innerHTML = m.body;
+          overlay.hidden = false;
+        }
+
+        function closeFooterModal() { overlay.hidden = true; }
+
+        document.getElementById('footer-modal-close').addEventListener('click', closeFooterModal);
+        overlay.addEventListener('click', function(e) { if (e.target === overlay) closeFooterModal(); });
+        document.addEventListener('keydown', function(e) { if (e.key === 'Escape' && !overlay.hidden) closeFooterModal(); });
+
+        document.querySelectorAll('[data-footer-modal]').forEach(function(btn) {
+          btn.addEventListener('click', function() { openFooterModal(this.getAttribute('data-footer-modal')); });
+        });
+
+        document.getElementById('footer-share-btn').addEventListener('click', function() {
+          var btn = this;
+          var url = window.location.origin + window.location.pathname;
+          if (navigator.clipboard && navigator.clipboard.writeText) {
+            navigator.clipboard.writeText(url).then(function() {
+              btn.textContent = 'Copied!';
+              setTimeout(function() { btn.textContent = 'Share'; }, 2000);
+            });
+          } else {
+            var ta = document.createElement('textarea');
+            ta.value = url;
+            ta.style.position = 'fixed';
+            ta.style.opacity = '0';
+            document.body.appendChild(ta);
+            ta.select();
+            document.execCommand('copy');
+            document.body.removeChild(ta);
+            btn.textContent = 'Copied!';
+            setTimeout(function() { btn.textContent = 'Share'; }, 2000);
+          }
+        });
+      })();
+    </script>
+
     </div><!-- end mobile-scroll-wrapper -->
 
     <!-- Scripts -->

@@ -197,10 +197,7 @@ const GrammarModule = (function() {
     // Use event delegation on the grammar category container
     const grammarCategory = document.getElementById('grammar-category');
 
-    if (!grammarCategory) {
-      console.error('Grammar category container not found!');
-      return;
-    }
+    if (!grammarCategory) return;
 
     // Event delegation for all button clicks in grammar category
     grammarCategory.addEventListener('click', function(e) {
