@@ -15,11 +15,12 @@ const ProfileModule = (function () {
 
   const STRIPE_PORTAL = 'https://billing.stripe.com/p/login/28E9AV5O54TA14vf3vdUY00';
 
+  // Solid colors match the TIERS array in app.js
   const TIER_COLORS = {
-    Beginner:     { bg: '#f1f5f9', color: '#475569' },
-    Building:     { bg: '#ede9fe', color: '#4f46e5' },
-    Intermediate: { bg: '#e0f2fe', color: '#0369a1' },
-    Advanced:     { bg: '#d1fae5', color: '#065f46' }
+    Beginner:     { bg: '#64748b', color: '#fff' },
+    Building:     { bg: '#6366f1', color: '#fff' },
+    Intermediate: { bg: '#0ea5e9', color: '#fff' },
+    Advanced:     { bg: '#10b981', color: '#fff' }
   };
 
   const TIER_CRITERIA = {
