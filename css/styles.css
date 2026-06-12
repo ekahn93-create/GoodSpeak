@@ -3611,7 +3611,7 @@ canvas {
   border: 1px solid #c4b5fd;
   border-left: 4px solid var(--primary-color);
   border-radius: var(--border-radius);
-  padding: var(--spacing-md) var(--spacing-lg);
+  padding: 10px var(--spacing-lg);
   margin-bottom: var(--spacing-lg);
   position: relative;
   animation: nudgeSlideDown 0.3s ease;
@@ -3647,7 +3647,7 @@ canvas {
   display: flex;
   align-items: center;
   gap: 5px;
-  margin-bottom: 4px;
+  margin-bottom: 2px;
 }
 
 .pcb-toggle:hover {
@@ -3693,8 +3693,12 @@ canvas {
   text-transform: uppercase;
   letter-spacing: 0.05em;
   border-top: 1px solid #c4b5fd;
-  padding-top: 8px;
-  margin-top: 6px;
+  padding-top: 6px;
+  margin-top: 0;
+}
+
+.pcb-desc.pcb-open + .pcb-why-label {
+  margin-top: 8px;
 }
 
 .pcb-why {

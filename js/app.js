@@ -968,7 +968,11 @@ const App = (function() {
   // Public API
   function scrollToTop() {
     var wrapper = document.getElementById('mobile-scroll-wrapper');
-    if (wrapper) { wrapper.scrollTop = 0; } else { window.scrollTo(0, 0); }
+    if (wrapper && wrapper.scrollHeight > wrapper.clientHeight) {
+      wrapper.scrollTop = 0;
+    } else {
+      window.scrollTo(0, 0);
+    }
   }
 
   return {
