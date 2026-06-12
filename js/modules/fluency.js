@@ -619,7 +619,7 @@ const FluencyModule = (function() {
    * Switch between categories
    */
   function switchCategory(category) {
-    window.scrollTo(0, 0);
+    App.scrollToTop();
     currentCategory = category;
 
     // Save to localStorage
