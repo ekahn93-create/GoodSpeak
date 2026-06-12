@@ -1,0 +1,11 @@
+User-agent: *
+Allow: /
+Disallow: /index.html
+Disallow: /learn.html
+Disallow: /practice.html
+Disallow: /polish.html
+Disallow: /review.html
+Disallow: /play.html
+Disallow: /profile.html
+
+Sitemap: https://ezspeaks.com/sitemap.xml
