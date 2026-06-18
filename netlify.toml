@@ -4,6 +4,12 @@
   command = "npm install"
 
 [[redirects]]
+  from = "/?checkout=cancelled"
+  to = "/"
+  status = 301
+  force = true
+
+[[redirects]]
   from = "/app"
   to = "/app.html"
   status = 200
