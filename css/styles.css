@@ -5127,6 +5127,7 @@ canvas {
   display: flex;
   gap: var(--spacing-sm);
   flex-wrap: wrap;
+  justify-content: center;
   margin-bottom: var(--spacing-md);
 }
 
@@ -7019,6 +7020,11 @@ canvas {
   padding-bottom: var(--spacing-xl);
   max-width: 560px;
   margin: 0 auto;
+}
+
+/* Evenly space Game / Leaderboard / My Stats tabs */
+#play-view .vocab-categories {
+  justify-content: space-evenly;
 }
 
 /* Login Gate */

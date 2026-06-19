@@ -848,13 +848,20 @@ const WordBankModule = (function() {
    */
   function removeWordFromLearned(wordId) {
     if (!userData) return;
+    const allDbWords = [
+      ...(vocabularyDatabase.beginner || []),
+      ...(vocabularyDatabase.intermediate || []),
+      ...(vocabularyDatabase.advanced || [])
+    ];
+    const wordObj = allDbWords.find(w => w.id === wordId);
+    const wordKey = wordObj ? wordObj.word : wordId;
     Modal.confirm({
       title: 'Remove Word',
       message: 'Remove this word from your Word Bank? You can re-learn it from the Vocabulary Builder.',
       confirmText: 'Remove',
       cancelText: 'Cancel',
       onConfirm: () => {
-        userData.vocabulary.learned = userData.vocabulary.learned.filter(id => id !== wordId);
+        userData.vocabulary.learned = userData.vocabulary.learned.filter(id => id !== wordKey);
         userData.vocabulary.totalWordsLearned = userData.vocabulary.learned.length;
         if (StorageManager.save(userData)) {
           showToast('Word removed', 'success');
@@ -875,13 +882,20 @@ const WordBankModule = (function() {
    */
   function removeWordFromStillLearning(wordId) {
     if (!userData) return;
+    const allDbWords = [
+      ...(vocabularyDatabase.beginner || []),
+      ...(vocabularyDatabase.intermediate || []),
+      ...(vocabularyDatabase.advanced || [])
+    ];
+    const wordObj = allDbWords.find(w => w.id === wordId);
+    const wordKey = wordObj ? wordObj.word : wordId;
     Modal.confirm({
       title: 'Remove Word',
       message: 'Remove this word from your Word Bank? You can re-add it from the Vocabulary Builder.',
       confirmText: 'Remove',
       cancelText: 'Cancel',
       onConfirm: () => {
-        userData.vocabulary.stillLearning = (userData.vocabulary.stillLearning || []).filter(id => id !== wordId);
+        userData.vocabulary.stillLearning = (userData.vocabulary.stillLearning || []).filter(id => id !== wordKey);
         if (StorageManager.save(userData)) {
           showToast('Word removed', 'success');
           displayStillLearningWords();
@@ -902,15 +916,27 @@ const WordBankModule = (function() {
   function moveWordToLearned(wordId) {
     if (!userData) return;
 
+    // Vocabulary cards store word names (strings) in stillLearning/learned, not numeric IDs.
+    // Resolve the word name so indexOf/includes works correctly.
+    const allDbWords = [
+      ...(vocabularyDatabase.beginner || []),
+      ...(vocabularyDatabase.intermediate || []),
+      ...(vocabularyDatabase.advanced || [])
+    ];
+    const wordObj = allDbWords.find(w => w.id === wordId);
+    const wordKey = (wordObj && userData.vocabulary.stillLearning.includes(wordObj.word))
+      ? wordObj.word
+      : wordId;
+
     // Remove from still learning
-    const stillLearningIndex = userData.vocabulary.stillLearning.indexOf(wordId);
+    const stillLearningIndex = userData.vocabulary.stillLearning.indexOf(wordKey);
     if (stillLearningIndex > -1) {
       userData.vocabulary.stillLearning.splice(stillLearningIndex, 1);
     }
 
     // Add to learned if not already there
-    if (!userData.vocabulary.learned.includes(wordId)) {
-      userData.vocabulary.learned.push(wordId);
+    if (!userData.vocabulary.learned.includes(wordKey)) {
+      userData.vocabulary.learned.push(wordKey);
       userData.vocabulary.totalWordsLearned = userData.vocabulary.learned.length;
       userData.vocabulary.lastLearnedDate = StorageManager.getTodayString();
     }
@@ -941,16 +967,27 @@ const WordBankModule = (function() {
   function moveWordToStillLearning(wordId) {
     if (!userData) return;
 
+    // Vocabulary cards store word names (strings) in learned/stillLearning, not numeric IDs.
+    const allDbWords = [
+      ...(vocabularyDatabase.beginner || []),
+      ...(vocabularyDatabase.intermediate || []),
+      ...(vocabularyDatabase.advanced || [])
+    ];
+    const wordObj = allDbWords.find(w => w.id === wordId);
+    const wordKey = (wordObj && userData.vocabulary.learned.includes(wordObj.word))
+      ? wordObj.word
+      : wordId;
+
     // Remove from learned
-    const learnedIndex = userData.vocabulary.learned.indexOf(wordId);
+    const learnedIndex = userData.vocabulary.learned.indexOf(wordKey);
     if (learnedIndex > -1) {
       userData.vocabulary.learned.splice(learnedIndex, 1);
       userData.vocabulary.totalWordsLearned = userData.vocabulary.learned.length;
     }
 
     // Add to still learning if not already there
-    if (!userData.vocabulary.stillLearning.includes(wordId)) {
-      userData.vocabulary.stillLearning.push(wordId);
+    if (!userData.vocabulary.stillLearning.includes(wordKey)) {
+      userData.vocabulary.stillLearning.push(wordKey);
     }
 
     // Save to storage
@@ -1819,6 +1856,9 @@ const WordBankModule = (function() {
     data.savedForLater.splice(index, 1);
     StorageManager.save(data);
     userData = data;
+
+    StorageManager.markActiveToday();
+    if (status === 'learned') StorageManager.incrementWordsLearnedToday();
 
     if (typeof SessionWords !== 'undefined') {
       SessionWords.add(item.word);
