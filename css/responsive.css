@@ -789,9 +789,7 @@
     top: 0;
     padding-left: var(--spacing-sm);
     padding-right: var(--spacing-sm);
-    /* Fade hint at right edge */
-    mask-image: linear-gradient(to right, black calc(100% - 32px), transparent 100%);
-    -webkit-mask-image: linear-gradient(to right, black calc(100% - 32px), transparent 100%);
+    /* No mask — keeping background solid so content below doesn't bleed through */
   }
 
   .vocab-categories::-webkit-scrollbar,
