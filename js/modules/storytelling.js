@@ -2004,19 +2004,30 @@ case 'recordings':
   }
 
   function _startTranscriptWatcher(words) {
-    // Disconnect any previous observer
+    // Disconnect any previous observers
     if (_deployObserver) {
-      _deployObserver.disconnect();
+      if (Array.isArray(_deployObserver)) {
+        _deployObserver.forEach(function(ob) { ob.disconnect(); });
+      } else {
+        _deployObserver.disconnect();
+      }
       _deployObserver = null;
     }
 
-    const finalEl = document.getElementById('story-transcript-final');
-    if (!finalEl || words.length === 0) return;
+    if (words.length === 0) return;
+
+    const transcriptIds = [
+      'story-transcript-final',
+      'impromptu-transcript-final',
+      'pitch-transcript-final',
+      'endurance-transcript-final',
+      'summarization-transcript-final',
+      'paraphrasing-transcript-final'
+    ];
 
     const lowerWords = words.map(w => w.toLowerCase());
 
-    _deployObserver = new MutationObserver(function() {
-      const text = (finalEl.textContent || '').toLowerCase();
+    function _checkText(text) {
       lowerWords.forEach(function(w) {
         if (!_deployCheckedWords.has(w) && text.includes(w)) {
           _deployCheckedWords.add(w);
@@ -2027,9 +2038,17 @@ case 'recordings':
           }
         }
       });
-    });
+    }
 
-    _deployObserver.observe(finalEl, { childList: true, characterData: true, subtree: true });
+    _deployObserver = transcriptIds.map(function(id) {
+      const el = document.getElementById(id);
+      if (!el) return null;
+      const ob = new MutationObserver(function() {
+        _checkText((el.textContent || '').toLowerCase());
+      });
+      ob.observe(el, { childList: true, characterData: true, subtree: true });
+      return ob;
+    }).filter(Boolean);
   }
 
   // Public API
