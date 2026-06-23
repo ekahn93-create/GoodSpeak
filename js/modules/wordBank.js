@@ -867,7 +867,6 @@ const WordBankModule = (function() {
           showToast('Word removed', 'success');
           displayAppLearnedWords();
           updateCounts();
-          Modal.hide();
           if (typeof VocabularyModule !== 'undefined' && VocabularyModule.refresh) VocabularyModule.refresh();
         } else {
           showToast('Failed to save', 'error');
@@ -900,7 +899,6 @@ const WordBankModule = (function() {
           showToast('Word removed', 'success');
           displayStillLearningWords();
           updateCounts();
-          Modal.hide();
           if (typeof VocabularyModule !== 'undefined' && VocabularyModule.refresh) VocabularyModule.refresh();
         } else {
           showToast('Failed to save', 'error');

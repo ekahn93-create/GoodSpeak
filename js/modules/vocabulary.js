@@ -60,6 +60,7 @@ const VocabularyModule = (function() {
     if (!force && available.length >= threshold) return;
 
     try {
+      if (typeof APIService === 'undefined') return;
       const candidates = await APIService.buildWordPool(diff);
       if (!candidates.length) return;
 
@@ -108,6 +109,7 @@ const VocabularyModule = (function() {
     }
 
     // Fetch from API
+    if (typeof APIService === 'undefined') return null;
     const wordObj = await APIService.getWordData(wordStr, diff, category);
     if (wordObj) wordCache.set(wordStr, wordObj);
     return wordObj;
