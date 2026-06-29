@@ -392,12 +392,13 @@
 
     <!-- Quick-Add FAB Script -->
     <script>
-      (function() {
+      document.addEventListener('DOMContentLoaded', function() {
         var fab = document.getElementById('quick-add-fab');
         var overlay = document.getElementById('quick-add-overlay');
         var closeBtn = document.getElementById('quick-add-close');
         var input = document.getElementById('quick-add-input');
         var saveBtn = document.getElementById('quick-add-save');
+        if (!fab || !overlay || !closeBtn || !input || !saveBtn) return;
 
         function openSheet() {
           overlay.classList.add('active');
@@ -426,7 +427,7 @@
           if (e.key === 'Enter') { e.preventDefault(); saveWord(); }
           if (e.key === 'Escape') closeSheet();
         });
-      })();
+      });
     </script>
 
     <script>
