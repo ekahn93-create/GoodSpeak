@@ -53,9 +53,9 @@
     font-size: var(--font-size-sm);
   }
 
-  /* Main Container */
+  /* Main Container — no top padding on mobile (scroll starts at top of viewport) */
   #app-container {
-    padding: var(--spacing-md);
+    padding: 0 var(--spacing-md) var(--spacing-md);
   }
 
   /* Hero Section */
@@ -342,9 +342,9 @@
     font-size: 13px;
   }
 
-  /* Main Container */
+  /* Main Container — no top padding on mobile (tab bar is at bottom, scroll starts at top) */
   #app-container {
-    padding: var(--spacing-sm);
+    padding: 0 var(--spacing-sm) var(--spacing-sm);
   }
 
   /* View Header — compact on mobile */
