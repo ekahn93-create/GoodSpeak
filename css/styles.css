@@ -6469,13 +6469,12 @@ canvas {
   gap: 6px;
   opacity: 0;
   pointer-events: none;
-  transform: translateY(8px);
-  transition: opacity 0.25s ease, transform 0.25s ease;
+  transition: opacity 0.25s ease;
   z-index: 900;
   touch-action: none;
 }
 
-/* When snapped to top edge, panel opens below the pill */
+/* When snapped to top half, panel opens below the pill */
 .learn-bridge-banner.lbb-edge-top {
   flex-direction: column;
 }
@@ -6488,7 +6487,6 @@ canvas {
 
 .learn-bridge-banner.lbb-visible {
   opacity: 1;
-  transform: translateY(0);
   pointer-events: auto;
 }
 
