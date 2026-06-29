@@ -6459,7 +6459,7 @@ canvas {
 
 .learn-bridge-banner {
   position: fixed;
-  bottom: 80px; /* overridden by JS drag/restore */
+  bottom: 80px; /* overridden by JS to top-align with FAB */
   left: 16px;
   width: fit-content;
   max-width: calc(100vw - 78px);
@@ -6469,24 +6469,14 @@ canvas {
   gap: 6px;
   opacity: 0;
   pointer-events: none;
-  transition: opacity 0.25s ease;
+  transform: translateY(8px);
+  transition: opacity 0.25s ease, transform 0.25s ease;
   z-index: 900;
-  touch-action: none;
-}
-
-/* When snapped to top half, panel opens below the pill */
-.learn-bridge-banner.lbb-edge-top {
-  flex-direction: column;
-}
-
-.learn-bridge-banner.lbb-dragging {
-  transition: none !important;
-  opacity: 0.85;
-  cursor: grabbing;
 }
 
 .learn-bridge-banner.lbb-visible {
   opacity: 1;
+  transform: translateY(0);
   pointer-events: auto;
 }
 
