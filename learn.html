@@ -1198,7 +1198,7 @@
         if (!banner) return;
 
         var dragStart = null;
-        var bannerStartY = null;
+        var bannerStart = null;
         var isDragging = false;
 
         function applyPosition(along) {
@@ -1234,7 +1234,8 @@
         banner.addEventListener('pointerdown', function(e) {
           if (e.target.closest('a, button, .lbb-word-chip')) return;
           dragStart = { x: e.clientX, y: e.clientY };
-          bannerStartY = banner.getBoundingClientRect().top;
+          var rect = banner.getBoundingClientRect();
+          bannerStart = { x: rect.left, y: rect.top };
           isDragging = false;
           banner.setPointerCapture(e.pointerId);
         });
@@ -1246,19 +1247,21 @@
           if (!isDragging && Math.sqrt(dx*dx + dy*dy) < DRAG_THRESHOLD) return;
           isDragging = true;
           banner.classList.add('lbb-dragging');
+          var vw = window.innerWidth;
           var vh = window.innerHeight;
+          var bw = banner.offsetWidth;
           var bh = banner.offsetHeight;
-          var newTop = Math.max(0, Math.min(vh - bh, bannerStartY + dy));
-          banner.style.top = newTop + 'px';
+          // move freely during drag so user can see it follow their finger
+          banner.style.top = Math.max(0, Math.min(vh - bh, bannerStart.y + dy)) + 'px';
+          banner.style.left = Math.max(0, Math.min(vw - bw, bannerStart.x + dx)) + 'px';
           banner.style.bottom = '';
-          // keep locked to left — no horizontal movement
-          banner.style.left = EDGE_MARGIN + 'px';
           banner.style.right = '';
         });
 
         banner.addEventListener('pointerup', function(e) {
           banner.classList.remove('lbb-dragging');
           if (!isDragging) { dragStart = null; return; }
+          // snap to left edge at whatever vertical position
           var vh = window.innerHeight;
           var rect = banner.getBoundingClientRect();
           var along = rect.top / vh;

@@ -6481,8 +6481,9 @@ canvas {
 }
 
 .learn-bridge-banner.lbb-dragging {
-  transition: none;
+  transition: none !important;
   opacity: 0.85;
+  cursor: grabbing;
 }
 
 .learn-bridge-banner.lbb-visible {
