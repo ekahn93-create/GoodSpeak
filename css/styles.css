@@ -4723,6 +4723,7 @@ canvas {
   background-color: var(--bg-main);
   z-index: 900;
   padding-top: var(--spacing-md);
+  margin-top: calc(-1 * var(--spacing-md));
 }
 
 .storytelling-category-tab {

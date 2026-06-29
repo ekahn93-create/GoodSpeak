@@ -796,6 +796,8 @@
     scrollbar-width: none; /* Firefox */
     /* Sticky: no top nav on mobile, so top: 0 */
     top: 0;
+    padding-top: 4px;
+    margin-top: 0;
     padding-left: var(--spacing-sm);
     padding-right: var(--spacing-sm);
     /* No mask — keeping background solid so content below doesn't bleed through */
