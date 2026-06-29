@@ -6607,6 +6607,19 @@ canvas {
   pointer-events: none;
   opacity: 0;
   transition: opacity 0.25s ease;
+  touch-action: none; /* prevent scroll interference during drag */
+}
+
+/* When snapped to top edge, panel opens below the pill */
+.session-tray.st-edge-top {
+  flex-direction: column-reverse;
+  align-items: flex-end;
+}
+
+/* Drag handle cursor */
+.session-tray.st-dragging {
+  transition: none;
+  opacity: 0.85;
 }
 
 .session-tray.st-visible {

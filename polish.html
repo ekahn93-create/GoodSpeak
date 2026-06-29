@@ -1365,6 +1365,116 @@
         });
 
         setTimeout(checkSectionsVisible, 500);
+
+        // ── Draggable tray ──────────────────────────────────────────────
+        (function() {
+          var STORAGE_KEY = 'sessionTrayPos';
+          var DRAG_THRESHOLD = 5;
+          var TAB_BAR_H = 72;
+          var EDGE_MARGIN = 8;
+
+          var dragStart = null;
+          var trayStart = null;
+          var isDragging = false;
+
+          function applyPosition(pos) {
+            tray.style.top = '';
+            tray.style.bottom = '';
+            tray.style.left = '';
+            tray.style.right = '';
+            tray.classList.remove('st-edge-top');
+
+            var vw = window.innerWidth;
+            var vh = window.innerHeight;
+            var tw = tray.offsetWidth;
+            var th = tray.offsetHeight;
+
+            if (pos.edge === 'bottom') {
+              tray.style.bottom = TAB_BAR_H + 'px';
+              tray.style.left = Math.round(Math.max(EDGE_MARGIN, Math.min(vw - tw - EDGE_MARGIN, pos.along * vw))) + 'px';
+            } else if (pos.edge === 'top') {
+              tray.style.top = EDGE_MARGIN + 'px';
+              tray.style.left = Math.round(Math.max(EDGE_MARGIN, Math.min(vw - tw - EDGE_MARGIN, pos.along * vw))) + 'px';
+              tray.classList.add('st-edge-top');
+            } else if (pos.edge === 'left') {
+              tray.style.left = EDGE_MARGIN + 'px';
+              tray.style.top = Math.round(Math.max(EDGE_MARGIN, Math.min(vh - th - TAB_BAR_H, pos.along * vh))) + 'px';
+            } else {
+              tray.style.right = EDGE_MARGIN + 'px';
+              tray.style.top = Math.round(Math.max(EDGE_MARGIN, Math.min(vh - th - TAB_BAR_H, pos.along * vh))) + 'px';
+            }
+          }
+
+          function snapToEdge(x, y) {
+            var vw = window.innerWidth;
+            var vh = window.innerHeight;
+            var tw = tray.offsetWidth;
+            var th = tray.offsetHeight;
+            var cx = x + tw / 2;
+            var cy = y + th / 2;
+            var dLeft = cx;
+            var dRight = vw - cx;
+            var dTop = cy;
+            var dBottom = vh - cy;
+            var min = Math.min(dLeft, dRight, dTop, dBottom);
+            if (min === dBottom) return { edge: 'bottom', along: x / vw };
+            if (min === dTop)    return { edge: 'top',    along: x / vw };
+            if (min === dLeft)   return { edge: 'left',   along: y / vh };
+            return                      { edge: 'right',  along: y / vh };
+          }
+
+          function savePos(pos) {
+            try { localStorage.setItem(STORAGE_KEY, JSON.stringify(pos)); } catch(e) {}
+          }
+
+          function loadPos() {
+            try { return JSON.parse(localStorage.getItem(STORAGE_KEY)); } catch(e) { return null; }
+          }
+
+          pillBtn.addEventListener('pointerdown', function(e) {
+            dragStart = { x: e.clientX, y: e.clientY };
+            var rect = tray.getBoundingClientRect();
+            trayStart = { x: rect.left, y: rect.top };
+            isDragging = false;
+            pillBtn.setPointerCapture(e.pointerId);
+          });
+
+          pillBtn.addEventListener('pointermove', function(e) {
+            if (!dragStart) return;
+            var dx = e.clientX - dragStart.x;
+            var dy = e.clientY - dragStart.y;
+            if (!isDragging && Math.sqrt(dx*dx + dy*dy) < DRAG_THRESHOLD) return;
+            isDragging = true;
+            tray.classList.add('st-dragging');
+            var vw = window.innerWidth;
+            var vh = window.innerHeight;
+            var tw = tray.offsetWidth;
+            var th = tray.offsetHeight;
+            tray.style.top = Math.max(0, Math.min(vh - th, trayStart.y + dy)) + 'px';
+            tray.style.left = Math.max(0, Math.min(vw - tw, trayStart.x + dx)) + 'px';
+            tray.style.bottom = '';
+            tray.style.right = '';
+          });
+
+          pillBtn.addEventListener('pointerup', function(e) {
+            tray.classList.remove('st-dragging');
+            if (!isDragging) { dragStart = null; return; }
+            var rect = tray.getBoundingClientRect();
+            var pos = snapToEdge(rect.left, rect.top);
+            applyPosition(pos);
+            savePos(pos);
+            dragStart = null;
+            isDragging = false;
+            pillBtn.addEventListener('click', function stopClick(ev) {
+              ev.stopImmediatePropagation();
+              pillBtn.removeEventListener('click', stopClick, true);
+            }, true);
+          });
+
+          var saved = loadPos();
+          if (saved) applyPosition(saved);
+        })();
+        // ────────────────────────────────────────────────────────────────
       })();
     </script>
     </div><!-- /#mobile-scroll-wrapper -->

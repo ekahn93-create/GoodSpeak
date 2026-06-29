@@ -1440,6 +1440,134 @@
 
         // Initial check after a short delay to let modules load
         setTimeout(checkSectionsVisible, 500);
+
+        // ── Draggable tray ──────────────────────────────────────────────
+        (function() {
+          var STORAGE_KEY = 'sessionTrayPos';
+          var DRAG_THRESHOLD = 5;
+          var TAB_BAR_H = 72; // clearance above mobile tab bar
+          var EDGE_MARGIN = 8; // gap from screen edge when snapped
+
+          var dragStart = null;
+          var trayStart = null;
+          var isDragging = false;
+
+          function applyPosition(pos) {
+            // pos: { edge: 'bottom'|'top'|'left'|'right', along: 0..1 }
+            tray.style.top = '';
+            tray.style.bottom = '';
+            tray.style.left = '';
+            tray.style.right = '';
+            tray.classList.remove('st-edge-top');
+
+            var vw = window.innerWidth;
+            var vh = window.innerHeight;
+            var tw = tray.offsetWidth;
+            var th = tray.offsetHeight;
+
+            if (pos.edge === 'bottom') {
+              tray.style.bottom = TAB_BAR_H + 'px';
+              tray.style.left = Math.round(Math.max(EDGE_MARGIN, Math.min(vw - tw - EDGE_MARGIN, pos.along * vw))) + 'px';
+            } else if (pos.edge === 'top') {
+              tray.style.top = EDGE_MARGIN + 'px';
+              tray.style.left = Math.round(Math.max(EDGE_MARGIN, Math.min(vw - tw - EDGE_MARGIN, pos.along * vw))) + 'px';
+              tray.classList.add('st-edge-top');
+            } else if (pos.edge === 'left') {
+              tray.style.left = EDGE_MARGIN + 'px';
+              tray.style.top = Math.round(Math.max(EDGE_MARGIN, Math.min(vh - th - TAB_BAR_H, pos.along * vh))) + 'px';
+            } else { // right
+              tray.style.right = EDGE_MARGIN + 'px';
+              tray.style.top = Math.round(Math.max(EDGE_MARGIN, Math.min(vh - th - TAB_BAR_H, pos.along * vh))) + 'px';
+            }
+          }
+
+          function snapToEdge(x, y) {
+            var vw = window.innerWidth;
+            var vh = window.innerHeight;
+            var tw = tray.offsetWidth;
+            var th = tray.offsetHeight;
+            // cx/cy = center of tray
+            var cx = x + tw / 2;
+            var cy = y + th / 2;
+            // distances to each edge
+            var dLeft = cx;
+            var dRight = vw - cx;
+            var dTop = cy;
+            var dBottom = vh - cy;
+            var min = Math.min(dLeft, dRight, dTop, dBottom);
+            var pos;
+            if (min === dBottom) {
+              pos = { edge: 'bottom', along: (x) / vw };
+            } else if (min === dTop) {
+              pos = { edge: 'top', along: (x) / vw };
+            } else if (min === dLeft) {
+              pos = { edge: 'left', along: (y) / vh };
+            } else {
+              pos = { edge: 'right', along: (y) / vh };
+            }
+            return pos;
+          }
+
+          function savePos(pos) {
+            try { localStorage.setItem(STORAGE_KEY, JSON.stringify(pos)); } catch(e) {}
+          }
+
+          function loadPos() {
+            try { return JSON.parse(localStorage.getItem(STORAGE_KEY)); } catch(e) { return null; }
+          }
+
+          function restorePos() {
+            var pos = loadPos();
+            if (pos) applyPosition(pos);
+          }
+
+          pillBtn.addEventListener('pointerdown', function(e) {
+            dragStart = { x: e.clientX, y: e.clientY };
+            var rect = tray.getBoundingClientRect();
+            trayStart = { x: rect.left, y: rect.top };
+            isDragging = false;
+            // capture so we get pointermove/up even if pointer leaves element
+            pillBtn.setPointerCapture(e.pointerId);
+          });
+
+          pillBtn.addEventListener('pointermove', function(e) {
+            if (!dragStart) return;
+            var dx = e.clientX - dragStart.x;
+            var dy = e.clientY - dragStart.y;
+            if (!isDragging && Math.sqrt(dx*dx + dy*dy) < DRAG_THRESHOLD) return;
+            isDragging = true;
+            tray.classList.add('st-dragging');
+            var vw = window.innerWidth;
+            var vh = window.innerHeight;
+            var tw = tray.offsetWidth;
+            var th = tray.offsetHeight;
+            tray.style.top = Math.max(0, Math.min(vh - th, trayStart.y + dy)) + 'px';
+            tray.style.left = Math.max(0, Math.min(vw - tw, trayStart.x + dx)) + 'px';
+            tray.style.bottom = '';
+            tray.style.right = '';
+          });
+
+          pillBtn.addEventListener('pointerup', function(e) {
+            tray.classList.remove('st-dragging');
+            if (!isDragging) { dragStart = null; return; }
+            // snap
+            var rect = tray.getBoundingClientRect();
+            var pos = snapToEdge(rect.left, rect.top);
+            applyPosition(pos);
+            savePos(pos);
+            dragStart = null;
+            isDragging = false;
+            // prevent the click from toggling the panel after a drag
+            pillBtn.addEventListener('click', function stopClick(ev) {
+              ev.stopImmediatePropagation();
+              pillBtn.removeEventListener('click', stopClick, true);
+            }, true);
+          });
+
+          // Restore saved position on load
+          restorePos();
+        })();
+        // ────────────────────────────────────────────────────────────────
       })();
     </script>
     </div><!-- /#mobile-scroll-wrapper -->
