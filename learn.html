@@ -1188,9 +1188,9 @@
         });
       })();
 
-      // Draggable learn bridge banner — snap to edges, shared position key with session tray
+      // Draggable learn bridge banner — left edge only, slides up/down
       (function() {
-        var STORAGE_KEY = 'sessionTrayPos';
+        var STORAGE_KEY = 'learnBannerPos';
         var DRAG_THRESHOLD = 5;
         var TAB_BAR_H = 72;
         var EDGE_MARGIN = 8;
@@ -1198,71 +1198,43 @@
         if (!banner) return;
 
         var dragStart = null;
-        var bannerStart = null;
+        var bannerStartY = null;
         var isDragging = false;
 
-        function applyPosition(pos) {
-          banner.style.top = '';
+        function applyPosition(along) {
+          // along: 0..1 ratio of vertical position
+          var vh = window.innerHeight;
+          var bh = banner.offsetHeight;
+          var topPx = Math.round(Math.max(EDGE_MARGIN, Math.min(vh - bh - TAB_BAR_H, along * vh)));
+          banner.style.top = topPx + 'px';
           banner.style.bottom = '';
-          banner.style.left = '';
+          banner.style.left = EDGE_MARGIN + 'px';
           banner.style.right = '';
-          banner.classList.remove('lbb-edge-top');
-
-          var vw = window.innerWidth;
-          var vh = window.innerHeight;
-          var bw = banner.offsetWidth;
-          var bh = banner.offsetHeight;
-
-          if (pos.edge === 'bottom') {
-            banner.style.bottom = TAB_BAR_H + 'px';
-            banner.style.left = Math.round(Math.max(EDGE_MARGIN, Math.min(vw - bw - EDGE_MARGIN, pos.along * vw))) + 'px';
-          } else if (pos.edge === 'top') {
-            banner.style.top = EDGE_MARGIN + 'px';
-            banner.style.left = Math.round(Math.max(EDGE_MARGIN, Math.min(vw - bw - EDGE_MARGIN, pos.along * vw))) + 'px';
-            banner.classList.add('lbb-edge-top');
-          } else if (pos.edge === 'left') {
-            banner.style.left = EDGE_MARGIN + 'px';
-            banner.style.top = Math.round(Math.max(EDGE_MARGIN, Math.min(vh - bh - TAB_BAR_H, pos.along * vh))) + 'px';
-          } else {
-            banner.style.right = EDGE_MARGIN + 'px';
-            banner.style.top = Math.round(Math.max(EDGE_MARGIN, Math.min(vh - bh - TAB_BAR_H, pos.along * vh))) + 'px';
-          }
+          // panel opens below pill when in top half, above when in bottom half
+          banner.classList.toggle('lbb-edge-top', topPx < vh / 2);
         }
 
-        function snapToEdge(x, y) {
-          var vw = window.innerWidth;
-          var vh = window.innerHeight;
-          var bw = banner.offsetWidth;
-          var bh = banner.offsetHeight;
-          var cx = x + bw / 2;
-          var cy = y + bh / 2;
-          var dLeft = cx, dRight = vw - cx, dTop = cy, dBottom = vh - cy;
-          var min = Math.min(dLeft, dRight, dTop, dBottom);
-          if (min === dBottom) return { edge: 'bottom', along: x / vw };
-          if (min === dTop)    return { edge: 'top',    along: x / vw };
-          if (min === dLeft)   return { edge: 'left',   along: y / vh };
-          return                      { edge: 'right',  along: y / vh };
-        }
-
-        function savePos(pos) {
-          try { localStorage.setItem(STORAGE_KEY, JSON.stringify(pos)); } catch(e) {}
+        function savePos(along) {
+          try { localStorage.setItem(STORAGE_KEY, String(along)); } catch(e) {}
         }
 
         function loadPos() {
-          try { return JSON.parse(localStorage.getItem(STORAGE_KEY)); } catch(e) { return null; }
+          try {
+            var v = localStorage.getItem(STORAGE_KEY);
+            return v !== null ? parseFloat(v) : null;
+          } catch(e) { return null; }
         }
 
         function restorePos() {
-          var pos = loadPos();
-          if (pos) applyPosition(pos);
+          var along = loadPos();
+          // default: bottom area (0.7 of viewport height)
+          applyPosition(along !== null ? along : 0.7);
         }
 
         banner.addEventListener('pointerdown', function(e) {
-          // Only drag from pill row, not word chips or buttons (close, shuffle, CTA)
           if (e.target.closest('a, button, .lbb-word-chip')) return;
           dragStart = { x: e.clientX, y: e.clientY };
-          var rect = banner.getBoundingClientRect();
-          bannerStart = { x: rect.left, y: rect.top };
+          bannerStartY = banner.getBoundingClientRect().top;
           isDragging = false;
           banner.setPointerCapture(e.pointerId);
         });
@@ -1274,28 +1246,28 @@
           if (!isDragging && Math.sqrt(dx*dx + dy*dy) < DRAG_THRESHOLD) return;
           isDragging = true;
           banner.classList.add('lbb-dragging');
-          var vw = window.innerWidth;
           var vh = window.innerHeight;
-          var bw = banner.offsetWidth;
           var bh = banner.offsetHeight;
-          banner.style.top = Math.max(0, Math.min(vh - bh, bannerStart.y + dy)) + 'px';
-          banner.style.left = Math.max(0, Math.min(vw - bw, bannerStart.x + dx)) + 'px';
+          var newTop = Math.max(0, Math.min(vh - bh, bannerStartY + dy));
+          banner.style.top = newTop + 'px';
           banner.style.bottom = '';
+          // keep locked to left — no horizontal movement
+          banner.style.left = EDGE_MARGIN + 'px';
           banner.style.right = '';
         });
 
         banner.addEventListener('pointerup', function(e) {
           banner.classList.remove('lbb-dragging');
           if (!isDragging) { dragStart = null; return; }
+          var vh = window.innerHeight;
           var rect = banner.getBoundingClientRect();
-          var pos = snapToEdge(rect.left, rect.top);
-          applyPosition(pos);
-          savePos(pos);
+          var along = rect.top / vh;
+          applyPosition(along);
+          savePos(along);
           dragStart = null;
           isDragging = false;
         });
 
-        // Restore position on load and after re-renders
         restorePos();
         document.addEventListener('sessionWordsChanged', function() {
           setTimeout(restorePos, 50);
