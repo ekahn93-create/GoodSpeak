@@ -1200,7 +1200,6 @@
         var dragStart = null;
         var bannerStart = null;
         var isDragging = false;
-        var pillRow = null; // set after banner is rendered
 
         function applyPosition(along) {
           var vh = window.innerHeight;
@@ -1229,15 +1228,18 @@
           applyPosition(along !== null ? along : 0.7);
         }
 
-        function onPointerDown(e) {
+        // pointerdown on pill row starts drag; move/up on banner so capture works across full screen
+        banner.addEventListener('pointerdown', function(e) {
+          // ignore taps on interactive children
+          if (e.target.closest('a, button, .lbb-word-chip')) return;
           dragStart = { x: e.clientX, y: e.clientY };
           var rect = banner.getBoundingClientRect();
           bannerStart = { x: rect.left, y: rect.top };
           isDragging = false;
-          this.setPointerCapture(e.pointerId);
-        }
+          banner.setPointerCapture(e.pointerId);
+        });
 
-        function onPointerMove(e) {
+        banner.addEventListener('pointermove', function(e) {
           if (!dragStart) return;
           var dx = e.clientX - dragStart.x;
           var dy = e.clientY - dragStart.y;
@@ -1248,13 +1250,13 @@
           var vh = window.innerHeight;
           var bw = banner.offsetWidth;
           var bh = banner.offsetHeight;
-          banner.style.top  = Math.max(0, Math.min(vh - bh, bannerStart.y + dy)) + 'px';
-          banner.style.left = Math.max(0, Math.min(vw - bw, bannerStart.x + dx)) + 'px';
+          banner.style.top    = Math.max(0, Math.min(vh - bh, bannerStart.y + dy)) + 'px';
+          banner.style.left   = Math.max(0, Math.min(vw - bw, bannerStart.x + dx)) + 'px';
           banner.style.bottom = '';
           banner.style.right  = '';
-        }
+        });
 
-        function onPointerUp(e) {
+        banner.addEventListener('pointerup', function(e) {
           banner.classList.remove('lbb-dragging');
           if (!isDragging) { dragStart = null; return; }
           var vh = window.innerHeight;
@@ -1263,26 +1265,10 @@
           savePos(along);
           dragStart = null;
           isDragging = false;
-          // block the click that fires after pointerup
-          this.addEventListener('click', function stopClick(ev) {
-            ev.stopImmediatePropagation();
-            this.removeEventListener('click', stopClick, true);
-          }.bind(this), true);
-        }
+        });
 
-        function attachDrag() {
-          // attach to lbb-pill-row so clicks on buttons/links/chips still work
-          var row = banner.querySelector('.lbb-pill-row');
-          if (!row || row === pillRow) return;
-          pillRow = row;
-          row.addEventListener('pointerdown', onPointerDown);
-          row.addEventListener('pointermove', onPointerMove);
-          row.addEventListener('pointerup', onPointerUp);
-        }
-
-        // re-attach after every re-render (innerHTML is replaced by _showBridgeBanner)
+        // restore position after _showBridgeBanner re-renders inner HTML
         var observer = new MutationObserver(function() {
-          attachDrag();
           restorePos();
         });
         observer.observe(banner, { childList: true });
